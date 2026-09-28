@@ -1066,7 +1066,7 @@ function create({data={},lang='zh',href}){
   rows.forEach(row=>observer.observe(row));return ()=>{live=false;observer.disconnect();};
  }
  function row(entry,index,kind='book',showPin=true){
-  const label=kind==='book'?labelFor(entry):entry.labels.slice(0,2).join(' · ');
+  const label=kind==='book'?labelFor(entry):entry.labels.filter(label=>showPin||!/^pinned(?:-\d+)?$/i.test(label)).slice(0,2).join(' · ');
   const readingBadge=kind==='book'&&entry.readingState?`<b class="study-reading-badge">${entry.readingState==='reading'?L('在读','Reading','読書中'):entry.readingState==='finished'?L('读完','Finished','読了'):L('想读','Want to read','読みたい')}</b> · `:'';
   return `<a class="study-entry" href="${href('/article/'+entry.id)}"${kind==='post'?` data-post-id="${esc(entry.id)}"`:''}><span class="study-index">${String(index+1).padStart(2,'0')}</span><span class="study-entry-copy"><small>${readingBadge}${showPin&&entry.pinLevel&&kind==='post'?`<b class="study-pin">${L('置顶','Pinned','固定')}</b> · `:''}${esc(label||L('文章','Article','記事'))}</small><strong>${esc(entry.title)}</strong></span><time>${esc(entry.date)}</time><span class="study-arrow" aria-hidden="true">→</span></a>`;
  }
@@ -1097,7 +1097,7 @@ function create({data={},lang='zh',href}){
   const list=shown.length?`<div class="study-list">${shown.map((b,i)=>row(b,i)).join('')}</div>`:empty(true);
   const reading=shown.filter(book=>book.reading);
   const currently=reading.length?`<section class="study-currently"><p class="eyebrow">ON THE DESK · ${L('正在读','Reading now','読書中')}</p><div class="study-list">${reading.map((book,index)=>row(book,index)).join('')}</div></section>`:'';
-  return `<div class="shell subpage study-page"><div class="study-room-heading"><p class="eyebrow">THE STUDY · LULIY</p><div class="page-title"><h1>${L('书房','Study room','書斎')}</h1><span>${String(state.books.length).padStart(2,'0')} / NOTES</span></div><div class="study-actions"><a href="https://blog.luliy.me/book.html" target="_blank" rel="noopener noreferrer">${L('现有书架','Existing bookshelf','今の本棚')}</a><a href="${href('/posts')}">${L('文章','Writing','記事')}</a></div></div>${photoShelves()}${currently}<div class="study-room-shelves"><div class="study-room-shelves-top"><span>${L('读书笔记 · Gmeek Issues','Reading notes · Gmeek Issues','読書ノート · Gmeek Issues')}</span><button type="button" class="study-refresh" data-study-refresh>${L('刷新书目','Refresh books','書目を更新')}</button></div>${tabs}${list}</div><section class="study-writing"><div class="study-writing-head"><div><p class="eyebrow">NOTES FROM THE DESK</p><h2>${L('书房手记','Notes from the desk','書斎のノート')}</h2></div><a href="${href('/posts')}">${L('全部文章','All writing','すべての記事')}</a></div>${postsContent(3)}</section><p class="study-source">${L('书目来自','Books come from','書目の出典：')} <a href="https://blog.luliy.me/book.html" target="_blank" rel="noopener noreferrer">blog.luliy.me</a> · Gmeek Issues</p></div>`;
+  return `<div class="shell subpage study-page"><div class="study-room-heading"><p class="eyebrow">THE STUDY · LULIY</p><div class="page-title"><h1>${L('书房','Study room','書斎')}</h1><span>${String(state.books.length).padStart(2,'0')} / NOTES</span></div><div class="study-actions"><a href="https://blog.luliy.me/book.html" target="_blank" rel="noopener noreferrer">${L('现有书架','Existing bookshelf','今の本棚')}</a><a href="${href('/posts')}">${L('文章','Writing','記事')}</a></div></div>${photoShelves()}${currently}<div class="study-room-shelves"><div class="study-room-shelves-top"><button type="button" class="study-refresh" data-study-refresh>${L('刷新书目','Refresh books','書目を更新')}</button></div>${tabs}${list}</div><section class="study-writing"><div class="study-writing-head"><div><p class="eyebrow">NOTES FROM THE DESK</p><h2>${L('书房手记','Notes from the desk','書斎のノート')}</h2></div><a href="${href('/posts')}">${L('全部文章','All writing','すべての記事')}</a></div>${postsContent(3)}</section><p class="study-source">${L('书目来自','Books come from','書目の出典：')} <a href="https://blog.luliy.me/book.html" target="_blank" rel="noopener noreferrer">blog.luliy.me</a> · Gmeek Issues</p></div>`;
  }
  function art(){const photo=data.shelfPhotos?.[2]||'';return `<a class="study-room-scene" href="${href('/books')}" aria-label="${L('进入书房','Enter the study room','書斎へ')}">${photo?`<img class="study-scene-photo" src="${esc(photo)}" alt="" decoding="async">`:''}<span class="study-scene-label">LULIY / THE STUDY</span><span class="study-scene-door">${L('走进书房','Enter the study','書斎へ')}</span></a>`;}
  return {categories,books:()=>state.books,posts:()=>state.posts,pinnedEntry,orderedPosts,postsPage,searchText,sequence,revision:()=>state.revision,loaded:()=>state.loaded,refresh,hydrateCovers,entries:bookEntries,art,postsContent,pinnedContent,booksPage:roomPage,count:id=>bookEntries(id).length};
@@ -1381,9 +1381,9 @@ window.LuliyReaderTools={mount};
   function updateMiniProgress() {
     if(!mini||mini.hidden)return;
     const duration=durationOf(current())||(media&&Number.isFinite(media.duration)?media.duration:0),position=elapsed(),seekInput=mini.querySelector('.lr-mini-seek');
-    if(document.activeElement!==seekInput)seekInput.value=position;
+    if(!seekInput.matches(':active'))seekInput.value=position;
     seekInput.max=duration||1;seekInput.disabled=!duration;seekInput.setAttribute('aria-valuetext',time(position)+' / '+time(duration));
-    mini.querySelector('.lr-mini-elapsed').textContent=time(position);mini.querySelector('.lr-mini-duration').textContent=time(duration);
+    if(!seekInput.matches(':active'))mini.querySelector('.lr-mini-elapsed').textContent=time(position);mini.querySelector('.lr-mini-duration').textContent=time(duration);
     mini.style.setProperty('--lr-ring',String(113.1*(1-(duration?position/duration:0))));
   }
   function setLang(lang) {
@@ -1429,9 +1429,9 @@ window.LuliyReaderTools={mount};
     on(shelf,'wheel',event=>{if(event.ctrlKey||shelf.scrollWidth<=shelf.clientWidth+2)return;const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;if(!delta)return;event.preventDefault();const now=performance.now();if(now-lastWheel<360)return;lastWheel=now;moveShelf(Math.sign(delta));},{passive:false});
     function progress() {
       if(destroyed)return;const position=elapsed(),track=current();
-      if(document.activeElement!==seekInput)seekInput.value=position;
+      if(!seekInput.matches(':active'))seekInput.value=position;
       seekInput.max=durationOf(track)||1;seekInput.disabled=!durationOf(track);seekInput.setAttribute('aria-valuetext',time(position)+' / '+time(track.duration));
-      root.querySelector('.lr-elapsed').textContent=time(position);root.querySelector('.lr-duration').textContent=time(track.duration);
+      if(!seekInput.matches(':active'))root.querySelector('.lr-elapsed').textContent=time(position);root.querySelector('.lr-duration').textContent=time(track.duration);
     }
     function update() {
       if(destroyed)return;const d=dictionary(),track=current(),empty=state.index<0;
@@ -1539,6 +1539,7 @@ window.LuliyReaderTools={mount};
 const D=window.LULIY_DATA,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const motion=matchMedia('(prefers-reduced-motion: reduce)');
+let renderVersion=0;
 let lang='zh',route='/',cleanup=[],activeScene=null,footerScene=null,directoryScene=null,frame=0,selected=0,searchButtons=[],searchToken=0,searchTimer=0,articleRestoreY=null,lbPhotos=[],lbIndex=0,lbScale=1,lbX=0,lbY=0,toastTimer=0,transitionSource=null,listReturn=null;
 try{lang=localStorage.getItem('luliy-language')||'zh';}catch(e){}if(!['zh','en','ja'].includes(lang))lang='zh';
 const words={
@@ -1579,7 +1580,7 @@ function staticText(){
  $$('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));$('#searchTitle').textContent=t('searchTitle');$('#searchInput').placeholder=t('searchPlaceholder');$('#searchHint').textContent=t('searchHint');$('#usesLink').textContent=t('uses');$('#colophonLink').textContent=t('colophon');$('#contactTitle').textContent=t('about');$('#contactCopy').textContent=t('footerCopy');$('#copyEmail').textContent=L('复制主邮箱','Copy email','メールをコピー');$('#skipLink').textContent=L('跳到正文','Skip to content','本文へ');$('#vaultGate').setAttribute('aria-label',L('长按落款，进入全集','Hold signature to enter the collection','署名を長押しして全集へ'));$('.preview-project-list').innerHTML=projects.map(p=>esc(p[0])).join('<br>');syncTheme();
  const labels={'.brand':['Luliy 首页','Luliy home','Luliy ホーム'],'#chapterNav':['章节导航','Chapters','章のナビゲーション'],'#directoryLinks':['完整目录','Full directory','すべての目次'],'#searchOpen':['搜索与快捷命令','Search and commands','検索とコマンド'],'#searchResults':['搜索结果','Search results','検索結果'],'#lightbox':['照片查看器','Photo viewer','写真ビューアー'],'#lbReset':['复位照片','Reset photograph','写真をリセット'],'#lbPrev':['上一张照片','Previous photograph','前の写真'],'#lbNext':['下一张照片','Next photograph','次の写真'],'[data-close="lightbox"]':['关闭照片','Close photograph','写真を閉じる'],'[data-close="searchDialog"]':['关闭搜索','Close search','検索を閉じる'],'[data-close="contactDialog"]':['关闭联系窗口','Close contact dialog','連絡先を閉じる']};Object.entries(labels).forEach(([s,a])=>$(s)?.setAttribute('aria-label',L(...a)));$('#searchLabel').textContent=L('搜索页面、项目与命令','Search pages, projects and commands','ページ・作品・コマンドを検索');$('#usesLink').href=href('/uses');$('#colophonLink').href=href('/colophon');
 }
-function setLang(next){if(!['zh','en','ja'].includes(next))return;lang=next;try{localStorage.setItem('luliy-language',lang);}catch(e){}$('#langMenu').hidden=true;$('#langTrigger').setAttribute('aria-expanded','false');const target=href(route);if(location.hash===target)render();else location.hash=target;}
+function setLang(next){if(!['zh','en','ja'].includes(next))return;lang=next;try{localStorage.setItem('luliy-language',lang);}catch(e){}$('#langMenu').hidden=true;$('#langTrigger').setAttribute('aria-expanded','false');const current=new URL(location.hash.slice(1)||'/', 'https://luliy.local');current.searchParams.delete('lang');const query=current.searchParams.toString(),target=href(route+(query?'?'+query:''));if(location.hash===target)return;if(route.startsWith('/article/'))articleRestoreY=scrollY;location.hash=target;}
 
 const defaultProjects=[
  ['CET4','\u82f1\u8bed\u56db\u7ea7\u5b66\u4e60\u4e0e\u8bcd\u6c47\u6574\u7406','CET-4 English study and vocabulary','\u82f1\u8a9e\u56db\u7d1a\u306e\u5b66\u7fd2\u3068\u8a9e\u5f59','https://luliy6.42web.io/'],
@@ -1675,7 +1676,7 @@ function mountReadingGuide(body){
  const links=headings.map((heading,index)=>{
   if(!heading.id)heading.id='reading-heading-'+index;
   const button=document.createElement('button');button.type='button';button.className='reader-toc-item level-'+heading.tagName.toLowerCase();button.textContent=heading.textContent.trim();button.title=button.textContent;
-  button.addEventListener('click',()=>{window.scrollTo({top:heading.getBoundingClientRect().top+scrollY-118,behavior:motion.matches?'instant':'smooth'});aside.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');});
+  button.addEventListener('click',()=>{window.scrollTo({top:heading.getBoundingClientRect().top+scrollY-118,behavior:motion.matches?'instant':'smooth'});});
   nav.append(button);return button;
  });
  let current=-1,raf=0;const abort=new AbortController();
@@ -1703,13 +1704,14 @@ function articleSeries(entry,shelf){
  return `<nav class="reader-series" aria-label="${L('同系列文章','Articles in this series','同じシリーズの記事')}"><p class="eyebrow">${L('继续阅读','Continue reading','続きを読む')} · ${esc(group.label)} <span>${index+1} / ${group.items.length}</span></p><div>${before?`<a href="${href('/article/'+before.id)}"><small>← ${L('上一篇','Previous','前の記事')}</small><strong>${esc(before.title)}</strong></a>`:'<span></span>'}${after?`<a href="${href('/article/'+after.id)}"><small>${L('下一篇','Next','次の記事')} →</small><strong>${esc(after.title)}</strong></a>`:'<span></span>'}</div></nav>`;
 }
 function renderGmeekArticle(id){
+ const version=renderVersion;
  const shelf=library(),book=shelf.books().find(x=>x.id===id),entry=book||shelf.posts().find(x=>x.id===id)||shelf.pinnedEntry(id);
  if(!entry){if(!shelf.loaded())$('#main').innerHTML=`<div class="shell subpage"><p class="page-intro">${L('正在打开文章…','Opening the article…','記事を読み込み中…')}</p></div>`;else render404();return;}
  const back=book?'/books':'/posts',backHref=listReturn?.articleId===id?listReturn.hash:href(back),number=String(shelf.sequence(id)||1).padStart(3,'0');
  const category=`${book?'THE STUDY':'BLOG A'} · ${esc(entry.labels.join(' / ')||L('阅读笔记','Reading notes','読書ノート'))}`;
  const original=esc(entry.url||'https://github.com/luliy6/luliy6.github.io/issues/'+id.slice(1));
  $('#main').innerHTML=`<div class="shell source-reading"><p class="source-number" id="sourceNumber">No.${number}</p><h1>${esc(entry.title)}</h1><div class="source-meta"><a class="reader-return" href="${backHref}" aria-label="${L('返回列表','Back to the list','一覧へ戻る')}" title="${L('返回列表','Back to the list','一覧へ戻る')}">←</a><span class="source-category">${category}</span><time>${esc(entry.date)}</time><span id="sourceReadingTime">${L('计算阅读时间…','Calculating reading time…','読書時間を計算中…')}</span><button type="button" class="reader-refresh" data-reader="refresh" aria-label="${L('刷新正文','Refresh text','本文を更新')}" title="${L('刷新正文','Refresh text','本文を更新')}">↻</button><a href="${original}" target="_blank" rel="noopener noreferrer">${L('博客原文','Original post','元の記事')}</a></div><div class="source-layout"><article class="source-body" id="sourceArticleBody" aria-live="polite"><p>${L('正在载入正文…','Loading the text…','本文を読み込み中…')}</p></article><aside class="source-toc" id="readerToc" aria-label="${L('文章目录','Article contents','記事の目次')}"><p>${L('目录','Contents','目次')}</p><nav aria-label="${L('文章章节','Article sections','記事の節')}"></nav></aside><div class="reader-float"><button type="button" class="reader-toc-toggle" aria-controls="readerToc" aria-expanded="false" aria-label="${L('打开文章目录','Open article contents','記事の目次を開く')}">☰</button><button type="button" class="reader-back-top" aria-label="${L('回到文章顶部','Back to article top','記事の先頭へ')}">↑</button></div></div>${articleSeries(entry,shelf)}<div class="source-end"><a href="${backHref}">← ${L('返回列表','Back to the list','一覧へ戻る')}</a><a href="https://github.com/luliy6/luliy6.github.io/issues/${entry.id.slice(1)}" target="_blank" rel="noopener noreferrer">${L('查看讨论','View discussion','議論を見る')}</a></div></div>`;
- LuliyReader.load(entry).then(fragment=>{const host=$('#sourceArticleBody');if(route==='/article/'+id&&host){host.replaceChildren(fragment);const first=host.querySelector(':scope > h1');if(first?.textContent.trim().replace(/\s+/g,'')===entry.title.trim().replace(/\s+/g,''))first.remove();host.dataset.sourceText=sourceFingerprint(host);const metrics=readingMetrics(host);$('#sourceReadingTime').textContent=L(`${metrics.count.toLocaleString('zh-CN')} 字 · 约 ${metrics.minutes} 分钟阅读`,`${metrics.count.toLocaleString('en-US')} words · ${metrics.minutes} min read`,`${metrics.count.toLocaleString('ja-JP')} 字 · 約 ${metrics.minutes} 分`);mountReadingGuide(host);cleanup.push(LuliyReaderTools.mount({body:host,entry,lang,href,notify,onRefresh:async()=>{await LuliyReader.load(entry,true);articleRestoreY=scrollY;render();notify(L('正文已刷新','Article refreshed','本文を更新しました'));}}));requestAnimationFrame(()=>{pageScroll();if(articleRestoreY!==null){scrollTo({top:articleRestoreY,behavior:'instant'});articleRestoreY=null;}});}}).catch(()=>{const host=$('#sourceArticleBody');if(route==='/article/'+id&&host){$('#sourceReadingTime').textContent=L('阅读时间待正文载入','Reading time unavailable','読書時間を取得できません');host.innerHTML=`<p>${L('正文暂时无法载入，可打开博客原文阅读。','The text could not be loaded. Open the original post instead.','本文を読み込めません。元の記事をご覧ください。')}</p><p><a href="${original}" target="_blank" rel="noopener noreferrer">${L('打开博客原文','Open the original post','元の記事を開く')}</a></p>`;mountReadingGuide(host);cleanup.push(LuliyReaderTools.mount({body:host,entry,lang,href,notify,onRefresh:async()=>{await LuliyReader.load(entry,true);articleRestoreY=scrollY;render();notify(L('正文已刷新','Article refreshed','本文を更新しました'));}}));}});
+ LuliyReader.load(entry).then(fragment=>{const host=$('#sourceArticleBody');if(version===renderVersion&&route==='/article/'+id&&host){host.replaceChildren(fragment);const first=host.querySelector(':scope > h1');if(first?.textContent.trim().replace(/\s+/g,'')===entry.title.trim().replace(/\s+/g,''))first.remove();host.dataset.sourceText=sourceFingerprint(host);const metrics=readingMetrics(host);$('#sourceReadingTime').textContent=L(`${metrics.count.toLocaleString('zh-CN')} 字 · 约 ${metrics.minutes} 分钟阅读`,`${metrics.count.toLocaleString('en-US')} words · ${metrics.minutes} min read`,`${metrics.count.toLocaleString('ja-JP')} 字 · 約 ${metrics.minutes} 分`);mountReadingGuide(host);cleanup.push(LuliyReaderTools.mount({body:host,entry,lang,href,notify,onRefresh:async()=>{await LuliyReader.load(entry,true);articleRestoreY=scrollY;render();notify(L('正文已刷新','Article refreshed','本文を更新しました'));}}));requestAnimationFrame(()=>{pageScroll();if(articleRestoreY!==null){scrollTo({top:articleRestoreY,behavior:'instant'});articleRestoreY=null;}});}}).catch(()=>{const host=$('#sourceArticleBody');if(version===renderVersion&&route==='/article/'+id&&host){$('#sourceReadingTime').textContent=L('阅读时间待正文载入','Reading time unavailable','読書時間を取得できません');host.innerHTML=`<p>${L('正文暂时无法载入，可打开博客原文阅读。','The text could not be loaded. Open the original post instead.','本文を読み込めません。元の記事をご覧ください。')}</p><p><a href="${original}" target="_blank" rel="noopener noreferrer">${L('打开博客原文','Open the original post','元の記事を開く')}</a></p>`;mountReadingGuide(host);cleanup.push(LuliyReaderTools.mount({body:host,entry,lang,href,notify,onRefresh:async()=>{await LuliyReader.load(entry,true);articleRestoreY=scrollY;render();notify(L('正文已刷新','Article refreshed','本文を更新しました'));}}));}});
 }
 
 function renderUtility(kind){const key=kind==='uses'?'uses':kind==='vault'?'vault':'colophon';let body='';if(kind==='uses'){body=`<p class="page-intro">${L('写作与整理的工具。尚未提供的个人设备信息，留待日后补上。','Tools for writing and collecting. Personal equipment details can be added later.','書くこと、整理することのための道具。個人の機材情報は、また後ほど。')}</p><div class="utility-list"><div><h2>${L('写作','Writing','書く')}</h2><p>Gmeek · <a href="https://blog.luliy.me" target="_blank" rel="noopener">Blog A</a> · <a href="https://mini.luliy.me" target="_blank" rel="noopener">Blog B</a></p></div><div><h2>${L('阅读与记录','Reading & notes','読む・記録')}</h2><p><a href="${href('/books')}">${esc(t('books'))}</a> · Favorites / Timeline — Coming soon</p></div></div>`;}else if(kind==='vault'){body=`<p class="page-intro">${L('所有入口，收在这里。','All the doorways, in one place.','すべての入口を、ここに。')}</p><div class="vault-grid">${['books','projects','posts','music','about','uses','colophon'].map(k=>`<a href="${href('/'+k)}">${esc(t(k))}</a>`).join('')}</div><section class="section">${spaces()}</section>`;}else{body=`<p class="page-intro">${L('关于这座小小的互联网空间，以及用来展示它的素材。','About this small corner of the internet, and the materials used to demonstrate it.','この小さな場所と、そのデモに使われている素材について。')}</p><div class="utility-list"><div><h2>${L('设计参考','Design reference','デザイン参考')}</h2><p><a href="https://ungetsu.net/" target="_blank" rel="noopener">ungetsu.net</a> · ${L('纸墨配色、滚动叙事、展览式排版。本站交互与程序化月面为独立实现。','Paper-and-ink colors, scrolling narrative and exhibition layouts. Interactions and the procedural moon are independently implemented.','紙と墨の配色、スクロールの物語、展示のレイアウト。操作と月面は独自に実装。')}</p></div><div><h2>${L('内容','Content','内容')}</h2><p>${L('Luliy 的简介、博客与联系方式来自你提供的原始 HTML。书房与文章从博客一读取；唱片区播放个人网盘中的音乐文件，部分图片为演示素材。','The profile, blogs and contact details come from the original Luliy HTML. The study room and writing are read from Blog A. The record player uses music files from my cloud drive; some images remain demonstration materials.','紹介文、ブログ、連絡先は元の Luliy HTML から。書斎と記事は Blog A から取得。レコード棚はクラウド上の音楽ファイルを再生します。')}</p></div><div><h2>${L('字与声音','Type & sound','文字と音')}</h2><p>EB Garamond · SIL Open Font License<br>${L('中文与日文使用系统衬线字体。唱片音频从 cloud.luliy.me 在线加载。','Chinese and Japanese use system serif fonts. Records stream from cloud.luliy.me.','日本語・中国語はシステムのセリフ体。音楽は cloud.luliy.me から読み込まれます。')}</p></div></div><section class="section"><h2 style="font-size:28px;margin-bottom:25px">${L('文章示例配图','Sample article images','サンプル記事の画像')}</h2><ul class="credits-list">${D.photos.map(p=>`<li>${esc(photoTitle(p))} — ${esc(p.credit)} · <a href="${esc(p.source)}" target="_blank" rel="noopener">Unsplash</a></li>`).join('')}</ul><p class="list-note"><a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a></p></section>`;}
@@ -1718,7 +1720,7 @@ function renderUtility(kind){const key=kind==='uses'?'uses':kind==='vault'?'vaul
 }
 function render404(){$('#main').innerHTML=`<div class="shell subpage not-found"><h1>404</h1><p>${esc(t('error404'))}</p>${routeLink('/','home')}</div>`;}
 function reveal(){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.remove('pending');io.unobserve(e.target);}}),{threshold:.04});$$('.reveal').forEach(el=>{el.classList.add('pending');io.observe(el);});cleanup.push(()=>io.disconnect());}
-function render(){cleanup.forEach(fn=>fn());cleanup=[];if(activeScene){activeScene.destroy();activeScene=null;}const u=new URL(location.hash.slice(1)||'/', 'https://luliy.local');route=u.pathname.replace(/\/$/,'')||'/';const urlLang=u.searchParams.get('lang');if(['zh','en','ja'].includes(urlLang))lang=urlLang;if(route==='/photos'||route.startsWith('/album/')){route='/books';history.replaceState(null,'',href(route));}syncFooterPortrait();staticText();$('#directoryOpen').hidden=false;$('#main').className='';switch(route){case'/':renderHome();break;case'/books':renderBooks();break;case'/projects':renderProjects();break;case'/posts':renderPosts();break;case'/music':renderMusic();break;case'/about':renderAbout();break;case'/uses':renderUtility('uses');break;case'/colophon':renderUtility('colophon');break;case'/vault':renderUtility('vault');break;default:if(route.startsWith('/books/'))renderBooks(route.split('/')[2]);else if(route.startsWith('/article/'))renderGmeekArticle(route.split('/')[2]);else if(route.startsWith('/post/'))renderArticle(route.split('/')[2]);else render404();}
+function render(){renderVersion++;cleanup.forEach(fn=>fn());cleanup=[];if(activeScene){activeScene.destroy();activeScene=null;}const u=new URL(location.hash.slice(1)||'/', 'https://luliy.local');route=u.pathname.replace(/\/$/,'')||'/';const urlLang=u.searchParams.get('lang');if(['zh','en','ja'].includes(urlLang))lang=urlLang;if(route==='/photos'||route.startsWith('/album/')){route='/books';history.replaceState(null,'',href(route));}syncFooterPortrait();staticText();$('#directoryOpen').hidden=false;$('#main').className='';switch(route){case'/':renderHome();break;case'/books':renderBooks();break;case'/projects':renderProjects();break;case'/posts':renderPosts();break;case'/music':renderMusic();break;case'/about':renderAbout();break;case'/uses':renderUtility('uses');break;case'/colophon':renderUtility('colophon');break;case'/vault':renderUtility('vault');break;default:if(route.startsWith('/books/'))renderBooks(route.split('/')[2]);else if(route.startsWith('/article/'))renderGmeekArticle(route.split('/')[2]);else if(route.startsWith('/post/'))renderArticle(route.split('/')[2]);else render404();}
  $$('.signature-dot img').forEach(img=>img.decode().then(()=>img.parentElement?.classList.add('is-loaded')).catch(()=>{}));
  const article=articles.find(a=>route==='/post/'+a.id),source=[...library().books(),...library().posts()].find(x=>route==='/article/'+x.id),category=library().categories.find(c=>route==='/books/'+c.id);document.title=route==='/'?'Luliy':'Luliy — '+(source?source.title:article?articleTitle(article):category?category.name:words[route.slice(1)]?t(route.slice(1)):'404');reveal();cleanup.push(library().hydrateCovers($('#main')));requestAnimationFrame(pageScroll);
 }
@@ -1761,7 +1763,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-go-contact]')){$$('dialog[open]').forEach(d=>closeDialog(d.id));window.scrollTo({top:document.documentElement.scrollHeight,behavior:motion.matches?'instant':'smooth'});$('#contact').focus({preventScroll:true});return;}
  const pic=e.target.closest('[data-lightbox]');if(pic){openLightbox(D.photos,+pic.dataset.lightbox);return;}
  const anchor=e.target.closest('[data-article-anchor]');if(anchor){e.preventDefault();$('#article-'+anchor.dataset.articleAnchor)?.scrollIntoView({behavior:motion.matches?'instant':'smooth'});return;}
- const link=e.target.closest('a[href^="#/"]');if(link){$$('dialog[open]').forEach(d=>closeDialog(d.id));if(link.hash===location.hash){e.preventDefault();scrollTo({top:0,behavior:motion.matches?'instant':'smooth'});}}
+ const link=e.target.closest('a[href^="#/"]');if(link){if(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;$$('dialog[open]').forEach(d=>closeDialog(d.id));if(link.hash===location.hash){e.preventDefault();if(link.closest('.study-tabs,.post-filters'))return;scrollTo({top:0,behavior:motion.matches?'instant':'smooth'});}}
  if(!e.target.closest('.lang-wrap')){$('#langMenu').hidden=true;$('#langTrigger').setAttribute('aria-expanded','false');}
 });
 $('#qrOpen').onclick=()=>openDialog('qrDialog');$('#themeToggle').onclick=changeTheme;$('#directoryOpen').onclick=()=>openDialog('directory');$('#searchOpen').onclick=openSearch;$('#langTrigger').onclick=()=>{const open=$('#langMenu').hidden;$('#langMenu').hidden=!open;$('#langTrigger').setAttribute('aria-expanded',String(open));};
@@ -1773,10 +1775,12 @@ document.addEventListener('pointerdown',e=>{const gate=e.target.closest('[data-v
 ['pointerup','pointerleave','pointercancel'].forEach(type=>document.addEventListener(type,e=>{if(!holdGate||e.target.closest('[data-vault-gate]')!==holdGate)return;cancelVaultHold();},true));
 document.addEventListener('click',e=>{const gate=e.target.closest('[data-vault-gate]');if(gate&&e.detail===0)vault(gate);});
 document.addEventListener('keydown',e=>{const gate=e.target.closest('[data-vault-gate]');if(gate&&(e.key==='Enter'||e.key===' ')){e.preventDefault();vault(gate);}});
+window.addEventListener('blur',cancelVaultHold);
+window.addEventListener('scroll',cancelVaultHold,{passive:true});
 document.addEventListener('contextmenu',e=>{if(e.target.closest('[data-vault-gate]'))e.preventDefault();});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&!e.isComposing){e.preventDefault();$('#searchDialog').open?closeDialog('searchDialog'):openSearch();}if(e.key==='Escape'&&!$('#langMenu').hidden){$('#langMenu').hidden=true;$('#langTrigger').setAttribute('aria-expanded','false');$('#langTrigger').focus();}});
-document.addEventListener('click',event=>{const row=event.target.closest('a.study-entry[href*="/article/"]');if(!row||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;transitionSource=row.querySelector('.study-entry-copy strong');listReturn={hash:location.hash||'#/',y:scrollY,articleId:row.getAttribute('href').split('/article/')[1]?.split('?')[0]};},true);
-window.addEventListener('hashchange',()=>{if(location.hash==='#main'){$('#main').focus();return;}const source=transitionSource;transitionSource=null;const targetRoute=location.hash.slice(1).split('?')[0];const animate=source?.isConnected&&targetRoute.startsWith('/article/')&&!motion.matches&&typeof document.startViewTransition==='function';const restore=listReturn?.hash===location.hash&&route.startsWith('/article/')?listReturn.y:null;const filterChange=route==='/posts'&&targetRoute==='/posts';const filterAnimate=filterChange&&!motion.matches&&typeof document.startViewTransition==='function';const filterY=filterChange?scrollY:null;const update=()=>{render();scrollTo({top:restore??filterY??0,behavior:'instant'});if(restore!==null)requestAnimationFrame(()=>scrollTo({top:restore,behavior:'instant'}));if(animate){source.style.viewTransitionName='';const title=$('#main .source-reading h1');if(title)title.style.viewTransitionName='article-title';}$('#main').focus({preventScroll:true});};if(animate){source.style.viewTransitionName='article-title';const transition=document.startViewTransition(update);transition.finished.finally(()=>{$('#main .source-reading h1')?.style.removeProperty('view-transition-name');source.style.removeProperty('view-transition-name');});}else if(filterAnimate)document.startViewTransition(update);else update();});window.addEventListener('scroll',()=>{if(!frame)frame=requestAnimationFrame(pageScroll);},{passive:true});window.addEventListener('resize',()=>{if(!frame)frame=requestAnimationFrame(pageScroll);});
+document.addEventListener('click',event=>{const row=event.target.closest('a.study-entry[href*="/article/"],a.home-pinned-link[href*="/article/"]');if(!row||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;transitionSource=row.querySelector('.study-entry-copy strong,strong');listReturn={hash:location.hash||'#/',y:scrollY,articleId:row.getAttribute('href').split('/article/')[1]?.split('?')[0]};},true);
+window.addEventListener('hashchange',()=>{if(location.hash==='#main'){$('#main').focus();return;}const source=transitionSource;transitionSource=null;const targetRoute=location.hash.slice(1).split('?')[0];const animate=source?.isConnected&&targetRoute.startsWith('/article/')&&!motion.matches&&typeof document.startViewTransition==='function';const restore=listReturn?.hash===location.hash&&route.startsWith('/article/')?listReturn.y:null;const filterChange=(route===targetRoute)||(/^\/books(?:\/|$)/.test(route)&&/^\/books(?:\/|$)/.test(targetRoute));const filterAnimate=filterChange&&!motion.matches&&typeof document.startViewTransition==='function';const filterY=filterChange?scrollY:null;const update=()=>{render();scrollTo({top:restore??filterY??0,behavior:'instant'});if(restore!==null)requestAnimationFrame(()=>scrollTo({top:restore,behavior:'instant'}));if(animate){source.style.viewTransitionName='';const title=$('#main .source-reading h1');if(title)title.style.viewTransitionName='article-title';}$('#main').focus({preventScroll:true});};if(animate){source.style.viewTransitionName='article-title';const transition=document.startViewTransition(update);transition.finished.finally(()=>{$('#main .source-reading h1')?.style.removeProperty('view-transition-name');source.style.removeProperty('view-transition-name');});}else if(filterAnimate)document.startViewTransition(update);else update();});window.addEventListener('scroll',()=>{if(!frame)frame=requestAnimationFrame(pageScroll);},{passive:true});window.addEventListener('resize',()=>{if(!frame)frame=requestAnimationFrame(pageScroll);});
 let footerPortrait='',footerInView=false;const footerImage=new Image();footerImage.crossOrigin='anonymous';function mountFooterScene(){if(!footerInView||footerScene||!footerImage.complete||!footerImage.naturalWidth)return;footerScene=LuliyMoon.mount($('#footerMoon'),{scene:'portrait',portrait:footerPortrait,portraitLayout:route==='/'?'default':'footer-side'});footerScene.setTheme(document.documentElement.dataset.theme);$('#contact').classList.add('portrait-ready');}function syncFooterPortrait(){const home=route==='/',next=home?(D.scenes?.footerPortrait||D.scenes?.portrait):(D.scenes?.sidePortrait||D.scenes?.portrait);$('#contact').classList.toggle('footer-home',home);if(next===footerPortrait)return;footerPortrait=next;if(footerScene){footerScene.destroy();footerScene=null;}$('#contact').classList.remove('portrait-ready');$('#footerMoon').dataset.portrait=next;footerImage.src=next;}footerImage.onload=mountFooterScene;const footerIO=new IntersectionObserver(([e])=>{footerInView=e.isIntersecting;mountFooterScene();},{threshold:0});footerIO.observe($('#contact'));
 render();
 const liveLibrary=library();let liveCoverCleanup=null;
@@ -1799,13 +1803,13 @@ setInterval(()=>{
   }
  });
 },60000);
-document.addEventListener('click',e=>{if(e.target.closest('[data-study-refresh]'))liveLibrary.refresh(true).then(()=>{if(route==='/books'||route.startsWith('/books/'))render();});});
+document.addEventListener('click',e=>{if(e.target.closest('[data-study-refresh]'))liveLibrary.refresh(true).then(()=>{if(route==='/books'||route.startsWith('/books/')){const y=scrollY;render();scrollTo({top:y,behavior:'instant'});}});});
 document.addEventListener('luliy:records-open',()=>{if(route==='/')$('#recordsHome')?.scrollIntoView({behavior:motion.matches?'instant':'smooth',block:'start'});else if(route==='/music')$('#recordMount')?.scrollIntoView({behavior:motion.matches?'instant':'smooth',block:'start'});else goto('/music');});
 })();
 
 
 </script>
-<script>/* A quiet night sky on inner pages and a brief, warm response to mouse clicks. */
+<script>/* A quiet night sky and warm, full-size click fireworks. */
 (function(){
  'use strict';
  const page=document.querySelector('.page-above');
@@ -1816,12 +1820,16 @@ document.addEventListener('luliy:records-open',()=>{if(route==='/')$('#recordsHo
  const skyCtx=sky.getContext('2d',{alpha:true}),clickCtx=clicks.getContext('2d',{alpha:true});
  if(!skyCtx||!clickCtx)return;
  const motion=matchMedia('(prefers-reduced-motion: reduce)'),fine=matchMedia('(pointer: fine)');
- let width=1,height=1,stars=[],skyFrame=0,clickFrame=0,lastSky=0,active=false;
+ let width=1,height=1,stars=[],skyFrame=0,clickFrame=0,layoutFrame=0,lastSky=0,active=false;
+ const colors=['#cf5f45','#cba24a','#e8e0d2'];
  const bursts=[];
+ let dirty=[];
+ function clearDirty(){for(const area of dirty)clickCtx.clearRect(area.x-214,area.y-214,428,428);dirty=[];}
  function size(){
+  if(skyFrame){cancelAnimationFrame(skyFrame);skyFrame=0;}
   width=Math.max(1,innerWidth);height=Math.max(1,innerHeight);
-  const ratio=Math.min(devicePixelRatio||1,2);
   for(const [canvas,ctx] of [[sky,skyCtx],[clicks,clickCtx]]){
+   const ratio=Math.min(devicePixelRatio||1,canvas===sky?1:1.5);
    canvas.width=Math.round(width*ratio);canvas.height=Math.round(height*ratio);
    ctx.setTransform(ratio,0,0,ratio,0,0);
   }
@@ -1831,7 +1839,6 @@ document.addEventListener('luliy:records-open',()=>{if(route==='/')$('#recordsHo
    let x=random();if(x>.26&&x<.74&&random()<.67)x=random()<.5?random()*.25:.75+random()*.25;
    return {x:x*width,y:random()*height,r:.42+random()*1.04,alpha:.14+random()*.29,phase:random()*6.283,speed:.00042+random()*.00055,gold:random()<.17};
   });
-  drawSky(performance.now());
  }
  function routeVisible(){
   const path=(location.hash.slice(1)||'/').split('?')[0];
@@ -1841,6 +1848,10 @@ document.addEventListener('luliy:records-open',()=>{if(route==='/')$('#recordsHo
   active=routeVisible();sky.style.opacity=active?'1':'0';
   if(active&&!skyFrame&&!document.hidden)skyFrame=requestAnimationFrame(drawSky);
   if(!active&&skyFrame){cancelAnimationFrame(skyFrame);skyFrame=0;}
+ }
+ function clearClicks(){
+  if(clickFrame)cancelAnimationFrame(clickFrame);
+  clickFrame=0;bursts.length=0;clearDirty();
  }
  function drawSky(now){
   skyFrame=0;if(document.hidden||!active)return;
@@ -1856,35 +1867,68 @@ document.addEventListener('luliy:records-open',()=>{if(route==='/')$('#recordsHo
   if(!motion.matches)skyFrame=requestAnimationFrame(drawSky);
  }
  function drawClicks(now){
-  clickFrame=0;clickCtx.clearRect(0,0,width,height);
+  clickFrame=0;clearDirty();
   for(let i=bursts.length-1;i>=0;i--){
-   const burst=bursts[i],p=Math.min(1,(now-burst.at)/620),fade=(1-p)*(1-p);
+   const burst=bursts[i],elapsed=now-burst.at,p=Math.min(1,elapsed/burst.duration);
    if(p>=1){bursts.splice(i,1);continue;}
-   clickCtx.beginPath();clickCtx.arc(burst.x,burst.y,4+p*51,0,Math.PI*2);
-   clickCtx.strokeStyle=`rgba(207,95,69,${fade*.48})`;clickCtx.lineWidth=1.25;clickCtx.stroke();
-   for(const dot of burst.dots){
-    const spread=9+p*dot.distance;
-    const x=burst.x+Math.cos(dot.angle)*spread,y=burst.y+Math.sin(dot.angle)*spread;
-    const color=dot.gold?'203,162,74':dot.white?'232,224,210':'207,95,69';
-    clickCtx.fillStyle=`rgba(${color},${fade*dot.alpha})`;
-    clickCtx.beginPath();clickCtx.arc(x,y,Math.max(.25,dot.radius*(1-p*.72)),0,Math.PI*2);clickCtx.fill();
+   dirty.push(burst);
+   burst.shrink=(1-p)*(1-p)*(1-p);burst.spread=1-burst.shrink;
+   const ringAlpha=.5*Math.max(0,1-elapsed/burst.ringFade);
+   if(ringAlpha>0){
+    clickCtx.beginPath();clickCtx.arc(burst.x,burst.y,.1+burst.spread*(burst.ringRadius-.1),0,Math.PI*2);
+    clickCtx.strokeStyle=`rgba(207,95,69,${ringAlpha})`;clickCtx.lineWidth=6*burst.shrink;clickCtx.stroke();
+   }
+  }
+  // Share three fill operations across all concurrent bursts.
+  for(let color=0;color<colors.length;color++){
+   clickCtx.fillStyle=colors[color];clickCtx.beginPath();
+   for(const burst of bursts){
+    for(const dot of burst.groups[color]){
+     const r=.1+(dot.radius-.1)*burst.shrink;
+     if(r<.35)continue;
+     const x=burst.x+dot.dx*burst.spread,y=burst.y+dot.dy*burst.spread;
+     clickCtx.moveTo(x+r,y);clickCtx.arc(x,y,r,0,Math.PI*2);
+    }
+   }
+   clickCtx.fill();
+  }
+  clickCtx.textAlign='center';clickCtx.textBaseline='middle';
+  for(const burst of bursts){
+   if(burst.shrink<.015)continue;
+   for(const word of burst.words){
+    clickCtx.save();
+    clickCtx.translate(burst.x+word.dx*burst.spread,burst.y+word.dy*burst.spread);
+    clickCtx.scale(burst.shrink,burst.shrink);
+    clickCtx.fillStyle=word.color;
+    clickCtx.font=word.text==='Luliy'?'italic 24px "Times New Roman",serif':'28px "Luliy Canger Kai",serif';
+    clickCtx.fillText(word.text,0,0);clickCtx.restore();
    }
   }
   if(bursts.length&&!document.hidden)clickFrame=requestAnimationFrame(drawClicks);
  }
- document.addEventListener('click',event=>{
-  if(motion.matches||!fine.matches||document.hidden||event.detail===0||event.button!==0)return;
-  if(event.target.closest('input,textarea,select,[contenteditable="true"]')||getSelection()?.toString())return;
-  const dots=Array.from({length:14},(_,i)=>({angle:Math.PI*2*i/14+(Math.random()-.5)*.3,distance:24+Math.random()*36,radius:.7+Math.random()*1.3,alpha:.4+Math.random()*.48,gold:i%4===0,white:i%5===0}));
-  bursts.push({x:event.clientX,y:event.clientY,at:performance.now(),dots});
-  if(bursts.length>4)bursts.shift();
+ document.addEventListener('mousedown',event=>{
+  if(motion.matches||!fine.matches||document.hidden||event.button!==0)return;
+  if(event.target.closest('input,textarea,select,[contenteditable="true"]'))return;
+  const groups=colors.map(()=>[]),words=[];
+  const count=bursts.length<10?30:12;
+  for(let i=0;i<count;i++){
+   const angle=Math.random()*Math.PI*2,distance=50+Math.random()*130;
+   const color=Math.floor(Math.random()*colors.length),dot={dx:Math.cos(angle)*distance,dy:Math.sin(angle)*distance,radius:16+Math.random()*16};
+   if(i<2)words.push({...dot,text:i===0?'Luliy':'离',color:colors[color]});
+   else groups[color].push(dot);
+  }
+  bursts.push({x:event.clientX,y:event.clientY,at:performance.now(),groups,words,duration:1200+Math.random()*600,ringRadius:80+Math.random()*80,ringFade:600+Math.random()*200});
+  if(bursts.length>64)bursts.shift();
   if(!clickFrame)clickFrame=requestAnimationFrame(drawClicks);
  },true);
- addEventListener('resize',()=>{size();sync()},{passive:true});
+ addEventListener('resize',()=>{if(!layoutFrame)layoutFrame=requestAnimationFrame(()=>{layoutFrame=0;size();sync();});},{passive:true});
  addEventListener('hashchange',()=>requestAnimationFrame(sync));
  addEventListener('scroll',sync,{passive:true});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){sync();if(bursts.length&&!clickFrame)clickFrame=requestAnimationFrame(drawClicks);}});
- motion.addEventListener('change',sync);
+ document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){if(skyFrame)cancelAnimationFrame(skyFrame);skyFrame=0;clearClicks();}
+  else sync();
+ });
+ motion.addEventListener('change',()=>{if(motion.matches)clearClicks();sync();});
  size();sync();
 })();
 </script>
