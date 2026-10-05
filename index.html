@@ -2208,6 +2208,10 @@ html[data-font][data-font] body :is(pre,code,kbd,samp),html[data-font][data-font
 #main .source-reading>h1{font-size:clamp(2.375rem,3.2vw,2.875rem);font-weight:700;letter-spacing:.20em;line-height:1.25}
 @media(max-width:700px){#main .source-reading>h1{font-size:2.125rem;letter-spacing:.20em}}
 
+/* One shared reading width for folio, title, metadata, body, and end notes. */
+#main .source-reading>:is(.source-number,h1,.source-meta,.source-layout,.source-end){width:min(var(--reader-measure,1600px),100%);margin-inline:auto}
+#main .source-reading>h1{font-size:60px;letter-spacing:.20em;overflow-wrap:anywhere}
+
 </style>
 </head>
 <body>
@@ -3033,7 +3037,7 @@ function mount({body,entry,lang='zh',href,notify,onRefresh,scroller=null,toc:sup
  tocHeader.after(panels);
  const prefs=readPrefs(),abort=new AbortController(),signal=abort.signal;
  richContent(body,signal);
- const apply=()=>{body.style.fontSize=prefs.size+'px';body.style.lineHeight=String(prefs.line);body.style.width=`min(${prefs.width}px,100%)`;body.classList.remove('reader-sans');delete prefs.sans;applyColor(prefs.color);savePrefs(prefs);};
+ const apply=()=>{body.style.fontSize=prefs.size+'px';body.style.lineHeight=String(prefs.line);body.style.width=`min(${prefs.width}px,100%)`;shell.style.setProperty('--reader-measure',prefs.width+'px');body.classList.remove('reader-sans');delete prefs.sans;applyColor(prefs.color);savePrefs(prefs);};
  panels.querySelectorAll('[data-pref]').forEach(input=>{input.checked=input.dataset.pref==='sans'&&!!prefs.sans;if(input.type!=='checkbox')input.value=prefs[input.dataset.pref];input.addEventListener('input',()=>{prefs[input.dataset.pref]=input.type==='checkbox'?input.checked:Number(input.value);apply();},{signal});});apply();
  panels.querySelector('.reader-options').append(colorPalette(lang,color=>{prefs.color=color;apply();}));
  const settings=panels.querySelector('.reader-options'),findBox=panels.querySelector('.reader-find'),findInput=findBox.querySelector('input[type=search]');
