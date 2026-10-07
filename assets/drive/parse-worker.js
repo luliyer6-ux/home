@@ -1,0 +1,15 @@
+/* Bounded parsing off the UI thread. Pinned local libraries only. */
+importScripts('jszip.min.js','xlsx.full.min.js');
+function boundedFile(file,limit){return new Promise((resolve,reject)=>{let size=0,parts=[];const stream=file.internalStream('uint8array');stream.on('data',part=>{size+=part.length;if(size>limit){stream.pause();parts=[];reject(Error('Expanded file exceeds preview limits'));}else parts.push(part);});stream.on('error',reject);stream.on('end',()=>{const result=new Uint8Array(size);let offset=0;for(const p of parts){result.set(p,offset);offset+=p.length;}resolve(result);});stream.resume();});}
+async function checkZip(data){const b=new Uint8Array(data);if(b[0]!==80||b[1]!==75)return;const zip=await JSZip.loadAsync(data),files=Object.values(zip.files);if(files.length>2000)throw Error('Too many archive entries');let total=0;for(const f of files){const n=f._data?.uncompressedSize||0;total+=n;if(n>16*1024*1024||total>50*1024*1024)throw Error('Archive expands beyond the safe preview limit');}return zip;}
+self.onmessage=async e=>{try{const {data,kind}=e.data;if(data.byteLength>20*1024*1024)throw Error('File exceeds 20MB');const zip=await checkZip(data);
+ if(kind==='epub'){
+  if(!zip)throw Error('Invalid EPUB archive');const files={};let extracted=0;for(const [path,f]of Object.entries(zip.files)){if(f.dir)continue;if(/\.(xml|opf|xhtml|html|htm|ncx)$/i.test(path)||path==='META-INF/container.xml'){const bytes=await boundedFile(f,4*1024*1024);extracted+=bytes.length;if(extracted>50*1024*1024)throw Error('Book expands beyond preview limits');files[path]=new TextDecoder().decode(bytes);}}
+  const images={};let total=0;for(const [path,f]of Object.entries(zip.files)){if(/\.(png|jpe?g|gif|webp)$/i.test(path)){const n=f._data?.uncompressedSize||0;if(n>2*1024*1024||total+n>8*1024*1024)continue;const data=await boundedFile(f,2*1024*1024);total+=data.length;if(total>8*1024*1024)break;let text='';for(let i=0;i<data.length;i+=8192)text+=String.fromCharCode(...data.subarray(i,i+8192));images[path]=btoa(text);}}
+  postMessage({files,images});return;
+ }
+ if(zip){let actual=0;for(const file of Object.values(zip.files)){if(file.dir)continue;actual+=(await boundedFile(file,16*1024*1024)).length;if(actual>50*1024*1024)throw Error('Spreadsheet expands beyond preview limits');}}
+ let input=data,type='array';if(kind==='csv'){input=new TextDecoder().decode(data);if(input.includes('\ufffd'))input=new TextDecoder('gb18030').decode(data);type='string';}
+ const book=XLSX.read(input,{type,cellFormula:false,cellHTML:false,cellStyles:false,sheetRows:1001});
+ const sheets=book.SheetNames.slice(0,50).map(name=>{const sheet=book.Sheets[name],range=XLSX.utils.decode_range(sheet['!ref']||'A1');const clipped=range.e.r>999||range.e.c>49;range.e.r=Math.min(range.e.r,999);range.e.c=Math.min(range.e.c,49);return {name,clipped,rows:XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',raw:false,range}).map(row=>row.map(cell=>String(cell).slice(0,4000)))};});postMessage({sheets});
+ }catch(err){postMessage({error:err.message||'Could not parse file'});}};
