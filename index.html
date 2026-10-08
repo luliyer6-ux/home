@@ -2497,6 +2497,8 @@ body .lr-mini.lm-mini.lm-collapsed{min-height:0;gap:0;padding:10px 12px}body .lm
 .lr-album-popup button.lm-queue-track{display:flex;grid-template-columns:none}.lr-album-popup .lm-queue-cover{width:32px;height:32px}.lr-album-popup .lm-queue-cover .lr-cover{width:100%;height:100%}
 body .lr-mini.lm-mini:not(.reader-music-card){width:min(340px,calc(100vw - 24px))}.lm-mini-head{width:100%;box-sizing:border-box}.lm-mini-panel{width:100%;box-sizing:border-box}.lm-mini-head .lr-mini-open{justify-content:flex-start;flex:1 1 auto;width:auto}.lm-mini-head .lr-mini-copy{flex:1;align-items:flex-start}.lm-mini-settings{width:100%;box-sizing:border-box}.lr-mini.lm-mini .lr-mini-seek::-webkit-slider-thumb{width:8px;height:8px}.lr-mini.lm-mini .lr-mini-seek::-moz-range-thumb{width:8px;height:8px}@media(max-width:700px){body .lr-mini.lm-mini:not(.reader-music-card){width:calc(100vw - 24px)}}
 body .lr-mini.lm-mini .lm-mini-head .lr-mini-open{min-width:0!important;flex:1 1 0!important;width:auto!important;grid-column:auto!important;overflow:hidden;position:relative;z-index:0}body .lr-mini.lm-mini .lm-mini-top{position:relative;z-index:3;flex:0 0 auto}body .lr-mini.lm-mini .lr-mini-cover *{pointer-events:none}
+
+body .lr-mini.lm-mini.lm-positioned{left:var(--lm-x)!important;top:var(--lm-y)!important;right:auto!important;bottom:auto!important;transform:none!important}body .lm-mini .lr-mini-open{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}body .lr-mini.lm-dragging{transition:none!important;animation:none!important}body .lm-dragging .lr-mini-open{cursor:grabbing}
 </style></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
@@ -11767,5 +11769,26 @@ new MutationObserver(schedule).observe(document.body,{childList:true});
 // Only watch visibility, not style changes made by positioning the card.
 let watchedMini;new MutationObserver(()=>{const mini=document.querySelector('.lr-mini');if(mini&&mini!==watchedMini){watchedMini=mini;new MutationObserver(schedule).observe(mini,{attributes:true,attributeFilter:['hidden']});}schedule();}).observe(document.body,{childList:true});
 addEventListener('resize',schedule);addEventListener('hashchange',schedule);schedule();
-})();</script><script id="directory-mark-js">(()=>{const open=document.getElementById('studyGlobalOpen'),dialog=document.getElementById('directory'),close=dialog?.querySelector('.plain-close');if(!open||!close)return;const mark='<svg viewBox="0 0 32 32" aria-hidden="true"><path class="menu-line line-top" d="M3 8H29"/><path class="menu-line line-middle" d="M3 16H29"/><path class="menu-line line-bottom" d="M3 24H29"/></svg>';open.innerHTML=mark;close.innerHTML=mark;open.setAttribute('aria-label','開啟目錄');open.setAttribute('aria-controls','directory');open.setAttribute('aria-haspopup','dialog');const sync=()=>open.setAttribute('aria-expanded',String(dialog.open));new MutationObserver(sync).observe(dialog,{attributes:true,attributeFilter:['open']});sync();})();</script></body>
+})();</script><script id="directory-mark-js">(()=>{const open=document.getElementById('studyGlobalOpen'),dialog=document.getElementById('directory'),close=dialog?.querySelector('.plain-close');if(!open||!close)return;const mark='<svg viewBox="0 0 32 32" aria-hidden="true"><path class="menu-line line-top" d="M3 8H29"/><path class="menu-line line-middle" d="M3 16H29"/><path class="menu-line line-bottom" d="M3 24H29"/></svg>';open.innerHTML=mark;close.innerHTML=mark;open.setAttribute('aria-label','開啟目錄');open.setAttribute('aria-controls','directory');open.setAttribute('aria-haspopup','dialog');const sync=()=>open.setAttribute('aria-expanded',String(dialog.open));new MutationObserver(sync).observe(dialog,{attributes:true,attributeFilter:['open']});sync();})();</script><script>(()=>{
+const key='luliy-music-card-position-v1';let saved=null;
+try{const p=JSON.parse(localStorage.getItem(key));if(Number.isFinite(p?.x)&&Number.isFinite(p?.y))saved=p;}catch{}
+const attach=mini=>{
+if(mini.dataset.dragReady||!mini.dataset.compactReady)return;
+mini.dataset.dragReady='true';const handle=mini.querySelector('.lr-mini-open');
+handle.title='長按拖動位置；點擊打開唱片頁';let pending=null,drag=null,suppressUntil=0;
+function place(x,y){if(mini.hidden)return;const r=mini.getBoundingClientRect(),margin=12;const maxX=Math.max(margin,innerWidth-r.width-margin),maxY=Math.max(margin,innerHeight-r.height-margin);x=Math.max(margin,Math.min(maxX,x));y=Math.max(margin,Math.min(maxY,y));mini.classList.add('lm-positioned');mini.style.setProperty('--lm-x',x+'px');mini.style.setProperty('--lm-y',y+'px');return {x,y};}
+function restore(){if(saved&&!mini.hidden)place(saved.x,saved.y);}
+function remember(){const r=mini.getBoundingClientRect();saved={x:r.left,y:r.top};try{localStorage.setItem(key,JSON.stringify(saved));}catch{}}
+function cancelPending(){if(pending){clearTimeout(pending.timer);pending=null;}}
+handle.addEventListener('pointerdown',e=>{if(e.button!==0||!e.isPrimary)return;cancelPending();const start={id:e.pointerId,x:e.clientX,y:e.clientY};start.timer=setTimeout(()=>{if(pending!==start)return;const r=mini.getBoundingClientRect();drag={id:start.id,dx:start.x-r.left,dy:start.y-r.top};pending=null;place(r.left,r.top);mini.classList.add('lm-dragging');handle.setPointerCapture(start.id);suppressUntil=Date.now()+1000;},400);pending=start;});
+handle.addEventListener('pointermove',e=>{if(drag?.id===e.pointerId){e.preventDefault();place(e.clientX-drag.dx,e.clientY-drag.dy);suppressUntil=Date.now()+1000;}else if(pending?.id===e.pointerId&&Math.hypot(e.clientX-pending.x,e.clientY-pending.y)>8)cancelPending();});
+function finish(e){cancelPending();if(drag?.id!==e.pointerId)return;drag=null;mini.classList.remove('lm-dragging');remember();suppressUntil=Date.now()+500;if(handle.hasPointerCapture(e.pointerId))handle.releasePointerCapture(e.pointerId);}
+handle.addEventListener('pointerup',finish);handle.addEventListener('pointercancel',finish);handle.addEventListener('lostpointercapture',finish);
+handle.addEventListener('click',e=>{if(Date.now()<suppressUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
+handle.addEventListener('contextmenu',e=>e.preventDefault());handle.addEventListener('dragstart',e=>e.preventDefault());
+addEventListener('resize',restore);new ResizeObserver(restore).observe(mini);new MutationObserver(restore).observe(mini,{attributes:true,attributeFilter:['hidden']});restore();
+};
+new MutationObserver(()=>document.querySelectorAll('.lr-mini').forEach(attach)).observe(document.body,{childList:true,subtree:true});document.querySelectorAll('.lr-mini').forEach(attach);
+})();
+</script></body>
 </html>
