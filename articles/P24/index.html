@@ -1,0 +1,688 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>gmeek ui · Luliy Articles</title><meta name="description" content="🍎 Gmeek UI 增强插件使用教程 📦 插件简介 Gmeek UI 插件通过纯前端增强的方式，为 Gmeek 框架博客带来 Apple 风格的焕然一新体验，包括： 文件名 功能说明 GmeekBaseTheme.css 基础布局样式：字体、圆角、卡片排版，兼容原始结构不污染构建样式 GmeekC"><link rel="canonical" href="https://luliy.me/articles/P24/"><link rel="alternate" type="application/rss+xml" title="Luliy Articles" href="/feed.xml"><meta property="og:type" content="article"><meta property="og:title" content="gmeek ui"><meta property="og:description" content="🍎 Gmeek UI 增强插件使用教程 📦 插件简介 Gmeek UI 插件通过纯前端增强的方式，为 Gmeek 框架博客带来 Apple 风格的焕然一新体验，包括： 文件名 功能说明 GmeekBaseTheme.css 基础布局样式：字体、圆角、卡片排版，兼容原始结构不污染构建样式 GmeekC"><meta property="og:url" content="https://luliy.me/articles/P24/"><meta property="og:image" content="https://camo.githubusercontent.com/82575d548c7c3e465af4876772a3e6e9f6b9c30c627ee91a2aed2e95440396f0/68747470733a2f2f66696c65732e636174626f782e6d6f652f396e376876382e706e67"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="gmeek ui"><meta name="twitter:description" content="🍎 Gmeek UI 增强插件使用教程 📦 插件简介 Gmeek UI 插件通过纯前端增强的方式，为 Gmeek 框架博客带来 Apple 风格的焕然一新体验，包括： 文件名 功能说明 GmeekBaseTheme.css 基础布局样式：字体、圆角、卡片排版，兼容原始结构不污染构建样式 GmeekC"><meta name="twitter:image" content="https://camo.githubusercontent.com/82575d548c7c3e465af4876772a3e6e9f6b9c30c627ee91a2aed2e95440396f0/68747470733a2f2f66696c65732e636174626f782e6d6f652f396e376876382e706e67"><link rel="stylesheet" href="/site-publish/article.css"></head><body><header><a href="/">LULIY <small>Articles</small></a><a href="/#/article/P24">在主站閱讀 ↗</a></header><main><h1>gmeek ui</h1><p class="meta">2026-06-05 · LULIY</p><div class="reading"><aside aria-label="文章目錄"><a style="--level:1" href="#heading-1">🍎 Gmeek UI 增强插件使用教程</a><a style="--level:2" href="#heading-2">📦 插件简介</a><a style="--level:2" href="#heading-3">✨ 功能亮点</a><a style="--level:2" href="#heading-4">更新说明：</a><a style="--level:3" href="#heading-5">v1.1.0（2025-9-28）</a><a style="--level:2" href="#heading-6">⚙️ 快速使用步骤</a><a style="--level:3" href="#heading-7">配置 config.json</a><a style="--level:2" href="#heading-8"></a><a style="--level:2" href="#heading-9">👇👇👇👇</a><a style="--level:3" href="#heading-10">② 文件资源部署建议</a><a style="--level:2" href="#heading-11">🖼️ 效果示意</a><a style="--level:2" href="#heading-12">🔧 插件加载流程 &amp; 机制</a><a style="--level:2" href="#heading-13">💡 开发者进阶拓展建议</a><a style="--level:2" href="#heading-14">✅ 插件特性总结</a><a style="--level:2" href="#heading-15">🔍 实时预览 &amp; 示例</a></aside><article><h1 id="heading-1">🍎 Gmeek UI 增强插件使用教程</h1>
+<h2 id="heading-2">📦 插件简介</h2>
+<p>Gmeek UI 插件通过纯前端增强的方式，为 Gmeek 框架博客带来 Apple 风格的焕然一新体验，包括：</p>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GmeekBaseTheme.css</code></td>
+<td>基础布局样式：字体、圆角、卡片排版，兼容原始结构不污染构建样式</td>
+</tr>
+<tr>
+<td><code>GmeekCustomizeCss.js</code></td>
+<td>UI 动态增强：卡片结构重构、玻璃拟态样式、深浅模式自适应、渐变背景、标签配色自动对比等功能</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🧠 零依赖、构建无侵入、插拔可选、明暗自动识别、视觉沉浸体验，100% 兼容 Gmeek 原生内容结构。</p>
+</blockquote>
+<hr>
+<h2 id="heading-3">✨ 功能亮点</h2>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🍏 Apple 风格排版</td>
+<td>使用 SF 字体栈 + 圆角 + 动效 + 阴影构建沉浸式阅读体验</td>
+</tr>
+<tr>
+<td>🧱 卡片结构重构</td>
+<td>将 <code>.SideNav-item</code> 动态转为 <code>.post-card</code>，支持标题/标签/摘要生成</td>
+</tr>
+<tr>
+<td>🧊 玻璃拟态样式</td>
+<td>卡片使用半透明玻璃效果，搭配背景模糊、边框、阴影增强视觉层次</td>
+</tr>
+<tr>
+<td>🌗 主题适配支持</td>
+<td>自动识别 <code>&lt;html data-color-mode&gt;</code> 中的 <code>light</code> / <code>dark</code> / <code>auto</code> 三种模式</td>
+</tr>
+<tr>
+<td>🌈 动态渐变背景</td>
+<td>渐变呼吸背景使用 <code>hue-rotate</code> 动效，明暗模式下自适配颜色主题</td>
+</tr>
+<tr>
+<td>🏷️ 标签配色对比自动识别</td>
+<td>标签从 <code>.Label</code> 提取背景色，并自动计算亮度决定字体使用白色或黑色，确保最佳可读性</td>
+</tr>
+<tr>
+<td>🧼 样式作用域隔离</td>
+<td>插件仅影响 <code>.post-card</code> 区域，正文、评论、页眉页脚、页面结构不被污染</td>
+</tr>
+<tr>
+<td>🎯 支持 Auto 模式偏好判断</td>
+<td>插件可在 <code>data-color-mode=&quot;auto&quot;</code> 情况下判断用户系统主题并实时切换（如 macOS 夜间自动切换）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-4">更新说明：</h2>
+<h3 id="heading-5">v1.1.0（2025-9-28）</h3>
+<ul>
+<li>删除了文章列表卡片中的文章说明，保持简洁，比如下图红框内容：<a href="https://camo.githubusercontent.com/82575d548c7c3e465af4876772a3e6e9f6b9c30c627ee91a2aed2e95440396f0/68747470733a2f2f66696c65732e636174626f782e6d6f652f396e376876382e706e67" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/82575d548c7c3e465af4876772a3e6e9f6b9c30c627ee91a2aed2e95440396f0/68747470733a2f2f66696c65732e636174626f782e6d6f652f396e376876382e706e67" alt="红框内容" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a></li>
+<li>解决<a href="https://github.com/tiengming/tiengming.github.io/issues/19#issuecomment-3281147970" rel="noopener noreferrer">此问题</a>，在插件设计时，没有考虑这个功能，疏忽了。点击标签可跳转到标签文章聚合页，鼠标悬浮友好渲染；</li>
+<li>解决<a href="https://github.com/tiengming/tiengming.github.io/issues/19#issuecomment-3289496357" rel="noopener noreferrer">性能问题</a>，我认为是加载方式不对，会导致<strong>LCP性能问题</strong>；</li>
+</ul>
+<hr>
+<h2 id="heading-6">⚙️ 快速使用步骤</h2>
+<h3 id="heading-7">配置 <code>config.json</code></h3>
+<p>打开项目根目录下 <code>config.json</code>，在 <code>&quot;allHead&quot;</code> 字段中添加以下内容（直接点击复制然后插入保存即可）：</p>
+<div><pre><span>&lt;link rel=\&quot;preconnect\&quot; href=\&quot;https://code.buxiantang.top\&quot;&gt;&lt;link rel=\&quot;preconnect\&quot; href=\&quot;https://blog.meekdai.com\&quot;&gt;&lt;link rel=\&quot;stylesheet\&quot; href=\&quot;https://code.buxiantang.top/assets/GmeekBaseTheme.css\&quot;&gt;&lt;script src=\&quot;https://code.buxiantang.top/assets/GmeekCustomizeCss.js\&quot;&gt;&lt;/script&gt;</span></pre></div>
+<h2 id="heading-8"><a href="https://camo.githubusercontent.com/c1e9ff88600ee3ec931979c3059a6bf0dde64f2cfe5cd01f483b38ae91ed8813/68747470733a2f2f7069636b2e62757869616e74616e672e746f702f726573742f624d645a79584b2e706e67" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/c1e9ff88600ee3ec931979c3059a6bf0dde64f2cfe5cd01f483b38ae91ed8813/68747470733a2f2f7069636b2e62757869616e74616e672e746f702f726573742f624d645a79584b2e706e67" alt="msedge_FHrCHq7Ru0.png" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a></h2>
+<h2 id="heading-9">👇👇👇👇</h2>
+<p><a href="https://camo.githubusercontent.com/69d0c1e4f028bee9c17ca0d5df8444442fea965015bdc37678642e884e4af816/68747470733a2f2f7069636b2e62757869616e74616e672e746f702f726573742f646a6b7879584b2e706e67" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/69d0c1e4f028bee9c17ca0d5df8444442fea965015bdc37678642e884e4af816/68747470733a2f2f7069636b2e62757869616e74616e672e746f702f726573742f646a6b7879584b2e706e67" alt="msedge_bBQNpnAXyV.png" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a></p>
+<ul>
+<li>✅ 确保所有链接以 <code>&#x27;单引号&#x27;</code> 包裹，避免 Gmeek 构建器解析错误；这里我使用的是转义方法。</li>
+<li>✅ 不需要更改主题模板或任何 HTML 内容结构，插件将自动注入卡片 UI 与渐变背景。</li>
+</ul>
+<hr>
+<h3 id="heading-10">② 文件资源部署建议</h3>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>路径/CDN 示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GmeekBaseTheme.css</code></td>
+<td><code>https://code.buxiantang.top/assets/GmeekBaseTheme.css</code></td>
+</tr>
+<tr>
+<td><code>GmeekCustomizeCss.js</code></td>
+<td><code>https://code.buxiantang.top/assets/GmeekCustomizeCss.js</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>如果只是使用链接引用方式使用，可以跳过。<br>
+推荐部署到自己的 CDN 或项目 <code>/assets/</code> 目录中，可长期缓存、独立版本管理。</p>
+</blockquote>
+<details>
+  <summary>点我展开看`GmeekBaseTheme.css`代码</summary>
+<div><pre><span>/* 🍏 Gmeek Apple 风格基础布局与排版样式 */</span>
+<span>body</span> {
+  <span>font-family</span><span>:</span> -apple-system<span>,</span> BlinkMacSystemFont<span>,</span> <span>&quot;San Francisco&quot;</span><span>,</span> <span>&quot;Helvetica Neue&quot;</span><span>,</span> sans-serif;
+  <span>background</span><span>:</span> transparent;
+  <span>color</span><span>:</span> inherit;
+  <span>max-width</span><span>:</span> <span>960<span>px</span></span>;
+  <span>margin</span><span>:</span> auto;
+  <span>padding</span><span>:</span> <span>24<span>px</span></span>;
+  <span>line-height</span><span>:</span> <span>1.6</span>;
+  <span>transition</span><span>:</span> background <span>0.3<span>s</span></span> ease;
+}
+
+.<span>post-card</span> {
+  <span>display</span><span>:</span> flex;
+  <span>flex-direction</span><span>:</span> column;
+  <span>border-radius</span><span>:</span> <span>20<span>px</span></span>;
+  <span>padding</span><span>:</span> <span>20<span>px</span></span> <span>24<span>px</span></span>;
+  <span>margin-bottom</span><span>:</span> <span>20<span>px</span></span>;
+  <span>box-shadow</span><span>:</span> <span>0</span> <span>8<span>px</span></span> <span>24<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
+  <span>background</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.2</span>);
+  <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>16<span>px</span></span>);
+  <span>-webkit-backdrop-filter</span><span>:</span> <span>blur</span>(<span>16<span>px</span></span>);
+  <span>border</span><span>:</span> <span>1<span>px</span></span> solid <span>rgba</span>(<span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.15</span>);
+  <span>text-decoration</span><span>:</span> none;
+  <span>transition</span><span>:</span> all <span>0.3<span>s</span></span> ease;
+}
+
+.<span>post-card</span><span>:</span><span>hover</span> {
+  <span>transform</span><span>:</span> <span>translateY</span>(<span>-4<span>px</span></span>) <span>scale</span>(<span>1.015</span>);
+  <span>box-shadow</span><span>:</span> <span>0</span> <span>12<span>px</span></span> <span>32<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>,</span> <span>0.15</span>);
+}
+
+.<span>post-meta</span> {
+  <span>display</span><span>:</span> flex;
+  <span>flex-wrap</span><span>:</span> wrap;
+  <span>gap</span><span>:</span> <span>8<span>px</span></span>;
+  <span>font-size</span><span>:</span> <span>13<span>px</span></span>;
+  <span>margin-bottom</span><span>:</span> <span>10<span>px</span></span>;
+}
+
+.<span>post-tag</span> {
+  <span>border-radius</span><span>:</span> <span>999<span>px</span></span>;
+  <span>padding</span><span>:</span> <span>3<span>px</span></span> <span>10<span>px</span></span>;
+  <span>font-weight</span><span>:</span> <span>500</span>;
+  <span>margin-right</span><span>:</span> <span>6<span>px</span></span>;
+}
+
+.<span>post-title</span> {
+  <span>font-size</span><span>:</span> <span>18<span>px</span></span>;
+  <span>font-weight</span><span>:</span> <span>600</span>;
+  <span>margin-bottom</span><span>:</span> <span>10<span>px</span></span>;
+}
+
+.<span>post-summary</span> {
+  <span>font-size</span><span>:</span> <span>14.5<span>px</span></span>;
+  <span>line-height</span><span>:</span> <span>1.6</span>;
+}</pre></div>
+</details>
+<details>
+  <summary>点我展开看`GmeekCustomizeCss.js`代码</summary>
+<div><pre><span>(</span><span>function</span> <span>(</span><span>)</span> <span>{</span>
+  <span>// 严格的重复执行保护</span>
+  <span>if</span> <span>(</span><span>window</span><span>.</span><span>__TiengmingModernized</span><span>)</span> <span>{</span>
+    <span>return</span><span>;</span>
+  <span>}</span>
+  
+  <span>console</span><span>.</span><span>log</span><span>(</span><span>&quot;🍏 TiengmingModern 插件启动中... https://code.buxiantang.top/&quot;</span><span>)</span><span>;</span>
+
+  <span>const</span> <span>themeColors</span> <span>=</span> <span>{</span>
+    <span>light</span>: <span>{</span>
+      <span>bgGradient</span>: <span>&quot;linear-gradient(135deg, #f4f4f4, #fef2f2, #f4f0ff)&quot;</span><span>,</span>
+      <span>cardBg</span>: <span>&quot;rgba(255,255,255,0.25)&quot;</span><span>,</span>
+      <span>cardBorder</span>: <span>&quot;1px solid rgba(255,255,255,0.2)&quot;</span><span>,</span>
+      <span>title</span>: <span>&quot;#1c1c1e&quot;</span><span>,</span>
+      <span>meta</span>: <span>&quot;#888&quot;</span>
+    <span>}</span><span>,</span>
+    <span>dark</span>: <span>{</span>
+      <span>bgGradient</span>: <span>&quot;linear-gradient(135deg, #1a1a2b, #222c3a, #2e3950)&quot;</span><span>,</span>
+      <span>cardBg</span>: <span>&quot;rgba(32,32,32,0.3)&quot;</span><span>,</span>
+      <span>cardBorder</span>: <span>&quot;1px solid rgba(255,255,255,0.08)&quot;</span><span>,</span>
+      <span>title</span>: <span>&quot;#eee&quot;</span><span>,</span>
+      <span>meta</span>: <span>&quot;#bbb&quot;</span>
+    <span>}</span>
+  <span>}</span><span>;</span>
+
+  <span>function</span> <span>getEffectiveMode</span><span>(</span><span>)</span> <span>{</span>
+    <span>const</span> <span>raw</span> <span>=</span> <span>document</span><span>.</span><span>documentElement</span><span>.</span><span>getAttribute</span><span>(</span><span>&quot;data-color-mode&quot;</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>raw</span> <span>===</span> <span>&quot;light&quot;</span> <span>||</span> <span>raw</span> <span>===</span> <span>&quot;dark&quot;</span><span>)</span> <span>return</span> <span>raw</span><span>;</span>
+    <span>return</span> <span>window</span><span>.</span><span>matchMedia</span><span>(</span><span>&quot;(prefers-color-scheme: dark)&quot;</span><span>)</span><span>.</span><span>matches</span> ? <span>&quot;dark&quot;</span> : <span>&quot;light&quot;</span><span>;</span>
+  <span>}</span>
+
+  <span>function</span> <span>getTextColor</span><span>(</span><span>bg</span><span>)</span> <span>{</span>
+    <span>const</span> <span>rgb</span> <span>=</span> <span>bg</span><span>.</span><span>match</span><span>(</span><span><span>/</span><span>\d</span><span>+</span><span>/</span>g</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>!</span><span>rgb</span><span>)</span> <span>return</span> <span>&quot;#fff&quot;</span><span>;</span>
+    <span>const</span> <span>[</span><span>r</span><span>,</span> <span>g</span><span>,</span> <span>b</span><span>]</span> <span>=</span> <span>rgb</span><span>.</span><span>map</span><span>(</span><span>Number</span><span>)</span><span>;</span>
+    <span>const</span> <span>l</span> <span>=</span> <span>(</span><span>0.299</span> <span>*</span> <span>r</span> <span>+</span> <span>0.587</span> <span>*</span> <span>g</span> <span>+</span> <span>0.114</span> <span>*</span> <span>b</span><span>)</span> <span>/</span> <span>255</span><span>;</span>
+    <span>return</span> <span>l</span> <span>&gt;</span> <span>0.6</span> ? <span>&quot;#000&quot;</span> : <span>&quot;#fff&quot;</span><span>;</span>
+  <span>}</span>
+
+  <span>// 标签点击处理函数</span>
+  <span>window</span><span>.</span><span>handleTagClick</span> <span>=</span> <span>function</span><span>(</span><span>event</span><span>,</span> <span>tagName</span><span>)</span> <span>{</span>
+    <span>event</span><span>.</span><span>preventDefault</span><span>(</span><span>)</span><span>;</span>
+    <span>event</span><span>.</span><span>stopPropagation</span><span>(</span><span>)</span><span>;</span>
+    <span>const</span> <span>tagUrl</span> <span>=</span> <span>`tag.html#<span><span>${</span><span>encodeURIComponent</span><span>(</span><span>tagName</span><span>)</span><span>}</span></span>`</span><span>;</span>
+    <span>window</span><span>.</span><span>location</span><span>.</span><span>href</span> <span>=</span> <span>tagUrl</span><span>;</span>
+  <span>}</span><span>;</span>
+
+  <span>// 初始化背景和样式</span>
+  <span>function</span> <span>initializeBackground</span><span>(</span><span>)</span> <span>{</span>
+    <span>const</span> <span>existingBg</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>&#x27;.herobgcolor&#x27;</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>existingBg</span><span>)</span> <span>existingBg</span><span>.</span><span>remove</span><span>(</span><span>)</span><span>;</span>
+
+    <span>const</span> <span>bg</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&quot;div&quot;</span><span>)</span><span>;</span>
+    <span>bg</span><span>.</span><span>className</span> <span>=</span> <span>&quot;herobgcolor&quot;</span><span>;</span>
+    <span>document</span><span>.</span><span>body</span><span>.</span><span>appendChild</span><span>(</span><span>bg</span><span>)</span><span>;</span>
+
+    <span>const</span> <span>existingStyle</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>&#x27;#tiengming-modern-styles&#x27;</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>existingStyle</span><span>)</span> <span>existingStyle</span><span>.</span><span>remove</span><span>(</span><span>)</span><span>;</span>
+
+    <span>const</span> <span>style</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&quot;style&quot;</span><span>)</span><span>;</span>
+    <span>style</span><span>.</span><span>id</span> <span>=</span> <span>&#x27;tiengming-modern-styles&#x27;</span><span>;</span>
+    <span>style</span><span>.</span><span>textContent</span> <span>=</span> <span>`</span>
+<span>      .herobgcolor {</span>
+<span>        position: fixed;</span>
+<span>        top: 0; left: 0;</span>
+<span>        width: 100vw; height: 100vh;</span>
+<span>        z-index: -1;</span>
+<span>        background-size: 600% 600%;</span>
+<span>        animation: hueflow 30s ease infinite;</span>
+<span>        transition: background 0.6s ease;</span>
+<span>      }</span>
+<span>      @keyframes hueflow {</span>
+<span>        0% { filter: hue-rotate(0deg); background-position: 0% 50%; }</span>
+<span>        50% { filter: hue-rotate(180deg); background-position: 100% 50%; }</span>
+<span>        100% { filter: hue-rotate(360deg); background-position: 0% 50%; }</span>
+<span>      }</span>
+<span>      .post-tag {</span>
+<span>        cursor: pointer;</span>
+<span>        transition: all 0.2s ease;</span>
+<span>        border-radius: 4px;</span>
+<span>        padding: 2px 6px;</span>
+<span>        margin-right: 4px;</span>
+<span>        font-size: 0.8em;</span>
+<span>        display: inline-block;</span>
+<span>      }</span>
+<span>      .post-tag:hover {</span>
+<span>        transform: translateY(-1px);</span>
+<span>        box-shadow: 0 2px 8px rgba(0,0,0,0.15);</span>
+<span>        opacity: 0.8;</span>
+<span>      }</span>
+<span>    `</span><span>;</span>
+    <span>document</span><span>.</span><span>head</span><span>.</span><span>appendChild</span><span>(</span><span>style</span><span>)</span><span>;</span>
+    <span>return</span> <span>bg</span><span>;</span>
+  <span>}</span>
+
+  <span>const</span> <span>bg</span> <span>=</span> <span>initializeBackground</span><span>(</span><span>)</span><span>;</span>
+
+  <span>function</span> <span>applyTheme</span><span>(</span><span>)</span> <span>{</span>
+    <span>const</span> <span>mode</span> <span>=</span> <span>getEffectiveMode</span><span>(</span><span>)</span><span>;</span>
+    <span>const</span> <span>theme</span> <span>=</span> <span>themeColors</span><span>[</span><span>mode</span><span>]</span><span>;</span>
+
+    <span>if</span> <span>(</span><span>bg</span><span>)</span> <span>bg</span><span>.</span><span>style</span><span>.</span><span>background</span> <span>=</span> <span>theme</span><span>.</span><span>bgGradient</span><span>;</span>
+
+    <span>document</span><span>.</span><span>querySelectorAll</span><span>(</span><span>&quot;.post-card&quot;</span><span>)</span><span>.</span><span>forEach</span><span>(</span><span>card</span> <span>=&gt;</span> <span>{</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>background</span> <span>=</span> <span>theme</span><span>.</span><span>cardBg</span><span>;</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>border</span> <span>=</span> <span>theme</span><span>.</span><span>cardBorder</span><span>;</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>backdropFilter</span> <span>=</span> <span>&quot;blur(16px)&quot;</span><span>;</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>webkitBackdropFilter</span> <span>=</span> <span>&quot;blur(16px)&quot;</span><span>;</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>boxShadow</span> <span>=</span> <span>&quot;0 8px 24px rgba(0,0,0,0.12)&quot;</span><span>;</span>
+
+      <span>const</span> <span>title</span> <span>=</span> <span>card</span><span>.</span><span>querySelector</span><span>(</span><span>&quot;.post-title&quot;</span><span>)</span><span>;</span>
+      <span>const</span> <span>meta</span> <span>=</span> <span>card</span><span>.</span><span>querySelector</span><span>(</span><span>&quot;.post-meta&quot;</span><span>)</span><span>;</span>
+
+      <span>if</span> <span>(</span><span>title</span><span>)</span> <span>title</span><span>.</span><span>style</span><span>.</span><span>color</span> <span>=</span> <span>theme</span><span>.</span><span>title</span><span>;</span>
+      <span>if</span> <span>(</span><span>meta</span><span>)</span> <span>meta</span><span>.</span><span>style</span><span>.</span><span>color</span> <span>=</span> <span>theme</span><span>.</span><span>meta</span><span>;</span>
+    <span>}</span><span>)</span><span>;</span>
+
+    <span>[</span><span>&quot;#header&quot;</span><span>,</span> <span>&quot;#footer&quot;</span><span>]</span><span>.</span><span>forEach</span><span>(</span><span>sel</span> <span>=&gt;</span> <span>{</span>
+      <span>const</span> <span>el</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>sel</span><span>)</span><span>;</span>
+      <span>if</span> <span>(</span><span>el</span><span>)</span> <span>el</span><span>.</span><span>style</span><span>.</span><span>color</span> <span>=</span> <span>mode</span> <span>===</span> <span>&quot;dark&quot;</span> ? <span>&quot;#ddd&quot;</span> : <span>&quot;&quot;</span><span>;</span>
+    <span>}</span><span>)</span><span>;</span>
+  <span>}</span>
+
+  <span>// 主题监听器</span>
+  <span>if</span> <span>(</span><span>document</span><span>.</span><span>documentElement</span><span>.</span><span>getAttribute</span><span>(</span><span>&quot;data-color-mode&quot;</span><span>)</span> <span>===</span> <span>&quot;auto&quot;</span><span>)</span> <span>{</span>
+    <span>window</span><span>.</span><span>matchMedia</span><span>(</span><span>&quot;(prefers-color-scheme: dark)&quot;</span><span>)</span><span>.</span><span>addEventListener</span><span>(</span><span>&quot;change&quot;</span><span>,</span> <span>applyTheme</span><span>)</span><span>;</span>
+  <span>}</span>
+
+  <span>new</span> <span>MutationObserver</span><span>(</span><span>applyTheme</span><span>)</span><span>.</span><span>observe</span><span>(</span><span>document</span><span>.</span><span>documentElement</span><span>,</span> <span>{</span>
+    <span>attributes</span>: <span>true</span><span>,</span>
+    <span>attributeFilter</span>: <span>[</span><span>&quot;data-color-mode&quot;</span><span>]</span>
+  <span>}</span><span>)</span><span>;</span>
+
+
+
+  <span>function</span> <span>rebuildCards</span><span>(</span><span>)</span> <span>{</span>
+    <span>// 查找所有可能的文章容器</span>
+    <span>const</span> <span>possibleSelectors</span> <span>=</span> <span>[</span>
+      <span>&#x27;.SideNav-item&#x27;</span><span>,</span>
+      <span>&#x27;.Box-row&#x27;</span><span>,</span> 
+      <span>&#x27;.d-flex&#x27;</span><span>,</span>
+      <span>&#x27;.listTitle&#x27;</span><span>,</span>
+      <span>&#x27;.Label&#x27;</span><span>,</span>
+      <span>&#x27;[class*=&quot;SideNav&quot;]&#x27;</span><span>,</span>
+      <span>&#x27;[class*=&quot;Box&quot;]&#x27;</span><span>,</span>
+      <span>&#x27;[class*=&quot;list&quot;]&#x27;</span><span>,</span>
+      <span>&#x27;article&#x27;</span><span>,</span>
+      <span>&#x27;.post&#x27;</span><span>,</span>
+      <span>&#x27;[href*=&quot;.html&quot;]&#x27;</span>
+    <span>]</span><span>;</span>
+    
+    <span>possibleSelectors</span><span>.</span><span>forEach</span><span>(</span><span>selector</span> <span>=&gt;</span> <span>{</span>
+      <span>const</span> <span>elements</span> <span>=</span> <span>document</span><span>.</span><span>querySelectorAll</span><span>(</span><span>selector</span><span>)</span><span>;</span>
+      <span>if</span> <span>(</span><span>elements</span><span>.</span><span>length</span> <span>&gt;</span> <span>0</span><span>)</span> <span>{</span>
+        <span>if</span> <span>(</span><span>elements</span><span>.</span><span>length</span> <span>&lt;=</span> <span>5</span><span>)</span> <span>{</span>
+          <span>elements</span><span>.</span><span>forEach</span><span>(</span><span>(</span><span>el</span><span>,</span> <span>i</span><span>)</span> <span>=&gt;</span> <span>{</span>
+            <span>if</span> <span>(</span><span>el</span><span>.</span><span>textContent</span> <span>&amp;&amp;</span> <span>el</span><span>.</span><span>textContent</span><span>.</span><span>length</span> <span>&lt;</span> <span>100</span><span>)</span> <span>{</span>
+            <span>}</span>
+          <span>}</span><span>)</span><span>;</span>
+        <span>}</span>
+      <span>}</span>
+    <span>}</span><span>)</span><span>;</span>
+
+    <span>// 查找包含 listTitle 的父元素</span>
+    <span>const</span> <span>listTitles</span> <span>=</span> <span>document</span><span>.</span><span>querySelectorAll</span><span>(</span><span>&#x27;.listTitle&#x27;</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>listTitles</span><span>.</span><span>length</span> <span>&gt;</span> <span>0</span><span>)</span> <span>{</span>
+      <span>listTitles</span><span>.</span><span>forEach</span><span>(</span><span>(</span><span>title</span><span>,</span> <span>i</span><span>)</span> <span>=&gt;</span> <span>{</span>
+      <span>}</span><span>)</span><span>;</span>
+    <span>}</span>
+
+    <span>let</span> <span>sideNavItems</span> <span>=</span> <span>document</span><span>.</span><span>querySelectorAll</span><span>(</span><span>&quot;.SideNav-item&quot;</span><span>)</span><span>;</span>
+    
+    <span>// 如果没找到，尝试通过 listTitle 找父元素</span>
+    <span>if</span> <span>(</span><span>sideNavItems</span><span>.</span><span>length</span> <span>===</span> <span>0</span> <span>&amp;&amp;</span> <span>listTitles</span><span>.</span><span>length</span> <span>&gt;</span> <span>0</span><span>)</span> <span>{</span>
+      <span>// 假设 listTitle 的父元素就是我们要找的容器</span>
+      <span>const</span> <span>parents</span> <span>=</span> <span>Array</span><span>.</span><span>from</span><span>(</span><span>listTitles</span><span>)</span><span>.</span><span>map</span><span>(</span><span>title</span> <span>=&gt;</span> <span>{</span>
+        <span>// 找到有href属性的祖先元素</span>
+        <span>let</span> <span>current</span> <span>=</span> <span>title</span><span>.</span><span>parentElement</span><span>;</span>
+        <span>while</span> <span>(</span><span>current</span> <span>&amp;&amp;</span> <span>!</span><span>current</span><span>.</span><span>getAttribute</span><span>(</span><span>&#x27;href&#x27;</span><span>)</span><span>)</span> <span>{</span>
+          <span>current</span> <span>=</span> <span>current</span><span>.</span><span>parentElement</span><span>;</span>
+          <span>if</span> <span>(</span><span>current</span> <span>===</span> <span>document</span><span>.</span><span>body</span><span>)</span> <span>break</span><span>;</span>
+        <span>}</span>
+        <span>return</span> <span>current</span><span>;</span>
+      <span>}</span><span>)</span><span>.</span><span>filter</span><span>(</span><span>Boolean</span><span>)</span><span>;</span>
+      
+      <span>if</span> <span>(</span><span>parents</span><span>.</span><span>length</span> <span>&gt;</span> <span>0</span><span>)</span> <span>{</span>
+        <span>sideNavItems</span> <span>=</span> <span>parents</span><span>;</span>
+      <span>}</span>
+    <span>}</span>
+    
+    <span>if</span> <span>(</span><span>sideNavItems</span><span>.</span><span>length</span> <span>===</span> <span>0</span><span>)</span> <span>{</span>
+      <span>setTimeout</span><span>(</span><span>rebuildCards</span><span>,</span> <span>1000</span><span>)</span><span>;</span>
+      <span>return</span><span>;</span>
+    <span>}</span>
+
+
+    <span>sideNavItems</span><span>.</span><span>forEach</span><span>(</span><span>(</span><span>card</span><span>,</span> <span>i</span><span>)</span> <span>=&gt;</span> <span>{</span>
+      <span>// 从href中提取文章标题作为备用方案</span>
+      <span>let</span> <span>title</span> <span>=</span> <span>card</span><span>.</span><span>querySelector</span><span>(</span><span>&quot;.listTitle&quot;</span><span>)</span><span>?.</span><span>innerText</span><span>;</span>
+      <span>if</span> <span>(</span><span>!</span><span>title</span><span>)</span> <span>{</span>
+        <span>// 如果没有listTitle，从href中提取文件名作为标题</span>
+        <span>const</span> <span>href</span> <span>=</span> <span>card</span><span>.</span><span>getAttribute</span><span>(</span><span>&quot;href&quot;</span><span>)</span> <span>||</span> <span>&quot;&quot;</span><span>;</span>
+        <span>const</span> <span>filename</span> <span>=</span> <span>href</span><span>.</span><span>split</span><span>(</span><span>&#x27;/&#x27;</span><span>)</span><span>.</span><span>pop</span><span>(</span><span>)</span><span>?.</span><span>replace</span><span>(</span><span>&#x27;.html&#x27;</span><span>,</span> <span>&#x27;&#x27;</span><span>)</span> <span>||</span> <span>&quot;未命名文章&quot;</span><span>;</span>
+        <span>title</span> <span>=</span> <span>filename</span><span>.</span><span>replace</span><span>(</span><span><span>/</span><span>-</span><span>/</span>g</span><span>,</span> <span>&#x27; &#x27;</span><span>)</span><span>.</span><span>replace</span><span>(</span><span><span>/</span><span>\b</span><span>\w</span><span>/</span>g</span><span>,</span> <span>l</span> <span>=&gt;</span> <span>l</span><span>.</span><span>toUpperCase</span><span>(</span><span>)</span><span>)</span><span>;</span>
+      <span>}</span>
+      <span>const</span> <span>link</span> <span>=</span> <span>card</span><span>.</span><span>getAttribute</span><span>(</span><span>&quot;href&quot;</span><span>)</span><span>;</span>
+      <span>const</span> <span>labels</span> <span>=</span> <span>[</span>...<span>card</span><span>.</span><span>querySelectorAll</span><span>(</span><span>&quot;.Label&quot;</span><span>)</span><span>]</span><span>;</span>
+      <span>const</span> <span>time</span> <span>=</span> <span>labels</span><span>.</span><span>find</span><span>(</span><span>el</span> <span>=&gt;</span> <span><span>/</span><span>^</span><span>\d</span><span>{</span><span>4</span><span>}</span><span>/</span></span><span>.</span><span>test</span><span>(</span><span>el</span><span>.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span><span>)</span><span>)</span><span>?.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span> <span>||</span> <span>&quot;&quot;</span><span>;</span>
+
+      <span>const</span> <span>tags</span> <span>=</span> <span>labels</span><span>.</span><span>filter</span><span>(</span><span>el</span> <span>=&gt;</span> <span>el</span><span>.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span> <span>!==</span> <span>time</span><span>)</span><span>.</span><span>map</span><span>(</span><span>el</span> <span>=&gt;</span> <span>{</span>
+        <span>const</span> <span>tag</span> <span>=</span> <span>el</span><span>.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span><span>;</span>
+        <span>const</span> <span>bg</span> <span>=</span> <span>el</span><span>.</span><span>style</span><span>.</span><span>backgroundColor</span> <span>||</span> <span>&quot;#999&quot;</span><span>;</span>
+        <span>const</span> <span>fg</span> <span>=</span> <span>getTextColor</span><span>(</span><span>bg</span><span>)</span><span>;</span>
+        <span>return</span> <span>`&lt;span class=&quot;post-tag&quot; style=&quot;background-color:<span><span>${</span><span>bg</span><span>}</span></span>;color:<span><span>${</span><span>fg</span><span>}</span></span>&quot; data-tag=&quot;<span><span>${</span><span>tag</span><span>}</span></span>&quot; onclick=&quot;handleTagClick(event, &#x27;<span><span>${</span><span>tag</span><span>}</span></span>&#x27;)&quot;&gt;<span><span>${</span><span>tag</span><span>}</span></span>&lt;/span&gt;`</span><span>;</span>
+      <span>}</span><span>)</span><span>.</span><span>join</span><span>(</span><span>&quot;&quot;</span><span>)</span><span>;</span>
+
+      <span>const</span> <span>newCard</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&quot;a&quot;</span><span>)</span><span>;</span>
+      <span>newCard</span><span>.</span><span>href</span> <span>=</span> <span>link</span><span>;</span>
+      <span>newCard</span><span>.</span><span>className</span> <span>=</span> <span>&quot;post-card&quot;</span><span>;</span>
+      <span>newCard</span><span>.</span><span>style</span><span>.</span><span>animationDelay</span> <span>=</span> <span>`<span><span>${</span><span>i</span> <span>*</span> <span>60</span><span>}</span></span>ms`</span><span>;</span>
+      <span>newCard</span><span>.</span><span>innerHTML</span> <span>=</span> <span>`</span>
+<span>        &lt;div class=&quot;post-meta&quot;&gt;<span><span>${</span><span>tags</span><span>}</span></span>&lt;span class=&quot;post-date&quot;&gt;<span><span>${</span><span>time</span><span>}</span></span>&lt;/span&gt;&lt;/div&gt;</span>
+<span>        &lt;h2 class=&quot;post-title&quot;&gt;<span><span>${</span><span>title</span><span>}</span></span>&lt;/h2&gt;</span>
+<span>      `</span><span>;</span>
+      <span>card</span><span>.</span><span>replaceWith</span><span>(</span><span>newCard</span><span>)</span><span>;</span>
+    <span>}</span><span>)</span><span>;</span>
+
+    <span>applyTheme</span><span>(</span><span>)</span><span>;</span>
+  <span>}</span>
+
+  <span>// 增强的DOM准备检查</span>
+  <span>function</span> <span>whenReady</span><span>(</span><span>callback</span><span>)</span> <span>{</span>
+    <span>if</span> <span>(</span><span>document</span><span>.</span><span>readyState</span> <span>===</span> <span>&#x27;complete&#x27;</span><span>)</span> <span>{</span>
+      <span>setTimeout</span><span>(</span><span>callback</span><span>,</span> <span>100</span><span>)</span><span>;</span>
+    <span>}</span> <span>else</span> <span>if</span> <span>(</span><span>document</span><span>.</span><span>readyState</span> <span>===</span> <span>&#x27;interactive&#x27;</span><span>)</span> <span>{</span>
+      <span>setTimeout</span><span>(</span><span>callback</span><span>,</span> <span>300</span><span>)</span><span>;</span>
+    <span>}</span> <span>else</span> <span>{</span>
+      <span>document</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;DOMContentLoaded&#x27;</span><span>,</span> <span>function</span><span>(</span><span>)</span> <span>{</span>
+        <span>setTimeout</span><span>(</span><span>callback</span><span>,</span> <span>200</span><span>)</span><span>;</span>
+      <span>}</span><span>)</span><span>;</span>
+      <span>window</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;load&#x27;</span><span>,</span> <span>function</span><span>(</span><span>)</span> <span>{</span>
+        <span>setTimeout</span><span>(</span><span>callback</span><span>,</span> <span>100</span><span>)</span><span>;</span>
+      <span>}</span><span>)</span><span>;</span>
+    <span>}</span>
+  <span>}</span>
+
+  <span>// 执行主逻辑</span>
+  <span>whenReady</span><span>(</span><span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>rebuildCards</span><span>(</span><span>)</span><span>;</span>
+    <span>// 标记完成 - 放在最前面，避免重复执行</span>
+    <span>window</span><span>.</span><span>__TiengmingModernized</span> <span>=</span> <span>true</span><span>;</span>
+    <span>console</span><span>.</span><span>log</span><span>(</span><span>&quot;🍏 TiengmingModern 插件加载完成&quot;</span><span>)</span><span>;</span>
+  <span>}</span><span>)</span><span>;</span>
+
+  <span>// 页面可见性监听 - 简化逻辑，只处理样式重新应用</span>
+  <span>document</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;visibilitychange&#x27;</span><span>,</span> <span>function</span><span>(</span><span>)</span> <span>{</span>
+    <span>if</span> <span>(</span><span>!</span><span>document</span><span>.</span><span>hidden</span> <span>&amp;&amp;</span> <span>window</span><span>.</span><span>__TiengmingModernized</span><span>)</span> <span>{</span>
+      <span>const</span> <span>existingCards</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>&#x27;.post-card&#x27;</span><span>)</span><span>;</span>
+      <span>const</span> <span>existingBg</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>&#x27;.herobgcolor&#x27;</span><span>)</span><span>;</span>
+      
+      <span>if</span> <span>(</span><span>existingCards</span> <span>&amp;&amp;</span> <span>!</span><span>existingBg</span><span>)</span> <span>{</span>
+        <span>initializeBackground</span><span>(</span><span>)</span><span>;</span>
+        <span>applyTheme</span><span>(</span><span>)</span><span>;</span>
+      <span>}</span>
+    <span>}</span>
+  <span>}</span><span>)</span><span>;</span>
+
+<span>}</span><span>)</span><span>(</span><span>)</span><span>;</span></pre></div>
+</details>
+<details>
+  <summary>旧版本`GmeekCustomizeCss.js`代码</summary>
+<div><pre><span>(</span><span>function</span> <span>(</span><span>)</span> <span>{</span>
+  <span>if</span> <span>(</span><span>window</span><span>.</span><span>__TiengmingModernized</span><span>)</span> <span>return</span><span>;</span>
+  <span>window</span><span>.</span><span>__TiengmingModernized</span> <span>=</span> <span>true</span><span>;</span>
+  <span>console</span><span>.</span><span>log</span><span>(</span><span>&quot;🍏 TiengmingModern 插件已启用 https://code.buxiantang.top/&quot;</span><span>)</span><span>;</span>
+
+  <span>const</span> <span>themeColors</span> <span>=</span> <span>{</span>
+    <span>light</span>: <span>{</span>
+      <span>bgGradient</span>: <span>&quot;linear-gradient(135deg, #f4f4f4, #fef2f2, #f4f0ff)&quot;</span><span>,</span>
+      <span>cardBg</span>: <span>&quot;rgba(255,255,255,0.25)&quot;</span><span>,</span>
+      <span>cardBorder</span>: <span>&quot;1px solid rgba(255,255,255,0.2)&quot;</span><span>,</span>
+      <span>title</span>: <span>&quot;#1c1c1e&quot;</span><span>,</span>
+      <span>summary</span>: <span>&quot;#444&quot;</span><span>,</span>
+      <span>meta</span>: <span>&quot;#888&quot;</span>
+    <span>}</span><span>,</span>
+    <span>dark</span>: <span>{</span>
+      <span>bgGradient</span>: <span>&quot;linear-gradient(135deg, #1a1a2b, #222c3a, #2e3950)&quot;</span><span>,</span>
+      <span>cardBg</span>: <span>&quot;rgba(32,32,32,0.3)&quot;</span><span>,</span>
+      <span>cardBorder</span>: <span>&quot;1px solid rgba(255,255,255,0.08)&quot;</span><span>,</span>
+      <span>title</span>: <span>&quot;#eee&quot;</span><span>,</span>
+      <span>summary</span>: <span>&quot;#aaa&quot;</span><span>,</span>
+      <span>meta</span>: <span>&quot;#bbb&quot;</span>
+    <span>}</span>
+  <span>}</span><span>;</span>
+
+  <span>function</span> <span>getEffectiveMode</span><span>(</span><span>)</span> <span>{</span>
+    <span>const</span> <span>raw</span> <span>=</span> <span>document</span><span>.</span><span>documentElement</span><span>.</span><span>getAttribute</span><span>(</span><span>&quot;data-color-mode&quot;</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>raw</span> <span>===</span> <span>&quot;light&quot;</span> <span>||</span> <span>raw</span> <span>===</span> <span>&quot;dark&quot;</span><span>)</span> <span>return</span> <span>raw</span><span>;</span>
+    <span>return</span> <span>window</span><span>.</span><span>matchMedia</span><span>(</span><span>&quot;(prefers-color-scheme: dark)&quot;</span><span>)</span><span>.</span><span>matches</span> ? <span>&quot;dark&quot;</span> : <span>&quot;light&quot;</span><span>;</span>
+  <span>}</span>
+
+  <span>function</span> <span>getTextColor</span><span>(</span><span>bg</span><span>)</span> <span>{</span>
+    <span>const</span> <span>rgb</span> <span>=</span> <span>bg</span><span>.</span><span>match</span><span>(</span><span><span>/</span><span>\d</span><span>+</span><span>/</span>g</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>!</span><span>rgb</span><span>)</span> <span>return</span> <span>&quot;#fff&quot;</span><span>;</span>
+    <span>const</span> <span>[</span><span>r</span><span>,</span> <span>g</span><span>,</span> <span>b</span><span>]</span> <span>=</span> <span>rgb</span><span>.</span><span>map</span><span>(</span><span>Number</span><span>)</span><span>;</span>
+    <span>const</span> <span>l</span> <span>=</span> <span>(</span><span>0.299</span> <span>*</span> <span>r</span> <span>+</span> <span>0.587</span> <span>*</span> <span>g</span> <span>+</span> <span>0.114</span> <span>*</span> <span>b</span><span>)</span> <span>/</span> <span>255</span><span>;</span>
+    <span>return</span> <span>l</span> <span>&gt;</span> <span>0.6</span> ? <span>&quot;#000&quot;</span> : <span>&quot;#fff&quot;</span><span>;</span>
+  <span>}</span>
+
+  <span>const</span> <span>bg</span> <span>=</span> <span>(</span><span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>el</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&quot;div&quot;</span><span>)</span><span>;</span>
+    <span>el</span><span>.</span><span>className</span> <span>=</span> <span>&quot;herobgcolor&quot;</span><span>;</span>
+    <span>document</span><span>.</span><span>body</span><span>.</span><span>appendChild</span><span>(</span><span>el</span><span>)</span><span>;</span>
+    <span>const</span> <span>style</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&quot;style&quot;</span><span>)</span><span>;</span>
+    <span>style</span><span>.</span><span>textContent</span> <span>=</span> <span>`</span>
+<span>      .herobgcolor {</span>
+<span>        position: fixed;</span>
+<span>        top: 0; left: 0;</span>
+<span>        width: 100vw; height: 100vh;</span>
+<span>        z-index: -1;</span>
+<span>        background-size: 600% 600%;</span>
+<span>        animation: hueflow 30s ease infinite;</span>
+<span>        transition: background 0.6s ease;</span>
+<span>      }</span>
+<span>      @keyframes hueflow {</span>
+<span>        0% { filter: hue-rotate(0deg); background-position: 0% 50%; }</span>
+<span>        50% { filter: hue-rotate(180deg); background-position: 100% 50%; }</span>
+<span>        100% { filter: hue-rotate(360deg); background-position: 0% 50%; }</span>
+<span>      }</span>
+<span>    `</span><span>;</span>
+    <span>document</span><span>.</span><span>head</span><span>.</span><span>appendChild</span><span>(</span><span>style</span><span>)</span><span>;</span>
+    <span>return</span> <span>el</span><span>;</span>
+  <span>}</span><span>)</span><span>(</span><span>)</span><span>;</span>
+
+  <span>function</span> <span>applyTheme</span><span>(</span><span>)</span> <span>{</span>
+    <span>const</span> <span>mode</span> <span>=</span> <span>getEffectiveMode</span><span>(</span><span>)</span><span>;</span>
+    <span>const</span> <span>theme</span> <span>=</span> <span>themeColors</span><span>[</span><span>mode</span><span>]</span><span>;</span>
+
+    <span>bg</span><span>.</span><span>style</span><span>.</span><span>background</span> <span>=</span> <span>theme</span><span>.</span><span>bgGradient</span><span>;</span>
+
+    <span>document</span><span>.</span><span>querySelectorAll</span><span>(</span><span>&quot;.post-card&quot;</span><span>)</span><span>.</span><span>forEach</span><span>(</span><span>card</span> <span>=&gt;</span> <span>{</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>background</span> <span>=</span> <span>theme</span><span>.</span><span>cardBg</span><span>;</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>border</span> <span>=</span> <span>theme</span><span>.</span><span>cardBorder</span><span>;</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>backdropFilter</span> <span>=</span> <span>&quot;blur(16px)&quot;</span><span>;</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>webkitBackdropFilter</span> <span>=</span> <span>&quot;blur(16px)&quot;</span><span>;</span>
+      <span>card</span><span>.</span><span>style</span><span>.</span><span>boxShadow</span> <span>=</span> <span>&quot;0 8px 24px rgba(0,0,0,0.12)&quot;</span><span>;</span>
+
+      <span>const</span> <span>title</span> <span>=</span> <span>card</span><span>.</span><span>querySelector</span><span>(</span><span>&quot;.post-title&quot;</span><span>)</span><span>;</span>
+      <span>const</span> <span>summary</span> <span>=</span> <span>card</span><span>.</span><span>querySelector</span><span>(</span><span>&quot;.post-summary&quot;</span><span>)</span><span>;</span>
+      <span>const</span> <span>meta</span> <span>=</span> <span>card</span><span>.</span><span>querySelector</span><span>(</span><span>&quot;.post-meta&quot;</span><span>)</span><span>;</span>
+
+      <span>if</span> <span>(</span><span>title</span><span>)</span> <span>title</span><span>.</span><span>style</span><span>.</span><span>color</span> <span>=</span> <span>theme</span><span>.</span><span>title</span><span>;</span>
+      <span>if</span> <span>(</span><span>summary</span><span>)</span> <span>summary</span><span>.</span><span>style</span><span>.</span><span>color</span> <span>=</span> <span>theme</span><span>.</span><span>summary</span><span>;</span>
+      <span>if</span> <span>(</span><span>meta</span><span>)</span> <span>meta</span><span>.</span><span>style</span><span>.</span><span>color</span> <span>=</span> <span>theme</span><span>.</span><span>meta</span><span>;</span>
+    <span>}</span><span>)</span><span>;</span>
+
+    <span>[</span><span>&quot;#header&quot;</span><span>,</span> <span>&quot;#footer&quot;</span><span>]</span><span>.</span><span>forEach</span><span>(</span><span>sel</span> <span>=&gt;</span> <span>{</span>
+      <span>const</span> <span>el</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>sel</span><span>)</span><span>;</span>
+      <span>if</span> <span>(</span><span>el</span><span>)</span> <span>el</span><span>.</span><span>style</span><span>.</span><span>color</span> <span>=</span> <span>mode</span> <span>===</span> <span>&quot;dark&quot;</span> ? <span>&quot;#ddd&quot;</span> : <span>&quot;&quot;</span><span>;</span>
+    <span>}</span><span>)</span><span>;</span>
+  <span>}</span>
+
+  <span>if</span> <span>(</span><span>document</span><span>.</span><span>documentElement</span><span>.</span><span>getAttribute</span><span>(</span><span>&quot;data-color-mode&quot;</span><span>)</span> <span>===</span> <span>&quot;auto&quot;</span><span>)</span> <span>{</span>
+    <span>window</span><span>.</span><span>matchMedia</span><span>(</span><span>&quot;(prefers-color-scheme: dark)&quot;</span><span>)</span><span>.</span><span>addEventListener</span><span>(</span><span>&quot;change&quot;</span><span>,</span> <span>applyTheme</span><span>)</span><span>;</span>
+  <span>}</span>
+
+  <span>new</span> <span>MutationObserver</span><span>(</span><span>applyTheme</span><span>)</span><span>.</span><span>observe</span><span>(</span><span>document</span><span>.</span><span>documentElement</span><span>,</span> <span>{</span>
+    <span>attributes</span>: <span>true</span><span>,</span>
+    <span>attributeFilter</span>: <span>[</span><span>&quot;data-color-mode&quot;</span><span>]</span>
+  <span>}</span><span>)</span><span>;</span>
+
+  <span>function</span> <span>rebuildCards</span><span>(</span><span>)</span> <span>{</span>
+    <span>document</span><span>.</span><span>querySelectorAll</span><span>(</span><span>&quot;.SideNav-item&quot;</span><span>)</span><span>.</span><span>forEach</span><span>(</span><span>(</span><span>card</span><span>,</span> <span>i</span><span>)</span> <span>=&gt;</span> <span>{</span>
+      <span>const</span> <span>title</span> <span>=</span> <span>card</span><span>.</span><span>querySelector</span><span>(</span><span>&quot;.listTitle&quot;</span><span>)</span><span>?.</span><span>innerText</span> <span>||</span> <span>&quot;未命名文章&quot;</span><span>;</span>
+      <span>const</span> <span>link</span> <span>=</span> <span>card</span><span>.</span><span>getAttribute</span><span>(</span><span>&quot;href&quot;</span><span>)</span><span>;</span>
+      <span>const</span> <span>labels</span> <span>=</span> <span>[</span>...<span>card</span><span>.</span><span>querySelectorAll</span><span>(</span><span>&quot;.Label&quot;</span><span>)</span><span>]</span><span>;</span>
+      <span>const</span> <span>time</span> <span>=</span> <span>labels</span><span>.</span><span>find</span><span>(</span><span>el</span> <span>=&gt;</span> <span><span>/</span><span>^</span><span>\d</span><span>{</span><span>4</span><span>}</span><span>/</span></span><span>.</span><span>test</span><span>(</span><span>el</span><span>.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span><span>)</span><span>)</span><span>?.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span> <span>||</span> <span>&quot;&quot;</span><span>;</span>
+
+      <span>const</span> <span>tags</span> <span>=</span> <span>labels</span><span>.</span><span>filter</span><span>(</span><span>el</span> <span>=&gt;</span> <span>el</span><span>.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span> <span>!==</span> <span>time</span><span>)</span><span>.</span><span>map</span><span>(</span><span>el</span> <span>=&gt;</span> <span>{</span>
+        <span>const</span> <span>tag</span> <span>=</span> <span>el</span><span>.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span><span>;</span>
+        <span>const</span> <span>bg</span> <span>=</span> <span>el</span><span>.</span><span>style</span><span>.</span><span>backgroundColor</span> <span>||</span> <span>&quot;#999&quot;</span><span>;</span>
+        <span>const</span> <span>fg</span> <span>=</span> <span>getTextColor</span><span>(</span><span>bg</span><span>)</span><span>;</span>
+        <span>return</span> <span>`&lt;span class=&quot;post-tag&quot; style=&quot;background-color:<span><span>${</span><span>bg</span><span>}</span></span>;color:<span><span>${</span><span>fg</span><span>}</span></span>&quot;&gt;<span><span>${</span><span>tag</span><span>}</span></span>&lt;/span&gt;`</span><span>;</span>
+      <span>}</span><span>)</span><span>.</span><span>join</span><span>(</span><span>&quot;&quot;</span><span>)</span><span>;</span>
+
+      <span>const</span> <span>summary</span> <span>=</span> <span>`本篇内容涵盖主题「<span><span>${</span><span>labels</span><span>.</span><span>map</span><span>(</span><span>x</span> <span>=&gt;</span> <span>x</span><span>.</span><span>textContent</span><span>.</span><span>trim</span><span>(</span><span>)</span><span>)</span><span>.</span><span>join</span><span>(</span><span>&quot; / &quot;</span><span>)</span><span>}</span></span>」，带你深入探索相关知识点。`</span><span>;</span>
+
+      <span>const</span> <span>newCard</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&quot;a&quot;</span><span>)</span><span>;</span>
+      <span>newCard</span><span>.</span><span>href</span> <span>=</span> <span>link</span><span>;</span>
+      <span>newCard</span><span>.</span><span>className</span> <span>=</span> <span>&quot;post-card&quot;</span><span>;</span>
+      <span>newCard</span><span>.</span><span>style</span><span>.</span><span>animationDelay</span> <span>=</span> <span>`<span><span>${</span><span>i</span> <span>*</span> <span>60</span><span>}</span></span>ms`</span><span>;</span>
+      <span>newCard</span><span>.</span><span>innerHTML</span> <span>=</span> <span>`</span>
+<span>        &lt;div class=&quot;post-meta&quot;&gt;<span><span>${</span><span>tags</span><span>}</span></span>&lt;span class=&quot;post-date&quot;&gt;<span><span>${</span><span>time</span><span>}</span></span>&lt;/span&gt;&lt;/div&gt;</span>
+<span>        &lt;h2 class=&quot;post-title&quot;&gt;<span><span>${</span><span>title</span><span>}</span></span>&lt;/h2&gt;</span>
+<span>        &lt;p class=&quot;post-summary&quot;&gt;<span><span>${</span><span>summary</span><span>}</span></span>&lt;/p&gt;</span>
+<span>      `</span><span>;</span>
+      <span>card</span><span>.</span><span>replaceWith</span><span>(</span><span>newCard</span><span>)</span><span>;</span>
+    <span>}</span><span>)</span><span>;</span>
+
+    <span>applyTheme</span><span>(</span><span>)</span><span>;</span>
+  <span>}</span>
+
+  <span>document</span><span>.</span><span>readyState</span> <span>===</span> <span>&quot;loading&quot;</span>
+    ? <span>window</span><span>.</span><span>addEventListener</span><span>(</span><span>&quot;DOMContentLoaded&quot;</span><span>,</span> <span>rebuildCards</span><span>)</span>
+    : <span>rebuildCards</span><span>(</span><span>)</span><span>;</span>
+
+  <span>document</span><span>.</span><span>documentElement</span><span>.</span><span>removeAttribute</span><span>(</span><span>&quot;data-ui-pending&quot;</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>(</span><span>)</span><span>;</span></pre></div>
+</details>
+<hr>
+<h2 id="heading-11">🖼️ 效果示意</h2>
+<table>
+<thead>
+<tr>
+<th>视觉模式</th>
+<th>卡片样式</th>
+<th>渐变背景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🌞 明亮模式</td>
+<td>白色半透明卡片 + 黑灰文字 + 原生标签 + 光影</td>
+<td>粉米紫冷调渐变 + hue 动态流动</td>
+</tr>
+<tr>
+<td>🌚 暗黑模式</td>
+<td>深灰玻璃卡片 + 明亮文字 + 白色标签</td>
+<td>深蓝深紫渐变背景 + light glow 效应</td>
+</tr>
+<tr>
+<td>🌓 Auto 模式</td>
+<td>随系统变化自动切换，支持 macOS / Windows / iOS</td>
+<td>插件监听 <code>prefers-color-scheme</code> 并动态应用配色模式</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-12">🔧 插件加载流程 &amp; 机制</h2>
+<div><pre><span>flowchart</span> <span>TB</span>
+  <span>A</span><span><span><span>(</span></span>页面加载<span><span>)</span></span></span> <span>--&gt;</span> <span>B</span><span><span><span>(</span></span>设置 data-ui-pending 隐藏内容<span><span>)</span></span></span>
+  <span>B</span> <span>--&gt;</span> <span>C</span><span><span><span>(</span></span>加载插件 JS/CSS<span><span>)</span></span></span>
+  <span>C</span> <span>--&gt;</span> <span>D</span><span><span><span>(</span></span>重构 .SideNav-item → .post-card<span><span>)</span></span></span>
+  <span>D</span> <span>--&gt;</span> <span>E</span><span><span><span>(</span></span>计算标签颜色 → 自动对比<span><span>)</span></span></span>
+  <span>E</span> <span>--&gt;</span> <span>F</span><span><span><span>(</span></span>注入渐变背景 .herobgcolor<span><span>)</span></span></span>
+  <span>F</span> <span>--&gt;</span> <span>G</span><span><span><span>(</span></span>判断主题模式：light / dark / auto<span><span>)</span></span></span>
+  <span>G</span> <span>--&gt;</span> <span>H</span><span><span><span>(</span></span>应用卡片/文字颜色样式<span><span>)</span></span></span>
+  <span>H</span> <span>--&gt;</span> <span>I</span><span><span><span>(</span></span>淡入主内容：移除 data-ui-pending<span><span>)</span></span></span></pre></div>
+<hr>
+<h2 id="heading-13">💡 开发者进阶拓展建议</h2>
+<table>
+<thead>
+<tr>
+<th>能力方向</th>
+<th>实现方式或建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔍 封面图接入</td>
+<td>可在 <code>.SideNav-item</code> 上加入 <code>data-cover</code>，或通过规则映射插入 <code>&lt;img class=&quot;card-cover&quot;&gt;</code></td>
+</tr>
+<tr>
+<td>✏️ 自定义主题色方案</td>
+<td>修改插件中的 <code>themeColors</code> 配置块，或通过 <code>style</code> 注入设置主题变量</td>
+</tr>
+<tr>
+<td>⏳ 首屏卡片 Skeleton</td>
+<td>使用 <code>#content { opacity: 0 }</code> 加延时加载，可插入骨架屏样式增强用户体验</td>
+</tr>
+<tr>
+<td>🎨 模块复用与封装</td>
+<td>将 JS 拆分为 <code>useTheme()</code>、<code>useCardBuilder()</code> 等函数模块，便于维护与拓展</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-14">✅ 插件特性总结</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🌗 明暗主题兼容</td>
+<td>✅ 支持 light / dark / auto 模式</td>
+</tr>
+<tr>
+<td>🧼 样式隔离</td>
+<td>✅ 仅作用于 <code>.post-card</code> 区域</td>
+</tr>
+<tr>
+<td>💎 UI 视觉细节</td>
+<td>✅ 阴影 / 模糊 / 圆角 / 渐变</td>
+</tr>
+<tr>
+<td>📱 响应式布局支持</td>
+<td>✅ 全面适配手机端显示</td>
+</tr>
+<tr>
+<td>🚀 加载顺滑体验</td>
+<td>✅ 支持内容淡入加载 / 防闪白</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-15">🔍 实时预览 &amp; 示例</h2>
+<p>👉 在线示例地址：<br>
+<a href="https://code.buxiantang.top/" rel="noopener noreferrer">https://code.buxiantang.top/</a></p>
+<hr>
+<p><em>最初由 <a href="https://github.com/tiengming" rel="noopener noreferrer">@tiengming</a> 在 <a href="https://github.com/tiengming/tiengming.github.io/issues/19" rel="noopener noreferrer">tiengming/tiengming.github.io#19</a> 发布</em></p></article></div></main><footer><a href="/feed.xml">RSS 訂閱</a> · <a href="/#/posts">所有文章</a> · <a href="#">回到頂部 ↑</a></footer></body></html>

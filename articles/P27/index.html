@@ -1,0 +1,3458 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JS CSS 详解 · Luliy Articles</title><meta name="description" content="📘 Luliy Blog v8 完整技术说明书 一、架构总览 Luliy Blog v8 ├── 📁 js/ │ └── main.js # 24个模块，按序加载 ├── 📁 css/ │ └── enhance.css # 27个区域，主题驱动 ├── 📄 config.json # 博客核心配置"><link rel="canonical" href="https://luliy.me/articles/P27/"><link rel="alternate" type="application/rss+xml" title="Luliy Articles" href="/feed.xml"><meta property="og:type" content="article"><meta property="og:title" content="JS CSS 详解"><meta property="og:description" content="📘 Luliy Blog v8 完整技术说明书 一、架构总览 Luliy Blog v8 ├── 📁 js/ │ └── main.js # 24个模块，按序加载 ├── 📁 css/ │ └── enhance.css # 27个区域，主题驱动 ├── 📄 config.json # 博客核心配置"><meta property="og:url" content="https://luliy.me/articles/P27/"><meta property="og:image" content="https://luliy.me/assets/site/share.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="JS CSS 详解"><meta name="twitter:description" content="📘 Luliy Blog v8 完整技术说明书 一、架构总览 Luliy Blog v8 ├── 📁 js/ │ └── main.js # 24个模块，按序加载 ├── 📁 css/ │ └── enhance.css # 27个区域，主题驱动 ├── 📄 config.json # 博客核心配置"><meta name="twitter:image" content="https://luliy.me/assets/site/share.png"><link rel="stylesheet" href="/site-publish/article.css"></head><body><header><a href="/">LULIY <small>Articles</small></a><a href="/#/article/P27">在主站閱讀 ↗</a></header><main><h1>JS CSS 详解</h1><p class="meta">2026-06-08 · LULIY</p><div class="reading"><aside aria-label="文章目錄"><a style="--level:1" href="#heading-1">📘 Luliy Blog v8 完整技术说明书</a><a style="--level:2" href="#heading-2">一、架构总览</a><a style="--level:2" href="#heading-3">二、JS 模块详解</a><a style="--level:3" href="#heading-4">Module 00 — Welcome Splash 欢迎闪屏</a><a style="--level:3" href="#heading-5">Module 01 — localStorage Init 本地存储初始化</a><a style="--level:3" href="#heading-6">Module 02 — Progress Bar 进度条</a><a style="--level:3" href="#heading-7">Module 03 — Dynamic Title 动态标题</a><a style="--level:3" href="#heading-8">Module 04 — Uptime Counter 运行时间计数器</a><a style="--level:3" href="#heading-9">Module 05 — Dark-mode Ripple 深色模式涟漪</a><a style="--level:3" href="#heading-10">Module 06 — Static Background 静态背景</a><a style="--level:3" href="#heading-11">Module 07 — Web Audio SFX 音效系统</a><a style="--level:3" href="#heading-12">Module 08 — Click Sparks 点击火花</a><a style="--level:3" href="#heading-13">Module 09 — Hero Cluster 英雄区集群</a><a style="--level:3" href="#heading-14">Module 10 — Hero Banner 首页滚动折叠横幅</a><a style="--level:3" href="#heading-15">Module 11 — Tag Page Search Toolbar 标签页搜索工具栏</a><a style="--level:3" href="#heading-16">Module 12 — Image Lightbox 图片灯箱</a><a style="--level:3" href="#heading-17">Module 13 — Floating Toolbar + Unified Sink 浮动工具栏</a><a style="--level:3" href="#heading-18">Module 14 — Home Card Rebuild 首页卡片重构</a><a style="--level:3" href="#heading-19">Module 15 — macOS Code Block Strip macOS 风格代码块</a><a style="--level:3" href="#heading-20">Module 16 — Sakura Petals 樱花花瓣</a><a style="--level:3" href="#heading-21">Module 17 — ArticleTOC Scroll-Spy + Back-to-Top 文章目录</a><a style="--level:3" href="#heading-22">Module 18 — Mobile Nav Hamburger + Dropdown 移动端导航</a><a style="--level:3" href="#heading-23">Module 19 — Search Overlay 搜索遮罩层</a><a style="--level:3" href="#heading-24">Module 20 — Homepage Bottom Gallery Banner 首页底部画廊横幅</a><a style="--level:3" href="#heading-25">Module 21 — Post Page Init 文章页初始化</a><a style="--level:3" href="#heading-26">Module 22 — Index Page Init 首页初始化</a><a style="--level:3" href="#heading-27">Module 23 — Main Entry 主入口</a><a style="--level:2" href="#heading-28">三、CSS 区域详解</a><a style="--level:3" href="#heading-29">Section 00 — Font Imports 字体导入</a><a style="--level:3" href="#heading-30">Section 01 — CSS Variables + Reset 变量与重置</a><a style="--level:3" href="#heading-31">Section 02 — Welcome Splash Overlay 欢迎闪屏样式</a><a style="--level:3" href="#heading-32">Section 03 — Background Image 背景图</a><a style="--level:3" href="#heading-33">Section 04 — Typography 排版</a><a style="--level:3" href="#heading-34">Section 05 — Navbar 导航栏</a><a style="--level:3" href="#heading-35">Section 06-07 — Hero 区域</a><a style="--level:3" href="#heading-36">Section 08 — Progress Bar 进度条</a><a style="--level:3" href="#heading-37">Section 09 — Cards 卡片网格</a><a style="--level:3" href="#heading-38">Section 10 — Date Badge 日期徽章</a><a style="--level:3" href="#heading-39">Section 11 — Pinned Section 置顶区</a><a style="--level:3" href="#heading-40">Section 12 — Article Reading Panels 文章阅读面板（4主题）</a><a style="--level:3" href="#heading-41">Section 13 — Code Blocks 代码块</a><a style="--level:3" href="#heading-42">Section 14 — Tables 表格</a><a style="--level:3" href="#heading-43">Section 15 — Article Theme CSS Variables 文章主题变量</a><a style="--level:3" href="#heading-44">Section 16 — TOC Scroll-Spy 目录滚动监听</a><a style="--level:3" href="#heading-45">Section 17 — Floating Toolbar + Sink Menu</a><a style="--level:1" href="#heading-46">📘 Luliy Blog v8 完整技术说明书</a><a style="--level:2" href="#heading-47">目录</a><a style="--level:2" href="#heading-48">一、架构总览</a><a style="--level:2" href="#heading-49">二、JS 模块详解</a><a style="--level:3" href="#heading-50">Module 00 — Welcome Splash 欢迎闪屏</a><a style="--level:3" href="#heading-51">Module 01 — localStorage Init 本地存储初始化</a><a style="--level:3" href="#heading-52">Module 02 — Progress Bar 进度条</a><a style="--level:3" href="#heading-53">Module 03 — Dynamic Title 动态标题</a><a style="--level:3" href="#heading-54">Module 04 — Uptime Counter 运行时间计数器</a><a style="--level:3" href="#heading-55">Module 05 — Dark-mode Ripple 深色模式涟漪</a><a style="--level:3" href="#heading-56">Module 06 — Static Background 静态背景</a><a style="--level:3" href="#heading-57">Module 07 — Web Audio SFX 音效系统</a><a style="--level:3" href="#heading-58">Module 08 — Click Sparks 点击火花</a><a style="--level:3" href="#heading-59">Module 09 — Hero Cluster 英雄区集群</a><a style="--level:3" href="#heading-60">Module 10 — Hero Banner 首页滚动折叠横幅</a><a style="--level:3" href="#heading-61">Module 11 — Tag Page Search Toolbar 标签页搜索工具栏</a><a style="--level:3" href="#heading-62">Module 12 — Image Lightbox 图片灯箱</a><a style="--level:3" href="#heading-63">Module 13 — Floating Toolbar + Unified Sink 浮动工具栏</a><a style="--level:3" href="#heading-64">Module 14 — Home Card Rebuild 首页卡片重构</a><a style="--level:3" href="#heading-65">Module 15 — macOS Code Block Strip macOS 风格代码块</a><a style="--level:3" href="#heading-66">Module 16 — Sakura Petals 樱花花瓣</a><a style="--level:3" href="#heading-67">Module 17 — ArticleTOC Scroll-Spy + Back-to-Top 文章目录</a><a style="--level:3" href="#heading-68">Module 18 — Mobile Nav Hamburger + Dropdown 移动端导航</a><a style="--level:3" href="#heading-69">Module 19 — Search Overlay 搜索遮罩层</a><a style="--level:3" href="#heading-70">Module 20 — Homepage Bottom Gallery Banner 首页底部画廊横幅</a><a style="--level:3" href="#heading-71">Module 21 — Post Page Init 文章页初始化</a><a style="--level:3" href="#heading-72">Module 22 — Index Page Init 首页初始化</a><a style="--level:3" href="#heading-73">Module 23 — Main Entry 主入口</a><a style="--level:2" href="#heading-74">三、CSS 区域详解</a><a style="--level:3" href="#heading-75">Section 00 — Font Imports 字体导入</a><a style="--level:3" href="#heading-76">Section 01 — CSS Variables + Reset 变量与重置</a><a style="--level:3" href="#heading-77">Section 02 — Welcome Splash Overlay 欢迎闪屏样式</a><a style="--level:3" href="#heading-78">Section 03 — Background Image 背景图</a><a style="--level:3" href="#heading-79">Section 04 — Typography 排版</a><a style="--level:3" href="#heading-80">Section 05 — Navbar 导航栏</a><a style="--level:3" href="#heading-81">Section 06-07 — Hero 区域</a><a style="--level:3" href="#heading-82">Section 08 — Progress Bar 进度条</a><a style="--level:3" href="#heading-83">Section 09 — Cards 卡片网格</a><a style="--level:3" href="#heading-84">Section 10 — Date Badge 日期徽章</a><a style="--level:3" href="#heading-85">Section 11 — Pinned Section 置顶区</a><a style="--level:3" href="#heading-86">Section 12 — Article Reading Panels 文章阅读面板（4主题）</a><a style="--level:3" href="#heading-87">Section 13 — Code Blocks 代码块</a><a style="--level:3" href="#heading-88">Section 14 — Tables 表格</a><a style="--level:3" href="#heading-89">Section 15 — Article Theme CSS Variables 文章主题变量</a><a style="--level:3" href="#heading-90">Section 16 — TOC Scroll-Spy 目录滚动监听</a><a style="--level:3" href="#heading-91">Section 17 — Floating Toolbar + Sink Menu</a><a style="--level:3" href="#heading-92">Section 18 — Prev/Next Navigation 前后文导航</a><a style="--level:3" href="#heading-93">Section 19 — Lightbox 灯箱样式</a><a style="--level:3" href="#heading-94">Section 20 — Back-to-Top 返回顶部</a><a style="--level:3" href="#heading-95">Section 21 — Sakura Canvas / Theme Ripple 樱花画布与主题涟漪</a><a style="--level:3" href="#heading-96">Section 22 — Uptime 运行时间</a><a style="--level:3" href="#heading-97">Section 23 — Timeline / Archive 时间线/归档</a><a style="--level:3" href="#heading-98">Section 24 — Homepage Bottom Gallery Banner 首页底部画廊横幅</a><a style="--level:3" href="#heading-99">Section 25 — Search Overlay 搜索遮罩层</a><a style="--level:3" href="#heading-100">Section 26 — Responsive (Mobile) 响应式设计</a></aside><article><h1 id="heading-1">📘 Luliy Blog v8 完整技术说明书</h1>
+<h2 id="heading-2">一、架构总览</h2>
+<pre><code>Luliy Blog v8
+├── 📁 js/
+│   └── main.js          # 24个模块，按序加载
+├── 📁 css/
+│   └── enhance.css      # 27个区域，主题驱动
+├── 📄 config.json       # 博客核心配置
+├── 📄 theme.json        # 主题预设（4主题）
+└── 📄 manifest.json     # PWA 配置
+</code></pre>
+<p><strong>设计哲学</strong>：模块化加载 → 主题变量驱动 → 渐进增强</p>
+<hr>
+<h2 id="heading-3">二、JS 模块详解</h2>
+<h3 id="heading-4"><code>Module 00</code> — Welcome Splash 欢迎闪屏</h3>
+<div><pre><span>// 功能：页面首次加载时的品牌展示动画</span>
+<span>// 触发：sessionStorage 控制，同会话只显示一次</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>触发条件</td>
+<td><code>sessionStorage.getItem(&#x27;visited&#x27;) !== &#x27;true&#x27;</code></td>
+</tr>
+<tr>
+<td>动画序列</td>
+<td>fadeIn → 品牌文字 → progress填充 → fadeOut</td>
+</tr>
+<tr>
+<td>阻断性</td>
+<td><strong>阻塞后续模块加载</strong>，动画完成后才执行 01-23</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 修改动画时长（默认 2500ms）</span>
+<span>const</span> <span>SPLASH_DURATION</span> <span>=</span> <span>3000</span><span>;</span>  <span>// 延长到3秒</span>
+
+<span>// 修改显示频率：每次刷新都显示</span>
+<span>// 删除或注释掉 sessionStorage 相关代码</span>
+
+<span>// 自定义品牌文字</span>
+<span>const</span> <span>BRAND_TEXT</span> <span>=</span> <span>&quot;Your Name&quot;</span><span>;</span>  <span>// 替换 &quot;Luliy&quot;</span></pre></div>
+<hr>
+<h3 id="heading-5"><code>Module 01</code> — localStorage Init 本地存储初始化</h3>
+<div><pre><span>// 功能：建立持久化配置层，所有用户偏好保存于此</span>
+<span>// 数据结构：{ theme, fontSize, reducedMotion, soundEnabled, ... }</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>存储键</th>
+<th>用途</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>luliy_theme</code></td>
+<td>当前主题ID</td>
+<td><code>&quot;sakura&quot;</code></td>
+</tr>
+<tr>
+<td><code>luliy_font</code></td>
+<td>字体缩放级别</td>
+<td><code>&quot;md&quot;</code></td>
+</tr>
+<tr>
+<td><code>luliy_motion</code></td>
+<td>减少动画偏好</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>luliy_sound</code></td>
+<td>音效开关</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>luliy_visited</code></td>
+<td>访问标记（splash用）</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 新增自定义配置项</span>
+<span>localStorage</span><span>.</span><span>setItem</span><span>(</span><span>&#x27;luliy_customGrid&#x27;</span><span>,</span> <span>&#x27;3&#x27;</span><span>)</span><span>;</span>  <span>// 新增：网格列数</span>
+
+<span>// 读取时</span>
+<span>const</span> <span>gridCols</span> <span>=</span> <span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>&#x27;luliy_customGrid&#x27;</span><span>)</span> <span>||</span> <span>&#x27;2&#x27;</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-6"><code>Module 02</code> — Progress Bar 进度条</h3>
+<div><pre><span>// 功能：顶部阅读进度指示器 + 页面加载进度</span>
+<span>// 双模式：loading（资源加载）| reading（滚动深度）</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>触发条件</th>
+<th>颜色来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loading</td>
+<td><code>document.readyState !== &#x27;complete&#x27;</code></td>
+<td><code>--accent</code></td>
+</tr>
+<tr>
+<td>Reading</td>
+<td>滚动事件</td>
+<td>当前主题主色</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 改为底部显示</span>
+<span>const</span> <span>progressBar</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;div&#x27;</span><span>)</span><span>;</span>
+<span>progressBar</span><span>.</span><span>style</span><span>.</span><span>top</span> <span>=</span> <span>&#x27;auto&#x27;</span><span>;</span>
+<span>progressBar</span><span>.</span><span>style</span><span>.</span><span>bottom</span> <span>=</span> <span>&#x27;0&#x27;</span><span>;</span>  <span>// 底部进度条</span>
+
+<span>// 添加缓冲动画效果</span>
+<span>progressBar</span><span>.</span><span>style</span><span>.</span><span>transition</span> <span>=</span> <span>&#x27;width 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94)&#x27;</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-7"><code>Module 03</code> — Dynamic Title 动态标题</h3>
+<div><pre><span>// 功能：标签页失焦时显示自定义消息，吸引用户回流</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>标题变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>页面可见</td>
+<td>原始标题 `&quot;文章标题</td>
+</tr>
+<tr>
+<td>页面隐藏</td>
+<td><code>&quot;(◍•ᴗ•◍) 快回来~&quot; + 原始标题</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 自定义失焦消息数组（随机轮换）</span>
+<span>const</span> <span>AWAY_MESSAGES</span> <span>=</span> <span>[</span>
+    <span>&quot;✨ 发现好文不看完吗？&quot;</span><span>,</span>
+    <span>&quot;🌸 樱花飘落中，等你回来&quot;</span><span>,</span>
+    <span>&quot;📚 知识正在冷却...&quot;</span><span>,</span>
+    <span>&quot;🎵 音乐暂停了&quot;</span>
+<span>]</span><span>;</span>
+
+<span>// 根据页面类型定制</span>
+<span>const</span> <span>isPostPage</span> <span>=</span> <span>location</span><span>.</span><span>pathname</span><span>.</span><span>includes</span><span>(</span><span>&#x27;/post/&#x27;</span><span>)</span><span>;</span>
+<span>const</span> <span>message</span> <span>=</span> <span>isPostPage</span> ? <span>&quot;📖 读一半呢，别走~&quot;</span> : <span>AWAY_MESSAGES</span><span>[</span><span>random</span><span>]</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-8"><code>Module 04</code> — Uptime Counter 运行时间计数器</h3>
+<div><pre><span>// 功能：显示博客自创建以来的运行时长</span>
+<span>// 格式：X年X月X日 X时X分X秒 | 或精简版</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>显示位置</th>
+<th>默认</th>
+<th>可选</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Footer</td>
+<td>完整格式</td>
+<td>精简图标版</td>
+</tr>
+<tr>
+<td>英雄区</td>
+<td>无</td>
+<td>徽章式</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 修改起始时间（博客创建日期）</span>
+<span>const</span> <span>BIRTH_DATE</span> <span>=</span> <span>new</span> <span>Date</span><span>(</span><span>&#x27;2020-03-15T00:00:00+08:00&#x27;</span><span>)</span><span>;</span>  <span>// 你的建站日</span>
+
+<span>// 改为显示&quot;本站已陪伴你&quot;（访客视角）</span>
+<span>const</span> <span>visitorFirstVisit</span> <span>=</span> <span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>&#x27;first_visit&#x27;</span><span>)</span><span>;</span>
+<span>const</span> <span>displayTime</span> <span>=</span> <span>visitorFirstVisit</span> 
+    ? <span>timeSince</span><span>(</span><span>new</span> <span>Date</span><span>(</span><span>visitorFirstVisit</span><span>)</span><span>)</span>  <span>// 个人视角</span>
+    : <span>timeSince</span><span>(</span><span>BIRTH_DATE</span><span>)</span><span>;</span>                  <span>// 站点视角</span></pre></div>
+<hr>
+<h3 id="heading-9"><code>Module 05</code> — Dark-mode Ripple 深色模式涟漪</h3>
+<div><pre><span>// 功能：主题切换时的视觉过渡效果</span>
+<span>// 原理：点击位置创建 radial-gradient 扩散动画</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>动画时长</td>
+<td>600ms</td>
+</tr>
+<tr>
+<td>缓动函数</td>
+<td><code>cubic-bezier(0.4, 0, 0.2, 1)</code></td>
+</tr>
+<tr>
+<td>覆盖范围</td>
+<td>全视口</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 改为从中心扩散（而非点击位置）</span>
+<span>const</span> <span>centerX</span> <span>=</span> <span>window</span><span>.</span><span>innerWidth</span> <span>/</span> <span>2</span><span>;</span>
+<span>const</span> <span>centerY</span> <span>=</span> <span>window</span><span>.</span><span>innerHeight</span> <span>/</span> <span>2</span><span>;</span>
+
+<span>// 添加声音反馈（配合 Module 07）</span>
+<span>ripple</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;animationstart&#x27;</span><span>,</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>playSound</span><span>(</span><span>&#x27;whoosh&#x27;</span><span>,</span> <span>0.3</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-10"><code>Module 06</code> — Static Background 静态背景</h3>
+<div><pre><span>// 功能：主题相关的背景图/渐变（v8移除粒子性能开销）</span>
+<span>// 替代方案：CSS 渐变 + 可选的轻量 SVG 纹理</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>背景类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sakura</code></td>
+<td>粉色渐变 + 花瓣纹理 SVG</td>
+</tr>
+<tr>
+<td><code>ocean</code></td>
+<td>深蓝渐变 + 波浪 SVG</td>
+</tr>
+<tr>
+<td><code>forest</code></td>
+<td>绿色渐变 + 叶脉纹理</td>
+</tr>
+<tr>
+<td><code>stardust</code></td>
+<td>深色渐变 + 星点 CSS</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加自定义纹理 */</span>
+[<span>data-theme</span><span>=</span><span>&quot;custom&quot;</span>] {
+    <span>--bg-gradient</span><span>:</span> <span>linear-gradient</span>(<span>135<span>deg</span></span><span>,</span> <span><span>#</span>667eea</span> <span>0<span>%</span></span><span>,</span> <span><span>#</span>764ba2</span> <span>100<span>%</span></span>);
+    <span>--bg-texture</span><span>:</span> <span>url</span>(<span>&quot;data:image/svg+xml,%3Csvg width=&#x27;60&#x27; height=&#x27;60&#x27;...&quot;</span>); <span>/* 内联 SVG */</span>
+}</pre></div>
+<hr>
+<h3 id="heading-11"><code>Module 07</code> — Web Audio SFX 音效系统</h3>
+<div><pre><span>// 功能：全站交互音效，基于 Web Audio API（非 HTML5 Audio）</span>
+<span>// 特点：零依赖、低延迟、可合成多种音色</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>音效ID</th>
+<th>触发场景</th>
+<th>音色类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>click</code></td>
+<td>按钮点击</td>
+<td>短促正弦波</td>
+</tr>
+<tr>
+<td><code>hover</code></td>
+<td>卡片悬停</td>
+<td>轻柔八度</td>
+</tr>
+<tr>
+<td><code>switch</code></td>
+<td>主题切换</td>
+<td>滑音效果</td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>操作成功</td>
+<td>和弦上升</td>
+</tr>
+<tr>
+<td><code>pop</code></td>
+<td>菜单展开</td>
+<td>气泡破裂</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>打字机（可选）</td>
+<td>机械键盘</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加新音效：页面滚动到特定区域的反馈</span>
+<span>function</span> <span>playScrollZoneSound</span><span>(</span><span>zoneName</span><span>)</span> <span>{</span>
+    <span>const</span> <span>frequencies</span> <span>=</span> <span>{</span>
+        <span>&#x27;hero&#x27;</span>: <span>523.25</span><span>,</span>      <span>// C5</span>
+        <span>&#x27;content&#x27;</span>: <span>659.25</span><span>,</span>   <span>// E5</span>
+        <span>&#x27;footer&#x27;</span>: <span>783.99</span>     <span>// G5</span>
+    <span>}</span><span>;</span>
+    <span>playTone</span><span>(</span><span>frequencies</span><span>[</span><span>zoneName</span><span>]</span><span>,</span> <span>&#x27;sine&#x27;</span><span>,</span> <span>0.15</span><span>,</span> <span>0.1</span><span>)</span><span>;</span>
+<span>}</span>
+
+<span>// 全局静音检测（系统偏好）</span>
+<span>if</span> <span>(</span><span>window</span><span>.</span><span>matchMedia</span><span>(</span><span>&#x27;(prefers-reduced-motion: reduce)&#x27;</span><span>)</span><span>.</span><span>matches</span><span>)</span> <span>{</span>
+    <span>audioContext</span><span>.</span><span>suspend</span><span>(</span><span>)</span><span>;</span>  <span>// 尊重用户系统设置</span>
+<span>}</span></pre></div>
+<hr>
+<h3 id="heading-12"><code>Module 08</code> — Click Sparks 点击火花</h3>
+<div><pre><span>// 功能：鼠标点击位置生成粒子爆发效果</span>
+<span>// 与 Module 16 樱花的区别：火花是瞬时爆发，樱花是持续环境</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>粒子数</td>
+<td>8-12</td>
+<td>随机</td>
+</tr>
+<tr>
+<td>颜色</td>
+<td>当前主题 accent</td>
+<td>动态继承</td>
+</tr>
+<tr>
+<td>生命周期</td>
+<td>600ms</td>
+<td>CSS 动画</td>
+</tr>
+<tr>
+<td>物理</td>
+<td>无重力</td>
+<td>纯扩散</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加重力效果（抛物线）</span>
+<span>spark</span><span>.</span><span>style</span><span>.</span><span>setProperty</span><span>(</span><span>&#x27;--gravity&#x27;</span><span>,</span> <span>`<span><span>${</span><span>Math</span><span>.</span><span>random</span><span>(</span><span>)</span> <span>*</span> <span>50</span> <span>+</span> <span>20</span><span>}</span></span>px`</span><span>)</span><span>;</span>
+
+<span>// CSS 配合</span>
+@<span>keyframes</span> <span>spark</span><span>-</span><span>fall</span><span></span> <span>{</span>
+    <span>0</span><span>%</span> <span>{</span> <span>transform</span>: <span>translate</span><span>(</span><span>0</span><span>,</span> <span>0</span><span>)</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span> <span>}</span>
+    <span>100</span><span>%</span> <span>{</span> <span>transform</span>: <span>translate</span><span>(</span><span>var</span><span>(</span><span>--</span><span>tx</span><span>)</span><span>,</span> <span>calc</span><span>(</span><span>var</span><span>(</span><span>--</span><span>ty</span><span>)</span> <span>+</span> <span>var</span><span>(</span><span>--</span><span>gravity</span><span>)</span><span>)</span><span>)</span> <span>scale</span><span>(</span><span>0</span><span>)</span><span>;</span> <span>}</span>
+<span>}</span>
+
+<span>// 右键特殊效果（爱心形状）</span>
+<span>document</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;contextmenu&#x27;</span><span>,</span> <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>createHeartBurst</span><span>(</span><span>e</span><span>.</span><span>clientX</span><span>,</span> <span>e</span><span>.</span><span>clientY</span><span>)</span><span>;</span>
+    <span>e</span><span>.</span><span>preventDefault</span><span>(</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-13"><code>Module 09</code> — Hero Cluster 英雄区集群</h3>
+<div><pre><span>// 功能：首页顶部核心信息展示区</span>
+<span>// 组成：头像(avatar) + 站点名(name) + 实时时钟(clock)</span></pre></div>
+<pre><code>布局结构：
+┌─────────────────────────┐
+│    ┌─────┐              │
+│    │ 😊  │  Luliy       │
+│    │avatar│  全栈开发者   │
+│    └─────┘  ──── 14:32  │
+│         [动态时钟]        │
+└─────────────────────────┘
+</code></pre>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 时钟改为多时区显示</span>
+<span>const</span> <span>clocks</span> <span>=</span> <span>[</span>
+    <span>{</span> <span>zone</span>: <span>&#x27;Asia/Shanghai&#x27;</span><span>,</span> <span>label</span>: <span>&#x27;北京&#x27;</span> <span>}</span><span>,</span>
+    <span>{</span> <span>zone</span>: <span>&#x27;America/New_York&#x27;</span><span>,</span> <span>label</span>: <span>&#x27;纽约&#x27;</span> <span>}</span><span>,</span>
+    <span>{</span> <span>zone</span>: <span>&#x27;Europe/London&#x27;</span><span>,</span> <span>label</span>: <span>&#x27;伦敦&#x27;</span> <span>}</span>
+<span>]</span><span>;</span>
+
+<span>// 头像添加状态指示（在线/忙碌/离线）</span>
+<span>const</span> <span>statusIndicator</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;div&#x27;</span><span>)</span><span>;</span>
+<span>statusIndicator</span><span>.</span><span>className</span> <span>=</span> <span>`status <span><span>${</span><span>getCurrentStatus</span><span>(</span><span>)</span><span>}</span></span>`</span><span>;</span> 
+<span>// CSS: .status.online { border-color: #00c853; }</span></pre></div>
+<hr>
+<h3 id="heading-14"><code>Module 10</code> — Hero Banner 首页滚动折叠横幅</h3>
+<div><pre><span>// 功能：滚动时英雄区的视差+折叠效果</span>
+<span>// 技术：scroll-driven animation (CSS) + JS fallback</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>滚动位置</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-100px</td>
+<td>正常显示，轻微视差</td>
+</tr>
+<tr>
+<td>100-300px</td>
+<td>高度压缩，元素淡出</td>
+</tr>
+<tr>
+<td>&gt;300px</td>
+<td>完全折叠为迷你导航栏</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 改为横向滚动触发（适用于横向布局网站）</span>
+<span>const</span> <span>scrollProgress</span> <span>=</span> <span>container</span><span>.</span><span>scrollLeft</span> <span>/</span> <span>(</span><span>container</span><span>.</span><span>scrollWidth</span> <span>-</span> <span>container</span><span>.</span><span>clientWidth</span><span>)</span><span>;</span>
+
+<span>// 添加毛玻璃强度随滚动变化</span>
+<span>const</span> <span>blurAmount</span> <span>=</span> <span>Math</span><span>.</span><span>min</span><span>(</span><span>scrollY</span> <span>/</span> <span>10</span><span>,</span> <span>20</span><span>)</span><span>;</span>
+<span>hero</span><span>.</span><span>style</span><span>.</span><span>backdropFilter</span> <span>=</span> <span>`blur(<span><span>${</span><span>blurAmount</span><span>}</span></span>px)`</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-15"><code>Module 11</code> — Tag Page Search Toolbar 标签页搜索工具栏</h3>
+<div><pre><span>// 功能：标签聚合页面的高级筛选</span>
+<span>// 特性：实时搜索、多标签交集筛选、排序切换</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>交互</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>搜索框</td>
+<td>输入即时过滤，debounce 150ms</td>
+</tr>
+<tr>
+<td>标签云</td>
+<td>点击添加/移除筛选条件</td>
+</tr>
+<tr>
+<td>排序</td>
+<td>时间/热度/字母</td>
+</tr>
+<tr>
+<td>视图</td>
+<td>网格/列表切换</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加正则搜索支持</span>
+<span>const</span> <span>isRegex</span> <span>=</span> <span>searchTerm</span><span>.</span><span>startsWith</span><span>(</span><span>&#x27;/&#x27;</span><span>)</span><span>;</span>
+<span>const</span> <span>pattern</span> <span>=</span> <span>isRegex</span> ? <span>new</span> <span>RegExp</span><span>(</span><span>searchTerm</span><span>.</span><span>slice</span><span>(</span><span>1</span><span>,</span> <span>-</span><span>1</span><span>)</span><span>,</span> <span>&#x27;i&#x27;</span><span>)</span> : <span>null</span><span>;</span>
+
+<span>// 添加搜索历史</span>
+<span>const</span> <span>searchHistory</span> <span>=</span> <span>JSON</span><span>.</span><span>parse</span><span>(</span><span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>&#x27;search_history&#x27;</span><span>)</span> <span>||</span> <span>&#x27;[]&#x27;</span><span>)</span><span>;</span>
+<span>// 显示最近5条，点击快速填充</span>
+
+<span>// 高级筛选：日期范围</span>
+<span>const</span> <span>dateRange</span> <span>=</span> <span>{</span>
+    <span>from</span>: <span>new</span> <span>Date</span><span>(</span><span>&#x27;2024-01-01&#x27;</span><span>)</span><span>,</span>
+    <span>to</span>: <span>new</span> <span>Date</span><span>(</span><span>)</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-16"><code>Module 12</code> — Image Lightbox 图片灯箱</h3>
+<div><pre><span>// 功能：文章内图片点击放大查看</span>
+<span>// 特性：手势支持、键盘导航、EXIF 信息展示</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单击</td>
+<td>打开灯箱</td>
+</tr>
+<tr>
+<td>滚轮</td>
+<td>缩放</td>
+</tr>
+<tr>
+<td>拖拽</td>
+<td>平移（放大后）</td>
+</tr>
+<tr>
+<td>←/→</td>
+<td>切换同组图片</td>
+</tr>
+<tr>
+<td>ESC</td>
+<td>关闭</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加图片对比模式（before/after）</span>
+<span>lightbox</span><span>.</span><span>enableCompare</span> <span>=</span> <span>(</span><span>img1</span><span>,</span> <span>img2</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>return</span> <span>new</span> <span>CompareSlider</span><span>(</span><span>img1</span><span>,</span> <span>img2</span><span>)</span><span>;</span>
+<span>}</span><span>;</span>
+
+<span>// 添加下载原图按钮</span>
+<span>const</span> <span>downloadBtn</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;a&#x27;</span><span>)</span><span>;</span>
+<span>downloadBtn</span><span>.</span><span>href</span> <span>=</span> <span>originalUrl</span><span>;</span>
+<span>downloadBtn</span><span>.</span><span>download</span> <span>=</span> <span>filename</span><span>;</span>
+<span>// 需要后端支持原图访问</span>
+
+<span>// 添加图片 OCR（调用 Tesseract.js）</span>
+<span>const</span> <span>ocrBtn</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;button&#x27;</span><span>)</span><span>;</span>
+<span>ocrBtn</span><span>.</span><span>onclick</span> <span>=</span> <span>async</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>result</span> <span>=</span> <span>await</span> <span>Tesseract</span><span>.</span><span>recognize</span><span>(</span><span>imgElement</span><span>)</span><span>;</span>
+    <span>showTextOverlay</span><span>(</span><span>result</span><span>.</span><span>data</span><span>.</span><span>text</span><span>)</span><span>;</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-17"><code>Module 13</code> — Floating Toolbar + Unified Sink 浮动工具栏</h3>
+<div><pre><span>// 功能：全局可访问的快捷操作中心</span>
+<span>// 4主题：每个主题有独立的工具栏配色和图标风格</span></pre></div>
+<pre><code>工具栏组成：
+┌────────────────────────────────┐
+│ [🎨主题] [🔤字体] [🔊声音] [⚙️] │  ← 常驻
+│         ▼ 展开更多              │
+│ [📑目录] [🔖收藏] [💬评论] [↑] │
+└────────────────────────────────┘
+         ↓
+    Unified Sink（统一收纳区）
+    所有展开面板在此层叠管理
+</code></pre>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加自定义快捷工具</span>
+<span>const</span> <span>customTools</span> <span>=</span> <span>[</span>
+    <span>{</span>
+        <span>id</span>: <span>&#x27;translate&#x27;</span><span>,</span>
+        <span>icon</span>: <span>&#x27;🌐&#x27;</span><span>,</span>
+        <span>action</span>: <span>(</span><span>)</span> <span>=&gt;</span> <span>toggleTranslateOverlay</span><span>(</span><span>)</span><span>,</span>
+        <span>shortcut</span>: <span>&#x27;KeyT&#x27;</span>
+    <span>}</span><span>,</span>
+    <span>{</span>
+        <span>id</span>: <span>&#x27;reader&#x27;</span><span>,</span>
+        <span>icon</span>: <span>&#x27;📖&#x27;</span><span>,</span>
+        <span>action</span>: <span>(</span><span>)</span> <span>=&gt;</span> <span>enterReaderMode</span><span>(</span><span>)</span><span>,</span>
+        <span>shortcut</span>: <span>&#x27;KeyR&#x27;</span>
+    <span>}</span>
+<span>]</span><span>;</span>
+
+<span>// 工具栏位置记忆</span>
+<span>const</span> <span>savedPosition</span> <span>=</span> <span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>&#x27;toolbar_pos&#x27;</span><span>)</span><span>;</span>
+<span>toolbar</span><span>.</span><span>style</span><span>.</span><span>left</span> <span>=</span> <span>savedPosition</span><span>?.</span><span>x</span> <span>||</span> <span>&#x27;auto&#x27;</span><span>;</span>
+<span>toolbar</span><span>.</span><span>style</span><span>.</span><span>right</span> <span>=</span> <span>&#x27;20px&#x27;</span><span>;</span>  <span>// 默认右侧</span></pre></div>
+<hr>
+<h3 id="heading-18"><code>Module 14</code> — Home Card Rebuild 首页卡片重构</h3>
+<div><pre><span>// 功能：文章列表的卡片式展示，v8 全新设计</span>
+<span>// 特性：悬停3D倾斜、图片懒加载、阅读时间估算</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>卡片元素</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>封面图</td>
+<td>aspect-ratio 16/10，懒加载 + 模糊占位</td>
+</tr>
+<tr>
+<td>分类标签</td>
+<td>左上角绝对定位</td>
+</tr>
+<tr>
+<td>标题</td>
+<td>2行截断，悬停展开</td>
+</tr>
+<tr>
+<td>摘要</td>
+<td>3行截断</td>
+</tr>
+<tr>
+<td>元信息</td>
+<td>日期 · 阅读时间 · 点赞数</td>
+</tr>
+<tr>
+<td>悬停效果</td>
+<td>3D tilt + 阴影扩散 + 图片缩放</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加阅读进度环（SVG）</span>
+<span>const</span> <span>progressRing</span> <span>=</span> <span>`</span>
+<span>&lt;svg class=&quot;progress-ring&quot; viewBox=&quot;0 0 36 36&quot;&gt;</span>
+<span>    &lt;path d=&quot;M18 2.0845...&quot; </span>
+<span>          stroke-dasharray=&quot;<span><span>${</span><span>readPercent</span><span>}</span></span>, 100&quot;/&gt;</span>
+<span>&lt;/svg&gt;`</span><span>;</span>
+
+<span>//  masonry 瀑布流布局</span>
+<span>const</span> <span>masonry</span> <span>=</span> <span>new</span> <span>Masonry</span><span>(</span><span>grid</span><span>,</span> <span>{</span>
+    <span>itemSelector</span>: <span>&#x27;.card&#x27;</span><span>,</span>
+    <span>columnWidth</span>: <span>&#x27;.card-sizer&#x27;</span><span>,</span>
+    <span>gutter</span>: <span>24</span>
+<span>}</span><span>)</span><span>;</span>
+
+<span>// 无限滚动替代分页</span>
+<span>const</span> <span>observer</span> <span>=</span> <span>new</span> <span>IntersectionObserver</span><span>(</span><span>(</span><span>entries</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>entries</span><span>[</span><span>0</span><span>]</span><span>.</span><span>isIntersecting</span> <span>&amp;&amp;</span> <span>loadMorePosts</span><span>(</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span>
+<span>observer</span><span>.</span><span>observe</span><span>(</span><span>sentinel</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-19"><code>Module 15</code> — macOS Code Block Strip macOS 风格代码块</h3>
+<div><pre><span>// 功能：仿 macOS Terminal 的代码展示</span>
+<span>// 组成：三色圆点 + 标题栏 + 行号 + 语法高亮 + 复制按钮</span></pre></div>
+<pre><code>┌─────────────────────────────┐  ← wrapper=&quot;code-window&quot;
+│ ● ● ●  filename.js          │  ← title bar (可选)
+├─────────────────────────────┤
+│ 1  │ const hello = &#x27;world&#x27;; │  ← line numbers + code
+│ 2  │ console.log(hello);    │
+│ 3  │                        │
+└─────────────────────────────┘
+      [📋]  ← 悬浮复制按钮
+</code></pre>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加语言图标</span>
+<span>const</span> <span>langIcons</span> <span>=</span> <span>{</span>
+    <span>&#x27;javascript&#x27;</span>: <span>&#x27;&lt;svg&gt;...&lt;/svg&gt;&#x27;</span><span>,</span>
+    <span>&#x27;python&#x27;</span>: <span>&#x27;&lt;svg&gt;...&lt;/svg&gt;&#x27;</span><span>,</span>
+    <span>&#x27;rust&#x27;</span>: <span>&#x27;&lt;svg&gt;...&lt;/svg&gt;&#x27;</span>
+<span>}</span><span>;</span>
+
+<span>// 添加代码执行（WebContainer 或 Pyodide）</span>
+<span>const</span> <span>runButton</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;button&#x27;</span><span>)</span><span>;</span>
+<span>runButton</span><span>.</span><span>onclick</span> <span>=</span> <span>async</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>result</span> <span>=</span> <span>await</span> <span>webcontainer</span><span>.</span><span>run</span><span>(</span><span>codeBlock</span><span>.</span><span>textContent</span><span>)</span><span>;</span>
+    <span>showOutput</span><span>(</span><span>result</span><span>)</span><span>;</span>
+<span>}</span><span>;</span>
+
+<span>// 添加 diff 高亮</span>
+<span>const</span> <span>diffColors</span> <span>=</span> <span>{</span>
+    <span>&#x27;+&#x27;</span>: <span>&#x27;var(--diff-add)&#x27;</span><span>,</span>
+    <span>&#x27;-&#x27;</span>: <span>&#x27;var(--diff-del)&#x27;</span><span>,</span>
+    <span>&#x27;@&#x27;</span>: <span>&#x27;var(--diff-meta)&#x27;</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-20"><code>Module 16</code> — Sakura Petals 樱花花瓣</h3>
+<div><pre><span>// 功能：全屏 Canvas 花瓣飘落动画（v8 性能优化版）</span>
+<span>// 与 v7 区别：使用 OffscreenCanvas + requestAnimationFrame 节流</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>最大花瓣数</td>
+<td>50（移动端 25）</td>
+</tr>
+<tr>
+<td>物理模拟</td>
+<td>风力 + 重力 + 旋转</td>
+</tr>
+<tr>
+<td>颜色</td>
+<td>主题关联（sakura=粉，ocean=蓝泡，forest=绿叶，stardust=星尘）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 根据季节自动切换</span>
+<span>const</span> <span>month</span> <span>=</span> <span>new</span> <span>Date</span><span>(</span><span>)</span><span>.</span><span>getMonth</span><span>(</span><span>)</span><span>;</span>
+<span>const</span> <span>seasonalEffects</span> <span>=</span> <span>{</span>
+    <span>2</span>: <span>&#x27;sakura&#x27;</span><span>,</span>    <span>// 3月春</span>
+    <span>5</span>: <span>&#x27;rain&#x27;</span><span>,</span>      <span>// 6月梅雨</span>
+    <span>8</span>: <span>&#x27;maple&#x27;</span><span>,</span>     <span>// 9月秋</span>
+    <span>11</span>: <span>&#x27;snow&#x27;</span>      <span>// 12月冬</span>
+<span>}</span><span>;</span>
+<span>setEffect</span><span>(</span><span>seasonalEffects</span><span>[</span><span>month</span><span>]</span> <span>||</span> <span>&#x27;none&#x27;</span><span>)</span><span>;</span>
+
+<span>// 鼠标交互：花瓣避让</span>
+<span>canvas</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;mousemove&#x27;</span><span>,</span> <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>petals</span><span>.</span><span>forEach</span><span>(</span><span>petal</span> <span>=&gt;</span> <span>{</span>
+        <span>const</span> <span>dx</span> <span>=</span> <span>petal</span><span>.</span><span>x</span> <span>-</span> <span>e</span><span>.</span><span>clientX</span><span>;</span>
+        <span>const</span> <span>dy</span> <span>=</span> <span>petal</span><span>.</span><span>y</span> <span>-</span> <span>e</span><span>.</span><span>clientY</span><span>;</span>
+        <span>const</span> <span>dist</span> <span>=</span> <span>Math</span><span>.</span><span>sqrt</span><span>(</span><span>dx</span><span>*</span><span>dx</span> <span>+</span> <span>dy</span><span>*</span><span>dy</span><span>)</span><span>;</span>
+        <span>if</span> <span>(</span><span>dist</span> <span>&lt;</span> <span>100</span><span>)</span> <span>{</span>
+            <span>petal</span><span>.</span><span>vx</span> <span>+=</span> <span>dx</span> <span>*</span> <span>0.01</span><span>;</span>
+            <span>petal</span><span>.</span><span>vy</span> <span>+=</span> <span>dy</span> <span>*</span> <span>0.01</span><span>;</span>
+        <span>}</span>
+    <span>}</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-21"><code>Module 17</code> — ArticleTOC Scroll-Spy + Back-to-Top 文章目录</h3>
+<div><pre><span>// 功能：文章页右侧/左侧浮动目录 + 滚动监听高亮</span>
+<span>// 双组件：TOC 导航 + 返回顶部按钮（智能显隐）</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>TOC 特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成源</td>
+<td>H2-H4 标题层级</td>
+</tr>
+<tr>
+<td>滚动监听</td>
+<td>IntersectionObserver，rootMargin 优化</td>
+</tr>
+<tr>
+<td>点击滚动</td>
+<td>smooth scroll，URL hash 更新</td>
+</tr>
+<tr>
+<td>折叠展开</td>
+<td>层级折叠，当前章节自动展开</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Back-to-Top</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>显示阈值</td>
+<td>滚动超过 500px</td>
+</tr>
+<tr>
+<td>进度环</td>
+<td>SVG 圆周表示阅读进度</td>
+</tr>
+<tr>
+<td>点击行为</td>
+<td>平滑回顶 + 可选确认</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// TOC 添加阅读时间估算</span>
+<span>const</span> <span>readingTime</span> <span>=</span> <span>Math</span><span>.</span><span>ceil</span><span>(</span><span>textLength</span> <span>/</span> <span>400</span><span>)</span><span>;</span> <span>// 400字/分钟</span>
+<span>tocHeader</span><span>.</span><span>innerHTML</span> <span>=</span> <span>`目录 · 约 <span><span>${</span><span>readingTime</span><span>}</span></span> 分钟`</span><span>;</span>
+
+<span>// Back-to-Top 添加章节快速跳转</span>
+<span>const</span> <span>quickJumps</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;div&#x27;</span><span>)</span><span>;</span>
+<span>quickJumps</span><span>.</span><span>innerHTML</span> <span>=</span> <span>`</span>
+<span>    &lt;button data-target=&quot;prev&quot;&gt;↑ 上一章&lt;/button&gt;</span>
+<span>    &lt;button data-target=&quot;next&quot;&gt;↓ 下一章&lt;/button&gt;</span>
+<span>`</span><span>;</span>
+
+<span>// 滚动方向感知：向下滚动隐藏 TOC，向上显示</span>
+<span>let</span> <span>lastScrollY</span> <span>=</span> <span>0</span><span>;</span>
+<span>window</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;scroll&#x27;</span><span>,</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>direction</span> <span>=</span> <span>window</span><span>.</span><span>scrollY</span> <span>&gt;</span> <span>lastScrollY</span> ? <span>&#x27;down&#x27;</span> : <span>&#x27;up&#x27;</span><span>;</span>
+    <span>toc</span><span>.</span><span>classList</span><span>.</span><span>toggle</span><span>(</span><span>&#x27;hidden&#x27;</span><span>,</span> <span>direction</span> <span>===</span> <span>&#x27;down&#x27;</span> <span>&amp;&amp;</span> <span>scrollY</span> <span>&gt;</span> <span>1000</span><span>)</span><span>;</span>
+    <span>lastScrollY</span> <span>=</span> <span>window</span><span>.</span><span>scrollY</span><span>;</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-22"><code>Module 18</code> — Mobile Nav Hamburger + Dropdown 移动端导航</h3>
+<div><pre><span>// 功能：小屏设备的响应式导航</span>
+<span>// 特性：手势滑动打开、焦点陷阱、ARIA 无障碍</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>断点</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&gt; 1024px</td>
+<td>水平导航栏，无汉堡</td>
+</tr>
+<tr>
+<td>768-1024px</td>
+<td>简化导航，可选汉堡</td>
+</tr>
+<tr>
+<td>&lt; 768px</td>
+<td>全屏抽屉导航</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加底部 Tab Bar（移动端 App 风格）</span>
+<span>const</span> <span>tabBar</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;nav&#x27;</span><span>)</span><span>;</span>
+<span>tabBar</span><span>.</span><span>className</span> <span>=</span> <span>&#x27;mobile-tab-bar&#x27;</span><span>;</span>
+<span>tabBar</span><span>.</span><span>innerHTML</span> <span>=</span> <span>`</span>
+<span>    &lt;a href=&quot;/&quot; <span><span>${</span><span>isActive</span><span>(</span><span>&#x27;/&#x27;</span><span>)</span><span>}</span></span>&gt;🏠 首页&lt;/a&gt;</span>
+<span>    &lt;a href=&quot;/tags&quot; <span><span>${</span><span>isActive</span><span>(</span><span>&#x27;/tags&#x27;</span><span>)</span><span>}</span></span>&gt;🏷️ 标签&lt;/a&gt;</span>
+<span>    &lt;a href=&quot;/search&quot; class=&quot;center-btn&quot;&gt;🔍&lt;/a&gt;</span>
+<span>    &lt;a href=&quot;/archive&quot; <span><span>${</span><span>isActive</span><span>(</span><span>&#x27;/archive&#x27;</span><span>)</span><span>}</span></span>&gt;📚 归档&lt;/a&gt;</span>
+<span>    &lt;a href=&quot;/about&quot; <span><span>${</span><span>isActive</span><span>(</span><span>&#x27;/about&#x27;</span><span>)</span><span>}</span></span>&gt;👤 我&lt;/a&gt;</span>
+<span>`</span><span>;</span>
+
+<span>// 手势：边缘右滑打开</span>
+<span>let</span> <span>touchStartX</span> <span>=</span> <span>0</span><span>;</span>
+<span>document</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;touchstart&#x27;</span><span>,</span> <span>e</span> <span>=&gt;</span> <span>touchStartX</span> <span>=</span> <span>e</span><span>.</span><span>touches</span><span>[</span><span>0</span><span>]</span><span>.</span><span>clientX</span><span>)</span><span>;</span>
+<span>document</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;touchend&#x27;</span><span>,</span> <span>e</span> <span>=&gt;</span> <span>{</span>
+    <span>if</span> <span>(</span><span>e</span><span>.</span><span>changedTouches</span><span>[</span><span>0</span><span>]</span><span>.</span><span>clientX</span> <span>-</span> <span>touchStartX</span> <span>&gt;</span> <span>100</span> <span>&amp;&amp;</span> <span>touchStartX</span> <span>&lt;</span> <span>30</span><span>)</span> <span>{</span>
+        <span>openDrawer</span><span>(</span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-23"><code>Module 19</code> — Search Overlay 搜索遮罩层</h3>
+<div><pre><span>// 功能：全站内容搜索，覆盖式 UI</span>
+<span>// 特性：快捷键唤起、本地索引、搜索结果高亮</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Cmd/Ctrl + K</code></td>
+<td>打开搜索</td>
+</tr>
+<tr>
+<td><code>ESC</code></td>
+<td>关闭</td>
+</tr>
+<tr>
+<td><code>↑/↓</code></td>
+<td>结果导航</td>
+</tr>
+<tr>
+<td><code>Enter</code></td>
+<td>打开选中</td>
+</tr>
+<tr>
+<td><code>Tab</code></td>
+<td>切换搜索范围</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 接入 Algolia 或 Meilisearch 实现全文搜索</span>
+<span>const</span> <span>searchClient</span> <span>=</span> <span>algoliasearch</span><span>(</span><span>&#x27;APP_ID&#x27;</span><span>,</span> <span>&#x27;API_KEY&#x27;</span><span>)</span><span>;</span>
+<span>const</span> <span>index</span> <span>=</span> <span>searchClient</span><span>.</span><span>initIndex</span><span>(</span><span>&#x27;posts&#x27;</span><span>)</span><span>;</span>
+
+<span>// 添加搜索建议（自动补全）</span>
+<span>const</span> <span>suggestions</span> <span>=</span> <span>await</span> <span>fetch</span><span>(</span><span>`/api/suggest?q=<span><span>${</span><span>encodeURIComponent</span><span>(</span><span>query</span><span>)</span><span>}</span></span>`</span><span>)</span><span>;</span>
+
+<span>// 搜索结果预览（上下文片段）</span>
+<span>const</span> <span>highlightResult</span> <span>=</span> <span>hit</span><span>.</span><span>_highlightResult</span><span>;</span>
+<span>const</span> <span>snippet</span> <span>=</span> <span>highlightResult</span><span>.</span><span>content</span><span>.</span><span>value</span><span>.</span><span>substring</span><span>(</span><span>0</span><span>,</span> <span>200</span><span>)</span> <span>+</span> <span>&#x27;...&#x27;</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-24"><code>Module 20</code> — Homepage Bottom Gallery Banner 首页底部画廊横幅</h3>
+<div><pre><span>// 功能：首页底部的图片展示墙，可链接到图集/相册</span>
+<span>// 布局：横向滚动或瀑布流</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scroll</code></td>
+<td>横向拖拽滚动，无限循环</td>
+</tr>
+<tr>
+<td><code>masonry</code></td>
+<td>瀑布流，点击放大</td>
+</tr>
+<tr>
+<td><code>carousel</code></td>
+<td>自动轮播，指示器导航</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 接入 Instagram/Flickr API 实时同步</span>
+<span>const</span> <span>feed</span> <span>=</span> <span>await</span> <span>fetch</span><span>(</span><span>`https://graph.instagram.com/me/media?fields=...`</span><span>)</span><span>;</span>
+
+<span>// 添加点赞交互</span>
+<span>galleryItem</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;dblclick&#x27;</span><span>,</span> <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>createHeartAnimation</span><span>(</span><span>e</span><span>.</span><span>clientX</span><span>,</span> <span>e</span><span>.</span><span>clientY</span><span>)</span><span>;</span>
+    <span>incrementLike</span><span>(</span><span>photoId</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span>
+
+<span>// 懒加载 + 模糊渐进</span>
+<span>const</span> <span>img</span> <span>=</span> <span>new</span> <span>Image</span><span>(</span><span>)</span><span>;</span>
+<span>img</span><span>.</span><span>src</span> <span>=</span> <span>thumbnailUrl</span><span>;</span>  <span>// 先加载模糊小图</span>
+<span>img</span><span>.</span><span>onload</span> <span>=</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>fullResImg</span><span>.</span><span>src</span> <span>=</span> <span>fullUrl</span><span>;</span>  <span>// 再加载高清图</span>
+    <span>fullResImg</span><span>.</span><span>classList</span><span>.</span><span>add</span><span>(</span><span>&#x27;loaded&#x27;</span><span>)</span><span>;</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-25"><code>Module 21</code> — Post Page Init 文章页初始化</h3>
+<div><pre><span>// 功能：文章页的模块组合调用</span>
+<span>// 执行顺序：语法高亮 → 图片处理 → TOC生成 → 相关文章 → 评论加载</span></pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加阅读进度保存（跨设备同步）</span>
+<span>const</span> <span>readingProgress</span> <span>=</span> <span>{</span>
+    <span>url</span>: <span>location</span><span>.</span><span>href</span><span>,</span>
+    <span>scrollPercent</span>: <span>0</span><span>,</span>
+    <span>timestamp</span>: <span>Date</span><span>.</span><span>now</span><span>(</span><span>)</span>
+<span>}</span><span>;</span>
+<span>syncToServer</span><span>(</span><span>readingProgress</span><span>)</span><span>;</span>  <span>// 或 localStorage</span>
+
+<span>// 返回时恢复位置</span>
+<span>window</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;load&#x27;</span><span>,</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>saved</span> <span>=</span> <span>await</span> <span>getProgress</span><span>(</span><span>location</span><span>.</span><span>href</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>saved</span> <span>&amp;&amp;</span> <span>saved</span><span>.</span><span>scrollPercent</span> <span>&lt;</span> <span>0.95</span><span>)</span> <span>{</span>
+        <span>window</span><span>.</span><span>scrollTo</span><span>(</span><span>0</span><span>,</span> <span>saved</span><span>.</span><span>scrollPercent</span> <span>*</span> <span>document</span><span>.</span><span>body</span><span>.</span><span>scrollHeight</span><span>)</span><span>;</span>
+        <span>showResumePrompt</span><span>(</span><span>saved</span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-26"><code>Module 22</code> — Index Page Init 首页初始化</h3>
+<div><pre><span>// 功能：首页的模块组合调用</span>
+<span>// 执行顺序：英雄区 → 卡片网格 → 分页/无限滚动 → 底部画廊</span></pre></div>
+<hr>
+<h3 id="heading-27"><code>Module 23</code> — Main Entry 主入口</h3>
+<div><pre><span>// 功能：路由分发 + 模块调度器</span>
+<span>// 根据页面类型（home/post/tag/archive）加载对应初始化模块</span></pre></div>
+<div><pre><span>// 路由映射表</span>
+<span>const</span> <span>ROUTES</span> <span>=</span> <span>{</span>
+    <span>&#x27;/&#x27;</span>: <span>[</span><span>&#x27;00&#x27;</span><span>,</span> <span>&#x27;01&#x27;</span><span>,</span> <span>&#x27;02&#x27;</span><span>,</span> <span>&#x27;03&#x27;</span><span>,</span> <span>&#x27;04&#x27;</span><span>,</span> <span>&#x27;06&#x27;</span><span>,</span> <span>&#x27;09&#x27;</span><span>,</span> <span>&#x27;10&#x27;</span><span>,</span> <span>&#x27;13&#x27;</span><span>,</span> <span>&#x27;14&#x27;</span><span>,</span> <span>&#x27;20&#x27;</span><span>,</span> <span>&#x27;23&#x27;</span><span>]</span><span>,</span>
+    <span>&#x27;/post/*&#x27;</span>: <span>[</span><span>&#x27;00&#x27;</span><span>,</span> <span>&#x27;01&#x27;</span><span>,</span> <span>&#x27;02&#x27;</span><span>,</span> <span>&#x27;03&#x27;</span><span>,</span> <span>&#x27;04&#x27;</span><span>,</span> <span>&#x27;06&#x27;</span><span>,</span> <span>&#x27;07&#x27;</span><span>,</span> <span>&#x27;08&#x27;</span><span>,</span> <span>&#x27;12&#x27;</span><span>,</span> <span>&#x27;15&#x27;</span><span>,</span> <span>&#x27;16&#x27;</span><span>,</span> <span>&#x27;17&#x27;</span><span>,</span> <span>&#x27;21&#x27;</span><span>,</span> <span>&#x27;23&#x27;</span><span>]</span><span>,</span>
+    <span>&#x27;/tag/*&#x27;</span>: <span>[</span><span>&#x27;00&#x27;</span><span>,</span> <span>&#x27;01&#x27;</span><span>,</span> <span>&#x27;02&#x27;</span><span>,</span> <span>&#x27;03&#x27;</span><span>,</span> <span>&#x27;04&#x27;</span><span>,</span> <span>&#x27;06&#x27;</span><span>,</span> <span>&#x27;11&#x27;</span><span>,</span> <span>&#x27;13&#x27;</span><span>,</span> <span>&#x27;23&#x27;</span><span>]</span><span>,</span>
+    <span>&#x27;/search&#x27;</span>: <span>[</span><span>&#x27;00&#x27;</span><span>,</span> <span>&#x27;01&#x27;</span><span>,</span> <span>&#x27;02&#x27;</span><span>,</span> <span>&#x27;03&#x27;</span><span>,</span> <span>&#x27;19&#x27;</span><span>,</span> <span>&#x27;23&#x27;</span><span>]</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h2 id="heading-28">三、CSS 区域详解</h2>
+<h3 id="heading-29"><code>Section 00</code> — Font Imports 字体导入</h3>
+<div><pre><span>/* 当前加载 */</span>
+<span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&amp;family=JetBrains+Mono&amp;display=swap&#x27;</span>);
+
+<span>/* 建议添加 */</span>
+<span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap&#x27;</span>); <span>/* 无衬线正文 */</span></pre></div>
+<hr>
+<h3 id="heading-30"><code>Section 01</code> — CSS Variables + Reset 变量与重置</h3>
+<div><pre><span>:</span><span>root</span> {
+    <span>/* 核心变量 */</span>
+    <span>--font-serif</span><span>:</span> <span>&#x27;Noto Serif SC&#x27;</span><span>,</span> serif;
+    <span>--font-sans</span><span>:</span> <span>&#x27;Noto Sans SC&#x27;</span><span>,</span> sans-serif;
+    <span>--font-mono</span><span>:</span> <span>&#x27;JetBrains Mono&#x27;</span><span>,</span> monospace;
+    
+    <span>/* 动态主题变量（由 JS 切换） */</span>
+    <span>--bg-primary</span><span>:</span> <span><span>#</span>faf7f5</span>;
+    <span>--bg-secondary</span><span>:</span> <span><span>#</span>f0ebe7</span>;
+    <span>--text-primary</span><span>:</span> <span><span>#</span>2c2420</span>;
+    <span>--text-secondary</span><span>:</span> <span><span>#</span>6b5e55</span>;
+    <span>--accent</span><span>:</span> <span><span>#</span>e8919c</span>;        <span>/* 主题色 */</span>
+    <span>--accent-hover</span><span>:</span> <span><span>#</span>d67a85</span>;  <span>/* 悬停态 */</span>
+    <span>--glass-bg</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.7</span>);
+    <span>--glass-border</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.3</span>);
+    
+    <span>/* 间距系统 */</span>
+    <span>--space-xs</span><span>:</span> <span>0.25<span>rem</span></span>;   <span>/* 4px */</span>
+    <span>--space-sm</span><span>:</span> <span>0.5<span>rem</span></span>;    <span>/* 8px */</span>
+    <span>--space-md</span><span>:</span> <span>1<span>rem</span></span>;      <span>/* 16px */</span>
+    <span>--space-lg</span><span>:</span> <span>1.5<span>rem</span></span>;    <span>/* 24px */</span>
+    <span>--space-xl</span><span>:</span> <span>2<span>rem</span></span>;      <span>/* 32px */</span>
+    <span>--space-2xl</span><span>:</span> <span>3<span>rem</span></span>;     <span>/* 48px */</span>
+    
+    <span>/* 圆角系统 */</span>
+    <span>--radius-sm</span><span>:</span> <span>4<span>px</span></span>;
+    <span>--radius-md</span><span>:</span> <span>8<span>px</span></span>;
+    <span>--radius-lg</span><span>:</span> <span>12<span>px</span></span>;
+    <span>--radius-xl</span><span>:</span> <span>16<span>px</span></span>;
+    <span>--radius-full</span><span>:</span> <span>9999<span>px</span></span>;
+    
+    <span>/* 阴影系统 */</span>
+    <span>--shadow-sm</span><span>:</span> <span>0</span> <span>1<span>px</span></span> <span>2<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.05</span>);
+    <span>--shadow-md</span><span>:</span> <span>0</span> <span>4<span>px</span></span> <span>6<span>px</span></span> <span>-1<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
+    <span>--shadow-lg</span><span>:</span> <span>0</span> <span>10<span>px</span></span> <span>15<span>px</span></span> <span>-3<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
+    <span>--shadow-glow</span><span>:</span> <span>0</span> <span>0</span> <span>20<span>px</span></span> <span>var</span>(<span>--accent-alpha</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-31"><code>Section 02</code> — Welcome Splash Overlay 欢迎闪屏样式</h3>
+<table>
+<thead>
+<tr>
+<th>类名</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.splash-overlay</code></td>
+<td>全屏固定层</td>
+</tr>
+<tr>
+<td><code>.splash-brand</code></td>
+<td>品牌文字容器</td>
+</tr>
+<tr>
+<td><code>.splash-progress</code></td>
+<td>底部进度条轨道</td>
+</tr>
+<tr>
+<td><code>.splash-progress-bar</code></td>
+<td>进度填充动画</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="heading-32"><code>Section 03</code> — Background Image 背景图</h3>
+<div><pre><span>/* 主题背景映射 */</span>
+[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
+    <span>--bg-image</span><span>:</span> <span>url</span>(<span>&#x27;/assets/bg-sakura.jpg&#x27;</span>);
+    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span>(<span>180<span>deg</span></span><span>,</span> <span>rgba</span>(<span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.9</span>) <span>0<span>%</span></span><span>,</span> <span>rgba</span>(<span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.6</span>) <span>100<span>%</span></span>);
+}
+
+[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
+    <span>--bg-image</span><span>:</span> <span>url</span>(<span>&#x27;/assets/bg-ocean.jpg&#x27;</span>);
+    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span>(<span>180<span>deg</span></span><span>,</span> <span>rgba</span>(<span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.9</span>) <span>0<span>%</span></span><span>,</span> <span>rgba</span>(<span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.6</span>) <span>100<span>%</span></span>);
+}</pre></div>
+<hr>
+<h3 id="heading-33"><code>Section 04</code> — Typography 排版</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>字体</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Day</td>
+<td><code>Noto Serif SC</code></td>
+<td>正文阅读，传统优雅</td>
+</tr>
+<tr>
+<td>Night</td>
+<td><code>Noto Sans SC</code></td>
+<td>暗色下更清晰</td>
+</tr>
+<tr>
+<td>代码</td>
+<td><code>JetBrains Mono</code></td>
+<td>等宽，连字支持</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="heading-34"><code>Section 05</code> — Navbar 导航栏</h3>
+<p><strong>Liquid Glass 效果</strong>：</p>
+<div><pre>.<span>navbar</span> {
+    <span>background</span><span>:</span> <span>var</span>(<span>--glass-bg</span>);
+    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>20<span>px</span></span>) <span>saturate</span>(<span>180<span>%</span></span>);
+    <span>-webkit-backdrop-filter</span><span>:</span> <span>blur</span>(<span>20<span>px</span></span>) <span>saturate</span>(<span>180<span>%</span></span>);
+    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--glass-border</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-35"><code>Section 06-07</code> — Hero 区域</h3>
+<p>见 Module 09-10 说明。</p>
+<hr>
+<h3 id="heading-36"><code>Section 08</code> — Progress Bar 进度条</h3>
+<div><pre>.<span>progress-bar</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>top</span><span>:</span> <span>0</span>;
+    <span>left</span><span>:</span> <span>0</span>;
+    <span>height</span><span>:</span> <span>3<span>px</span></span>;
+    <span>background</span><span>:</span> <span>linear-gradient</span>(<span>90<span>deg</span></span><span>,</span> <span>var</span>(<span>--accent</span>)<span>,</span> <span>var</span>(<span>--accent-hover</span>));
+    <span>z-index</span><span>:</span> <span>9999</span>;
+    <span>transition</span><span>:</span> width <span>0.1<span>s</span></span> linear;
+}</pre></div>
+<hr>
+<h3 id="heading-37"><code>Section 09</code> — Cards 卡片网格</h3>
+<div><pre>.<span>card-grid</span> {
+    <span>display</span><span>:</span> grid;
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(auto-fill<span>,</span> <span>minmax</span>(<span>min</span>(<span>100<span>%</span></span><span>,</span> <span>320<span>px</span></span>)<span>,</span> <span>1<span>fr</span></span>));
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+}
+
+<span>/* 3D 悬停效果 */</span>
+.<span>card</span> {
+    <span>transform-style</span><span>:</span> preserve-3d;
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> ease;
+}
+.<span>card</span><span>:</span><span>hover</span> {
+    <span>transform</span><span>:</span> <span>translateY</span>(<span>-4<span>px</span></span>) <span>rotateX</span>(<span>2<span>deg</span></span>) <span>rotateY</span>(<span>-2<span>deg</span></span>);
+}</pre></div>
+<hr>
+<h3 id="heading-38"><code>Section 10</code> — Date Badge 日期徽章</h3>
+<div><pre>.<span>date-badge</span> {
+    <span>display</span><span>:</span> inline-flex;
+    <span>align-items</span><span>:</span> center;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
+    <span>font-variant-numeric</span><span>:</span> tabular-nums;
+}</pre></div>
+<hr>
+<h3 id="heading-39"><code>Section 11</code> — Pinned Section 置顶区</h3>
+<div><pre>.<span>pinned-section</span> {
+    <span>position</span><span>:</span> relative;
+    <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>border-left</span><span>:</span> <span>3<span>px</span></span> solid <span>var</span>(<span>--accent</span>);
+}
+
+.<span>pinned-badge</span>::<span>before</span> {
+    <span>content</span><span>:</span> <span>&#x27;📌&#x27;</span>;
+    <span>margin-right</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-40"><code>Section 12</code> — Article Reading Panels 文章阅读面板（4主题）</h3>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>氛围</th>
+<th>背景</th>
+<th>文字</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sakura</code></td>
+<td>樱花纸质</td>
+<td>暖白微粉</td>
+<td>深褐</td>
+</tr>
+<tr>
+<td><code>ocean</code></td>
+<td>深海阅读</td>
+<td>深蓝灰</td>
+<td>浅青白</td>
+</tr>
+<tr>
+<td><code>forest</code></td>
+<td>森林晨读</td>
+<td>浅绿米</td>
+<td>深绿褐</td>
+</tr>
+<tr>
+<td><code>stardust</code></td>
+<td>星空夜读</td>
+<td>近黑</td>
+<td>星白</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="heading-41"><code>Section 13</code> — Code Blocks 代码块</h3>
+<p>见 Module 15。</p>
+<hr>
+<h3 id="heading-42"><code>Section 14</code> — Tables 表格</h3>
+<div><pre><span>/* 响应式表格：小屏横向滚动 */</span>
+.<span>table-wrapper</span> {
+    <span>overflow-x</span><span>:</span> auto;
+    <span>-webkit-overflow-scrolling</span><span>:</span> touch;
+}
+
+<span>/* 斑马纹 */</span>
+.<span>table-row</span><span>:</span><span>nth-child</span>(even) {
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-43"><code>Section 15</code> — Article Theme CSS Variables 文章主题变量</h3>
+<div><pre>[<span>data-article-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
+    <span>--article-bg</span><span>:</span> <span><span>#</span>fdfbf7</span>;
+    <span>--article-text</span><span>:</span> <span><span>#</span>3d322b</span>;
+    <span>--article-heading</span><span>:</span> <span><span>#</span>8b4513</span>;
+    <span>--article-link</span><span>:</span> <span><span>#</span>c45c6a</span>;
+    <span>--article-link-hover</span><span>:</span> <span><span>#</span>a03040</span>;
+    <span>--article-quote-border</span><span>:</span> <span><span>#</span>e8919c</span>;
+    <span>--article-code-bg</span><span>:</span> <span><span>#</span>f5f0eb</span>;
+}
+
+[<span>data-article-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
+    <span>--article-bg</span><span>:</span> <span><span>#</span>0f172a</span>;
+    <span>--article-text</span><span>:</span> <span><span>#</span>e2e8f0</span>;
+    <span>--article-heading</span><span>:</span> <span><span>#</span>7dd3fc</span>;
+    <span>--article-link</span><span>:</span> <span><span>#</span>38bdf8</span>;
+    <span>--article-link-hover</span><span>:</span> <span><span>#</span>0ea5e9</span>;
+    <span>--article-quote-border</span><span>:</span> <span><span>#</span>0ea5e9</span>;
+    <span>--article-code-bg</span><span>:</span> <span><span>#</span>1e293b</span>;
+}
+<span>/* ... forest, stardust 同理 */</span></pre></div>
+<hr>
+<h3 id="heading-44"><code>Section 16</code> — TOC Scroll-Spy 目录滚动监听</h3>
+<div><pre>.<span>toc-link</span> {
+    <span>display</span><span>:</span> block;
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
+    <span>border-left</span><span>:</span> <span>2<span>px</span></span> solid transparent;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
+}
+
+.<span>toc-link</span>.<span>active</span> {
+    <span>border-left-color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
+    <span>font-weight</span><span>:</span> <span>500</span>;
+}
+
+<span>/* 层级缩进 */</span>
+.<span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] { <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-lg</span>); }
+.<span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] { <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-xl</span>); }</pre></div>
+<hr>
+<h3 id="heading-45"><code>Section 17</code> — Floating Toolbar + Sink Menu</h3>
+<div><pre>.<span>floating-toolbar</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    <span>bottom</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
+    <span>display</span><span>:</span> flex;
+    <span>flex-direction</span><span>:</span> column;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-sm</span>);
+    <span>z-index</span><span>:</span> <span>100</span>;
+}
+
+<span>/* 展开动画 */</span>
+.<span>sink-panel</span> {
+    <span>transform-origin</span><span>:</span> bottom right;
+    <span>animation</span><span>:</span> sink-expand <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
+}
+
+<span>@keyframes</span> sink-expand {
+    <span>from</span> { <span>transform</span><span>:</span> <span>scale</span>(<span>0.8</span>); <span>opacity</span><span>:</span> <span>0</span>; }
+    <span>to</span> { <span>transform</span><span>:</span> <span>scale</span>(<span>1</span>); <span>opacity</span><span>:</span> <span>1</span>; }
+}</pre></div>
+<hr>
+<p>我来为您生成 <strong>Luliy Blog v8 完整技术说明书</strong>，涵盖所有模块、CSS 区域、JSON 配置及扩展建议。</p>
+<hr>
+<h1 id="heading-46">📘 Luliy Blog v8 完整技术说明书</h1>
+<h2 id="heading-47">目录</h2>
+<ol>
+<li><a href="https://blog.luliy.me/post/JS%20CSS%20-xiang-jie.html#%E4%B8%80%E6%9E%B6%E6%9E%84%E6%80%BB%E8%A7%88" rel="noopener noreferrer">架构总览</a></li>
+<li><a href="https://blog.luliy.me/post/JS%20CSS%20-xiang-jie.html#%E4%BA%8Cjs-%E6%A8%A1%E5%9D%97%E8%AF%A6%E8%A7%A3" rel="noopener noreferrer">JS 模块详解 (00-23)</a></li>
+<li><a href="https://blog.luliy.me/post/JS%20CSS%20-xiang-jie.html#%E4%B8%89css-%E5%8C%BA%E5%9F%9F%E8%AF%A6%E8%A7%A3" rel="noopener noreferrer">CSS 区域详解 (00-26)</a></li>
+<li><a href="https://blog.luliy.me/post/JS%20CSS%20-xiang-jie.html#%E5%9B%9Bjson-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6" rel="noopener noreferrer">JSON 配置文件</a></li>
+<li><a href="https://blog.luliy.me/post/JS%20CSS%20-xiang-jie.html#%E4%BA%94%E4%B8%BB%E9%A2%98%E7%B3%BB%E7%BB%9F%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90" rel="noopener noreferrer">主题系统深度解析</a></li>
+<li><a href="https://blog.luliy.me/post/JS%20CSS%20-xiang-jie.html#%E5%85%AD%E4%BF%AE%E6%94%B9%E6%8C%87%E5%8D%97" rel="noopener noreferrer">修改指南与最佳实践</a></li>
+<li><a href="https://blog.luliy.me/post/JS%20CSS%20-xiang-jie.html#%E4%B8%83%E6%89%A9%E5%B1%95%E5%8A%9F%E8%83%BD%E5%BB%BA%E8%AE%AE" rel="noopener noreferrer">扩展功能建议</a></li>
+</ol>
+<hr>
+<h2 id="heading-48">一、架构总览</h2>
+<pre><code>Luliy Blog v8
+├── 📁 js/
+│   └── main.js          # 24个模块，按序加载
+├── 📁 css/
+│   └── enhance.css      # 27个区域，主题驱动
+├── 📄 config.json       # 博客核心配置
+├── 📄 theme.json        # 主题预设（4主题）
+└── 📄 manifest.json     # PWA 配置
+</code></pre>
+<p><strong>设计哲学</strong>：模块化加载 → 主题变量驱动 → 渐进增强</p>
+<hr>
+<h2 id="heading-49">二、JS 模块详解</h2>
+<h3 id="heading-50"><code>Module 00</code> — Welcome Splash 欢迎闪屏</h3>
+<div><pre><span>// 功能：页面首次加载时的品牌展示动画</span>
+<span>// 触发：sessionStorage 控制，同会话只显示一次</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>触发条件</td>
+<td><code>sessionStorage.getItem(&#x27;visited&#x27;) !== &#x27;true&#x27;</code></td>
+</tr>
+<tr>
+<td>动画序列</td>
+<td>fadeIn → 品牌文字 → progress填充 → fadeOut</td>
+</tr>
+<tr>
+<td>阻断性</td>
+<td><strong>阻塞后续模块加载</strong>，动画完成后才执行 01-23</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 修改动画时长（默认 2500ms）</span>
+<span>const</span> <span>SPLASH_DURATION</span> <span>=</span> <span>3000</span><span>;</span>  <span>// 延长到3秒</span>
+
+<span>// 修改显示频率：每次刷新都显示</span>
+<span>// 删除或注释掉 sessionStorage 相关代码</span>
+
+<span>// 自定义品牌文字</span>
+<span>const</span> <span>BRAND_TEXT</span> <span>=</span> <span>&quot;Your Name&quot;</span><span>;</span>  <span>// 替换 &quot;Luliy&quot;</span></pre></div>
+<hr>
+<h3 id="heading-51"><code>Module 01</code> — localStorage Init 本地存储初始化</h3>
+<div><pre><span>// 功能：建立持久化配置层，所有用户偏好保存于此</span>
+<span>// 数据结构：{ theme, fontSize, reducedMotion, soundEnabled, ... }</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>存储键</th>
+<th>用途</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>luliy_theme</code></td>
+<td>当前主题ID</td>
+<td><code>&quot;sakura&quot;</code></td>
+</tr>
+<tr>
+<td><code>luliy_font</code></td>
+<td>字体缩放级别</td>
+<td><code>&quot;md&quot;</code></td>
+</tr>
+<tr>
+<td><code>luliy_motion</code></td>
+<td>减少动画偏好</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>luliy_sound</code></td>
+<td>音效开关</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>luliy_visited</code></td>
+<td>访问标记（splash用）</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 新增自定义配置项</span>
+<span>localStorage</span><span>.</span><span>setItem</span><span>(</span><span>&#x27;luliy_customGrid&#x27;</span><span>,</span> <span>&#x27;3&#x27;</span><span>)</span><span>;</span>  <span>// 新增：网格列数</span>
+
+<span>// 读取时</span>
+<span>const</span> <span>gridCols</span> <span>=</span> <span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>&#x27;luliy_customGrid&#x27;</span><span>)</span> <span>||</span> <span>&#x27;2&#x27;</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-52"><code>Module 02</code> — Progress Bar 进度条</h3>
+<div><pre><span>// 功能：顶部阅读进度指示器 + 页面加载进度</span>
+<span>// 双模式：loading（资源加载）| reading（滚动深度）</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>触发条件</th>
+<th>颜色来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loading</td>
+<td><code>document.readyState !== &#x27;complete&#x27;</code></td>
+<td><code>--accent</code></td>
+</tr>
+<tr>
+<td>Reading</td>
+<td>滚动事件</td>
+<td>当前主题主色</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 改为底部显示</span>
+<span>const</span> <span>progressBar</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;div&#x27;</span><span>)</span><span>;</span>
+<span>progressBar</span><span>.</span><span>style</span><span>.</span><span>top</span> <span>=</span> <span>&#x27;auto&#x27;</span><span>;</span>
+<span>progressBar</span><span>.</span><span>style</span><span>.</span><span>bottom</span> <span>=</span> <span>&#x27;0&#x27;</span><span>;</span>  <span>// 底部进度条</span>
+
+<span>// 添加缓冲动画效果</span>
+<span>progressBar</span><span>.</span><span>style</span><span>.</span><span>transition</span> <span>=</span> <span>&#x27;width 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94)&#x27;</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-53"><code>Module 03</code> — Dynamic Title 动态标题</h3>
+<div><pre><span>// 功能：标签页失焦时显示自定义消息，吸引用户回流</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>标题变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>页面可见</td>
+<td>原始标题 `&quot;文章标题</td>
+</tr>
+<tr>
+<td>页面隐藏</td>
+<td><code>&quot;(◍•ᴗ•◍) 快回来~&quot; + 原始标题</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 自定义失焦消息数组（随机轮换）</span>
+<span>const</span> <span>AWAY_MESSAGES</span> <span>=</span> <span>[</span>
+    <span>&quot;✨ 发现好文不看完吗？&quot;</span><span>,</span>
+    <span>&quot;🌸 樱花飘落中，等你回来&quot;</span><span>,</span>
+    <span>&quot;📚 知识正在冷却...&quot;</span><span>,</span>
+    <span>&quot;🎵 音乐暂停了&quot;</span>
+<span>]</span><span>;</span>
+
+<span>// 根据页面类型定制</span>
+<span>const</span> <span>isPostPage</span> <span>=</span> <span>location</span><span>.</span><span>pathname</span><span>.</span><span>includes</span><span>(</span><span>&#x27;/post/&#x27;</span><span>)</span><span>;</span>
+<span>const</span> <span>message</span> <span>=</span> <span>isPostPage</span> ? <span>&quot;📖 读一半呢，别走~&quot;</span> : <span>AWAY_MESSAGES</span><span>[</span><span>random</span><span>]</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-54"><code>Module 04</code> — Uptime Counter 运行时间计数器</h3>
+<div><pre><span>// 功能：显示博客自创建以来的运行时长</span>
+<span>// 格式：X年X月X日 X时X分X秒 | 或精简版</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>显示位置</th>
+<th>默认</th>
+<th>可选</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Footer</td>
+<td>完整格式</td>
+<td>精简图标版</td>
+</tr>
+<tr>
+<td>英雄区</td>
+<td>无</td>
+<td>徽章式</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 修改起始时间（博客创建日期）</span>
+<span>const</span> <span>BIRTH_DATE</span> <span>=</span> <span>new</span> <span>Date</span><span>(</span><span>&#x27;2020-03-15T00:00:00+08:00&#x27;</span><span>)</span><span>;</span>  <span>// 你的建站日</span>
+
+<span>// 改为显示&quot;本站已陪伴你&quot;（访客视角）</span>
+<span>const</span> <span>visitorFirstVisit</span> <span>=</span> <span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>&#x27;first_visit&#x27;</span><span>)</span><span>;</span>
+<span>const</span> <span>displayTime</span> <span>=</span> <span>visitorFirstVisit</span> 
+    ? <span>timeSince</span><span>(</span><span>new</span> <span>Date</span><span>(</span><span>visitorFirstVisit</span><span>)</span><span>)</span>  <span>// 个人视角</span>
+    : <span>timeSince</span><span>(</span><span>BIRTH_DATE</span><span>)</span><span>;</span>                  <span>// 站点视角</span></pre></div>
+<hr>
+<h3 id="heading-55"><code>Module 05</code> — Dark-mode Ripple 深色模式涟漪</h3>
+<div><pre><span>// 功能：主题切换时的视觉过渡效果</span>
+<span>// 原理：点击位置创建 radial-gradient 扩散动画</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>动画时长</td>
+<td>600ms</td>
+</tr>
+<tr>
+<td>缓动函数</td>
+<td><code>cubic-bezier(0.4, 0, 0.2, 1)</code></td>
+</tr>
+<tr>
+<td>覆盖范围</td>
+<td>全视口</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 改为从中心扩散（而非点击位置）</span>
+<span>const</span> <span>centerX</span> <span>=</span> <span>window</span><span>.</span><span>innerWidth</span> <span>/</span> <span>2</span><span>;</span>
+<span>const</span> <span>centerY</span> <span>=</span> <span>window</span><span>.</span><span>innerHeight</span> <span>/</span> <span>2</span><span>;</span>
+
+<span>// 添加声音反馈（配合 Module 07）</span>
+<span>ripple</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;animationstart&#x27;</span><span>,</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>playSound</span><span>(</span><span>&#x27;whoosh&#x27;</span><span>,</span> <span>0.3</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-56"><code>Module 06</code> — Static Background 静态背景</h3>
+<div><pre><span>// 功能：主题相关的背景图/渐变（v8移除粒子性能开销）</span>
+<span>// 替代方案：CSS 渐变 + 可选的轻量 SVG 纹理</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>背景类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sakura</code></td>
+<td>粉色渐变 + 花瓣纹理 SVG</td>
+</tr>
+<tr>
+<td><code>ocean</code></td>
+<td>深蓝渐变 + 波浪 SVG</td>
+</tr>
+<tr>
+<td><code>forest</code></td>
+<td>绿色渐变 + 叶脉纹理</td>
+</tr>
+<tr>
+<td><code>stardust</code></td>
+<td>深色渐变 + 星点 CSS</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加自定义纹理 */</span>
+[<span>data-theme</span><span>=</span><span>&quot;custom&quot;</span>] {
+    <span>--bg-gradient</span><span>:</span> <span>linear-gradient</span>(<span>135<span>deg</span></span><span>,</span> <span><span>#</span>667eea</span> <span>0<span>%</span></span><span>,</span> <span><span>#</span>764ba2</span> <span>100<span>%</span></span>);
+    <span>--bg-texture</span><span>:</span> <span>url</span>(<span>&quot;data:image/svg+xml,%3Csvg width=&#x27;60&#x27; height=&#x27;60&#x27;...&quot;</span>); <span>/* 内联 SVG */</span>
+}</pre></div>
+<hr>
+<h3 id="heading-57"><code>Module 07</code> — Web Audio SFX 音效系统</h3>
+<div><pre><span>// 功能：全站交互音效，基于 Web Audio API（非 HTML5 Audio）</span>
+<span>// 特点：零依赖、低延迟、可合成多种音色</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>音效ID</th>
+<th>触发场景</th>
+<th>音色类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>click</code></td>
+<td>按钮点击</td>
+<td>短促正弦波</td>
+</tr>
+<tr>
+<td><code>hover</code></td>
+<td>卡片悬停</td>
+<td>轻柔八度</td>
+</tr>
+<tr>
+<td><code>switch</code></td>
+<td>主题切换</td>
+<td>滑音效果</td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>操作成功</td>
+<td>和弦上升</td>
+</tr>
+<tr>
+<td><code>pop</code></td>
+<td>菜单展开</td>
+<td>气泡破裂</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>打字机（可选）</td>
+<td>机械键盘</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加新音效：页面滚动到特定区域的反馈</span>
+<span>function</span> <span>playScrollZoneSound</span><span>(</span><span>zoneName</span><span>)</span> <span>{</span>
+    <span>const</span> <span>frequencies</span> <span>=</span> <span>{</span>
+        <span>&#x27;hero&#x27;</span>: <span>523.25</span><span>,</span>      <span>// C5</span>
+        <span>&#x27;content&#x27;</span>: <span>659.25</span><span>,</span>   <span>// E5</span>
+        <span>&#x27;footer&#x27;</span>: <span>783.99</span>     <span>// G5</span>
+    <span>}</span><span>;</span>
+    <span>playTone</span><span>(</span><span>frequencies</span><span>[</span><span>zoneName</span><span>]</span><span>,</span> <span>&#x27;sine&#x27;</span><span>,</span> <span>0.15</span><span>,</span> <span>0.1</span><span>)</span><span>;</span>
+<span>}</span>
+
+<span>// 全局静音检测（系统偏好）</span>
+<span>if</span> <span>(</span><span>window</span><span>.</span><span>matchMedia</span><span>(</span><span>&#x27;(prefers-reduced-motion: reduce)&#x27;</span><span>)</span><span>.</span><span>matches</span><span>)</span> <span>{</span>
+    <span>audioContext</span><span>.</span><span>suspend</span><span>(</span><span>)</span><span>;</span>  <span>// 尊重用户系统设置</span>
+<span>}</span></pre></div>
+<hr>
+<h3 id="heading-58"><code>Module 08</code> — Click Sparks 点击火花</h3>
+<div><pre><span>// 功能：鼠标点击位置生成粒子爆发效果</span>
+<span>// 与 Module 16 樱花的区别：火花是瞬时爆发，樱花是持续环境</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>粒子数</td>
+<td>8-12</td>
+<td>随机</td>
+</tr>
+<tr>
+<td>颜色</td>
+<td>当前主题 accent</td>
+<td>动态继承</td>
+</tr>
+<tr>
+<td>生命周期</td>
+<td>600ms</td>
+<td>CSS 动画</td>
+</tr>
+<tr>
+<td>物理</td>
+<td>无重力</td>
+<td>纯扩散</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加重力效果（抛物线）</span>
+<span>spark</span><span>.</span><span>style</span><span>.</span><span>setProperty</span><span>(</span><span>&#x27;--gravity&#x27;</span><span>,</span> <span>`<span><span>${</span><span>Math</span><span>.</span><span>random</span><span>(</span><span>)</span> <span>*</span> <span>50</span> <span>+</span> <span>20</span><span>}</span></span>px`</span><span>)</span><span>;</span>
+
+<span>// CSS 配合</span>
+@<span>keyframes</span> <span>spark</span><span>-</span><span>fall</span><span></span> <span>{</span>
+    <span>0</span><span>%</span> <span>{</span> <span>transform</span>: <span>translate</span><span>(</span><span>0</span><span>,</span> <span>0</span><span>)</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span> <span>}</span>
+    <span>100</span><span>%</span> <span>{</span> <span>transform</span>: <span>translate</span><span>(</span><span>var</span><span>(</span><span>--</span><span>tx</span><span>)</span><span>,</span> <span>calc</span><span>(</span><span>var</span><span>(</span><span>--</span><span>ty</span><span>)</span> <span>+</span> <span>var</span><span>(</span><span>--</span><span>gravity</span><span>)</span><span>)</span><span>)</span> <span>scale</span><span>(</span><span>0</span><span>)</span><span>;</span> <span>}</span>
+<span>}</span>
+
+<span>// 右键特殊效果（爱心形状）</span>
+<span>document</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;contextmenu&#x27;</span><span>,</span> <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>createHeartBurst</span><span>(</span><span>e</span><span>.</span><span>clientX</span><span>,</span> <span>e</span><span>.</span><span>clientY</span><span>)</span><span>;</span>
+    <span>e</span><span>.</span><span>preventDefault</span><span>(</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-59"><code>Module 09</code> — Hero Cluster 英雄区集群</h3>
+<div><pre><span>// 功能：首页顶部核心信息展示区</span>
+<span>// 组成：头像(avatar) + 站点名(name) + 实时时钟(clock)</span></pre></div>
+<pre><code>布局结构：
+┌─────────────────────────┐
+│    ┌─────┐              │
+│    │ 😊  │  Luliy       │
+│    │avatar│  全栈开发者   │
+│    └─────┘  ──── 14:32  │
+│         [动态时钟]        │
+└─────────────────────────┘
+</code></pre>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 时钟改为多时区显示</span>
+<span>const</span> <span>clocks</span> <span>=</span> <span>[</span>
+    <span>{</span> <span>zone</span>: <span>&#x27;Asia/Shanghai&#x27;</span><span>,</span> <span>label</span>: <span>&#x27;北京&#x27;</span> <span>}</span><span>,</span>
+    <span>{</span> <span>zone</span>: <span>&#x27;America/New_York&#x27;</span><span>,</span> <span>label</span>: <span>&#x27;纽约&#x27;</span> <span>}</span><span>,</span>
+    <span>{</span> <span>zone</span>: <span>&#x27;Europe/London&#x27;</span><span>,</span> <span>label</span>: <span>&#x27;伦敦&#x27;</span> <span>}</span>
+<span>]</span><span>;</span>
+
+<span>// 头像添加状态指示（在线/忙碌/离线）</span>
+<span>const</span> <span>statusIndicator</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;div&#x27;</span><span>)</span><span>;</span>
+<span>statusIndicator</span><span>.</span><span>className</span> <span>=</span> <span>`status <span><span>${</span><span>getCurrentStatus</span><span>(</span><span>)</span><span>}</span></span>`</span><span>;</span> 
+<span>// CSS: .status.online { border-color: #00c853; }</span></pre></div>
+<hr>
+<h3 id="heading-60"><code>Module 10</code> — Hero Banner 首页滚动折叠横幅</h3>
+<div><pre><span>// 功能：滚动时英雄区的视差+折叠效果</span>
+<span>// 技术：scroll-driven animation (CSS) + JS fallback</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>滚动位置</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-100px</td>
+<td>正常显示，轻微视差</td>
+</tr>
+<tr>
+<td>100-300px</td>
+<td>高度压缩，元素淡出</td>
+</tr>
+<tr>
+<td>&gt;300px</td>
+<td>完全折叠为迷你导航栏</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 改为横向滚动触发（适用于横向布局网站）</span>
+<span>const</span> <span>scrollProgress</span> <span>=</span> <span>container</span><span>.</span><span>scrollLeft</span> <span>/</span> <span>(</span><span>container</span><span>.</span><span>scrollWidth</span> <span>-</span> <span>container</span><span>.</span><span>clientWidth</span><span>)</span><span>;</span>
+
+<span>// 添加毛玻璃强度随滚动变化</span>
+<span>const</span> <span>blurAmount</span> <span>=</span> <span>Math</span><span>.</span><span>min</span><span>(</span><span>scrollY</span> <span>/</span> <span>10</span><span>,</span> <span>20</span><span>)</span><span>;</span>
+<span>hero</span><span>.</span><span>style</span><span>.</span><span>backdropFilter</span> <span>=</span> <span>`blur(<span><span>${</span><span>blurAmount</span><span>}</span></span>px)`</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-61"><code>Module 11</code> — Tag Page Search Toolbar 标签页搜索工具栏</h3>
+<div><pre><span>// 功能：标签聚合页面的高级筛选</span>
+<span>// 特性：实时搜索、多标签交集筛选、排序切换</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>交互</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>搜索框</td>
+<td>输入即时过滤，debounce 150ms</td>
+</tr>
+<tr>
+<td>标签云</td>
+<td>点击添加/移除筛选条件</td>
+</tr>
+<tr>
+<td>排序</td>
+<td>时间/热度/字母</td>
+</tr>
+<tr>
+<td>视图</td>
+<td>网格/列表切换</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加正则搜索支持</span>
+<span>const</span> <span>isRegex</span> <span>=</span> <span>searchTerm</span><span>.</span><span>startsWith</span><span>(</span><span>&#x27;/&#x27;</span><span>)</span><span>;</span>
+<span>const</span> <span>pattern</span> <span>=</span> <span>isRegex</span> ? <span>new</span> <span>RegExp</span><span>(</span><span>searchTerm</span><span>.</span><span>slice</span><span>(</span><span>1</span><span>,</span> <span>-</span><span>1</span><span>)</span><span>,</span> <span>&#x27;i&#x27;</span><span>)</span> : <span>null</span><span>;</span>
+
+<span>// 添加搜索历史</span>
+<span>const</span> <span>searchHistory</span> <span>=</span> <span>JSON</span><span>.</span><span>parse</span><span>(</span><span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>&#x27;search_history&#x27;</span><span>)</span> <span>||</span> <span>&#x27;[]&#x27;</span><span>)</span><span>;</span>
+<span>// 显示最近5条，点击快速填充</span>
+
+<span>// 高级筛选：日期范围</span>
+<span>const</span> <span>dateRange</span> <span>=</span> <span>{</span>
+    <span>from</span>: <span>new</span> <span>Date</span><span>(</span><span>&#x27;2024-01-01&#x27;</span><span>)</span><span>,</span>
+    <span>to</span>: <span>new</span> <span>Date</span><span>(</span><span>)</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-62"><code>Module 12</code> — Image Lightbox 图片灯箱</h3>
+<div><pre><span>// 功能：文章内图片点击放大查看</span>
+<span>// 特性：手势支持、键盘导航、EXIF 信息展示</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单击</td>
+<td>打开灯箱</td>
+</tr>
+<tr>
+<td>滚轮</td>
+<td>缩放</td>
+</tr>
+<tr>
+<td>拖拽</td>
+<td>平移（放大后）</td>
+</tr>
+<tr>
+<td>←/→</td>
+<td>切换同组图片</td>
+</tr>
+<tr>
+<td>ESC</td>
+<td>关闭</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加图片对比模式（before/after）</span>
+<span>lightbox</span><span>.</span><span>enableCompare</span> <span>=</span> <span>(</span><span>img1</span><span>,</span> <span>img2</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>return</span> <span>new</span> <span>CompareSlider</span><span>(</span><span>img1</span><span>,</span> <span>img2</span><span>)</span><span>;</span>
+<span>}</span><span>;</span>
+
+<span>// 添加下载原图按钮</span>
+<span>const</span> <span>downloadBtn</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;a&#x27;</span><span>)</span><span>;</span>
+<span>downloadBtn</span><span>.</span><span>href</span> <span>=</span> <span>originalUrl</span><span>;</span>
+<span>downloadBtn</span><span>.</span><span>download</span> <span>=</span> <span>filename</span><span>;</span>
+<span>// 需要后端支持原图访问</span>
+
+<span>// 添加图片 OCR（调用 Tesseract.js）</span>
+<span>const</span> <span>ocrBtn</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;button&#x27;</span><span>)</span><span>;</span>
+<span>ocrBtn</span><span>.</span><span>onclick</span> <span>=</span> <span>async</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>result</span> <span>=</span> <span>await</span> <span>Tesseract</span><span>.</span><span>recognize</span><span>(</span><span>imgElement</span><span>)</span><span>;</span>
+    <span>showTextOverlay</span><span>(</span><span>result</span><span>.</span><span>data</span><span>.</span><span>text</span><span>)</span><span>;</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-63"><code>Module 13</code> — Floating Toolbar + Unified Sink 浮动工具栏</h3>
+<div><pre><span>// 功能：全局可访问的快捷操作中心</span>
+<span>// 4主题：每个主题有独立的工具栏配色和图标风格</span></pre></div>
+<pre><code>工具栏组成：
+┌────────────────────────────────┐
+│ [🎨主题] [🔤字体] [🔊声音] [⚙️] │  ← 常驻
+│         ▼ 展开更多              │
+│ [📑目录] [🔖收藏] [💬评论] [↑] │
+└────────────────────────────────┘
+         ↓
+    Unified Sink（统一收纳区）
+    所有展开面板在此层叠管理
+</code></pre>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加自定义快捷工具</span>
+<span>const</span> <span>customTools</span> <span>=</span> <span>[</span>
+    <span>{</span>
+        <span>id</span>: <span>&#x27;translate&#x27;</span><span>,</span>
+        <span>icon</span>: <span>&#x27;🌐&#x27;</span><span>,</span>
+        <span>action</span>: <span>(</span><span>)</span> <span>=&gt;</span> <span>toggleTranslateOverlay</span><span>(</span><span>)</span><span>,</span>
+        <span>shortcut</span>: <span>&#x27;KeyT&#x27;</span>
+    <span>}</span><span>,</span>
+    <span>{</span>
+        <span>id</span>: <span>&#x27;reader&#x27;</span><span>,</span>
+        <span>icon</span>: <span>&#x27;📖&#x27;</span><span>,</span>
+        <span>action</span>: <span>(</span><span>)</span> <span>=&gt;</span> <span>enterReaderMode</span><span>(</span><span>)</span><span>,</span>
+        <span>shortcut</span>: <span>&#x27;KeyR&#x27;</span>
+    <span>}</span>
+<span>]</span><span>;</span>
+
+<span>// 工具栏位置记忆</span>
+<span>const</span> <span>savedPosition</span> <span>=</span> <span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>&#x27;toolbar_pos&#x27;</span><span>)</span><span>;</span>
+<span>toolbar</span><span>.</span><span>style</span><span>.</span><span>left</span> <span>=</span> <span>savedPosition</span><span>?.</span><span>x</span> <span>||</span> <span>&#x27;auto&#x27;</span><span>;</span>
+<span>toolbar</span><span>.</span><span>style</span><span>.</span><span>right</span> <span>=</span> <span>&#x27;20px&#x27;</span><span>;</span>  <span>// 默认右侧</span></pre></div>
+<hr>
+<h3 id="heading-64"><code>Module 14</code> — Home Card Rebuild 首页卡片重构</h3>
+<div><pre><span>// 功能：文章列表的卡片式展示，v8 全新设计</span>
+<span>// 特性：悬停3D倾斜、图片懒加载、阅读时间估算</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>卡片元素</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>封面图</td>
+<td>aspect-ratio 16/10，懒加载 + 模糊占位</td>
+</tr>
+<tr>
+<td>分类标签</td>
+<td>左上角绝对定位</td>
+</tr>
+<tr>
+<td>标题</td>
+<td>2行截断，悬停展开</td>
+</tr>
+<tr>
+<td>摘要</td>
+<td>3行截断</td>
+</tr>
+<tr>
+<td>元信息</td>
+<td>日期 · 阅读时间 · 点赞数</td>
+</tr>
+<tr>
+<td>悬停效果</td>
+<td>3D tilt + 阴影扩散 + 图片缩放</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加阅读进度环（SVG）</span>
+<span>const</span> <span>progressRing</span> <span>=</span> <span>`</span>
+<span>&lt;svg class=&quot;progress-ring&quot; viewBox=&quot;0 0 36 36&quot;&gt;</span>
+<span>    &lt;path d=&quot;M18 2.0845...&quot; </span>
+<span>          stroke-dasharray=&quot;<span><span>${</span><span>readPercent</span><span>}</span></span>, 100&quot;/&gt;</span>
+<span>&lt;/svg&gt;`</span><span>;</span>
+
+<span>//  masonry 瀑布流布局</span>
+<span>const</span> <span>masonry</span> <span>=</span> <span>new</span> <span>Masonry</span><span>(</span><span>grid</span><span>,</span> <span>{</span>
+    <span>itemSelector</span>: <span>&#x27;.card&#x27;</span><span>,</span>
+    <span>columnWidth</span>: <span>&#x27;.card-sizer&#x27;</span><span>,</span>
+    <span>gutter</span>: <span>24</span>
+<span>}</span><span>)</span><span>;</span>
+
+<span>// 无限滚动替代分页</span>
+<span>const</span> <span>observer</span> <span>=</span> <span>new</span> <span>IntersectionObserver</span><span>(</span><span>(</span><span>entries</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>entries</span><span>[</span><span>0</span><span>]</span><span>.</span><span>isIntersecting</span> <span>&amp;&amp;</span> <span>loadMorePosts</span><span>(</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span>
+<span>observer</span><span>.</span><span>observe</span><span>(</span><span>sentinel</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-65"><code>Module 15</code> — macOS Code Block Strip macOS 风格代码块</h3>
+<div><pre><span>// 功能：仿 macOS Terminal 的代码展示</span>
+<span>// 组成：三色圆点 + 标题栏 + 行号 + 语法高亮 + 复制按钮</span></pre></div>
+<pre><code>┌─────────────────────────────┐  ← wrapper=&quot;code-window&quot;
+│ ● ● ●  filename.js          │  ← title bar (可选)
+├─────────────────────────────┤
+│ 1  │ const hello = &#x27;world&#x27;; │  ← line numbers + code
+│ 2  │ console.log(hello);    │
+│ 3  │                        │
+└─────────────────────────────┘
+      [📋]  ← 悬浮复制按钮
+</code></pre>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加语言图标</span>
+<span>const</span> <span>langIcons</span> <span>=</span> <span>{</span>
+    <span>&#x27;javascript&#x27;</span>: <span>&#x27;&lt;svg&gt;...&lt;/svg&gt;&#x27;</span><span>,</span>
+    <span>&#x27;python&#x27;</span>: <span>&#x27;&lt;svg&gt;...&lt;/svg&gt;&#x27;</span><span>,</span>
+    <span>&#x27;rust&#x27;</span>: <span>&#x27;&lt;svg&gt;...&lt;/svg&gt;&#x27;</span>
+<span>}</span><span>;</span>
+
+<span>// 添加代码执行（WebContainer 或 Pyodide）</span>
+<span>const</span> <span>runButton</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;button&#x27;</span><span>)</span><span>;</span>
+<span>runButton</span><span>.</span><span>onclick</span> <span>=</span> <span>async</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>result</span> <span>=</span> <span>await</span> <span>webcontainer</span><span>.</span><span>run</span><span>(</span><span>codeBlock</span><span>.</span><span>textContent</span><span>)</span><span>;</span>
+    <span>showOutput</span><span>(</span><span>result</span><span>)</span><span>;</span>
+<span>}</span><span>;</span>
+
+<span>// 添加 diff 高亮</span>
+<span>const</span> <span>diffColors</span> <span>=</span> <span>{</span>
+    <span>&#x27;+&#x27;</span>: <span>&#x27;var(--diff-add)&#x27;</span><span>,</span>
+    <span>&#x27;-&#x27;</span>: <span>&#x27;var(--diff-del)&#x27;</span><span>,</span>
+    <span>&#x27;@&#x27;</span>: <span>&#x27;var(--diff-meta)&#x27;</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-66"><code>Module 16</code> — Sakura Petals 樱花花瓣</h3>
+<div><pre><span>// 功能：全屏 Canvas 花瓣飘落动画（v8 性能优化版）</span>
+<span>// 与 v7 区别：使用 OffscreenCanvas + requestAnimationFrame 节流</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>最大花瓣数</td>
+<td>50（移动端 25）</td>
+</tr>
+<tr>
+<td>物理模拟</td>
+<td>风力 + 重力 + 旋转</td>
+</tr>
+<tr>
+<td>颜色</td>
+<td>主题关联（sakura=粉，ocean=蓝泡，forest=绿叶，stardust=星尘）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 根据季节自动切换</span>
+<span>const</span> <span>month</span> <span>=</span> <span>new</span> <span>Date</span><span>(</span><span>)</span><span>.</span><span>getMonth</span><span>(</span><span>)</span><span>;</span>
+<span>const</span> <span>seasonalEffects</span> <span>=</span> <span>{</span>
+    <span>2</span>: <span>&#x27;sakura&#x27;</span><span>,</span>    <span>// 3月春</span>
+    <span>5</span>: <span>&#x27;rain&#x27;</span><span>,</span>      <span>// 6月梅雨</span>
+    <span>8</span>: <span>&#x27;maple&#x27;</span><span>,</span>     <span>// 9月秋</span>
+    <span>11</span>: <span>&#x27;snow&#x27;</span>      <span>// 12月冬</span>
+<span>}</span><span>;</span>
+<span>setEffect</span><span>(</span><span>seasonalEffects</span><span>[</span><span>month</span><span>]</span> <span>||</span> <span>&#x27;none&#x27;</span><span>)</span><span>;</span>
+
+<span>// 鼠标交互：花瓣避让</span>
+<span>canvas</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;mousemove&#x27;</span><span>,</span> <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>petals</span><span>.</span><span>forEach</span><span>(</span><span>petal</span> <span>=&gt;</span> <span>{</span>
+        <span>const</span> <span>dx</span> <span>=</span> <span>petal</span><span>.</span><span>x</span> <span>-</span> <span>e</span><span>.</span><span>clientX</span><span>;</span>
+        <span>const</span> <span>dy</span> <span>=</span> <span>petal</span><span>.</span><span>y</span> <span>-</span> <span>e</span><span>.</span><span>clientY</span><span>;</span>
+        <span>const</span> <span>dist</span> <span>=</span> <span>Math</span><span>.</span><span>sqrt</span><span>(</span><span>dx</span><span>*</span><span>dx</span> <span>+</span> <span>dy</span><span>*</span><span>dy</span><span>)</span><span>;</span>
+        <span>if</span> <span>(</span><span>dist</span> <span>&lt;</span> <span>100</span><span>)</span> <span>{</span>
+            <span>petal</span><span>.</span><span>vx</span> <span>+=</span> <span>dx</span> <span>*</span> <span>0.01</span><span>;</span>
+            <span>petal</span><span>.</span><span>vy</span> <span>+=</span> <span>dy</span> <span>*</span> <span>0.01</span><span>;</span>
+        <span>}</span>
+    <span>}</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-67"><code>Module 17</code> — ArticleTOC Scroll-Spy + Back-to-Top 文章目录</h3>
+<div><pre><span>// 功能：文章页右侧/左侧浮动目录 + 滚动监听高亮</span>
+<span>// 双组件：TOC 导航 + 返回顶部按钮（智能显隐）</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>TOC 特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成源</td>
+<td>H2-H4 标题层级</td>
+</tr>
+<tr>
+<td>滚动监听</td>
+<td>IntersectionObserver，rootMargin 优化</td>
+</tr>
+<tr>
+<td>点击滚动</td>
+<td>smooth scroll，URL hash 更新</td>
+</tr>
+<tr>
+<td>折叠展开</td>
+<td>层级折叠，当前章节自动展开</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Back-to-Top</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>显示阈值</td>
+<td>滚动超过 500px</td>
+</tr>
+<tr>
+<td>进度环</td>
+<td>SVG 圆周表示阅读进度</td>
+</tr>
+<tr>
+<td>点击行为</td>
+<td>平滑回顶 + 可选确认</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// TOC 添加阅读时间估算</span>
+<span>const</span> <span>readingTime</span> <span>=</span> <span>Math</span><span>.</span><span>ceil</span><span>(</span><span>textLength</span> <span>/</span> <span>400</span><span>)</span><span>;</span> <span>// 400字/分钟</span>
+<span>tocHeader</span><span>.</span><span>innerHTML</span> <span>=</span> <span>`目录 · 约 <span><span>${</span><span>readingTime</span><span>}</span></span> 分钟`</span><span>;</span>
+
+<span>// Back-to-Top 添加章节快速跳转</span>
+<span>const</span> <span>quickJumps</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;div&#x27;</span><span>)</span><span>;</span>
+<span>quickJumps</span><span>.</span><span>innerHTML</span> <span>=</span> <span>`</span>
+<span>    &lt;button data-target=&quot;prev&quot;&gt;↑ 上一章&lt;/button&gt;</span>
+<span>    &lt;button data-target=&quot;next&quot;&gt;↓ 下一章&lt;/button&gt;</span>
+<span>`</span><span>;</span>
+
+<span>// 滚动方向感知：向下滚动隐藏 TOC，向上显示</span>
+<span>let</span> <span>lastScrollY</span> <span>=</span> <span>0</span><span>;</span>
+<span>window</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;scroll&#x27;</span><span>,</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>direction</span> <span>=</span> <span>window</span><span>.</span><span>scrollY</span> <span>&gt;</span> <span>lastScrollY</span> ? <span>&#x27;down&#x27;</span> : <span>&#x27;up&#x27;</span><span>;</span>
+    <span>toc</span><span>.</span><span>classList</span><span>.</span><span>toggle</span><span>(</span><span>&#x27;hidden&#x27;</span><span>,</span> <span>direction</span> <span>===</span> <span>&#x27;down&#x27;</span> <span>&amp;&amp;</span> <span>scrollY</span> <span>&gt;</span> <span>1000</span><span>)</span><span>;</span>
+    <span>lastScrollY</span> <span>=</span> <span>window</span><span>.</span><span>scrollY</span><span>;</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-68"><code>Module 18</code> — Mobile Nav Hamburger + Dropdown 移动端导航</h3>
+<div><pre><span>// 功能：小屏设备的响应式导航</span>
+<span>// 特性：手势滑动打开、焦点陷阱、ARIA 无障碍</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>断点</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&gt; 1024px</td>
+<td>水平导航栏，无汉堡</td>
+</tr>
+<tr>
+<td>768-1024px</td>
+<td>简化导航，可选汉堡</td>
+</tr>
+<tr>
+<td>&lt; 768px</td>
+<td>全屏抽屉导航</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加底部 Tab Bar（移动端 App 风格）</span>
+<span>const</span> <span>tabBar</span> <span>=</span> <span>document</span><span>.</span><span>createElement</span><span>(</span><span>&#x27;nav&#x27;</span><span>)</span><span>;</span>
+<span>tabBar</span><span>.</span><span>className</span> <span>=</span> <span>&#x27;mobile-tab-bar&#x27;</span><span>;</span>
+<span>tabBar</span><span>.</span><span>innerHTML</span> <span>=</span> <span>`</span>
+<span>    &lt;a href=&quot;/&quot; <span><span>${</span><span>isActive</span><span>(</span><span>&#x27;/&#x27;</span><span>)</span><span>}</span></span>&gt;🏠 首页&lt;/a&gt;</span>
+<span>    &lt;a href=&quot;/tags&quot; <span><span>${</span><span>isActive</span><span>(</span><span>&#x27;/tags&#x27;</span><span>)</span><span>}</span></span>&gt;🏷️ 标签&lt;/a&gt;</span>
+<span>    &lt;a href=&quot;/search&quot; class=&quot;center-btn&quot;&gt;🔍&lt;/a&gt;</span>
+<span>    &lt;a href=&quot;/archive&quot; <span><span>${</span><span>isActive</span><span>(</span><span>&#x27;/archive&#x27;</span><span>)</span><span>}</span></span>&gt;📚 归档&lt;/a&gt;</span>
+<span>    &lt;a href=&quot;/about&quot; <span><span>${</span><span>isActive</span><span>(</span><span>&#x27;/about&#x27;</span><span>)</span><span>}</span></span>&gt;👤 我&lt;/a&gt;</span>
+<span>`</span><span>;</span>
+
+<span>// 手势：边缘右滑打开</span>
+<span>let</span> <span>touchStartX</span> <span>=</span> <span>0</span><span>;</span>
+<span>document</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;touchstart&#x27;</span><span>,</span> <span>e</span> <span>=&gt;</span> <span>touchStartX</span> <span>=</span> <span>e</span><span>.</span><span>touches</span><span>[</span><span>0</span><span>]</span><span>.</span><span>clientX</span><span>)</span><span>;</span>
+<span>document</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;touchend&#x27;</span><span>,</span> <span>e</span> <span>=&gt;</span> <span>{</span>
+    <span>if</span> <span>(</span><span>e</span><span>.</span><span>changedTouches</span><span>[</span><span>0</span><span>]</span><span>.</span><span>clientX</span> <span>-</span> <span>touchStartX</span> <span>&gt;</span> <span>100</span> <span>&amp;&amp;</span> <span>touchStartX</span> <span>&lt;</span> <span>30</span><span>)</span> <span>{</span>
+        <span>openDrawer</span><span>(</span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-69"><code>Module 19</code> — Search Overlay 搜索遮罩层</h3>
+<div><pre><span>// 功能：全站内容搜索，覆盖式 UI</span>
+<span>// 特性：快捷键唤起、本地索引、搜索结果高亮</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Cmd/Ctrl + K</code></td>
+<td>打开搜索</td>
+</tr>
+<tr>
+<td><code>ESC</code></td>
+<td>关闭</td>
+</tr>
+<tr>
+<td><code>↑/↓</code></td>
+<td>结果导航</td>
+</tr>
+<tr>
+<td><code>Enter</code></td>
+<td>打开选中</td>
+</tr>
+<tr>
+<td><code>Tab</code></td>
+<td>切换搜索范围</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 接入 Algolia 或 Meilisearch 实现全文搜索</span>
+<span>const</span> <span>searchClient</span> <span>=</span> <span>algoliasearch</span><span>(</span><span>&#x27;APP_ID&#x27;</span><span>,</span> <span>&#x27;API_KEY&#x27;</span><span>)</span><span>;</span>
+<span>const</span> <span>index</span> <span>=</span> <span>searchClient</span><span>.</span><span>initIndex</span><span>(</span><span>&#x27;posts&#x27;</span><span>)</span><span>;</span>
+
+<span>// 添加搜索建议（自动补全）</span>
+<span>const</span> <span>suggestions</span> <span>=</span> <span>await</span> <span>fetch</span><span>(</span><span>`/api/suggest?q=<span><span>${</span><span>encodeURIComponent</span><span>(</span><span>query</span><span>)</span><span>}</span></span>`</span><span>)</span><span>;</span>
+
+<span>// 搜索结果预览（上下文片段）</span>
+<span>const</span> <span>highlightResult</span> <span>=</span> <span>hit</span><span>.</span><span>_highlightResult</span><span>;</span>
+<span>const</span> <span>snippet</span> <span>=</span> <span>highlightResult</span><span>.</span><span>content</span><span>.</span><span>value</span><span>.</span><span>substring</span><span>(</span><span>0</span><span>,</span> <span>200</span><span>)</span> <span>+</span> <span>&#x27;...&#x27;</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-70"><code>Module 20</code> — Homepage Bottom Gallery Banner 首页底部画廊横幅</h3>
+<div><pre><span>// 功能：首页底部的图片展示墙，可链接到图集/相册</span>
+<span>// 布局：横向滚动或瀑布流</span></pre></div>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scroll</code></td>
+<td>横向拖拽滚动，无限循环</td>
+</tr>
+<tr>
+<td><code>masonry</code></td>
+<td>瀑布流，点击放大</td>
+</tr>
+<tr>
+<td><code>carousel</code></td>
+<td>自动轮播，指示器导航</td>
+</tr>
+</tbody>
+</table>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 接入 Instagram/Flickr API 实时同步</span>
+<span>const</span> <span>feed</span> <span>=</span> <span>await</span> <span>fetch</span><span>(</span><span>`https://graph.instagram.com/me/media?fields=...`</span><span>)</span><span>;</span>
+
+<span>// 添加点赞交互</span>
+<span>galleryItem</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;dblclick&#x27;</span><span>,</span> <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>createHeartAnimation</span><span>(</span><span>e</span><span>.</span><span>clientX</span><span>,</span> <span>e</span><span>.</span><span>clientY</span><span>)</span><span>;</span>
+    <span>incrementLike</span><span>(</span><span>photoId</span><span>)</span><span>;</span>
+<span>}</span><span>)</span><span>;</span>
+
+<span>// 懒加载 + 模糊渐进</span>
+<span>const</span> <span>img</span> <span>=</span> <span>new</span> <span>Image</span><span>(</span><span>)</span><span>;</span>
+<span>img</span><span>.</span><span>src</span> <span>=</span> <span>thumbnailUrl</span><span>;</span>  <span>// 先加载模糊小图</span>
+<span>img</span><span>.</span><span>onload</span> <span>=</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>fullResImg</span><span>.</span><span>src</span> <span>=</span> <span>fullUrl</span><span>;</span>  <span>// 再加载高清图</span>
+    <span>fullResImg</span><span>.</span><span>classList</span><span>.</span><span>add</span><span>(</span><span>&#x27;loaded&#x27;</span><span>)</span><span>;</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-71"><code>Module 21</code> — Post Page Init 文章页初始化</h3>
+<div><pre><span>// 功能：文章页的模块组合调用</span>
+<span>// 执行顺序：语法高亮 → 图片处理 → TOC生成 → 相关文章 → 评论加载</span></pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>// 添加阅读进度保存（跨设备同步）</span>
+<span>const</span> <span>readingProgress</span> <span>=</span> <span>{</span>
+    <span>url</span>: <span>location</span><span>.</span><span>href</span><span>,</span>
+    <span>scrollPercent</span>: <span>0</span><span>,</span>
+    <span>timestamp</span>: <span>Date</span><span>.</span><span>now</span><span>(</span><span>)</span>
+<span>}</span><span>;</span>
+<span>syncToServer</span><span>(</span><span>readingProgress</span><span>)</span><span>;</span>  <span>// 或 localStorage</span>
+
+<span>// 返回时恢复位置</span>
+<span>window</span><span>.</span><span>addEventListener</span><span>(</span><span>&#x27;load&#x27;</span><span>,</span> <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>saved</span> <span>=</span> <span>await</span> <span>getProgress</span><span>(</span><span>location</span><span>.</span><span>href</span><span>)</span><span>;</span>
+    <span>if</span> <span>(</span><span>saved</span> <span>&amp;&amp;</span> <span>saved</span><span>.</span><span>scrollPercent</span> <span>&lt;</span> <span>0.95</span><span>)</span> <span>{</span>
+        <span>window</span><span>.</span><span>scrollTo</span><span>(</span><span>0</span><span>,</span> <span>saved</span><span>.</span><span>scrollPercent</span> <span>*</span> <span>document</span><span>.</span><span>body</span><span>.</span><span>scrollHeight</span><span>)</span><span>;</span>
+        <span>showResumePrompt</span><span>(</span><span>saved</span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span><span>)</span><span>;</span></pre></div>
+<hr>
+<h3 id="heading-72"><code>Module 22</code> — Index Page Init 首页初始化</h3>
+<div><pre><span>// 功能：首页的模块组合调用</span>
+<span>// 执行顺序：英雄区 → 卡片网格 → 分页/无限滚动 → 底部画廊</span></pre></div>
+<hr>
+<h3 id="heading-73"><code>Module 23</code> — Main Entry 主入口</h3>
+<div><pre><span>// 功能：路由分发 + 模块调度器</span>
+<span>// 根据页面类型（home/post/tag/archive）加载对应初始化模块</span></pre></div>
+<div><pre><span>// 路由映射表</span>
+<span>const</span> <span>ROUTES</span> <span>=</span> <span>{</span>
+    <span>&#x27;/&#x27;</span>: <span>[</span><span>&#x27;00&#x27;</span><span>,</span> <span>&#x27;01&#x27;</span><span>,</span> <span>&#x27;02&#x27;</span><span>,</span> <span>&#x27;03&#x27;</span><span>,</span> <span>&#x27;04&#x27;</span><span>,</span> <span>&#x27;06&#x27;</span><span>,</span> <span>&#x27;09&#x27;</span><span>,</span> <span>&#x27;10&#x27;</span><span>,</span> <span>&#x27;13&#x27;</span><span>,</span> <span>&#x27;14&#x27;</span><span>,</span> <span>&#x27;20&#x27;</span><span>,</span> <span>&#x27;23&#x27;</span><span>]</span><span>,</span>
+    <span>&#x27;/post/*&#x27;</span>: <span>[</span><span>&#x27;00&#x27;</span><span>,</span> <span>&#x27;01&#x27;</span><span>,</span> <span>&#x27;02&#x27;</span><span>,</span> <span>&#x27;03&#x27;</span><span>,</span> <span>&#x27;04&#x27;</span><span>,</span> <span>&#x27;06&#x27;</span><span>,</span> <span>&#x27;07&#x27;</span><span>,</span> <span>&#x27;08&#x27;</span><span>,</span> <span>&#x27;12&#x27;</span><span>,</span> <span>&#x27;15&#x27;</span><span>,</span> <span>&#x27;16&#x27;</span><span>,</span> <span>&#x27;17&#x27;</span><span>,</span> <span>&#x27;21&#x27;</span><span>,</span> <span>&#x27;23&#x27;</span><span>]</span><span>,</span>
+    <span>&#x27;/tag/*&#x27;</span>: <span>[</span><span>&#x27;00&#x27;</span><span>,</span> <span>&#x27;01&#x27;</span><span>,</span> <span>&#x27;02&#x27;</span><span>,</span> <span>&#x27;03&#x27;</span><span>,</span> <span>&#x27;04&#x27;</span><span>,</span> <span>&#x27;06&#x27;</span><span>,</span> <span>&#x27;11&#x27;</span><span>,</span> <span>&#x27;13&#x27;</span><span>,</span> <span>&#x27;23&#x27;</span><span>]</span><span>,</span>
+    <span>&#x27;/search&#x27;</span>: <span>[</span><span>&#x27;00&#x27;</span><span>,</span> <span>&#x27;01&#x27;</span><span>,</span> <span>&#x27;02&#x27;</span><span>,</span> <span>&#x27;03&#x27;</span><span>,</span> <span>&#x27;19&#x27;</span><span>,</span> <span>&#x27;23&#x27;</span><span>]</span>
+<span>}</span><span>;</span></pre></div>
+<hr>
+<h2 id="heading-74">三、CSS 区域详解</h2>
+<h3 id="heading-75"><code>Section 00</code> — Font Imports 字体导入</h3>
+<div><pre><span>/* 当前加载 */</span>
+<span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&amp;family=JetBrains+Mono&amp;display=swap&#x27;</span>);
+
+<span>/* 建议添加 */</span>
+<span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap&#x27;</span>); <span>/* 无衬线正文 */</span></pre></div>
+<hr>
+<h3 id="heading-76"><code>Section 01</code> — CSS Variables + Reset 变量与重置</h3>
+<div><pre><span>:</span><span>root</span> {
+    <span>/* 核心变量 */</span>
+    <span>--font-serif</span><span>:</span> <span>&#x27;Noto Serif SC&#x27;</span><span>,</span> serif;
+    <span>--font-sans</span><span>:</span> <span>&#x27;Noto Sans SC&#x27;</span><span>,</span> sans-serif;
+    <span>--font-mono</span><span>:</span> <span>&#x27;JetBrains Mono&#x27;</span><span>,</span> monospace;
+    
+    <span>/* 动态主题变量（由 JS 切换） */</span>
+    <span>--bg-primary</span><span>:</span> <span><span>#</span>faf7f5</span>;
+    <span>--bg-secondary</span><span>:</span> <span><span>#</span>f0ebe7</span>;
+    <span>--text-primary</span><span>:</span> <span><span>#</span>2c2420</span>;
+    <span>--text-secondary</span><span>:</span> <span><span>#</span>6b5e55</span>;
+    <span>--accent</span><span>:</span> <span><span>#</span>e8919c</span>;        <span>/* 主题色 */</span>
+    <span>--accent-hover</span><span>:</span> <span><span>#</span>d67a85</span>;  <span>/* 悬停态 */</span>
+    <span>--glass-bg</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.7</span>);
+    <span>--glass-border</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.3</span>);
+    
+    <span>/* 间距系统 */</span>
+    <span>--space-xs</span><span>:</span> <span>0.25<span>rem</span></span>;   <span>/* 4px */</span>
+    <span>--space-sm</span><span>:</span> <span>0.5<span>rem</span></span>;    <span>/* 8px */</span>
+    <span>--space-md</span><span>:</span> <span>1<span>rem</span></span>;      <span>/* 16px */</span>
+    <span>--space-lg</span><span>:</span> <span>1.5<span>rem</span></span>;    <span>/* 24px */</span>
+    <span>--space-xl</span><span>:</span> <span>2<span>rem</span></span>;      <span>/* 32px */</span>
+    <span>--space-2xl</span><span>:</span> <span>3<span>rem</span></span>;     <span>/* 48px */</span>
+    
+    <span>/* 圆角系统 */</span>
+    <span>--radius-sm</span><span>:</span> <span>4<span>px</span></span>;
+    <span>--radius-md</span><span>:</span> <span>8<span>px</span></span>;
+    <span>--radius-lg</span><span>:</span> <span>12<span>px</span></span>;
+    <span>--radius-xl</span><span>:</span> <span>16<span>px</span></span>;
+    <span>--radius-full</span><span>:</span> <span>9999<span>px</span></span>;
+    
+    <span>/* 阴影系统 */</span>
+    <span>--shadow-sm</span><span>:</span> <span>0</span> <span>1<span>px</span></span> <span>2<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.05</span>);
+    <span>--shadow-md</span><span>:</span> <span>0</span> <span>4<span>px</span></span> <span>6<span>px</span></span> <span>-1<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
+    <span>--shadow-lg</span><span>:</span> <span>0</span> <span>10<span>px</span></span> <span>15<span>px</span></span> <span>-3<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
+    <span>--shadow-glow</span><span>:</span> <span>0</span> <span>0</span> <span>20<span>px</span></span> <span>var</span>(<span>--accent-alpha</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-77"><code>Section 02</code> — Welcome Splash Overlay 欢迎闪屏样式</h3>
+<table>
+<thead>
+<tr>
+<th>类名</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.splash-overlay</code></td>
+<td>全屏固定层</td>
+</tr>
+<tr>
+<td><code>.splash-brand</code></td>
+<td>品牌文字容器</td>
+</tr>
+<tr>
+<td><code>.splash-progress</code></td>
+<td>底部进度条轨道</td>
+</tr>
+<tr>
+<td><code>.splash-progress-bar</code></td>
+<td>进度填充动画</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="heading-78"><code>Section 03</code> — Background Image 背景图</h3>
+<div><pre><span>/* 主题背景映射 */</span>
+[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
+    <span>--bg-image</span><span>:</span> <span>url</span>(<span>&#x27;/assets/bg-sakura.jpg&#x27;</span>);
+    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span>(<span>180<span>deg</span></span><span>,</span> <span>rgba</span>(<span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.9</span>) <span>0<span>%</span></span><span>,</span> <span>rgba</span>(<span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.6</span>) <span>100<span>%</span></span>);
+}
+
+[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
+    <span>--bg-image</span><span>:</span> <span>url</span>(<span>&#x27;/assets/bg-ocean.jpg&#x27;</span>);
+    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span>(<span>180<span>deg</span></span><span>,</span> <span>rgba</span>(<span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.9</span>) <span>0<span>%</span></span><span>,</span> <span>rgba</span>(<span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.6</span>) <span>100<span>%</span></span>);
+}</pre></div>
+<hr>
+<h3 id="heading-79"><code>Section 04</code> — Typography 排版</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>字体</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Day</td>
+<td><code>Noto Serif SC</code></td>
+<td>正文阅读，传统优雅</td>
+</tr>
+<tr>
+<td>Night</td>
+<td><code>Noto Sans SC</code></td>
+<td>暗色下更清晰</td>
+</tr>
+<tr>
+<td>代码</td>
+<td><code>JetBrains Mono</code></td>
+<td>等宽，连字支持</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="heading-80"><code>Section 05</code> — Navbar 导航栏</h3>
+<p><strong>Liquid Glass 效果</strong>：</p>
+<div><pre>.<span>navbar</span> {
+    <span>background</span><span>:</span> <span>var</span>(<span>--glass-bg</span>);
+    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>20<span>px</span></span>) <span>saturate</span>(<span>180<span>%</span></span>);
+    <span>-webkit-backdrop-filter</span><span>:</span> <span>blur</span>(<span>20<span>px</span></span>) <span>saturate</span>(<span>180<span>%</span></span>);
+    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--glass-border</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-81"><code>Section 06-07</code> — Hero 区域</h3>
+<p>见 Module 09-10 说明。</p>
+<hr>
+<h3 id="heading-82"><code>Section 08</code> — Progress Bar 进度条</h3>
+<div><pre>.<span>progress-bar</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>top</span><span>:</span> <span>0</span>;
+    <span>left</span><span>:</span> <span>0</span>;
+    <span>height</span><span>:</span> <span>3<span>px</span></span>;
+    <span>background</span><span>:</span> <span>linear-gradient</span>(<span>90<span>deg</span></span><span>,</span> <span>var</span>(<span>--accent</span>)<span>,</span> <span>var</span>(<span>--accent-hover</span>));
+    <span>z-index</span><span>:</span> <span>9999</span>;
+    <span>transition</span><span>:</span> width <span>0.1<span>s</span></span> linear;
+}</pre></div>
+<hr>
+<h3 id="heading-83"><code>Section 09</code> — Cards 卡片网格</h3>
+<div><pre>.<span>card-grid</span> {
+    <span>display</span><span>:</span> grid;
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(auto-fill<span>,</span> <span>minmax</span>(<span>min</span>(<span>100<span>%</span></span><span>,</span> <span>320<span>px</span></span>)<span>,</span> <span>1<span>fr</span></span>));
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+}
+
+<span>/* 3D 悬停效果 */</span>
+.<span>card</span> {
+    <span>transform-style</span><span>:</span> preserve-3d;
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> ease;
+}
+.<span>card</span><span>:</span><span>hover</span> {
+    <span>transform</span><span>:</span> <span>translateY</span>(<span>-4<span>px</span></span>) <span>rotateX</span>(<span>2<span>deg</span></span>) <span>rotateY</span>(<span>-2<span>deg</span></span>);
+}</pre></div>
+<hr>
+<h3 id="heading-84"><code>Section 10</code> — Date Badge 日期徽章</h3>
+<div><pre>.<span>date-badge</span> {
+    <span>display</span><span>:</span> inline-flex;
+    <span>align-items</span><span>:</span> center;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
+    <span>font-variant-numeric</span><span>:</span> tabular-nums;
+}</pre></div>
+<hr>
+<h3 id="heading-85"><code>Section 11</code> — Pinned Section 置顶区</h3>
+<div><pre>.<span>pinned-section</span> {
+    <span>position</span><span>:</span> relative;
+    <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>border-left</span><span>:</span> <span>3<span>px</span></span> solid <span>var</span>(<span>--accent</span>);
+}
+
+.<span>pinned-badge</span>::<span>before</span> {
+    <span>content</span><span>:</span> <span>&#x27;📌&#x27;</span>;
+    <span>margin-right</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-86"><code>Section 12</code> — Article Reading Panels 文章阅读面板（4主题）</h3>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>氛围</th>
+<th>背景</th>
+<th>文字</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sakura</code></td>
+<td>樱花纸质</td>
+<td>暖白微粉</td>
+<td>深褐</td>
+</tr>
+<tr>
+<td><code>ocean</code></td>
+<td>深海阅读</td>
+<td>深蓝灰</td>
+<td>浅青白</td>
+</tr>
+<tr>
+<td><code>forest</code></td>
+<td>森林晨读</td>
+<td>浅绿米</td>
+<td>深绿褐</td>
+</tr>
+<tr>
+<td><code>stardust</code></td>
+<td>星空夜读</td>
+<td>近黑</td>
+<td>星白</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="heading-87"><code>Section 13</code> — Code Blocks 代码块</h3>
+<p>见 Module 15。</p>
+<hr>
+<h3 id="heading-88"><code>Section 14</code> — Tables 表格</h3>
+<div><pre><span>/* 响应式表格：小屏横向滚动 */</span>
+.<span>table-wrapper</span> {
+    <span>overflow-x</span><span>:</span> auto;
+    <span>-webkit-overflow-scrolling</span><span>:</span> touch;
+}
+
+<span>/* 斑马纹 */</span>
+.<span>table-row</span><span>:</span><span>nth-child</span>(even) {
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-89"><code>Section 15</code> — Article Theme CSS Variables 文章主题变量</h3>
+<div><pre>[<span>data-article-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
+    <span>--article-bg</span><span>:</span> <span><span>#</span>fdfbf7</span>;
+    <span>--article-text</span><span>:</span> <span><span>#</span>3d322b</span>;
+    <span>--article-heading</span><span>:</span> <span><span>#</span>8b4513</span>;
+    <span>--article-link</span><span>:</span> <span><span>#</span>c45c6a</span>;
+    <span>--article-link-hover</span><span>:</span> <span><span>#</span>a03040</span>;
+    <span>--article-quote-border</span><span>:</span> <span><span>#</span>e8919c</span>;
+    <span>--article-code-bg</span><span>:</span> <span><span>#</span>f5f0eb</span>;
+}
+
+[<span>data-article-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
+    <span>--article-bg</span><span>:</span> <span><span>#</span>0f172a</span>;
+    <span>--article-text</span><span>:</span> <span><span>#</span>e2e8f0</span>;
+    <span>--article-heading</span><span>:</span> <span><span>#</span>7dd3fc</span>;
+    <span>--article-link</span><span>:</span> <span><span>#</span>38bdf8</span>;
+    <span>--article-link-hover</span><span>:</span> <span><span>#</span>0ea5e9</span>;
+    <span>--article-quote-border</span><span>:</span> <span><span>#</span>0ea5e9</span>;
+    <span>--article-code-bg</span><span>:</span> <span><span>#</span>1e293b</span>;
+}
+<span>/* ... forest, stardust 同理 */</span></pre></div>
+<hr>
+<h3 id="heading-90"><code>Section 16</code> — TOC Scroll-Spy 目录滚动监听</h3>
+<div><pre>.<span>toc-link</span> {
+    <span>display</span><span>:</span> block;
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
+    <span>border-left</span><span>:</span> <span>2<span>px</span></span> solid transparent;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
+}
+
+.<span>toc-link</span>.<span>active</span> {
+    <span>border-left-color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
+    <span>font-weight</span><span>:</span> <span>500</span>;
+}
+
+<span>/* 层级缩进 */</span>
+.<span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] { <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-lg</span>); }
+.<span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] { <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-xl</span>); }</pre></div>
+<hr>
+<h3 id="heading-91"><code>Section 17</code> — Floating Toolbar + Sink Menu</h3>
+<div><pre>.<span>floating-toolbar</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    <span>bottom</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
+    <span>display</span><span>:</span> flex;
+    <span>flex-direction</span><span>:</span> column;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-sm</span>);
+    <span>z-index</span><span>:</span> <span>100</span>;
+}
+
+<span>/* 展开动画 */</span>
+.<span>sink-panel</span> {
+    <span>transform-origin</span><span>:</span> bottom right;
+    <span>animation</span><span>:</span> sink-expand <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
+}
+
+<span>@keyframes</span> sink-expand {
+    <span>from</span> { <span>transform</span><span>:</span> <span>scale</span>(<span>0.8</span>); <span>opacity</span><span>:</span> <span>0</span>; }
+    <span>to</span> { <span>transform</span><span>:</span> <span>scale</span>(<span>1</span>); <span>opacity</span><span>:</span> <span>1</span>; }
+}</pre></div>
+<hr>
+<h3 id="heading-92"><code>Section 18</code> — Prev/Next Navigation 前后文导航</h3>
+<div><pre>.<span>post-nav</span> {
+    <span>display</span><span>:</span> grid;
+    <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>1<span>fr</span></span>;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    <span>margin-top</span><span>:</span> <span>var</span>(<span>--space-2xl</span>);
+    <span>padding-top</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
+    <span>border-top</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--border-color</span>);
+}
+
+.<span>post-nav-prev</span> { <span>text-align</span><span>:</span> left; }
+.<span>post-nav-next</span> { <span>text-align</span><span>:</span> right; }
+
+.<span>post-nav-label</span> {
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
+    <span>text-transform</span><span>:</span> uppercase;
+    <span>letter-spacing</span><span>:</span> 
+
+我继续完成 Luliy Blog v8 的技术说明书，从 Section 18 继续，并补充完整的 JSON 配置说明和扩展功能建议。
+
+<span>-</span><span>-</span><span>-</span>
+
+<span>#</span><span>#</span> 三、CSS 区域详解（续）
+
+<span>#</span><span>#</span><span>#</span> `Section 18` — Prev<span>/</span>Next Navigation 前后文导航（续）
+
+```css
+.<span>post-nav-label</span> {
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
+    <span>text-transform</span><span>:</span> uppercase;
+    <span>letter-spacing</span><span>:</span> <span>0.05<span>em</span></span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+}
+
+.<span>post-nav-title</span> {
+    <span>font-size</span><span>:</span> <span>1.125<span>rem</span></span>;
+    <span>font-weight</span><span>:</span> <span>600</span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
+    <span>line-height</span><span>:</span> <span>1.4</span>;
+    <span>display</span><span>:</span> -webkit-box;
+    <span>-webkit-line-clamp</span><span>:</span> <span>2</span>;
+    <span>-webkit-box-orient</span><span>:</span> vertical;
+    <span>overflow</span><span>:</span> hidden;
+}
+
+<span>/* 悬停效果 */</span>
+.<span>post-nav-link</span><span>:</span><span>hover</span> .<span>post-nav-title</span> {
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+}
+
+.<span>post-nav-link</span><span>:</span><span>hover</span> .<span>post-nav-arrow</span> {
+    <span>transform</span><span>:</span> <span>translateX</span>(<span>var</span>(<span>--space-xs</span>));
+}
+.<span>post-nav-prev</span><span>:</span><span>hover</span> .<span>post-nav-arrow</span> {
+    <span>transform</span><span>:</span> <span>translateX</span>(<span>calc</span>(<span>var</span>(<span>--space-xs</span>) <span>*</span> <span>-1</span>));
+}</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加文章封面缩略图 */</span>
+.<span>post-nav-thumb</span> {
+    <span>width</span><span>:</span> <span>80<span>px</span></span>;
+    <span>height</span><span>:</span> <span>60<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-md</span>);
+    <span>object-fit</span><span>:</span> cover;
+    <span>opacity</span><span>:</span> <span>0.8</span>;
+    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span>;
+}
+.<span>post-nav-link</span><span>:</span><span>hover</span> .<span>post-nav-thumb</span> {
+    <span>opacity</span><span>:</span> <span>1</span>;
+}
+
+<span>/* 改为垂直堆叠（移动端） */</span>
+<span>@media</span> (<span>max-width</span><span>:</span> <span>640<span>px</span></span>) {
+    .<span>post-nav</span> {
+        <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span>;
+    }
+    .<span>post-nav-next</span> {
+        <span>text-align</span><span>:</span> left;
+        <span>border-top</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--border-color</span>);
+        <span>padding-top</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    }
+}</pre></div>
+<hr>
+<h3 id="heading-93"><code>Section 19</code> — Lightbox 灯箱样式</h3>
+<div><pre>.<span>lightbox-overlay</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>inset</span><span>:</span> <span>0</span>;
+    <span>background</span><span>:</span> <span>rgba</span>(<span>0</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>,</span> <span>0.92</span>);
+    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>10<span>px</span></span>);
+    <span>z-index</span><span>:</span> <span>1000</span>;
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> center;
+    <span>justify-content</span><span>:</span> center;
+    <span>opacity</span><span>:</span> <span>0</span>;
+    <span>transition</span><span>:</span> opacity <span>0.3<span>s</span></span>;
+}
+
+.<span>lightbox-overlay</span>.<span>active</span> {
+    <span>opacity</span><span>:</span> <span>1</span>;
+}
+
+.<span>lightbox-image</span> {
+    <span>max-width</span><span>:</span> <span>90<span>vw</span></span>;
+    <span>max-height</span><span>:</span> <span>90<span>vh</span></span>;
+    <span>object-fit</span><span>:</span> contain;
+    <span>transform</span><span>:</span> <span>scale</span>(<span>0.9</span>);
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
+}
+
+.<span>lightbox-overlay</span>.<span>active</span> .<span>lightbox-image</span> {
+    <span>transform</span><span>:</span> <span>scale</span>(<span>1</span>);
+}
+
+<span>/* 图片信息栏 */</span>
+.<span>lightbox-meta</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>bottom</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    <span>left</span><span>:</span> <span>50<span>%</span></span>;
+    <span>transform</span><span>:</span> <span>translateX</span>(<span>-50<span>%</span></span>);
+    <span>text-align</span><span>:</span> center;
+    <span>color</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.8</span>);
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
+}
+
+<span>/* 导航箭头 */</span>
+.<span>lightbox-nav</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>top</span><span>:</span> <span>50<span>%</span></span>;
+    <span>transform</span><span>:</span> <span>translateY</span>(<span>-50<span>%</span></span>);
+    <span>width</span><span>:</span> <span>48<span>px</span></span>;
+    <span>height</span><span>:</span> <span>48<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
+    <span>background</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.1</span>);
+    <span>color</span><span>:</span> white;
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> center;
+    <span>justify-content</span><span>:</span> center;
+    <span>cursor</span><span>:</span> pointer;
+    <span>transition</span><span>:</span> background <span>0.2<span>s</span></span>;
+}
+.<span>lightbox-nav</span><span>:</span><span>hover</span> {
+    <span>background</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.2</span>);
+}
+.<span>lightbox-prev</span> { <span>left</span><span>:</span> <span>var</span>(<span>--space-lg</span>); }
+.<span>lightbox-next</span> { <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>); }
+
+<span>/* 关闭按钮 */</span>
+.<span>lightbox-close</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>top</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    <span>width</span><span>:</span> <span>40<span>px</span></span>;
+    <span>height</span><span>:</span> <span>40<span>px</span></span>;
+    <span>color</span><span>:</span> white;
+    <span>opacity</span><span>:</span> <span>0.7</span>;
+    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span>;
+}
+.<span>lightbox-close</span><span>:</span><span>hover</span> {
+    <span>opacity</span><span>:</span> <span>1</span>;
+}</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加缩放指示器 */</span>
+.<span>lightbox-zoom-hint</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>bottom</span><span>:</span> <span>calc</span>(<span>var</span>(<span>--space-lg</span>) <span>+</span> <span>40<span>px</span></span>);
+    <span>left</span><span>:</span> <span>50<span>%</span></span>;
+    <span>transform</span><span>:</span> <span>translateX</span>(<span>-50<span>%</span></span>);
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
+    <span>background</span><span>:</span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.5</span>);
+    <span>color</span><span>:</span> white;
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
+    <span>pointer-events</span><span>:</span> none;
+}
+
+<span>/* 图片对比模式样式 */</span>
+.<span>lightbox-compare</span> {
+    <span>display</span><span>:</span> grid;
+    <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>1<span>fr</span></span>;
+    <span>gap</span><span>:</span> <span>2<span>px</span></span>;
+    <span>background</span><span>:</span> white;
+}
+.<span>lightbox-compare</span> <span>img</span> {
+    <span>max-width</span><span>:</span> <span>45<span>vw</span></span>;
+}
+
+<span>/* 缩略图导航条 */</span>
+.<span>lightbox-thumbs</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>bottom</span><span>:</span> <span>0</span>;
+    <span>left</span><span>:</span> <span>0</span>;
+    <span>right</span><span>:</span> <span>0</span>;
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>display</span><span>:</span> flex;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-sm</span>);
+    <span>justify-content</span><span>:</span> center;
+    <span>background</span><span>:</span> <span>linear-gradient</span>(transparent<span>,</span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.8</span>));
+    <span>overflow-x</span><span>:</span> auto;
+}
+.<span>lightbox-thumb</span> {
+    <span>width</span><span>:</span> <span>60<span>px</span></span>;
+    <span>height</span><span>:</span> <span>45<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-sm</span>);
+    <span>opacity</span><span>:</span> <span>0.5</span>;
+    <span>cursor</span><span>:</span> pointer;
+    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span>;
+}
+.<span>lightbox-thumb</span>.<span>active</span><span>,</span>
+.<span>lightbox-thumb</span><span>:</span><span>hover</span> {
+    <span>opacity</span><span>:</span> <span>1</span>;
+}</pre></div>
+<hr>
+<h3 id="heading-94"><code>Section 20</code> — Back-to-Top 返回顶部</h3>
+<div><pre>.<span>back-to-top</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    <span>bottom</span><span>:</span> <span>calc</span>(<span>var</span>(<span>--space-xl</span>) <span>+</span> <span>60<span>px</span></span>); <span>/* 在工具栏上方 */</span>
+    <span>width</span><span>:</span> <span>44<span>px</span></span>;
+    <span>height</span><span>:</span> <span>44<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--glass-bg</span>);
+    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>10<span>px</span></span>);
+    <span>border</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--glass-border</span>);
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> center;
+    <span>justify-content</span><span>:</span> center;
+    <span>cursor</span><span>:</span> pointer;
+    <span>opacity</span><span>:</span> <span>0</span>;
+    <span>transform</span><span>:</span> <span>translateY</span>(<span>20<span>px</span></span>) <span>scale</span>(<span>0.9</span>);
+    <span>transition</span><span>:</span> all <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
+    <span>z-index</span><span>:</span> <span>99</span>;
+}
+
+.<span>back-to-top</span>.<span>visible</span> {
+    <span>opacity</span><span>:</span> <span>1</span>;
+    <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>) <span>scale</span>(<span>1</span>);
+}
+
+<span>/* 进度环 SVG */</span>
+.<span>back-to-top</span> <span>svg</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>inset</span><span>:</span> <span>0</span>;
+    <span>transform</span><span>:</span> <span>rotate</span>(<span>-90<span>deg</span></span>);
+}
+.<span>back-to-top</span> <span>circle</span> {
+    <span>fill</span><span>:</span> none;
+    <span>stroke-width</span><span>:</span> <span>2</span>;
+}
+.<span>back-to-top</span> .<span>progress-track</span> {
+    <span>stroke</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+}
+.<span>back-to-top</span> .<span>progress-fill</span> {
+    <span>stroke</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>stroke-dasharray</span><span>:</span> <span>126</span>; <span>/* 2 * PI * 20 */</span>
+    <span>stroke-dashoffset</span><span>:</span> <span>126</span>;
+    <span>transition</span><span>:</span> stroke-dashoffset <span>0.1<span>s</span></span>;
+}</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加百分比显示 */</span>
+.<span>back-to-top</span>::<span>after</span> {
+    <span>content</span><span>:</span> <span>attr</span>(data-percent);
+    <span>position</span><span>:</span> absolute;
+    <span>font-size</span><span>:</span> <span>0.625<span>rem</span></span>;
+    <span>font-weight</span><span>:</span> <span>600</span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+}
+
+<span>/* 改为长条形（底部固定） */</span>
+.<span>back-to-top-bar</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>bottom</span><span>:</span> <span>0</span>;
+    <span>left</span><span>:</span> <span>0</span>;
+    <span>right</span><span>:</span> <span>0</span>;
+    <span>height</span><span>:</span> <span>4<span>px</span></span>;
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>transform-origin</span><span>:</span> left;
+    <span>transform</span><span>:</span> <span>scaleX</span>(<span>var</span>(<span>--scroll-progress</span>));
+}
+
+<span>/* 点击时的火箭动画 */</span>
+.<span>back-to-top</span>.<span>launching</span> {
+    <span>animation</span><span>:</span> rocket-launch <span>0.6<span>s</span></span> ease-out forwards;
+}
+<span>@keyframes</span> rocket-launch {
+    <span>0<span>%</span></span> { <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>); }
+    <span>50<span>%</span></span> { <span>transform</span><span>:</span> <span>translateY</span>(<span>-20<span>px</span></span>) <span>scale</span>(<span>1.2</span>); }
+    <span>100<span>%</span></span> { <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>) <span>scale</span>(<span>1</span>); }
+}</pre></div>
+<hr>
+<h3 id="heading-95"><code>Section 21</code> — Sakura Canvas / Theme Ripple 樱花画布与主题涟漪</h3>
+<div><pre><span>/* 樱花画布容器 */</span>
+.<span>sakura-container</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>inset</span><span>:</span> <span>0</span>;
+    <span>pointer-events</span><span>:</span> none;
+    <span>z-index</span><span>:</span> <span>1</span>; <span>/* 在内容下方 */</span>
+}
+
+<span>/* 主题切换涟漪 */</span>
+.<span>theme-ripple</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
+    <span>background</span><span>:</span> <span>var</span>(<span>--ripple-color</span>);
+    <span>pointer-events</span><span>:</span> none;
+    <span>z-index</span><span>:</span> <span>9998</span>;
+    <span>animation</span><span>:</span> ripple-expand <span>0.6<span>s</span></span> <span>cubic-bezier</span>(<span>0.4</span><span>,</span> <span>0</span><span>,</span> <span>0.2</span><span>,</span> <span>1</span>) forwards;
+}
+
+<span>@keyframes</span> ripple-expand {
+    <span>from</span> {
+        <span>width</span><span>:</span> <span>0</span>;
+        <span>height</span><span>:</span> <span>0</span>;
+        <span>opacity</span><span>:</span> <span>0.5</span>;
+    }
+    <span>to</span> {
+        <span>width</span><span>:</span> <span>var</span>(<span>--ripple-size</span>);
+        <span>height</span><span>:</span> <span>var</span>(<span>--ripple-size</span>);
+        <span>opacity</span><span>:</span> <span>0</span>;
+    }
+}
+
+<span>/* 各主题涟漪色 */</span>
+[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] { <span>--ripple-color</span><span>:</span> <span><span>#</span>f8c3cd</span>; }
+[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] { <span>--ripple-color</span><span>:</span> <span><span>#</span>7dd3fc</span>; }
+[<span>data-theme</span><span>=</span><span>&quot;forest&quot;</span>] { <span>--ripple-color</span><span>:</span> <span><span>#</span>86efac</span>; }
+[<span>data-theme</span><span>=</span><span>&quot;stardust&quot;</span>] { <span>--ripple-color</span><span>:</span> <span><span>#</span>c4b5fd</span>; }</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加鼠标轨迹拖尾 */</span>
+.<span>cursor-trail</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>width</span><span>:</span> <span>8<span>px</span></span>;
+    <span>height</span><span>:</span> <span>8<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>pointer-events</span><span>:</span> none;
+    <span>opacity</span><span>:</span> <span>0.6</span>;
+    <span>animation</span><span>:</span> trail-fade <span>1<span>s</span></span> forwards;
+}
+<span>@keyframes</span> trail-fade {
+    <span>to</span> {
+        <span>opacity</span><span>:</span> <span>0</span>;
+        <span>transform</span><span>:</span> <span>scale</span>(<span>0</span>);
+    }
+}
+
+<span>/* 节日特效层 */</span>
+.<span>festival-overlay</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>inset</span><span>:</span> <span>0</span>;
+    <span>pointer-events</span><span>:</span> none;
+    <span>z-index</span><span>:</span> <span>2</span>;
+}
+<span>/* 春节：红色粒子 */</span>
+<span>/* 圣诞：雪花 */</span>
+<span>/* 万圣节：蝙蝠剪影 */</span></pre></div>
+<hr>
+<h3 id="heading-96"><code>Section 22</code> — Uptime 运行时间</h3>
+<div><pre>.<span>uptime-display</span> {
+    <span>font-family</span><span>:</span> <span>var</span>(<span>--font-mono</span>);
+    <span>font-variant-numeric</span><span>:</span> tabular-nums;
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+    <span>display</span><span>:</span> inline-flex;
+    <span>align-items</span><span>:</span> center;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+}
+
+.<span>uptime-display</span>::<span>before</span> {
+    <span>content</span><span>:</span> <span>&#x27;&#x27;</span>;
+    <span>width</span><span>:</span> <span>8<span>px</span></span>;
+    <span>height</span><span>:</span> <span>8<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
+    <span>background</span><span>:</span> <span><span>#</span>22c55e</span>;
+    <span>animation</span><span>:</span> pulse <span>2<span>s</span></span> infinite;
+}
+
+<span>@keyframes</span> pulse {
+    <span>0<span>%</span></span><span>,</span> <span>100<span>%</span></span> { <span>opacity</span><span>:</span> <span>1</span>; }
+    <span>50<span>%</span></span> { <span>opacity</span><span>:</span> <span>0.5</span>; }
+}
+
+<span>/* 不同状态 */</span>
+.<span>uptime-display</span>.<span>warning</span>::<span>before</span> {
+    <span>background</span><span>:</span> <span><span>#</span>f59e0b</span>;
+}
+.<span>uptime-display</span>.<span>error</span>::<span>before</span> {
+    <span>background</span><span>:</span> <span><span>#</span>ef4444</span>;
+    <span>animation</span><span>:</span> none;
+}</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加详细展开 */</span>
+.<span>uptime-detail</span> {
+    <span>display</span><span>:</span> grid;
+    <span>grid-template-columns</span><span>:</span> auto <span>1<span>fr</span></span>;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-md</span>);
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
+}
+.<span>uptime-detail</span> <span>dt</span> {
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+}
+.<span>uptime-detail</span> <span>dd</span> {
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
+    <span>font-family</span><span>:</span> <span>var</span>(<span>--font-mono</span>);
+}
+
+<span>/* 服务器状态网格 */</span>
+.<span>server-grid</span> {
+    <span>display</span><span>:</span> grid;
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(auto-fill<span>,</span> <span>minmax</span>(<span>120<span>px</span></span><span>,</span> <span>1<span>fr</span></span>));
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+}
+.<span>server-card</span> {
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-lg</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+}
+.<span>server-card</span> .<span>metric</span> {
+    <span>font-size</span><span>:</span> <span>1.5<span>rem</span></span>;
+    <span>font-weight</span><span>:</span> <span>700</span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-97"><code>Section 23</code> — Timeline / Archive 时间线/归档</h3>
+<div><pre>.<span>timeline</span> {
+    <span>position</span><span>:</span> relative;
+    <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
+}
+
+.<span>timeline</span>::<span>before</span> {
+    <span>content</span><span>:</span> <span>&#x27;&#x27;</span>;
+    <span>position</span><span>:</span> absolute;
+    <span>left</span><span>:</span> <span>7<span>px</span></span>; <span>/* 圆点中心对齐 */</span>
+    <span>top</span><span>:</span> <span>0</span>;
+    <span>bottom</span><span>:</span> <span>0</span>;
+    <span>width</span><span>:</span> <span>2<span>px</span></span>;
+    <span>background</span><span>:</span> <span>linear-gradient</span>(
+        to bottom<span>,</span>
+        <span>var</span>(<span>--accent</span>)<span>,</span>
+        <span>var</span>(<span>--accent-alpha</span>)
+    );
+}
+
+.<span>timeline-item</span> {
+    <span>position</span><span>:</span> relative;
+    <span>padding-bottom</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
+}
+
+.<span>timeline-dot</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>left</span><span>:</span> <span>calc</span>(<span>var</span>(<span>--space-xl</span>) <span>*</span> <span>-1</span> <span>+</span> <span>3<span>px</span></span>);
+    <span>width</span><span>:</span> <span>12<span>px</span></span>;
+    <span>height</span><span>:</span> <span>12<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-primary</span>);
+    <span>border</span><span>:</span> <span>2<span>px</span></span> solid <span>var</span>(<span>--accent</span>);
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
+}
+
+.<span>timeline-item</span><span>:</span><span>hover</span> .<span>timeline-dot</span> {
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>transform</span><span>:</span> <span>scale</span>(<span>1.2</span>);
+}
+
+.<span>timeline-date</span> {
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+}
+
+.<span>timeline-content</span> {
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-lg</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
+}
+
+.<span>timeline-item</span><span>:</span><span>hover</span> .<span>timeline-content</span> {
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-primary</span>);
+    <span>box-shadow</span><span>:</span> <span>var</span>(<span>--shadow-md</span>);
+}
+
+<span>/* 年份标记 */</span>
+.<span>timeline-year</span> {
+    <span>position</span><span>:</span> sticky;
+    <span>top</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
+    <span>z-index</span><span>:</span> <span>10</span>;
+    <span>font-size</span><span>:</span> <span>1.5<span>rem</span></span>;
+    <span>font-weight</span><span>:</span> <span>700</span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-primary</span>);
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-sm</span>) <span>0</span>;
+    <span>margin-left</span><span>:</span> <span>calc</span>(<span>var</span>(<span>--space-xl</span>) <span>*</span> <span>-1</span>);
+}</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加文章类型图标 */</span>
+.<span>timeline-type</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>right</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>top</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>width</span><span>:</span> <span>24<span>px</span></span>;
+    <span>height</span><span>:</span> <span>24<span>px</span></span>;
+    <span>opacity</span><span>:</span> <span>0.5</span>;
+}
+.<span>timeline-type-article</span>::<span>before</span> { <span>content</span><span>:</span> <span>&#x27;📝&#x27;</span>; }
+.<span>timeline-type-photo</span>::<span>before</span> { <span>content</span><span>:</span> <span>&#x27;📷&#x27;</span>; }
+.<span>timeline-type-video</span>::<span>before</span> { <span>content</span><span>:</span> <span>&#x27;🎬&#x27;</span>; }
+
+<span>/* 热力图式归档（GitHub 风格） */</span>
+.<span>archive-heatmap</span> {
+    <span>display</span><span>:</span> grid;
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(<span>53</span><span>,</span> <span>1<span>fr</span></span>); <span>/* 53周 */</span>
+    <span>gap</span><span>:</span> <span>3<span>px</span></span>;
+}
+.<span>heatmap-cell</span> {
+    <span>aspect-ratio</span><span>:</span> <span>1</span>;
+    <span>border-radius</span><span>:</span> <span>2<span>px</span></span>;
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+}
+.<span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;1&quot;</span>] { <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>); }
+.<span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;2&quot;</span>] { <span>background</span><span>:</span> <span>var</span>(<span>--accent-light</span>); }
+.<span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] { <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>); }
+.<span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] { <span>background</span><span>:</span> <span>var</span>(<span>--accent-dark</span>); }</pre></div>
+<hr>
+<h3 id="heading-98"><code>Section 24</code> — Homepage Bottom Gallery Banner 首页底部画廊横幅</h3>
+<div><pre>.<span>gallery-banner</span> {
+    <span>position</span><span>:</span> relative;
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-2xl</span>) <span>0</span>;
+    <span>overflow</span><span>:</span> hidden;
+}
+
+.<span>gallery-track</span> {
+    <span>display</span><span>:</span> flex;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>animation</span><span>:</span> gallery-scroll <span>30<span>s</span></span> linear infinite;
+}
+
+.<span>gallery-track</span><span>:</span><span>hover</span> {
+    <span>animation-play-state</span><span>:</span> paused;
+}
+
+<span>@keyframes</span> gallery-scroll {
+    <span>from</span> { <span>transform</span><span>:</span> <span>translateX</span>(<span>0</span>); }
+    <span>to</span> { <span>transform</span><span>:</span> <span>translateX</span>(<span>calc</span>(<span>-50<span>%</span></span> <span>-</span> <span>var</span>(<span>--space-md</span>) <span>/</span> <span>2</span>)); }
+    <span>/* 复制一份实现无缝循环 */</span>
+}
+
+.<span>gallery-item</span> {
+    <span>flex-shrink</span><span>:</span> <span>0</span>;
+    <span>width</span><span>:</span> <span>280<span>px</span></span>;
+    <span>height</span><span>:</span> <span>200<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-lg</span>);
+    <span>overflow</span><span>:</span> hidden;
+    <span>position</span><span>:</span> relative;
+}
+
+.<span>gallery-item</span> <span>img</span> {
+    <span>width</span><span>:</span> <span>100<span>%</span></span>;
+    <span>height</span><span>:</span> <span>100<span>%</span></span>;
+    <span>object-fit</span><span>:</span> cover;
+    <span>transition</span><span>:</span> transform <span>0.5<span>s</span></span>;
+}
+
+.<span>gallery-item</span><span>:</span><span>hover</span> <span>img</span> {
+    <span>transform</span><span>:</span> <span>scale</span>(<span>1.05</span>);
+}
+
+.<span>gallery-item-overlay</span> {
+    <span>position</span><span>:</span> absolute;
+    <span>inset</span><span>:</span> <span>0</span>;
+    <span>background</span><span>:</span> <span>linear-gradient</span>(transparent <span>50<span>%</span></span><span>,</span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.7</span>));
+    <span>opacity</span><span>:</span> <span>0</span>;
+    <span>transition</span><span>:</span> opacity <span>0.3<span>s</span></span>;
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> flex-end;
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>color</span><span>:</span> white;
+}
+
+.<span>gallery-item</span><span>:</span><span>hover</span> .<span>gallery-item-overlay</span> {
+    <span>opacity</span><span>:</span> <span>1</span>;
+}</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 改为瀑布流 */</span>
+.<span>gallery-masonry</span> {
+    <span>columns</span><span>:</span> <span>3</span>;
+    <span>column-gap</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+}
+.<span>gallery-masonry</span> .<span>gallery-item</span> {
+    <span>break-inside</span><span>:</span> avoid;
+    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>height</span><span>:</span> auto;
+}
+
+<span>/* 添加 lightbox 快捷入口 */</span>
+.<span>gallery-item</span>::<span>after</span> {
+    <span>content</span><span>:</span> <span>&#x27;🔍&#x27;</span>;
+    <span>position</span><span>:</span> absolute;
+    <span>top</span><span>:</span> <span>50<span>%</span></span>;
+    <span>left</span><span>:</span> <span>50<span>%</span></span>;
+    <span>transform</span><span>:</span> <span>translate</span>(<span>-50<span>%</span></span><span>,</span> <span>-50<span>%</span></span>) <span>scale</span>(<span>0</span>);
+    <span>width</span><span>:</span> <span>40<span>px</span></span>;
+    <span>height</span><span>:</span> <span>40<span>px</span></span>;
+    <span>background</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.9</span>);
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> center;
+    <span>justify-content</span><span>:</span> center;
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
+}
+.<span>gallery-item</span><span>:</span><span>hover</span>::<span>after</span> {
+    <span>transform</span><span>:</span> <span>translate</span>(<span>-50<span>%</span></span><span>,</span> <span>-50<span>%</span></span>) <span>scale</span>(<span>1</span>);
+}
+
+<span>/* 全屏沉浸式画廊 */</span>
+.<span>gallery-immersive</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>inset</span><span>:</span> <span>0</span>;
+    <span>z-index</span><span>:</span> <span>1000</span>;
+    <span>background</span><span>:</span> black;
+    <span>display</span><span>:</span> grid;
+    <span>place-items</span><span>:</span> center;
+}
+.<span>gallery-immersive</span> <span>img</span> {
+    <span>max-width</span><span>:</span> <span>100<span>vw</span></span>;
+    <span>max-height</span><span>:</span> <span>100<span>vh</span></span>;
+}</pre></div>
+<hr>
+<h3 id="heading-99"><code>Section 25</code> — Search Overlay 搜索遮罩层</h3>
+<div><pre>.<span>search-overlay</span> {
+    <span>position</span><span>:</span> fixed;
+    <span>inset</span><span>:</span> <span>0</span>;
+    <span>background</span><span>:</span> <span>rgba</span>(<span>0</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>,</span> <span>0.6</span>);
+    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>8<span>px</span></span>);
+    <span>z-index</span><span>:</span> <span>200</span>;
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> flex-start;
+    <span>justify-content</span><span>:</span> center;
+    <span>padding-top</span><span>:</span> <span>15<span>vh</span></span>;
+    <span>opacity</span><span>:</span> <span>0</span>;
+    <span>visibility</span><span>:</span> hidden;
+    <span>transition</span><span>:</span> all <span>0.3<span>s</span></span>;
+}
+
+.<span>search-overlay</span>.<span>active</span> {
+    <span>opacity</span><span>:</span> <span>1</span>;
+    <span>visibility</span><span>:</span> visible;
+}
+
+.<span>search-container</span> {
+    <span>width</span><span>:</span> <span>min</span>(<span>640<span>px</span></span><span>,</span> <span>90<span>vw</span></span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-primary</span>);
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-xl</span>);
+    <span>box-shadow</span><span>:</span> <span>var</span>(<span>--shadow-lg</span>)<span>,</span> <span>0</span> <span>25<span>px</span></span> <span>50<span>px</span></span> <span>-12<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.25</span>);
+    <span>overflow</span><span>:</span> hidden;
+    <span>transform</span><span>:</span> <span>translateY</span>(<span>-20<span>px</span></span>) <span>scale</span>(<span>0.95</span>);
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
+}
+
+.<span>search-overlay</span>.<span>active</span> .<span>search-container</span> {
+    <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>) <span>scale</span>(<span>1</span>);
+}
+
+.<span>search-input-wrapper</span> {
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> center;
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>) <span>var</span>(<span>--space-lg</span>);
+    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--border-color</span>);
+}
+
+.<span>search-input</span> {
+    <span>flex</span><span>:</span> <span>1</span>;
+    <span>border</span><span>:</span> none;
+    <span>background</span><span>:</span> none;
+    <span>font-size</span><span>:</span> <span>1.125<span>rem</span></span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
+    <span>outline</span><span>:</span> none;
+}
+
+.<span>search-input</span>::<span>placeholder</span> {
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+}
+
+.<span>search-shortcut-hint</span> {
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-sm</span>);
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+    <span>font-family</span><span>:</span> <span>var</span>(<span>--font-mono</span>);
+}
+
+.<span>search-results</span> {
+    <span>max-height</span><span>:</span> <span>60<span>vh</span></span>;
+    <span>overflow-y</span><span>:</span> auto;
+}
+
+.<span>search-result-item</span> {
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> flex-start;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>) <span>var</span>(<span>--space-lg</span>);
+    <span>cursor</span><span>:</span> pointer;
+    <span>transition</span><span>:</span> background <span>0.15<span>s</span></span>;
+}
+
+.<span>search-result-item</span><span>:</span><span>hover</span><span>,</span>
+.<span>search-result-item</span>.<span>selected</span> {
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+}
+
+.<span>search-result-icon</span> {
+    <span>width</span><span>:</span> <span>40<span>px</span></span>;
+    <span>height</span><span>:</span> <span>40<span>px</span></span>;
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-md</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
+    <span>display</span><span>:</span> flex;
+    <span>align-items</span><span>:</span> center;
+    <span>justify-content</span><span>:</span> center;
+    <span>flex-shrink</span><span>:</span> <span>0</span>;
+}
+
+.<span>search-result-content</span> {
+    <span>flex</span><span>:</span> <span>1</span>;
+    <span>min-width</span><span>:</span> <span>0</span>;
+}
+
+.<span>search-result-title</span> {
+    <span>font-weight</span><span>:</span> <span>500</span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
+    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+}
+
+.<span>search-result-excerpt</span> {
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
+    <span>line-height</span><span>:</span> <span>1.5</span>;
+    <span>display</span><span>:</span> -webkit-box;
+    <span>-webkit-line-clamp</span><span>:</span> <span>2</span>;
+    <span>-webkit-box-orient</span><span>:</span> vertical;
+    <span>overflow</span><span>:</span> hidden;
+}
+
+.<span>search-result-meta</span> {
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
+    <span>color</span><span>:</span> <span>var</span>(<span>--text-tertiary</span>);
+    <span>margin-top</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+}
+
+<span>/* 高亮标记 */</span>
+.<span>search-highlight</span> {
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
+    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>border-radius</span><span>:</span> <span>2<span>px</span></span>;
+    <span>padding</span><span>:</span> <span>0</span> <span>2<span>px</span></span>;
+}</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加分类筛选标签 */</span>
+.<span>search-filters</span> {
+    <span>display</span><span>:</span> flex;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-sm</span>);
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-sm</span>) <span>var</span>(<span>--space-lg</span>);
+    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--border-color</span>);
+    <span>overflow-x</span><span>:</span> auto;
+}
+
+.<span>search-filter</span> {
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-md</span>);
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
+    <span>white-space</span><span>:</span> nowrap;
+    <span>cursor</span><span>:</span> pointer;
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
+}
+
+.<span>search-filter</span>.<span>active</span> {
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>);
+    <span>color</span><span>:</span> white;
+}
+
+<span>/* 空状态 */</span>
+.<span>search-empty</span> {
+    <span>text-align</span><span>:</span> center;
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-2xl</span>);
+}
+.<span>search-empty-icon</span> {
+    <span>font-size</span><span>:</span> <span>3<span>rem</span></span>;
+    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-md</span>);
+}
+
+<span>/* 搜索历史 */</span>
+.<span>search-history</span> {
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-sm</span>) <span>var</span>(<span>--space-lg</span>);
+}
+.<span>search-history-tag</span> {
+    <span>display</span><span>:</span> inline-flex;
+    <span>align-items</span><span>:</span> center;
+    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
+    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
+    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-sm</span>);
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
+    <span>margin</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
+    <span>cursor</span><span>:</span> pointer;
+}
+.<span>search-history-tag</span><span>:</span><span>hover</span> {
+    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
+}</pre></div>
+<hr>
+<h3 id="heading-100"><code>Section 26</code> — Responsive (Mobile) 响应式设计</h3>
+<div><pre><span>/* 断点系统 */</span>
+<span>:</span><span>root</span> {
+    <span>--bp-sm</span><span>:</span> <span>640<span>px</span></span>;
+    <span>--bp-md</span><span>:</span> <span>768<span>px</span></span>;
+    <span>--bp-lg</span><span>:</span> <span>1024<span>px</span></span>;
+    <span>--bp-xl</span><span>:</span> <span>1280<span>px</span></span>;
+    <span>--bp-2xl</span><span>:</span> <span>1536<span>px</span></span>;
+}
+
+<span>/* 移动端优先，逐步增强 */</span>
+
+<span>/* 小屏基础 */</span>
+.<span>container</span> {
+    <span>width</span><span>:</span> <span>100<span>%</span></span>;
+    <span>padding</span><span>:</span> <span>0</span> <span>var</span>(<span>--space-md</span>);
+}
+
+<span>/* 中屏 */</span>
+<span>@media</span> (<span>min-width</span><span>:</span> <span>768<span>px</span></span>) {
+    .<span>container</span> {
+        <span>max-width</span><span>:</span> <span>720<span>px</span></span>;
+        <span>margin</span><span>:</span> <span>0</span> auto;
+    }
+    .<span>card-grid</span> {
+        <span>grid-template-columns</span><span>:</span> <span>repeat</span>(<span>2</span><span>,</span> <span>1<span>fr</span></span>);
+    }
+}
+
+<span>/* 大屏 */</span>
+<span>@media</span> (<span>min-width</span><span>:</span> <span>1024<span>px</span></span>) {
+    .<span>container</span> {
+        <span>max-width</span><span>:</span> <span>960<span>px</span></span>;
+    }
+    .<span>card-grid</span> {
+        <span>grid-template-columns</span><span>:</span> <span>repeat</span>(<span>3</span><span>,</span> <span>1<span>fr</span></span>);
+    }
+    .<span>layout-with-sidebar</span> {
+        <span>display</span><span>:</span> grid;
+        <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>280<span>px</span></span>;
+        <span>gap</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
+    }
+}
+
+<span>/* 超大屏 */</span>
+<span>@media</span> (<span>min-width</span><span>:</span> <span>1280<span>px</span></span>) {
+    .<span>container</span> {
+        <span>max-width</span><span>:</span> <span>1200<span>px</span></span>;
+    }
+}
+
+<span>/* 横屏优化 */</span>
+<span>@media</span> (<span>max-height</span><span>:</span> <span>500<span>px</span></span>) <span>and</span> (<span>orientation</span><span>:</span> landscape) {
+    .<span>hero-banner</span> {
+        <span>min-height</span><span>:</span> auto;
+        <span>padding</span><span>:</span> <span>var</span>(<span>--space-xl</span>) <span>0</span>;
+    }
+}
+
+<span>/* 深色模式偏好（系统级） */</span>
+<span>@media</span> (<span>prefers-color-scheme</span><span>:</span> dark) {
+    <span>:</span><span>root</span><span>:</span><span>not</span>([<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>])<span>:</span><span>not</span>([<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>])<span>:</span><span>not</span>([<span>data-theme</span><span>=</span><span>&quot;forest&quot;</span>]) {
+        <span>/* 默认深色 fallback */</span>
+    }
+}
+
+<span>/* 减少动画偏好 */</span>
+<span>@media</span> (<span>prefers-reduced-motion</span><span>:</span> reduce) {
+    <span><span>*</span></span><span>,</span>
+    <span><span>*</span></span>::<span>before</span><span>,</span>
+    <span><span>*</span></span>::<span>after</span> {
+        <span>animation-duration</span><span>:</span> <span>0.01<span>ms</span></span> <span>!important</span>;
+        <span>animation-iteration-count</span><span>:</span> <span>1</span> <span>!important</span>;
+        <span>transition-duration</span><span>:</span> <span>0.01<span>ms</span></span> <span>!important</span>;
+    }
+    .<span>sakura-container</span><span>,</span>
+    .<span>cursor-trail</span> {
+        <span>display</span><span>:</span> none <span>!important</span>;
+    }
+}
+
+<span>/* 高对比度模式 */</span>
+<span>@media</span> (<span>prefers-contrast</span><span>:</span> high) {
+    <span>:</span><span>root</span> {
+        <span>--text-primary</span><span>:</span> <span><span>#</span>000</span>;
+        <span>--text-secondary</span><span>:</span> <span><span>#</span>333</span>;
+        <span>--accent</span><span>:</span> <span><span>#</span>0066cc</span>;
+    }
+}
+
+<span>/* 打印样式 */</span>
+<span>@media</span> print {
+    .<span>navbar</span><span>,</span>
+    .<span>floating-toolbar</span><span>,</span>
+    .<span>back-to-top</span><span>,</span>
+    .<span>sakura-container</span><span>,</span>
+    .<span>comments</span> {
+        <span>display</span><span>:</span> none <span>!important</span>;
+    }
+    .<span>article-content</span> {
+        <span>font-size</span><span>:</span> <span>12<span>pt</span></span>;
+        <span>line-height</span><span>:</span> <span>1.6</span>;
+    }
+    <span>a</span> {
+        <span>text-decoration</span><span>:</span> underline;
+        <span>color</span><span>:</span> <span><span>#</span>000</span>;
+    }
+    <span>a</span>::<span>after</span> {
+        <span>content</span><span>:</span> <span>&quot; (&quot;</span> <span>attr</span>(href) <span>&quot;)&quot;</span>;
+        <span>font-size</span><span>:</span> <span>0.8<span>em</span></span>;
+        <span>color</span><span>:</span> <span><span>#</span>666</span>;
+    }
+}</pre></div>
+<p><strong>修改方式</strong>：</p>
+<div><pre><span>/* 添加容器查询（现代浏览器） */</span>
+<span>@container</span> (<span>min-width</span><span>:</span> <span>400<span>px</span></span>) {
+    .<span>card</span> {
+        <span>display</span><span>:</span> grid;
+        <span>grid-template-columns</span><span>:</span> <span>120<span>px</span></span> <span>1<span>fr</span></span>;
+    }
+    .<span>card-image</span> {
+        <span>height</span><span>:</span> <span>100<span>%</span></span>;
+    }
+}
+
+<span>/* 折叠屏适配 */</span>
+<span>@media</span> (<span>horizontal-viewport-segments</span><span>:</span> <span>2</span>) {
+    .<span>layout-with-sidebar</span> {
+        <span>grid-template-columns</span><span>:</span> <span>env</span>(viewport-segment-width <span>0</span> <span>0</span>) <span>1<span>fr</span></span>;
+    }
+}
+
+<span>/* 鼠标/触控检测 */</span>
+<span>@media</span> (<span>hover</span><span>:</span> hover) <span>and</span> (<span>pointer</span><span>:</span> fine) {
+    <span>/* 桌面端：悬停效果 */</span>
+    .<span>card</span><span>:</span><span>hover</span> {
+        <span>transform</span><span>:</span> <span>translateY</span>(<span>-4<span>px</span></span>);
+    }
+}
+<span>@media</span> (<span>hover</span><span>:</span> none) <span>and</span> (<span>pointer</span><span>:</span> coarse) {
+    <span>/* 移动端：点击反馈 */</span>
+    .<span>card</span><span>:</span><span>active</span> {
+        <span>transform</span><span>:</span> <span>scale</span>(<span>0.98</span>);
+    }
+    <span>/* 增大点击区域 */</span>
+    .<span>button</span> {
+        <span>min-height</span><span>:</span> <span>44<span>px</span></span>;
+        <span>min-width</span><span>:</span> <span>44<span>px</span></span>;
+    }
+}</pre></div></article></div></main><footer><a href="/feed.xml">RSS 訂閱</a> · <a href="/#/posts">所有文章</a> · <a href="#">回到頂部 ↑</a></footer></body></html>

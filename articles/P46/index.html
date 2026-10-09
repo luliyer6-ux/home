@@ -1,0 +1,645 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>博客完整说明指南 · Luliy Articles</title><meta name="description" content="ΔιάΝους 博客完整说明指南 这份文档是你这个博客的「使用手册 + 功能清单 + 维护说明」，存档备查用。 基于 Gmeek 框架 + 自定义 enhance.js / enhance.css，赛博朋克主题。 目录 一、5 分钟快速搭建 Gmeek 博客 二、CSS 和 JS 在 Gmeek 里"><link rel="canonical" href="https://luliy.me/articles/P46/"><link rel="alternate" type="application/rss+xml" title="Luliy Articles" href="/feed.xml"><meta property="og:type" content="article"><meta property="og:title" content="博客完整说明指南"><meta property="og:description" content="ΔιάΝους 博客完整说明指南 这份文档是你这个博客的「使用手册 + 功能清单 + 维护说明」，存档备查用。 基于 Gmeek 框架 + 自定义 enhance.js / enhance.css，赛博朋克主题。 目录 一、5 分钟快速搭建 Gmeek 博客 二、CSS 和 JS 在 Gmeek 里"><meta property="og:url" content="https://luliy.me/articles/P46/"><meta property="og:image" content="https://luliy.me/assets/site/share.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="博客完整说明指南"><meta name="twitter:description" content="ΔιάΝους 博客完整说明指南 这份文档是你这个博客的「使用手册 + 功能清单 + 维护说明」，存档备查用。 基于 Gmeek 框架 + 自定义 enhance.js / enhance.css，赛博朋克主题。 目录 一、5 分钟快速搭建 Gmeek 博客 二、CSS 和 JS 在 Gmeek 里"><meta name="twitter:image" content="https://luliy.me/assets/site/share.png"><link rel="stylesheet" href="/site-publish/article.css"></head><body><header><a href="/">LULIY <small>Articles</small></a><a href="/#/article/P46">在主站閱讀 ↗</a></header><main><h1>博客完整说明指南</h1><p class="meta">2026-06-23 · LULIY</p><div class="reading"><aside aria-label="文章目錄"><a style="--level:1" href="#heading-1">ΔιάΝους 博客完整说明指南</a><a style="--level:2" href="#heading-2">目录</a><a style="--level:2" href="#heading-3">一、5 分钟快速搭建 Gmeek 博客</a><a style="--level:2" href="#heading-4">二、CSS 和 JS 在 Gmeek 里怎么配置</a><a style="--level:3" href="#heading-5">6. 静态资源</a><a style="--level:3" href="#heading-6">7. 域名（可选）</a><a style="--level:2" href="#heading-7">八、给新手：从零开始写博客</a><a style="--level:2" href="#heading-8">目录</a><a style="--level:2" href="#heading-9">一、5 分钟快速搭建 Gmeek 博客</a><a style="--level:2" href="#heading-10">二、CSS 和 JS 在 Gmeek 里怎么配置</a><a style="--level:3" href="#heading-11">本博客的做法（推荐）</a><a style="--level:3" href="#heading-12">head 字段的防闪烁脚本</a><a style="--level:2" href="#heading-13">三、功能总目录</a><a style="--level:3" href="#heading-14">✅ 已实现的功能</a><a style="--level:3" href="#heading-15">⬜ 尚未实现 / 已移除的功能</a><a style="--level:2" href="#heading-16">四、功能详解（按序号）</a><a style="--level:2" href="#heading-17">五、Archives 归档页 怎么用</a><a style="--level:2" href="#heading-18">六、Chronicle 编年史页 怎么用</a><a style="--level:2" href="#heading-19">七、除了复制粘贴代码，你还需要配置什么</a><a style="--level:3" href="#heading-20">1. 必填的基础信息</a><a style="--level:3" href="#heading-21">2. singlePage（单页列表）</a><a style="--level:3" href="#heading-22">3. allHead（引入文件和库）</a><a style="--level:3" href="#heading-23">4. 要建的 Issues（页面和数据）</a><a style="--level:3" href="#heading-24">5. 文章要打的标签（决定文章去哪）</a><a style="--level:3" href="#heading-25">6. 静态资源</a><a style="--level:3" href="#heading-26">7. 域名（可选）</a><a style="--level:2" href="#heading-27">八、给新手：从零开始写博客</a></aside><article>
+
+<h1 id="heading-1">ΔιάΝους 博客完整说明指南</h1>
+<blockquote>
+<p>这份文档是你这个博客的「使用手册 + 功能清单 + 维护说明」，存档备查用。
+基于 Gmeek 框架 + 自定义 <code>enhance.js</code> / <code>enhance.css</code>，赛博朋克主题。</p>
+</blockquote>
+<hr>
+<h2 id="heading-2">目录</h2>
+<ul>
+<li><a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%B8%805-%E5%88%86%E9%92%9F%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA-gmeek-%E5%8D%9A%E5%AE%A2" rel="noopener noreferrer">一、5 分钟快速搭建 Gmeek 博客</a></li>
+<li><a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%BA%8Ccss-%E5%92%8C-js-%E5%9C%A8-gmeek-%E9%87%8C%E6%80%8E%E4%B9%88%E9%85%8D%E7%BD%AE" rel="noopener noreferrer">二、CSS 和 JS 在 Gmeek 里怎么配置</a></li>
+<li><a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%B8%89%E5%8A%9F%E8%83%BD%E6%80%BB%E7%9B%AE%E5%BD%95" rel="noopener noreferrer">三、功能总目录（已实现 / 未实现）</a></li>
+<li><a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E5%9B%9B%E5%8A%9F%E8%83%BD%E8%AF%A6%E8%A7%A3%E6%8C%89%E5%BA%8F%E5%8F%B7" rel="noopener noreferrer">四、功能详解（按序号）</a></li>
+<li><a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%BA%94archives-%E5%BD%92%E6%A1%A3%E9%A1%B5-%E6%80%8E%E4%B9%88%E7%94%A8" rel="noopener noreferrer">五、Archives 归档页 怎么用</a></li>
+<li><a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E5%85%ADchronicle-%E7%BC%96%E5%B9%B4%E5%8F%B2%E9%A1%B5-%E6%80%8E%E4%B9%88%E7%94%A8" rel="noopener noreferrer">六、Chronicle 编年史页 怎么用</a></li>
+<li><a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%B8%83%E9%99%A4%E4%BA%86%E5%A4%8D%E5%88%B6%E7%B2%98%E8%B4%B4%E4%BB%A3%E7%A0%81%E4%BD%A0%E8%BF%98%E9%9C%80%E8%A6%81%E9%85%8D%E7%BD%AE%E4%BB%80%E4%B9%88" rel="noopener noreferrer">七、除了复制粘贴代码，你还需要配置什么</a></li>
+<li><a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E5%85%AB%E7%BB%99%E6%96%B0%E6%89%8B%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2" rel="noopener noreferrer">八、给新手：从零开始写博客</a></li>
+</ul>
+<hr>
+<h2 id="heading-3">一、5 分钟快速搭建 Gmeek 博客</h2>
+<p>Gmeek 是一个「用 GitHub Issues 写博客」的框架，文章就是 Issue，发布靠 GitHub Actions 自动生成静态页。</p>
+<p><strong>步骤：</strong></p>
+<ol>
+<li><strong>Fork 或新建仓库</strong>：仓库名建议用 <code>你的用户名.github.io</code>（这样可以用根域名）。</li>
+<li><strong>启用 GitHub Pages</strong>：仓库 Settings → Pages → Source 选 <code>GitHub Actions</code>。</li>
+<li><strong>放入 Gmeek 配置</strong>：仓库根目录要有 <code>config.json</code>（站点配置）和 <code>.github/workflows/</code> 里的工作流文件。</li>
+<li><strong>写文章 = 发 Issue</strong>：在仓库 Issues 里新建 Issue，标题是文章标题，正文是 Markdown 内容，打上你想要的分类标签。</li>
+<li><strong>触发生成</strong>：Gmeek 的 GitHub Action 会自动把 Issue 转成网页。</li>
+<li><strong>访问</strong>：<code>https://你的用户名.github.io</code> 就能看到。</li>
+</ol>
+<blockquote>
+<p>核心概念：<strong>一篇文章 = 一个 Issue</strong>，<strong>一个标签 = 一个分类</strong>。你不用碰 HTML，写 Markdown 就行。</p>
+</blockquote>
+<hr>
+<h2 id="heading-4">二、CSS 和 JS 在 Gmeek 里怎么配置</h2>
+<p>Gmeek 的 <code>config.json</code> 里有几个字段专门用来注入自定义样式和脚本：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>作用</th>
+<th>在哪个页面生效</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>allHead</td>
+<td>注入到所有页面  的内容（引入 CSS/JS 文件、字体、第三方库）</td>
+<td>全部页面</td>
+</tr>
+<tr>
+<td>style</td>
+<td>全站 CSS（直接写样式代码）</td>
+<td>全部页面</td>
+</tr>
+<tr>
+<td>script</td>
+<td>全站 JS（直接写脚本代码）</td>
+<td>全部页面</td>
+</tr>
+<tr>
+<td>indexStyle</td>
+<td>仅首页 CSS</td>
+<td>仅首页</td>
+</tr>
+<tr>
+<td>indexScript</td>
+<td>仅首页 JS</td>
+<td>仅首页</td>
+</tr>
+<tr>
+<td>head</td>
+<td>注入到  最前面（适合放要尽早执行的脚本，比如防闪烁）</td>
+<td>全部页面</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-5">6. 静态资源</h3>
+<p>卡片背景图、海报图、音乐文件等，建议放仓库 <code>static/</code> 目录，用这种链接引用：</p>
+<pre><code>https://raw.githubusercontent.com/你的用户名/仓库名/refs/heads/main/static/文件路径
+</code></pre>
+<h3 id="heading-6">7. 域名（可选）</h3>
+<p>如果用自定义域名（如 luliy.me）：</p>
+<ul>
+<li>仓库根目录放 <code>CNAME</code> 文件，内容是你的域名</li>
+<li>域名 DNS 配置 GitHub Pages 的 A 记录 + CNAME 记录</li>
+<li>如果用 Cloudflare，必须设为「仅 DNS（灰云）」，不能开代理</li>
+</ul>
+<hr>
+<h2 id="heading-7">八、给新手：从零开始写博客</h2>
+<p>如果你是第一次用 Gmeek，按这个顺序来：</p>
+<p><strong>第 1 步：发布第一篇文章</strong>
+进仓库 Issues → New issue → 标题写文章名 → 正文写 Markdown 内容 → 给它打一个分类标签（比如 <code>日志</code>）→ 提交。等 GitHub Action 跑完，文章就上线了。</p>
+<p><strong>第 2 步：让文章出现在首页卡片</strong>
+首页六张卡片对应六个标签（学习/日志/随笔/指南/藏书/AI）。你的文章打哪个标签，点对应卡片就能看到它。</p>
+<p><strong>第 3 步：用归档页找所有文章</strong>
+点副标题或导航进归档页，所有文章按时间排好了，不用自己整理。</p>
+<p><strong>第 4 步：记录生活（Chronicle）</strong>
+想记录今年去了哪、看了什么书电影，就编辑 <code>chronicle-data</code> 那个 Issue。这是手动填的，格式是 JSON（参考第六章）。</p>
+<p><strong>第 5 步：建个人书架（Book）</strong>
+读完一本书写篇文章，打 <code>Library</code> + 分类标签（如 <code>小说</code>），书架页就自动多一本书，点击书脊跳到你的文章。</p>
+<p><strong>常见疑问：</strong></p>
+<ul>
+<li><em>改了 Issue 页面没变？</em> → 多数是浏览器缓存，强制刷新（Ctrl+Shift+R）。</li>
+<li><em>Chronicle 改了不用重新生成站点</em>，刷新即可；普通文章和归档需要 Gmeek 重新生成。</li>
+<li><em>Markdown 不会写？</em> → 标题用 <code>#</code>，加粗用 <code>**字**</code>，链接用 <code>[文字](网址)</code>，图片用 <code>![](图片网址)</code>，其余搜「Markdown 语法」即可。</li>
+</ul>
+<hr>
+<p><em>文档结束。这份说明随博客功能更新可能需要同步修订。</em></p>
+
+# ΔιάΝους 博客完整说明指南
+<blockquote>
+<p>这份文档是你这个博客的「使用手册 + 功能清单 + 维护说明」，存档备查用。<br>
+基于 Gmeek 框架 + 自定义 <code>enhance.js</code> / <code>enhance.css</code>，赛博朋克主题。</p>
+</blockquote>
+<hr>
+<h2 id="heading-8">目录</h2>
+<ul>
+<li>[<a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%B8%805-%E5%88%86%E9%92%9F%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA-gmeek-%E5%8D%9A%E5%AE%A2" rel="noopener noreferrer">一、5 分钟快速搭建 Gmeek 博客</a>](#一5-分钟快速搭建-gmeek-博客)</li>
+<li>[<a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%BA%8Ccss-%E5%92%8C-js-%E5%9C%A8-gmeek-%E9%87%8C%E6%80%8E%E4%B9%88%E9%85%8D%E7%BD%AE" rel="noopener noreferrer">二、CSS 和 JS 在 Gmeek 里怎么配置</a>](#二css-和-js-在-gmeek-里怎么配置)</li>
+<li>[<a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%B8%89%E5%8A%9F%E8%83%BD%E6%80%BB%E7%9B%AE%E5%BD%95" rel="noopener noreferrer">三、功能总目录（已实现 / 未实现）</a>](#三功能总目录)</li>
+<li>[<a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E5%9B%9B%E5%8A%9F%E8%83%BD%E8%AF%A6%E8%A7%A3%E6%8C%89%E5%BA%8F%E5%8F%B7" rel="noopener noreferrer">四、功能详解（按序号）</a>](#四功能详解按序号)</li>
+<li>[<a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%BA%94archives-%E5%BD%92%E6%A1%A3%E9%A1%B5-%E6%80%8E%E4%B9%88%E7%94%A8" rel="noopener noreferrer">五、Archives 归档页 怎么用</a>](#五archives-归档页-怎么用)</li>
+<li>[<a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E5%85%ADchronicle-%E7%BC%96%E5%B9%B4%E5%8F%B2%E9%A1%B5-%E6%80%8E%E4%B9%88%E7%94%A8" rel="noopener noreferrer">六、Chronicle 编年史页 怎么用</a>](#六chronicle-编年史页-怎么用)</li>
+<li>[<a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E4%B8%83%E9%99%A4%E4%BA%86%E5%A4%8D%E5%88%B6%E7%B2%98%E8%B4%B4%E4%BB%A3%E7%A0%81%E4%BD%A0%E8%BF%98%E9%9C%80%E8%A6%81%E9%85%8D%E7%BD%AE%E4%BB%80%E4%B9%88" rel="noopener noreferrer">七、除了复制粘贴代码，你还需要配置什么</a>](#七除了复制粘贴代码你还需要配置什么)</li>
+<li>[<a href="https://claude.ai/chat/f2994855-08ec-47a6-8c44-0e81f63ef802#%E5%85%AB%E7%BB%99%E6%96%B0%E6%89%8B%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2" rel="noopener noreferrer">八、给新手：从零开始写博客</a>](#八给新手从零开始写博客)</li>
+</ul>
+<hr>
+<h2 id="heading-9">一、5 分钟快速搭建 Gmeek 博客</h2>
+<p>Gmeek 是一个「用 GitHub Issues 写博客」的框架，文章就是 Issue，发布靠 GitHub Actions 自动生成静态页。</p>
+<p><strong>步骤：</strong></p>
+<ol>
+<li><strong>Fork 或新建仓库</strong>：仓库名建议用 <code>你的用户名.github.io</code>（这样可以用根域名）。</li>
+<li><strong>启用 GitHub Pages</strong>：仓库 Settings → Pages → Source 选 <code>GitHub Actions</code>。</li>
+<li><strong>放入 Gmeek 配置</strong>：仓库根目录要有 <code>config.json</code>（站点配置）和 <code>.github/workflows/</code> 里的工作流文件。</li>
+<li><strong>写文章 = 发 Issue</strong>：在仓库 Issues 里新建 Issue，标题是文章标题，正文是 Markdown 内容，打上你想要的分类标签。</li>
+<li><strong>触发生成</strong>：Gmeek 的 GitHub Action 会自动把 Issue 转成网页。</li>
+<li><strong>访问</strong>：<code>https://你的用户名.github.io</code> 就能看到。</li>
+</ol>
+<blockquote>
+<p>核心概念：<strong>一篇文章 = 一个 Issue</strong>，<strong>一个标签 = 一个分类</strong>。你不用碰 HTML，写 Markdown 就行。</p>
+</blockquote>
+<hr>
+<h2 id="heading-10">二、CSS 和 JS 在 Gmeek 里怎么配置</h2>
+<p>Gmeek 的 <code>config.json</code> 里有几个字段专门用来注入自定义样式和脚本：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>作用</th>
+<th>在哪个页面生效</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>allHead</code></td>
+<td>注入到所有页面 <code>&lt;head&gt;</code> 的内容（引入 CSS/JS 文件、字体、第三方库）</td>
+<td>全部页面</td>
+</tr>
+<tr>
+<td><code>style</code></td>
+<td>全站 CSS（直接写样式代码）</td>
+<td>全部页面</td>
+</tr>
+<tr>
+<td><code>script</code></td>
+<td>全站 JS（直接写脚本代码）</td>
+<td>全部页面</td>
+</tr>
+<tr>
+<td><code>indexStyle</code></td>
+<td>仅首页 CSS</td>
+<td>仅首页</td>
+</tr>
+<tr>
+<td><code>indexScript</code></td>
+<td>仅首页 JS</td>
+<td>仅首页</td>
+</tr>
+<tr>
+<td><code>head</code></td>
+<td>注入到 <code>&lt;head&gt;</code> 最前面（适合放要尽早执行的脚本，比如防闪烁）</td>
+<td>全部页面</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-11">本博客的做法（推荐）</h3>
+<p>把大量的自定义代码<strong>单独存成文件</strong>，而不是全塞进 <code>config.json</code>（否则 JSON 会变得巨大、难维护）：</p>
+<ol>
+<li>在仓库 <code>docs/</code> 目录放两个文件：<code>enhance.css</code> 和 <code>enhance.js</code></li>
+<li>在 <code>config.json</code> 的 <code>allHead</code> 末尾用 <code>&lt;link&gt;</code> 和 <code>&lt;script&gt;</code> 引入它们：</li>
+</ol>
+<div><pre><span>&lt;</span><span>link</span> <span>rel</span>=&#x27;<span>stylesheet</span>&#x27; <span>href</span>=&#x27;<span>/enhance.css</span>&#x27;<span>&gt;</span>
+<span>&lt;</span><span>script</span> <span>defer</span> <span>src</span>=&#x27;<span>/enhance.js</span>&#x27;<span>&gt;</span><span>&lt;/</span><span>script</span><span>&gt;</span></pre></div>
+<p>这样以后改样式/功能，只动 <code>enhance.css</code> / <code>enhance.js</code> 两个文件，<code>config.json</code> 基本不用动。</p>
+<blockquote>
+<p>本博客的 <code>allHead</code> 里还引入了：KaTeX（数学公式）、Prism（代码高亮）、Mermaid（流程图）、Chart.js（图表）、APlayer（音乐播放器）、Live2D（看板娘）等第三方库。</p>
+</blockquote>
+<h3 id="heading-12">head 字段的防闪烁脚本</h3>
+<p><code>head</code> 字段里放了一段<strong>很早执行</strong>的脚本，作用是在页面刚加载、CSS 还没生效时就确定深色/浅色模式，避免「先白屏一下再变暗」的闪烁。这类需要抢在渲染前执行的代码就放 <code>head</code>。</p>
+<hr>
+<h2 id="heading-13">三、功能总目录</h2>
+<h3 id="heading-14">✅ 已实现的功能</h3>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>英文名</th>
+<th>中文名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00</td>
+<td>Loading Splash</td>
+<td>加载动画（两种随机：流光 / 光线扫描）</td>
+</tr>
+<tr>
+<td>01</td>
+<td>localStorage Init</td>
+<td>本地设置初始化</td>
+</tr>
+<tr>
+<td>02</td>
+<td>Progress Bar</td>
+<td>阅读进度条</td>
+</tr>
+<tr>
+<td>03</td>
+<td>Dynamic Title</td>
+<td>动态标题（切走标签页时变化）</td>
+</tr>
+<tr>
+<td>04</td>
+<td>Uptime Counter</td>
+<td>建站运行时长计时</td>
+</tr>
+<tr>
+<td>05</td>
+<td>Dark-mode Ripple</td>
+<td>深浅模式切换涟漪动画</td>
+</tr>
+<tr>
+<td>06</td>
+<td>Cyber Particles</td>
+<td>赛博粒子背景（经典 / 城市天际线两种风格）</td>
+</tr>
+<tr>
+<td>07</td>
+<td>Web Audio SFX</td>
+<td>交互音效</td>
+</tr>
+<tr>
+<td>08</td>
+<td>Click Sparks</td>
+<td>点击火花 / 鼠标拖尾</td>
+</tr>
+<tr>
+<td>09</td>
+<td>Navbar</td>
+<td>顶部导航（头像 + 站名 + 时钟 + 图标）</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Brand + Thinker Icon</td>
+<td>站名发光标题 + 沉思者图标（跳 Issues）</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Subtitle Links</td>
+<td>副标题三词链接（→ Chronicle / Book / Favorites）</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Image Lightbox</td>
+<td>图片灯箱（点击放大）</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Floating Toolbar</td>
+<td>浮动设置面板（主题 / 阅读偏好 / 音乐 / 特效开关）</td>
+</tr>
+<tr>
+<td>13a</td>
+<td>7 Themes</td>
+<td>七套主题（赛博朋克 / 默认 / 樱花 / 你的名字 / 太空 / 日落 / 单色）</td>
+</tr>
+<tr>
+<td>13b</td>
+<td>Liquid Glass</td>
+<td>液态玻璃（模糊 / 透明度 / 色调可调）</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Home Category Cards</td>
+<td>首页六张分类卡片（宽高可调 + 悬停霓虹光晕）</td>
+</tr>
+<tr>
+<td>15</td>
+<td>macOS Code Block</td>
+<td>代码块美化（三个圆点 + 行号）</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Sakura</td>
+<td>樱花花瓣飘落</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Reading Progress Ring</td>
+<td>阅读进度环 + 返回顶部</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Nav Drawer</td>
+<td>抽屉式侧边导航（汉堡菜单）</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Favorites Lock</td>
+<td>收藏页密码锁</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Post Page</td>
+<td>文章页（系列导航 + 滚动记忆 + 站内搜索）</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Tag Cloud</td>
+<td>标签云页</td>
+</tr>
+<tr>
+<td>24</td>
+<td>In-page Search</td>
+<td>文章内搜索浮层</td>
+</tr>
+<tr>
+<td>25</td>
+<td>Mouse Trail</td>
+<td>鼠标拖尾 + 萤火虫</td>
+</tr>
+<tr>
+<td>26</td>
+<td>View Transitions</td>
+<td>跨页淡入淡出过渡</td>
+</tr>
+<tr>
+<td>A</td>
+<td>Archives</td>
+<td>归档页（Weekly / Other 双标签 + 分页）</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Chronicle</td>
+<td>编年史页（年份 + 出游 / 书影游 / 海报墙）</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Bookshelf</td>
+<td>书架页（自动读 Library 文章，五大类）</td>
+</tr>
+<tr>
+<td>M</td>
+<td>APlayer</td>
+<td>可拖动音乐播放器（增删曲 / 随机 / 快捷键）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-15">⬜ 尚未实现 / 已移除的功能</h3>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hero Banner</td>
+<td>旧的首页大横幅，已移除（改用六张分类卡片）</td>
+</tr>
+<tr>
+<td>Background Image</td>
+<td>背景图功能已移除（全站改用纯色 + 粒子）</td>
+</tr>
+<tr>
+<td>Mouse Glow Halo</td>
+<td>鼠标光晕，已删除（保留拖尾和点击爆炸）</td>
+</tr>
+<tr>
+<td>Reading Summary</td>
+<td>Chronicle/Book 暂不显示文章摘要（postList.json 无摘要字段）</td>
+</tr>
+<tr>
+<td>Gallery Banner</td>
+<td>首页底部画廊横幅，已停用</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-16">四、功能详解（按序号）</h2>
+<blockquote>
+<p>以下按代码里的区块序号介绍核心功能，方便你日后定位修改。</p>
+</blockquote>
+<p><strong>00 加载动画 Loading Splash</strong><br>
+打开网站时居中显示「ΔιάΝους」。两种动画随机出现：① 流光（霓虹色缠绕流动）；② 光线扫描（白光从左扫到右，扫到的字母才亮，结尾十字星闪烁）。约 1.5 秒后淡出。</p>
+<p><strong>01 本地设置初始化 localStorage Init</strong><br>
+所有用户偏好（主题、特效开关、音乐位置等）存在浏览器 localStorage 里，键名都以 <code>luliy-</code> 开头。手机端默认关闭粒子和樱花（纯净阅读）。</p>
+<p><strong>02–04 进度条 / 动态标题 / 运行时长</strong><br>
+顶部阅读进度条；切走标签页时标题变化提醒；页脚显示建站至今的运行天数。</p>
+<p><strong>05 深浅模式涟漪 Dark-mode Ripple</strong><br>
+切换深浅模式时，从点击位置扩散一圈涟漪动画。</p>
+<p><strong>06 赛博粒子 Cyber Particles</strong><br>
+全屏粒子背景，两种风格：① 经典（粒子向站名汇聚）；② 城市（多层 3D 赛博朋克建筑天际线 + 物理引力粒子）。在设置面板可切换、可关闭。那些紫色的星星就是这个系统。</p>
+<p><strong>07–08 音效 / 点击火花</strong><br>
+交互音效（Web Audio 合成）；点击迸发火花、鼠标拖尾粒子。</p>
+<p><strong>09–11 导航 / 站名 / 副标题</strong><br>
+顶部：头像、站名、时钟、图标按钮。站名「ΔιάΝους」有恒星核心发光效果，右边是 Q 版沉思者图标（点击进 GitHub Issues）。副标题三个希腊词分别链接到 Chronicle / Book / Favorites。</p>
+<p><strong>12 图片灯箱 Image Lightbox</strong><br>
+文章里的图片点击可放大查看。</p>
+<p><strong>13 浮动设置面板 Floating Toolbar</strong><br>
+核心控制台。可切换：七套主题、液态玻璃参数（模糊/透明度/色调）、文章面板透明度、卡片宽高、粒子开关与风格、樱花开关、减弱动效、卡片视图。有「恢复默认值」按钮。这些设置也镜像在抽屉里。</p>
+<p><strong>14 首页分类卡片 Home Category Cards</strong><br>
+首页六张卡片：学习 / 日志 / 随笔 / 指南 / 藏书 / AI，对应 GitHub 标签。卡片宽高可在设置里调，悬停时上浮 + 粉色霓虹光晕 + 图片放大锐化。</p>
+<p><strong>15–17 代码块 / 樱花 / 阅读进度环</strong><br>
+代码块仿 macOS 窗口（三个圆点 + 行号）；樱花花瓣飘落；文章页右下角阅读进度环 + 返回顶部。</p>
+<p><strong>18 抽屉导航 Nav Drawer</strong><br>
+左上角汉堡菜单展开侧边抽屉，含快捷链接、主题切换、设置。抽屉背景跟随当前主题变色。</p>
+<p><strong>19 收藏页密码锁 Favorites Lock</strong><br>
+收藏页用前端密码遮挡（注意：仅是遮挡，源码里仍可见，别放真正机密）。</p>
+<p><strong>21–26 文章页 / 标签云 / 搜索 / 拖尾 / 过渡</strong><br>
+文章页支持系列导航、滚动位置记忆、站内搜索；标签云页；文章内搜索浮层；鼠标拖尾萤火虫；跨页淡入淡出。</p>
+<p><strong>A / C / B / M：见下方专章和书架说明。</strong></p>
+<hr>
+<h2 id="heading-17">五、Archives 归档页 怎么用</h2>
+<p><strong>它是什么</strong>：把你所有文章按时间归档展示的页面，URL 是 <code>/archive.html</code>。</p>
+<p><strong>页面长什么样</strong>：</p>
+<ul>
+<li>右上角有「Weekly | Other」两个标签</li>
+<li>文章按年份分组，每行左边日期、右边标题</li>
+<li>每页 10 篇，超过自动分页（&lt; Page 1 of N &gt;）</li>
+<li>会记住你上次看的是哪个标签</li>
+</ul>
+<p><strong>两个标签怎么分</strong>：</p>
+<ul>
+<li><strong>Weekly</strong>：文章标签里有 <code>Weekly</code> / <code>周记</code> / <code>周报</code> / <code>二十四节气</code> 任意一个</li>
+<li><strong>Other</strong>：其余正常文章（系统页如 about/book 等会被自动排除）</li>
+</ul>
+<p><strong>怎么维护</strong>：完全自动。你正常发文章（带标签），归档页就自动更新，不用手动列清单。</p>
+<p><strong>怎么创建这个页面</strong>：</p>
+<ol>
+<li><code>config.json</code> 的 <code>singlePage</code> 里要有 <code>archive</code></li>
+<li>建一个 Issue：标题随意、标签 <code>archive</code>、正文写一句占位即可</li>
+</ol>
+<hr>
+<h2 id="heading-18">六、Chronicle 编年史页 怎么用</h2>
+<p><strong>它是什么</strong>：记录你的年度生活轨迹的页面，URL 是 <code>/chronicle.html</code>。分三个板块：出游、书影游、海报墙。</p>
+<p><strong>页面长什么样</strong>：</p>
+<ul>
+<li>右上角切换年份（2026 / 2025...）</li>
+<li>下面切换板块：出游 / 书影游 / 海报墙</li>
+<li>出游：月份 | 城市 | 活动（同月份自动合并）</li>
+<li>书影游：月份 | 读书 | 观影 | 演出 | 游戏</li>
+<li>海报墙：网格图片，点击全屏看大图，可左右切换</li>
+<li>会记住你上次选的年份和板块</li>
+</ul>
+<p><strong>数据从哪来</strong>：和归档页不同，编年史内容<strong>不是从文章自动生成</strong>的，而是来自一个专门的 GitHub Issue（标签 <code>chronicle-data</code>）。你编辑那个 Issue 的内容，刷新页面就更新（不用重新生成站点）。</p>
+<p><strong>怎么用（三个 Issue）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>标题</th>
+<th>标签</th>
+<th>正文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>页面</td>
+<td>Chronicle</td>
+<td><code>chronicle</code></td>
+<td>一段固定的占位骨架（含备用数据）</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>随意</td>
+<td><code>chronicle-data</code></td>
+<td>你的实际内容（JSON 格式，夹在两行注释中间）</td>
+</tr>
+</tbody>
+</table>
+<p>数据 Issue 正文格式：</p>
+<pre><code>&lt;!-- chronicle:data:start --&gt;
+{ ...你的 JSON 数据... }
+&lt;!-- chronicle:data:end --&gt;
+</code></pre>
+<p><strong>JSON 结构要点</strong>：</p>
+<ul>
+<li><code>years</code>：年份数组，如 <code>[&quot;2026&quot;,&quot;2025&quot;]</code>，第一个默认显示</li>
+<li><code>categories</code>：三个板块，<code>key</code> 必须是 <code>travel</code>/<code>media</code>/<code>posters</code>（不能改），<code>label</code> 是显示名（可改）</li>
+<li><code>data</code>：每年每个板块的具体内容</li>
+</ul>
+<p><strong>最容易出错的地方</strong>：JSON 里必须用英文双引号，不能有多余逗号，年份要写成字符串。改完建议先到 jsonlint.com 验证一下再贴。</p>
+<hr>
+<h2 id="heading-19">七、除了复制粘贴代码，你还需要配置什么</h2>
+<p>除了把 <code>enhance.js</code> / <code>enhance.css</code> 放进 <code>docs/</code>，你还需要在 <strong>config.json</strong> 里确认/配置这些（全中文说明）：</p>
+<h3 id="heading-20">1. 必填的基础信息</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>填什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>title</code> / <code>displayTitle</code></td>
+<td>站点名称（你的是 ΔιάΝους）</td>
+</tr>
+<tr>
+<td><code>subTitle</code></td>
+<td>副标题文字</td>
+</tr>
+<tr>
+<td><code>avatarUrl</code></td>
+<td>头像图片链接</td>
+</tr>
+<tr>
+<td><code>homeUrl</code></td>
+<td>你的网站域名（如 <a href="https://luliy.me%EF%BC%89" rel="noopener noreferrer">https://luliy.me）</a></td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>联系邮箱</td>
+</tr>
+<tr>
+<td><code>startSite</code></td>
+<td>建站日期（用于运行时长计时）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-21">2. singlePage（单页列表）</h3>
+<p>要让 Archives / Chronicle / Book 这些特殊页面生效，它们的名字必须列在这里：</p>
+<div><pre><span>&quot;singlePage&quot;</span>: [<span><span>&quot;</span>about<span>&quot;</span></span>,<span><span>&quot;</span>gallery<span>&quot;</span></span>,<span><span>&quot;</span>book<span>&quot;</span></span>,<span><span>&quot;</span>favorites<span>&quot;</span></span>,<span><span>&quot;</span>archive<span>&quot;</span></span>,<span><span>&quot;</span>stock<span>&quot;</span></span>,<span><span>&quot;</span>link<span>&quot;</span></span>,<span><span>&quot;</span>chronicle<span>&quot;</span></span>]</pre></div>
+<h3 id="heading-22">3. allHead（引入文件和库）</h3>
+<p>确认末尾有引入你的两个文件：</p>
+<div><pre><span>&lt;</span><span>link</span> <span>rel</span>=&#x27;<span>stylesheet</span>&#x27; <span>href</span>=&#x27;<span>/enhance.css</span>&#x27;<span>&gt;</span>
+<span>&lt;</span><span>script</span> <span>defer</span> <span>src</span>=&#x27;<span>/enhance.js</span>&#x27;<span>&gt;</span><span>&lt;/</span><span>script</span><span>&gt;</span></pre></div>
+<h3 id="heading-23">4. 要建的 Issues（页面和数据）</h3>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>标签</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>归档页</td>
+<td><code>archive</code></td>
+</tr>
+<tr>
+<td>编年史页</td>
+<td><code>chronicle</code></td>
+</tr>
+<tr>
+<td>编年史数据</td>
+<td><code>chronicle-data</code></td>
+</tr>
+<tr>
+<td>书架页</td>
+<td><code>book</code></td>
+</tr>
+<tr>
+<td>关于页</td>
+<td><code>about</code></td>
+</tr>
+<tr>
+<td>收藏页</td>
+<td><code>favorites</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-24">5. 文章要打的标签（决定文章去哪）</h3>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>文章会出现在</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>学习</code> / <code>日志</code> / <code>随笔</code> / <code>指南</code> / <code>藏书</code> / <code>AI</code></td>
+<td>首页对应分类卡片</td>
+</tr>
+<tr>
+<td><code>Library</code> + <code>小说</code>/<code>成长</code>/<code>投资</code>/<code>现实</code></td>
+<td>书架对应分类</td>
+</tr>
+<tr>
+<td><code>Library</code> + <code>在读</code></td>
+<td>书架的「在读」书堆</td>
+</tr>
+<tr>
+<td><code>Weekly</code> / <code>周记</code> / <code>周报</code></td>
+<td>归档页的 Weekly 标签</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-25">6. 静态资源</h3>
+<p>卡片背景图、海报图、音乐文件等，建议放仓库 <code>static/</code> 目录，用这种链接引用：</p>
+<pre><code>https://raw.githubusercontent.com/你的用户名/仓库名/refs/heads/main/static/文件路径
+</code></pre>
+<h3 id="heading-26">7. 域名（可选）</h3>
+<p>如果用自定义域名（如 luliy.me）：</p>
+<ul>
+<li>仓库根目录放 <code>CNAME</code> 文件，内容是你的域名</li>
+<li>域名 DNS 配置 GitHub Pages 的 A 记录 + CNAME 记录</li>
+<li>如果用 Cloudflare，必须设为「仅 DNS（灰云）」，不能开代理</li>
+</ul>
+<hr>
+<h2 id="heading-27">八、给新手：从零开始写博客</h2>
+<p>如果你是第一次用 Gmeek，按这个顺序来：</p>
+<p><strong>第 1 步：发布第一篇文章</strong><br>
+进仓库 Issues → New issue → 标题写文章名 → 正文写 Markdown 内容 → 给它打一个分类标签（比如 <code>日志</code>）→ 提交。等 GitHub Action 跑完，文章就上线了。</p>
+<p><strong>第 2 步：让文章出现在首页卡片</strong><br>
+首页六张卡片对应六个标签（学习/日志/随笔/指南/藏书/AI）。你的文章打哪个标签，点对应卡片就能看到它。</p>
+<p><strong>第 3 步：用归档页找所有文章</strong><br>
+点副标题或导航进归档页，所有文章按时间排好了，不用自己整理。</p>
+<p><strong>第 4 步：记录生活（Chronicle）</strong><br>
+想记录今年去了哪、看了什么书电影，就编辑 <code>chronicle-data</code> 那个 Issue。这是手动填的，格式是 JSON（参考第六章）。</p>
+<p><strong>第 5 步：建个人书架（Book）</strong><br>
+读完一本书写篇文章，打 <code>Library</code> + 分类标签（如 <code>小说</code>），书架页就自动多一本书，点击书脊跳到你的文章。</p>
+<p><strong>常见疑问：</strong></p>
+<ul>
+<li><em>改了 Issue 页面没变？</em> → 多数是浏览器缓存，强制刷新（Ctrl+Shift+R）。</li>
+<li><em>Chronicle 改了不用重新生成站点</em>，刷新即可；普通文章和归档需要 Gmeek 重新生成。</li>
+<li><em>Markdown 不会写？</em> → 标题用 <code>#</code>，加粗用 <code>**字**</code>，链接用 <code>[文字](网址)</code>，图片用 <code>![](图片网址)</code>，其余搜「Markdown 语法」即可。</li>
+</ul>
+<hr>
+<p><em>文档结束。这份说明随博客功能更新可能需要同步修订。</em></p></article></div></main><footer><a href="/feed.xml">RSS 訂閱</a> · <a href="/#/posts">所有文章</a> · <a href="#">回到頂部 ↑</a></footer></body></html>

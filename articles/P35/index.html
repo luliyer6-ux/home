@@ -1,0 +1,663 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>本站js，css，指南 · Luliy Articles</title><meta name="description" content="Luliy Blog 增强系统完全指南 enhance.js v10 + enhance.css v9 — 功能说明 · DIY 方法 · 运行原理 1. 系统总览 整个增强系统由两个文件构成，以模块化方式挂载在一个 IIFE（立即执行函数）里，避免污染全局命名空间： enhance.js → 行为"><link rel="canonical" href="https://luliy.me/articles/P35/"><link rel="alternate" type="application/rss+xml" title="Luliy Articles" href="/feed.xml"><meta property="og:type" content="article"><meta property="og:title" content="本站js，css，指南"><meta property="og:description" content="Luliy Blog 增强系统完全指南 enhance.js v10 + enhance.css v9 — 功能说明 · DIY 方法 · 运行原理 1. 系统总览 整个增强系统由两个文件构成，以模块化方式挂载在一个 IIFE（立即执行函数）里，避免污染全局命名空间： enhance.js → 行为"><meta property="og:url" content="https://luliy.me/articles/P35/"><meta property="og:image" content="https://luliy.me/assets/site/share.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="本站js，css，指南"><meta name="twitter:description" content="Luliy Blog 增强系统完全指南 enhance.js v10 + enhance.css v9 — 功能说明 · DIY 方法 · 运行原理 1. 系统总览 整个增强系统由两个文件构成，以模块化方式挂载在一个 IIFE（立即执行函数）里，避免污染全局命名空间： enhance.js → 行为"><meta name="twitter:image" content="https://luliy.me/assets/site/share.png"><link rel="stylesheet" href="/site-publish/article.css"></head><body><header><a href="/">LULIY <small>Articles</small></a><a href="/#/article/P35">在主站閱讀 ↗</a></header><main><h1>本站js，css，指南</h1><p class="meta">2026-06-12 · LULIY</p><div class="reading"><aside aria-label="文章目錄"><a style="--level:1" href="#heading-1">Luliy Blog 增强系统完全指南</a><a style="--level:2" href="#heading-2">1. 系统总览</a><a style="--level:2" href="#heading-3">2. 快速 DIY：核心配置项 LULIY_OPTS</a><a style="--level:2" href="#heading-4">3. 持久化开关：localStorage 键值表</a><a style="--level:2" href="#heading-5">4. 模块逐一说明</a><a style="--level:3" href="#heading-6">M00 首页 Hero 全屏封面</a><a style="--level:3" href="#heading-7">M01 localStorage 初始化</a><a style="--level:3" href="#heading-8">M02 阅读进度条</a><a style="--level:3" href="#heading-9">M03 动态标题</a><a style="--level:3" href="#heading-10">M04 建站运行时计时器</a><a style="--level:3" href="#heading-11">M05 暗色模式切换涟漪</a><a style="--level:3" href="#heading-12">M07 Web Audio 音效</a><a style="--level:3" href="#heading-13">M08 点击粒子火花</a><a style="--level:3" href="#heading-14">M09 导航栏重建（头像 + 时钟）</a><a style="--level:3" href="#heading-15">M10 Hero 卷轴分隔条</a><a style="--level:3" href="#heading-16">M11 标签页搜索栏</a><a style="--level:3" href="#heading-17">M12 图片灯箱</a><a style="--level:3" href="#heading-18">M13 悬浮工具栏 + 统一控制面板</a><a style="--level:3" href="#heading-19">M14 首页卡片重建（三视图 + 骨架屏）</a><a style="--level:3" href="#heading-20">M15 macOS 风格代码块</a><a style="--level:3" href="#heading-21">M16 樱花飘落 + 流星（四季自适应）</a><a style="--level:3" href="#heading-22">M17 文章 TOC 滚动高亮 + 阅读进度环</a><a style="--level:3" href="#heading-23">M18 移动端汉堡菜单 + 滑动翻页</a><a style="--level:3" href="#heading-24">M19 收藏夹密码门</a><a style="--level:3" href="#heading-25">M20 首页底部图片展示区</a><a style="--level:3" href="#heading-26">M21 文章页初始化（系列导航 + 滚动记忆）</a><a style="--level:3" href="#heading-27">M22 归档页（时间轴 + 日历）</a><a style="--level:3" href="#heading-28">M23 标签云页面</a><a style="--level:3" href="#heading-29">M24 文章内搜索浮层</a><a style="--level:3" href="#heading-30">M25 鼠标拖尾 + 萤火虫</a><a style="--level:3" href="#heading-31">M26 页面切换淡入淡出</a><a style="--level:2" href="#heading-32">5. CSS 主题系统</a><a style="--level:2" href="#heading-33">6. 性能设计说明</a><a style="--level:2" href="#heading-34">7. 常见 DIY 场景速查</a></aside><article><h1 id="heading-1">Luliy Blog 增强系统完全指南</h1>
+<blockquote>
+<p><code>enhance.js v10</code> + <code>enhance.css v9</code> — 功能说明 · DIY 方法 · 运行原理</p>
+</blockquote>
+<h2 id="heading-2">1. 系统总览</h2>
+<p>整个增强系统由两个文件构成，以<strong>模块化方式</strong>挂载在一个 IIFE（立即执行函数）里，避免污染全局命名空间：</p>
+<pre><code>enhance.js   →  行为层（DOM 构建 / 事件 / 动画 / 数据读取）
+enhance.css  →  样式层（主题变量 / 布局 / 过渡动画）
+</code></pre>
+<p><strong>启动流程：</strong></p>
+<pre><code>页面加载开始
+  ↓
+① initLocalStorage()        — 补全缺失的 localStorage 默认值
+② FOUC 防闪烁块             — 立即读取保存的主题/背景，写入 body
+③ initSakura()              — 若已开启，尽早启动 canvas（避免延迟）
+  ↓ DOMContentLoaded
+④ ready() 回调              — 初始化所有模块
+⑤ 页面类型判断              — isPost → initPost()  /  isIndex → initIndex()
+</code></pre>
+<p>所有滚动监听统一经过 <strong><code>onScrollRAF</code></strong> 调度器，合并到单个 <code>requestAnimationFrame</code> 帧里执行，避免多个模块各自注册 scroll 事件造成卡顿。</p>
+<hr>
+<h2 id="heading-3">2. 快速 DIY：核心配置项 <code>LULIY_OPTS</code></h2>
+<p><code>enhance.js</code> 顶部的 <code>LULIY_OPTS</code> 对象是<strong>唯一需要修改</strong>的主配置区。</p>
+<div><pre><span>var</span> <span>LULIY_OPTS</span> <span>=</span> <span>{</span>
+  <span>// ① 首页底部画廊：只放 1 张 = 全幅 Banner；放 2 张以上 = 网格</span>
+  <span>galleryImages</span>: <span>[</span><span>&#x27;https://你的图片链接.jpg&#x27;</span><span>]</span><span>,</span>
+  <span>galleryText</span>: <span>&#x27;我将无限进步&#x27;</span><span>,</span>         <span>// 画廊上的文字</span>
+
+  <span>// ② 首页全屏 Hero</span>
+  <span>heroImage</span>: <span>&#x27;https://你的背景图.webp&#x27;</span><span>,</span> <span>// 背景大图</span>
+  <span>heroTitle</span>: <span>&#x27;Luliy&#x27;</span><span>,</span>                  <span>// 大标题</span>
+  <span>heroSubtitle</span>: <span>&#x27;我将无限进步&#x27;</span><span>,</span>         <span>// 副标题</span>
+  <span>heroHint</span>: <span>&#x27;下滑进入 ↓&#x27;</span><span>,</span>              <span>// 向下提示文字</span>
+
+  <span>// ③ 音乐播放列表（跨页面持续播放）</span>
+  <span>musicTracks</span>: <span>[</span>
+    <span>{</span> <span>name</span>: <span>&#x27;曲目名称&#x27;</span><span>,</span> <span>src</span>: <span>&#x27;https://你的mp3链接.mp3&#x27;</span> <span>}</span>
+    <span>// 可添加多首</span>
+  <span>]</span><span>,</span>
+
+  <span>// ④ 收藏夹密码（SHA-256 哈希值，明文密码不出现在代码里）</span>
+  <span>favoritesHash</span>: <span>&#x27;SHA256哈希值&#x27;</span><span>,</span>
+  <span>favoritesPathMatch</span>: <span><span>/</span><span>f</span><span>a</span><span>v</span><span>o</span><span>r</span><span>i</span><span>t</span><span>e</span><span>s</span><span>/</span>i</span><span>,</span>    <span>// 匹配收藏夹页面 URL</span>
+
+  <span>homeUrl</span>: <span>&#x27;/&#x27;</span>
+<span>}</span><span>;</span></pre></div>
+<p><strong>如何生成 SHA-256 密码哈希？</strong><br>
+在浏览器控制台运行：</p>
+<div><pre><span>crypto</span><span>.</span><span>subtle</span><span>.</span><span>digest</span><span>(</span><span>&#x27;SHA-256&#x27;</span><span>,</span> <span>new</span> <span>TextEncoder</span><span>(</span><span>)</span><span>.</span><span>encode</span><span>(</span><span>&#x27;你的密码&#x27;</span><span>)</span><span>)</span>
+  <span>.</span><span>then</span><span>(</span><span>b</span> <span>=&gt;</span> <span>console</span><span>.</span><span>log</span><span>(</span><span>[</span>...<span>new</span> <span>Uint8Array</span><span>(</span><span>b</span><span>)</span><span>]</span><span>.</span><span>map</span><span>(</span><span>x</span><span>=&gt;</span><span>x</span><span>.</span><span>toString</span><span>(</span><span>16</span><span>)</span><span>.</span><span>padStart</span><span>(</span><span>2</span><span>,</span><span>&#x27;0&#x27;</span><span>)</span><span>)</span><span>.</span><span>join</span><span>(</span><span>&#x27;&#x27;</span><span>)</span><span>)</span><span>)</span></pre></div>
+<hr>
+<h2 id="heading-4">3. 持久化开关：localStorage 键值表</h2>
+<p>这些键值由访客操作自动写入，也可以在控制台手动设置来调试：</p>
+<table>
+<thead>
+<tr>
+<th>键名</th>
+<th>默认值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>luliy-sfx</code></td>
+<td><code>&#x27;1&#x27;</code></td>
+<td>音效开关（<code>&#x27;0&#x27;</code> = 关闭）</td>
+</tr>
+<tr>
+<td><code>luliy-sakura</code></td>
+<td><code>&#x27;1&#x27;</code></td>
+<td>樱花/四季粒子开关</td>
+</tr>
+<tr>
+<td><code>luliy-sink</code></td>
+<td><code>&#x27;default&#x27;</code></td>
+<td>当前主题名称</td>
+</tr>
+<tr>
+<td><code>luliy-bg</code></td>
+<td><code>&#x27;&#x27;</code></td>
+<td>自定义背景图 URL（空 = 默认背景）</td>
+</tr>
+<tr>
+<td><code>luliy-fontsize</code></td>
+<td><code>&#x27;18&#x27;</code></td>
+<td>文章字号（px），范围 14–24</td>
+</tr>
+<tr>
+<td><code>luliy-sans</code></td>
+<td><code>&#x27;0&#x27;</code></td>
+<td>字体：<code>&#x27;0&#x27;</code>=默认楷体 / <code>&#x27;1&#x27;</code>=黑体 / <code>&#x27;2&#x27;</code>=苍耳今楷</td>
+</tr>
+<tr>
+<td><code>luliy-music</code></td>
+<td><code>&#x27;&#x27;</code></td>
+<td>用户自添加的曲目（JSON 数组）</td>
+</tr>
+<tr>
+<td><code>luliy-cardview</code></td>
+<td><code>&#x27;grid&#x27;</code></td>
+<td>首页卡片视图：<code>grid</code> / <code>list</code> / <code>timeline</code></td>
+</tr>
+<tr>
+<td><code>luliy-trail</code></td>
+<td><code>&#x27;0&#x27;</code></td>
+<td>鼠标拖尾开关</td>
+</tr>
+<tr>
+<td><code>luliy-firefly</code></td>
+<td><code>&#x27;0&#x27;</code></td>
+<td>萤火虫开关</td>
+</tr>
+<tr>
+<td><code>luliy-focus</code></td>
+<td><code>&#x27;0&#x27;</code></td>
+<td>专注阅读模式</td>
+</tr>
+<tr>
+<td><code>luliy-reduce</code></td>
+<td><code>&#x27;0&#x27;</code></td>
+<td>强制减少动效（覆盖系统设置）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-5">4. 模块逐一说明</h2>
+<hr>
+<h3 id="heading-6">M00 首页 Hero 全屏封面</h3>
+<p><strong>功能：</strong> 访客打开首页时，先看到占满屏幕的大图封面，滚动后进入内容区。导航栏在 Hero 范围内完全隐藏，滚出后淡入显示。</p>
+<p><strong>运行原理：</strong></p>
+<ol>
+<li><code>isIndexPage()</code> 检测当前是首页</li>
+<li>用 JS 动态创建 <code>&lt;section id=&quot;luliy-hero&quot;&gt;</code> 并插入 <code>body</code> 最前面</li>
+<li>CSS 将其设置为 <code>height: 100vh; position: relative</code></li>
+<li>通过 <code>onScrollRAF</code> 监听滚动，实现：
+<ul>
+<li>内容文字：<code>translateY + opacity</code> 视差淡出</li>
+<li>导航栏：滚动量 &lt; 85vh 时 <code>opacity:0; pointer-events:none</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>DIY 方法：</strong></p>
+<ul>
+<li>修改 <code>LULIY_OPTS.heroImage/heroTitle/heroSubtitle/heroHint</code></li>
+<li>CSS 中 <code>#luliy-hero</code> 调整 <code>background-position</code> 控制焦点</li>
+<li>修改视差系数：<code>p * 60</code>（位移量）和 <code>p * 1.4</code>（淡出速度）</li>
+</ul>
+<hr>
+<h3 id="heading-7">M01 localStorage 初始化</h3>
+<p><strong>功能：</strong> 首次访问时为所有持久化选项写入默认值，防止后续读取返回 <code>null</code>。</p>
+<p><strong>运行原理：</strong> 遍历默认值字典，用 <code>localStorage.getItem(k) === null</code> 判断是否已设置，未设置则写入默认值。<strong>只在缺失时写入，不覆盖已有值。</strong></p>
+<hr>
+<h3 id="heading-8">M02 阅读进度条</h3>
+<p><strong>功能：</strong> 页面顶部一条细线，随页面滚动从 0% 增长到 100%。</p>
+<p><strong>运行原理：</strong></p>
+<pre><code>滚动百分比 = scrollY / (scrollHeight - clientHeight) × 100%
+</code></pre>
+<p>进度条宽度通过 <code>bar.style.width</code> 实时更新。颜色跟随当前主题的 <code>--accent</code> CSS 变量。</p>
+<p><strong>DIY 方法：</strong> CSS 中 <code>#luliy-progress-bar</code> 修改高度、颜色、渐变。</p>
+<hr>
+<h3 id="heading-9">M03 动态标题</h3>
+<p><strong>功能：</strong> 切换到其他标签页时，标题变为「👀 别走啊，我还在进步！」；切回来时显示「✨ 欢迎回来！」，2 秒后恢复原标题。</p>
+<p><strong>运行原理：</strong> 监听 <code>document.visibilitychange</code> 事件，修改 <code>document.title</code>。</p>
+<p><strong>DIY 方法：</strong> 修改代码中两处 Unicode 字符串：</p>
+<ul>
+<li>离开时：<code>&#x27;\uD83D\uDC40 \u522b\u8d70\u554a...&#x27;</code></li>
+<li>回来时：<code>&#x27;\u2728 \u6b22\u8fce\u56de\u6765\uff01&#x27;</code></li>
+</ul>
+<hr>
+<h3 id="heading-10">M04 建站运行时计时器</h3>
+<p><strong>功能：</strong> 页面底部显示「🌱 本站已陪伴你无限进步：X天 X小时 X分 X秒」，秒数实时跳动。</p>
+<p><strong>运行原理：</strong></p>
+<ul>
+<li>读取硬编码的建站时间 <code>new Date(&#x27;2026/05/30 00:00:00&#x27;)</code></li>
+<li><code>setInterval</code> 每秒计算差值并更新 DOM</li>
+</ul>
+<p><strong>DIY 方法：</strong> 修改建站日期：</p>
+<div><pre><span>var</span> <span>start</span> <span>=</span> <span>new</span> <span>Date</span><span>(</span><span>&#x27;2026/05/30 00:00:00&#x27;</span><span>)</span><span>.</span><span>getTime</span><span>(</span><span>)</span><span>;</span>
+<span>// 改为你的建站日期</span></pre></div>
+<p>修改显示文字中的 Unicode 字符串。</p>
+<hr>
+<h3 id="heading-11">M05 暗色模式切换涟漪</h3>
+<p><strong>功能：</strong> 点击日/夜切换按钮时，从点击位置向四周扩散一个圆形涟漪遮罩，完成模式切换的视觉过渡。</p>
+<p><strong>运行原理：</strong></p>
+<ol>
+<li>监听点击事件，识别含 <code>Moon/Sun</code> SVG 或相关 title 的按钮</li>
+<li>计算点击坐标到最远角落的距离作为最终半径</li>
+<li>动态创建一个 <code>position:fixed</code> 的圆形 div，用 CSS <code>transform: scale(0→1)</code> + <code>opacity: 1→0</code> 完成扩散动画</li>
+<li>700ms 后自动移除</li>
+</ol>
+<p><strong>全局暴露：</strong> <code>window._luliyThemeRipple(x, y)</code> — 可从任何地方调用触发涟漪。</p>
+<hr>
+<h3 id="heading-12">M07 Web Audio 音效</h3>
+<p><strong>功能：</strong> 点击、切换主题、科技感操作时播放轻微提示音。完全由浏览器 Web Audio API 合成，无需加载音频文件。</p>
+<p><strong>三种音效：</strong></p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>触发场景</th>
+<th>波形</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>click</code></td>
+<td>普通点击</td>
+<td>方波，900Hz→400Hz，60ms</td>
+</tr>
+<tr>
+<td><code>sci</code></td>
+<td>科技操作（全屏等）</td>
+<td>正弦波，440→880→660Hz，250ms</td>
+</tr>
+<tr>
+<td><code>theme</code></td>
+<td>主题切换</td>
+<td>三音和弦（C-E-G），依次延迟</td>
+</tr>
+</tbody>
+</table>
+<p><strong>DIY 方法：</strong> 修改 <code>playSfx</code> 函数内的频率值和时长。关闭音效：<code>localStorage.setItem(&#x27;luliy-sfx&#x27;,&#x27;0&#x27;)</code>。</p>
+<hr>
+<h3 id="heading-13">M08 点击粒子火花</h3>
+<p><strong>功能：</strong> 每次点击屏幕，从点击位置爆出 6 个彩色小圆点向四周飞散后淡出。</p>
+<p><strong>运行原理：</strong></p>
+<ul>
+<li>监听 <code>document.click</code></li>
+<li>每个粒子是一个 <code>position:fixed</code> 的 7×7px 圆形 div</li>
+<li>用 CSS <code>transform: translate + rotate</code> + <code>transition</code> 完成飞散动画</li>
+<li>颜色从主题调色板随机选取（<code>--card-c1</code> 到 <code>--card-c4</code>）</li>
+<li>700ms 后自动移除</li>
+</ul>
+<hr>
+<h3 id="heading-14">M09 导航栏重建（头像 + 时钟）</h3>
+<p><strong>功能：</strong> 将 Gmeek 默认导航栏重构为：左上时钟 — 左图标区 — 中央头像+博客名 — 右图标区 的布局。</p>
+<p><strong>运行原理：</strong></p>
+<ol>
+<li>隐藏原有 header 子元素</li>
+<li>创建 <code>#luliy-nav-rebuilt</code> shell，包含四个区域</li>
+<li>从原 <code>.title-right</code> 中提取导航链接，按数量对半分到左右图标区</li>
+<li>日/夜切换按钮通过代理点击原始按钮保持 Gmeek 功能</li>
+<li>时钟每秒更新 <code>HH:MM:SS</code></li>
+</ol>
+<p><strong>DIY 方法：</strong></p>
+<ul>
+<li>头像图片：修改 <code>avatarImg.src</code> 中的 URL</li>
+<li>博客名：修改 <code>blogName.textContent = &#x27;Luliy&#x27;</code></li>
+<li>头像链接目标：修改 <code>avatarLink.href = &#x27;/about&#x27;</code></li>
+</ul>
+<hr>
+<h3 id="heading-15">M10 Hero 卷轴分隔条</h3>
+<p><strong>功能：</strong> 首页内容区顶部的一条可折叠横幅条，随滚动向上收起。</p>
+<p><strong>运行原理：</strong> 监听滚动，用 <code>translateY</code> 和 <code>opacity</code> 实现向上折叠效果，折叠距离基于自身高度动态计算。</p>
+<hr>
+<h3 id="heading-16">M11 标签页搜索栏</h3>
+<p><strong>功能：</strong> 在 <code>/tag.html</code> 页面顶部插入搜索框，实时筛选显示的标签，并显示「匹配数/总数」。</p>
+<p><strong>运行原理：</strong></p>
+<ul>
+<li>检测 URL 路径是否匹配 <code>/tag\.html/</code></li>
+<li>等待 <code>#taglabel</code> 元素出现（Gmeek 异步渲染）</li>
+<li>监听 <code>input</code> 事件，遍历所有 <code>.Label</code> 元素，用 <code>style.display</code> 控制显隐</li>
+<li>用 <code>MutationObserver</code> 监听标签列表变化，保持筛选实时有效</li>
+</ul>
+<hr>
+<h3 id="heading-17">M12 图片灯箱</h3>
+<p><strong>功能：</strong> 点击文章中的图片，在全屏遮罩中放大显示，点击背景或按 Esc 关闭。</p>
+<p><strong>运行原理：</strong></p>
+<ul>
+<li>监听 <code>#postBody</code> 内 <code>img</code> 的点击事件</li>
+<li>打开时：向灯箱 <code>&lt;img&gt;</code> 写入 src，添加 <code>.is-open</code> 类（CSS 控制显示），锁定 body 滚动</li>
+<li>关闭时：移除类，300ms 后清除 src（等待淡出动画）</li>
+</ul>
+<p><strong>全局暴露：</strong> <code>window._luliyLightboxOpen(src, alt)</code> — 可手动触发打开灯箱。</p>
+<hr>
+<h3 id="heading-18">M13 悬浮工具栏 + 统一控制面板</h3>
+<p><strong>功能：</strong> 右侧悬浮的控制按钮，点击展开面板，包含：</p>
+<table>
+<thead>
+<tr>
+<th>区域</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主题预览</td>
+<td>Day/Night 卡片，点击切换明暗模式</td>
+</tr>
+<tr>
+<td>六个主题</td>
+<td>默认/樱花少女/你的名字/太空旅行/日落黄昏/极简黑白</td>
+</tr>
+<tr>
+<td>效果开关</td>
+<td>樱花效果、背景图更换</td>
+</tr>
+<tr>
+<td>阅读设置</td>
+<td>字号调节（A- / A+）、字体切换（仅文章页）</td>
+</tr>
+<tr>
+<td>音乐播放器</td>
+<td>播放/暂停/上下首/添加曲目/播放列表</td>
+</tr>
+<tr>
+<td>更多功能</td>
+<td>鼠标拖尾、萤火虫、专注模式（文章页）、减少动效</td>
+</tr>
+</tbody>
+</table>
+<p><strong>运行原理（主题系统）：</strong></p>
+<ol>
+<li><code>SINKS</code> 数组定义 6 个主题的 id、调色板、描述</li>
+<li><code>applySink(id)</code> 执行：设置 <code>body[data-luliy-theme]</code>，并更新 4 个 CSS 变量 <code>--card-c1/c2/c3/c4</code></li>
+<li>CSS 中 <code>[data-luliy-theme=&quot;sakura&quot;]</code> 等选择器覆盖对应样式</li>
+</ol>
+<p><strong>运行原理（音乐播放器）：</strong></p>
+<ul>
+<li>使用 <code>&lt;audio&gt;</code> 元素，跨页面通过 <code>localStorage</code> 持久化 <code>{trackIndex, position, isPlaying}</code></li>
+<li>页面卸载时保存播放位置，下一页加载时恢复（受浏览器自动播放策略限制）</li>
+<li>用户可通过「＋」按钮输入 URL 添加曲目，存储在 <code>luliy-music</code> 键</li>
+</ul>
+<p><strong>DIY 方法（添加主题）：</strong><br>
+在 <code>SINKS</code> 数组末尾添加新对象：</p>
+<div><pre><span>{</span>
+  <span>id</span>: <span>&#x27;ocean&#x27;</span><span>,</span>
+  <span>label</span>: <span>&#x27;深海蓝&#x27;</span><span>,</span>
+  <span>dot</span>: <span>&#x27;#006994&#x27;</span><span>,</span>
+  <span>theme</span>: <span>&#x27;ocean&#x27;</span><span>,</span>
+  <span>cardPalette</span>: <span>[</span><span>&#x27;#006994&#x27;</span><span>,</span> <span>&#x27;#0099cc&#x27;</span><span>,</span> <span>&#x27;#00ccff&#x27;</span><span>,</span> <span>&#x27;#80e5ff&#x27;</span><span>]</span><span>,</span>
+  <span>desc</span>: <span>&#x27;深邃海洋，静谧蓝调&#x27;</span>
+<span>}</span></pre></div>
+<p>然后在 CSS 中添加对应的 <code>[data-luliy-theme=&quot;ocean&quot;]</code> 样式块。</p>
+<hr>
+<h3 id="heading-19">M14 首页卡片重建（三视图 + 骨架屏）</h3>
+<p><strong>功能：</strong></p>
+<ul>
+<li>从 <code>/postList.json</code> 读取文章数据并重建卡片</li>
+<li>支持三种视图切换：<strong>网格</strong>（多列卡片）、<strong>列表</strong>（单列紧凑）、<strong>时间轴</strong>（居中竖线）</li>
+<li>按年份自动插入年份分隔线</li>
+<li>置顶文章标注 📌，多级置顶（<code>pinned</code>/<code>pinned-2</code>/<code>pinned-3</code>）</li>
+<li>加载期间显示<strong>骨架屏</strong>占位，避免布局跳动</li>
+</ul>
+<p><strong>运行原理：</strong></p>
+<ol>
+<li>调用 <code>fetchPosts()</code> 获取 postList.json，解析为统一格式的文章对象数组</li>
+<li>排序：先按 pinLevel 降序，再按日期降序</li>
+<li>遍历数组，检测年份变化插入 <code>.luliy-card-yeardiv</code></li>
+<li><code>applyCardView()</code> 在 <code>.luliy-card-grid</code> 上切换 <code>luliy-card-list</code> / <code>luliy-card-timeline</code> 类</li>
+</ol>
+<p><strong>置顶标签命名规则：</strong></p>
+<ul>
+<li><code>pinned</code> = 一级置顶（最高）</li>
+<li><code>pinned-2</code> = 二级置顶</li>
+<li><code>pinned-3</code> = 三级置顶（数字越大优先级越低）</li>
+</ul>
+<hr>
+<h3 id="heading-20">M15 macOS 风格代码块</h3>
+<p><strong>功能：</strong> 为每个 <code>&lt;pre&gt;&lt;code&gt;</code> 块添加 macOS 风格的三色按钮装饰条，并显示语言标签和行号。</p>
+<table>
+<thead>
+<tr>
+<th>按钮颜色</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔴 红色</td>
+<td>复制代码（HTTPS 下用 Clipboard API，否则降级 execCommand）</td>
+</tr>
+<tr>
+<td>🟡 黄色</td>
+<td>折叠/展开代码块</td>
+</tr>
+<tr>
+<td>🟢 绿色</td>
+<td>全屏阅读（双击代码块也可触发）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>运行原理：</strong></p>
+<ul>
+<li>遍历 <code>#postBody</code> 内所有 <code>&lt;pre&gt;</code> 元素，跳过已处理的（检查 <code>.mac-strip</code> 是否存在）</li>
+<li>行号：统计 <code>\n</code> 数量，用 <code>&lt;span class=&quot;luliy-lineno&quot;&gt;</code> 生成行号列，CSS <code>pre-wrap</code> 保持对齐</li>
+<li>全局只注册一个 Escape 键监听（<code>_codeEscBound</code> 防重复）</li>
+<li><code>MutationObserver</code> 监听 postBody 变化，动态代码块也能被处理</li>
+</ul>
+<hr>
+<h3 id="heading-21">M16 樱花飘落 + 流星（四季自适应）</h3>
+<p><strong>功能：</strong> 全屏 Canvas 上持续飘落的粒子，颜色和行为根据当前月份自动变化：</p>
+<table>
+<thead>
+<tr>
+<th>季节</th>
+<th>月份</th>
+<th>粒子颜色</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>春</td>
+<td>3–5月</td>
+<td>粉色系</td>
+<td>轻柔，微风漂移</td>
+</tr>
+<tr>
+<td>夏</td>
+<td>6–8月</td>
+<td>绿色系</td>
+<td>缓慢，近乎垂直</td>
+</tr>
+<tr>
+<td>秋</td>
+<td>9–11月</td>
+<td>橙红系</td>
+<td>较快，风大</td>
+</tr>
+<tr>
+<td>冬</td>
+<td>12–2月</td>
+<td>白蓝系</td>
+<td>飘轻，稀疏</td>
+</tr>
+</tbody>
+</table>
+<p><strong>流星：</strong> 随机在顶部生成，对角线快速滑落后淡出（仅夜晚模式触发）</p>
+<p><strong>运行原理：</strong></p>
+<ul>
+<li>使用 <code>requestAnimationFrame</code> 循环，每帧 <code>clearRect</code> 后重绘所有粒子</li>
+<li>每个粒子有 <code>x, y, vx, vy, size, opacity, rotation, rotSpeed</code> 属性</li>
+<li>超出屏幕边界时随机重置到顶部</li>
+<li>Canvas <code>pointer-events:none</code> 不影响页面交互</li>
+</ul>
+<p><strong>DIY 方法：</strong> 修改 <code>SEASON_CONFIG</code> 中各季节的 <code>count</code>（数量）、<code>speedY</code>（下落速度范围）、<code>wind</code>（横漂强度）、<code>opacity</code>（透明度范围）。</p>
+<hr>
+<h3 id="heading-22">M17 文章 TOC 滚动高亮 + 阅读进度环</h3>
+<p><strong>功能：</strong></p>
+<ul>
+<li>TOC（目录）随滚动自动高亮当前所在章节</li>
+<li>顶部进度条 + 右下角返回顶部按钮（内含 SVG 圆形进度环）</li>
+<li>TOC 顶部注入「目录」标签和「↑ 回顶」按钮</li>
+</ul>
+<p><strong>运行原理：</strong></p>
+<ol>
+<li><strong>TOC 迁移</strong>：将 <code>articletoc.js</code> 插入到 <code>#postBody</code> 内的 TOC 元素移动到 <code>document.body</code> 直属，避免被 <code>backdrop-filter</code> 或 <code>transform</code> 的父元素创建新层叠上下文，确保 <code>position:fixed</code> 正确工作</li>
+<li><strong>ID 生成</strong>：对没有 id 的标题自动生成 slug（中文保留，英文小写，空格转连字符）</li>
+<li><strong>滚动高亮</strong>：<code>getBoundingClientRect().top &lt;= 110</code> 判断标题是否已滚过视口，取最后一个符合条件的作为当前章节</li>
+<li><strong>进度环</strong>：SVG <code>stroke-dashoffset</code> 随滚动百分比变化</li>
+</ol>
+<hr>
+<h3 id="heading-23">M18 移动端汉堡菜单 + 滑动翻页</h3>
+<p><strong>功能：</strong></p>
+<ul>
+<li>移动端顶部右侧三横线汉堡按钮，点击展开导航下拉菜单</li>
+<li>下拉菜单包含：音效开关、主题选择、粒子开关、导航链接</li>
+<li>文章页支持<strong>左右滑动</strong>切换上一篇/下一篇</li>
+</ul>
+<p><strong>运行原理（汉堡菜单）：</strong></p>
+<ul>
+<li>从 <code>.title-right</code> 提取原始导航链接，重新填充到下拉容器</li>
+<li>点击菜单外区域关闭</li>
+</ul>
+<p><strong>运行原理（滑动翻页）：</strong></p>
+<ul>
+<li>监听 <code>touchstart</code> 记录起始坐标</li>
+<li><code>touchend</code> 时计算 <code>dx/dy</code>，要求 <code>|dx| &gt; 120px</code> 且水平方向占主导（比例 &gt; 3:1）</li>
+<li>匹配 <code>.luliy-prevnext</code> 中对应方向的链接，添加滑动动画类后跳转</li>
+</ul>
+<hr>
+<h3 id="heading-24">M19 收藏夹密码门</h3>
+<p><strong>功能：</strong> 访问 <code>/favorites</code> 路径时显示密码输入框，通过验证后逐步揭示内容（渐进式模糊→清晰）。</p>
+<p><strong>运行原理：</strong></p>
+<ol>
+<li>URL 匹配 <code>LULIY_OPTS.favoritesPathMatch</code>（默认 <code>/favorites/i</code>）</li>
+<li>显示密码输入框覆盖层</li>
+<li>用户输入后，将密码进行 SHA-256 哈希，与 <code>LULIY_OPTS.favoritesHash</code> 比对</li>
+<li>验证通过：结果存入 <code>sessionStorage</code>（当次会话有效）</li>
+<li>页面内容先完全模糊，验证后逐渐清晰（CSS <code>filter:blur</code> 过渡）</li>
+</ol>
+<p><strong>更改密码：</strong> 重新生成新密码的 SHA-256 哈希值，替换 <code>favoritesHash</code>。</p>
+<hr>
+<h3 id="heading-25">M20 首页底部图片展示区</h3>
+<p><strong>功能：</strong> 首页文章列表下方的图片展示区。放 1 张图片 = 全幅 Banner；放 2 张以上 = 响应式网格。</p>
+<p><strong>DIY 方法：</strong> 修改 <code>LULIY_OPTS.galleryImages</code> 数组和 <code>galleryText</code>。</p>
+<hr>
+<h3 id="heading-26">M21 文章页初始化（系列导航 + 滚动记忆）</h3>
+<p>这个模块在 <code>isPost = true</code> 时触发，包含三个子功能：</p>
+<p><strong>系列导航（M21b）：</strong></p>
+<ul>
+<li>读取 postList.json，找到当前文章共享标签数最多的同标签文章组（≥2篇）</li>
+<li>在文章顶部插入「📚 系列：标签名 (当前/总数)」面板，列出系列全部文章</li>
+</ul>
+<p><strong>滚动记忆（M21c）：</strong></p>
+<ul>
+<li>离开文章时将滚动百分比保存到 <code>sessionStorage</code></li>
+<li>重新访问时，若上次读到 5%–95% 位置，底部弹出「上次读到 XX%，继续阅读 ↓」提示</li>
+<li>点击提示自动滚到对应位置，6 秒后自动消失</li>
+</ul>
+<p><strong>外链悬停预览（M16b）：</strong></p>
+<ul>
+<li>悬停文章内的外部链接时，在鼠标旁显示小卡片，包含：网站 favicon + 域名 + 路径</li>
+</ul>
+<hr>
+<h3 id="heading-27">M22 归档页（时间轴 + 日历）</h3>
+<p><strong>功能：</strong> <code>/archive</code> 页面提供两种视图：</p>
+<table>
+<thead>
+<tr>
+<th>视图</th>
+<th>样式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>时间轴</td>
+<td>居中竖线，左右交替排列文章节点</td>
+</tr>
+<tr>
+<td>日历</td>
+<td>按月份排列的日历格，发文日期有高亮</td>
+</tr>
+</tbody>
+</table>
+<p>顶部 Tab 切换，选择持久化到 <code>localStorage</code>。</p>
+<p><strong>运行原理：</strong></p>
+<ul>
+<li>调用 <code>fetchPosts()</code> 获取所有文章</li>
+<li>时间轴：按年/月分组，DOM 构建为 <code>luliy-timeline-item</code> 节点</li>
+<li>日历：生成指定年月的完整日历格，有文章的日期渲染为可点击节点</li>
+</ul>
+<hr>
+<h3 id="heading-28">M23 标签云页面</h3>
+<p><strong>功能：</strong> 在 <code>/tag.html</code> 顶部生成标签云，标签字号根据文章数量动态缩放（13px–35px），颜色来自 postList.json 的 <code>labelColorDict</code>。</p>
+<p><strong>运行原理：</strong></p>
+<ul>
+<li>统计各标签在所有文章中的出现频次</li>
+<li>线性插值映射到字号范围：<code>13 + ratio * 22</code></li>
+<li>点击标签跳转到 <code>/tag.html#标签名</code> 触发 Gmeek 原生筛选</li>
+</ul>
+<hr>
+<h3 id="heading-29">M24 文章内搜索浮层</h3>
+<p><strong>功能：</strong> 文章页按 <code>Ctrl/Cmd+F</code>（或右下角🔍按钮）弹出搜索栏，实时高亮匹配文字，<code>↑↓</code> 按钮逐个跳转，<code>Esc</code> 关闭。</p>
+<p><strong>运行原理：</strong></p>
+<ol>
+<li><strong>劫持</strong> 浏览器原生 <code>Ctrl+F</code>（<code>preventDefault</code>）</li>
+<li><code>TreeWalker</code> 遍历 <code>#postBody</code> 中的文本节点（自动跳过 code/pre/script/katex 等）</li>
+<li>找到匹配项后，用 <code>&lt;mark class=&quot;luliy-search-hit&quot;&gt;</code> 包裹</li>
+<li>当前聚焦项额外添加 <code>.is-current</code> 类（CSS 高亮色不同）</li>
+<li>关闭时通过 <code>parentNode.replaceChild</code> 还原文本节点，<code>normalize()</code> 合并相邻文本节点</li>
+</ol>
+<hr>
+<h3 id="heading-30">M25 鼠标拖尾 + 萤火虫</h3>
+<p><strong>鼠标拖尾：</strong></p>
+<ul>
+<li>每 60ms 在鼠标位置创建一个 emoji 元素（🌸/✧/☀/☁/✨，随主题变化）</li>
+<li>CSS <code>animation</code> 使其旋转淡出，1.1 秒后移除</li>
+<li>触摸设备和减少动效模式下自动禁用</li>
+</ul>
+<p><strong>萤火虫：</strong></p>
+<ul>
+<li>暗色模式 或 太空主题 下，<code>luliy-firefly=1</code> 时激活</li>
+<li>Canvas 上 N 个（最多 26 个）发光粒子自由漂浮</li>
+<li>在鼠标 220px 范围内受到温和吸引力</li>
+<li>使用径向渐变绘制发光效果，亮度随 sin 函数脉动</li>
+</ul>
+<p><strong>减少动效安全网：</strong></p>
+<ul>
+<li>系统设置 <code>prefers-reduced-motion: reduce</code> 或手动设置 <code>luliy-reduce=1</code> 时，自动停止拖尾和萤火虫，并为整个 body 添加 <code>.luliy-reduce-motion</code> 类（CSS 中该类选择器关闭所有过渡）</li>
+</ul>
+<hr>
+<h3 id="heading-31">M26 页面切换淡入淡出</h3>
+<p><strong>功能：</strong> 博客内部页面之间跳转时，使用浏览器原生 <strong>View Transitions API</strong> 实现平滑淡入淡出，而非硬跳转。</p>
+<p><strong>运行原理：</strong></p>
+<ol>
+<li>拦截所有同源内部链接的点击事件</li>
+<li>排除：新标签、下载链接、纯 hash 跳转、<code>Ctrl/Cmd/Shift+点击</code></li>
+<li>调用 <code>document.startViewTransition(() =&gt; { location.href = dest })</code></li>
+<li>安全降级：不支持的浏览器直接执行 <code>location.href</code>；1 秒超时保底跳转</li>
+</ol>
+<hr>
+<h2 id="heading-32">5. CSS 主题系统</h2>
+<p><code>enhance.css</code> 通过 CSS 变量 + <code>[data-luliy-theme]</code> 属性选择器实现 6 套主题：</p>
+<div><pre><span>/* 每个主题定义自己的颜色组 */</span>
+[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
+  <span>--accent</span><span>:</span> <span><span>#</span>e05c8a</span>;
+  <span>--accent-light</span><span>:</span> <span><span>#</span>f9a8c9</span>;
+  <span>--card-border</span><span>:</span> <span>rgba</span>(<span>224</span><span>,</span> <span>92</span><span>,</span> <span>138</span><span>,</span> <span>0.18</span>);
+  <span>/* ... */</span>
+}</pre></div>
+<p>同时 JS 更新 4 个卡片渐变变量：</p>
+<div><pre>--card-c1 <span>/</span> <span>-</span><span>-</span>card<span>-</span>c2 <span>/</span> <span>-</span><span>-</span>card<span>-</span>c3 <span>/</span> <span>-</span><span>-</span>card<span>-</span>c4</pre></div>
+<p>卡片渐变写法：</p>
+<div><pre>.<span>luliy-card</span><span>:</span><span>nth-child</span>(4n+1) { <span>background</span><span>:</span> <span>linear-gradient</span>(<span>135<span>deg</span></span><span>,</span> <span>var</span>(<span>--card-c1</span>)<span>,</span> <span>var</span>(<span>--card-c2</span>)); }</pre></div>
+<hr>
+<h2 id="heading-33">6. 性能设计说明</h2>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>onScrollRAF</code> 调度器</td>
+<td>所有滚动回调合并到单个 rAF 帧</td>
+</tr>
+<tr>
+<td>FOUC 防闪块</td>
+<td>DOMContentLoaded 前恢复主题/背景，避免闪白</td>
+</tr>
+<tr>
+<td><code>MutationObserver</code></td>
+<td>监听 DOM 变化而非轮询</td>
+</tr>
+<tr>
+<td><code>_codeEscBound</code> 标志</td>
+<td>防止多个代码块重复注册全局 Escape 监听</td>
+</tr>
+<tr>
+<td>Canvas <code>pointer-events:none</code></td>
+<td>樱花/萤火虫 Canvas 不阻止用户点击</td>
+</tr>
+<tr>
+<td>骨架屏</td>
+<td>数据加载期间先渲染占位 UI，再替换</td>
+</tr>
+<tr>
+<td><code>sessionStorage</code> vs <code>localStorage</code></td>
+<td>滚动位置用 session（标签页级别）；偏好设置用 local（长期）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-34">7. 常见 DIY 场景速查</h2>
+<p><strong>① 换博客头像</strong></p>
+<div><pre><span>// enhance.js → initHeroCluster() 函数内</span>
+<span>avatarImg</span><span>.</span><span>src</span> <span>=</span> <span>&#x27;https://你的头像URL.jpg&#x27;</span><span>;</span></pre></div>
+<p><strong>② 修改建站时间</strong></p>
+<div><pre><span>// enhance.js → initUptime() 函数内</span>
+<span>var</span> <span>start</span> <span>=</span> <span>new</span> <span>Date</span><span>(</span><span>&#x27;2024/01/01 00:00:00&#x27;</span><span>)</span><span>.</span><span>getTime</span><span>(</span><span>)</span><span>;</span></pre></div>
+<p><strong>③ 添加新音乐曲目</strong></p>
+<div><pre><span>// LULIY_OPTS.musicTracks 数组</span>
+<span>{</span> <span>name</span>: <span>&#x27;你的曲目名&#x27;</span><span>,</span> <span>src</span>: <span>&#x27;https://你的mp3.mp3&#x27;</span> <span>}</span></pre></div>
+<p><strong>④ 默认关闭樱花效果</strong></p>
+<div><pre><span>// enhance.js → initLocalStorage() 的 defs 对象</span>
+<span>&#x27;luliy-sakura&#x27;</span>: <span>&#x27;0&#x27;</span>   <span>// 改为 &#x27;0&#x27;</span></pre></div>
+<p><strong>⑤ 增加主题</strong><br>
+在 <code>SINKS</code> 数组末尾添加对象 + CSS 中添加 <code>[data-luliy-theme=&quot;新主题名&quot;]</code> 样式块。</p>
+<p><strong>⑥ 修改首页卡片默认视图</strong></p>
+<div><pre><span>// defs 对象</span>
+<span>&#x27;luliy-cardview&#x27;</span>: <span>&#x27;list&#x27;</span>   <span>// &#x27;grid&#x27; | &#x27;list&#x27; | &#x27;timeline&#x27;</span></pre></div>
+<p><strong>⑦ 默认开启鼠标拖尾</strong></p>
+<div><pre><span>// defs 对象</span>
+<span>&#x27;luliy-trail&#x27;</span>: <span>&#x27;1&#x27;</span></pre></div>
+<p><strong>⑧ 调整字号范围</strong></p>
+<div><pre><span>// applyReadingPrefs() 和 setFs() 函数内</span>
+<span>px</span> <span>=</span> <span>Math</span><span>.</span><span>min</span><span>(</span><span>28</span><span>,</span> <span>Math</span><span>.</span><span>max</span><span>(</span><span>12</span><span>,</span> <span>px</span><span>)</span><span>)</span><span>;</span>  <span>// 改为 12–28px 范围</span></pre></div>
+<hr>
+<p><em>本指南基于 enhance.js v10 + enhance.css v9 编写，如代码有更新部分细节可能变化。</em></p></article></div></main><footer><a href="/feed.xml">RSS 訂閱</a> · <a href="/#/posts">所有文章</a> · <a href="#">回到頂部 ↑</a></footer></body></html>

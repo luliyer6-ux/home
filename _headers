@@ -1,0 +1,6 @@
+/assets/site/*
+  Cache-Control: public, max-age=31536000, immutable
+/feed.xml
+  Cache-Control: public, max-age=300
+/site-publish/article.css
+  Cache-Control: public, max-age=300

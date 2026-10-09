@@ -1,0 +1,585 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Luliy Blog v8 详细说明书 · Luliy Articles</title><meta name="description" content="📋 JavaScript 模块详解（enhance.js） 核心初始化模块 模块 功能 修改建议 增强思路 00 Welcome Splash 欢迎屏幕/加载动画 调整动画时长、背景颜色、文字内容 添加加载进度百分比显示 01 localStorage Init 本地存储初始化 配置存储键名、默认值"><link rel="canonical" href="https://luliy.me/articles/P26/"><link rel="alternate" type="application/rss+xml" title="Luliy Articles" href="/feed.xml"><meta property="og:type" content="article"><meta property="og:title" content="Luliy Blog v8 详细说明书"><meta property="og:description" content="📋 JavaScript 模块详解（enhance.js） 核心初始化模块 模块 功能 修改建议 增强思路 00 Welcome Splash 欢迎屏幕/加载动画 调整动画时长、背景颜色、文字内容 添加加载进度百分比显示 01 localStorage Init 本地存储初始化 配置存储键名、默认值"><meta property="og:url" content="https://luliy.me/articles/P26/"><meta property="og:image" content="https://luliy.me/assets/site/share.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Luliy Blog v8 详细说明书"><meta name="twitter:description" content="📋 JavaScript 模块详解（enhance.js） 核心初始化模块 模块 功能 修改建议 增强思路 00 Welcome Splash 欢迎屏幕/加载动画 调整动画时长、背景颜色、文字内容 添加加载进度百分比显示 01 localStorage Init 本地存储初始化 配置存储键名、默认值"><meta name="twitter:image" content="https://luliy.me/assets/site/share.png"><link rel="stylesheet" href="/site-publish/article.css"></head><body><header><a href="/">LULIY <small>Articles</small></a><a href="/#/article/P26">在主站閱讀 ↗</a></header><main><h1>Luliy Blog v8 详细说明书</h1><p class="meta">2026-06-08 · LULIY</p><div class="reading"><aside aria-label="文章目錄"><a style="--level:2" href="#heading-1">📋 JavaScript 模块详解（enhance.js）</a><a style="--level:3" href="#heading-2">核心初始化模块</a><a style="--level:3" href="#heading-3">视觉交互模块</a><a style="--level:3" href="#heading-4">页面结构模块</a><a style="--level:3" href="#heading-5">交互工具模块</a><a style="--level:3" href="#heading-6">动画特效模块</a><a style="--level:3" href="#heading-7">导航交互模块</a><a style="--level:3" href="#heading-8">页面初始化模块</a><a style="--level:2" href="#heading-9">🎨 CSS 模块详解（enhance.css）</a><a style="--level:3" href="#heading-10">基础样式</a><a style="--level:3" href="#heading-11">排版与主题</a><a style="--level:3" href="#heading-12">导航与布局</a><a style="--level:3" href="#heading-13">组件样式</a><a style="--level:3" href="#heading-14">内容展示</a><a style="--level:3" href="#heading-15">功能性样式</a><a style="--level:3" href="#heading-16">特殊效果</a><a style="--level:2" href="#heading-17">📄 JSON 配置文件说明</a><a style="--level:3" href="#heading-18">常见配置文件结构</a><a style="--level:3" href="#heading-19">关键配置项修改指南</a><a style="--level:2" href="#heading-20">💡 功能增强建议</a><a style="--level:3" href="#heading-21">建议新增模块</a><a style="--level:3" href="#heading-22">建议新增CSS主题</a></aside><article><h2 id="heading-1">📋 JavaScript 模块详解（enhance.js）</h2>
+<h3 id="heading-2">核心初始化模块</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>00 Welcome Splash</strong></td>
+<td>欢迎屏幕/加载动画</td>
+<td>调整动画时长、背景颜色、文字内容</td>
+<td>添加加载进度百分比显示</td>
+</tr>
+<tr>
+<td><strong>01 localStorage Init</strong></td>
+<td>本地存储初始化</td>
+<td>配置存储键名、默认值</td>
+<td>添加存储版本控制、过期时间</td>
+</tr>
+<tr>
+<td><strong>02 Progress Bar</strong></td>
+<td>页面滚动进度条</td>
+<td>调整颜色、高度、位置</td>
+<td>支持多段进度显示</td>
+</tr>
+<tr>
+<td><strong>03 Dynamic Title</strong></td>
+<td>动态页面标题</td>
+<td>修改标题切换文案</td>
+<td>添加表情符号动画</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-3">视觉交互模块</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>04 Uptime Counter</strong></td>
+<td>运行时间计数器</td>
+<td>改起始日期、格式</td>
+<td>添加服务器宕机检测、历史记录</td>
+</tr>
+<tr>
+<td><strong>05 Dark-mode Ripple</strong></td>
+<td>黑暗模式切换水波纹</td>
+<td>调整波纹颜色、扩散速度</td>
+<td>支持系统偏好自动切换</td>
+</tr>
+<tr>
+<td><strong>06 Static Background</strong></td>
+<td>静态背景（已移除粒子）</td>
+<td>更换背景图片URL</td>
+<td>添加时间段不同背景</td>
+</tr>
+<tr>
+<td><strong>07 Web Audio SFX</strong></td>
+<td>音效系统</td>
+<td>替换音频文件、调整音量</td>
+<td>添加音效开关、音量控制</td>
+</tr>
+<tr>
+<td><strong>08 Click Sparks</strong></td>
+<td>点击火花特效</td>
+<td>调整粒子数量、颜色、速度</td>
+<td>支持自定义形状、轨迹</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-4">页面结构模块</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>09 Hero Cluster</strong></td>
+<td>头部集群（头像+名字+时钟）</td>
+<td>修改头像、名字、时钟格式</td>
+<td>添加社交媒体链接、动态问候</td>
+</tr>
+<tr>
+<td><strong>10 Hero Banner</strong></td>
+<td>主视觉横幅</td>
+<td>更换背景、调整高度</td>
+<td>支持滑动切换多个横幅</td>
+</tr>
+<tr>
+<td><strong>11 Tag Search Toolbar</strong></td>
+<td>标签页搜索栏</td>
+<td>修改搜索框样式、占位符</td>
+<td>添加搜索建议、热门标签显示</td>
+</tr>
+<tr>
+<td><strong>12 Image Lightbox</strong></td>
+<td>图片灯箱</td>
+<td>调整动画、背景透明度</td>
+<td>支持缩略图导航、图片预加载</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-5">交互工具模块</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>13 Floating Toolbar</strong></td>
+<td>浮动工具栏 + 统一沉底菜单（4主题）</td>
+<td>修改按钮数量、主题配色</td>
+<td>添加工具栏自定义排序、主题预览</td>
+</tr>
+<tr>
+<td><strong>14 Home Card Rebuild</strong></td>
+<td>首页卡片重构</td>
+<td>调整卡片大小、间距、阴影</td>
+<td>支持卡片拖拽排序、多列布局</td>
+</tr>
+<tr>
+<td><strong>15 macOS Code Block</strong></td>
+<td>macOS风格代码块</td>
+<td>修改代码块颜色、字体</td>
+<td>添加代码行号、复制按钮、语法高亮</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-6">动画特效模块</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>16 Sakura Petals</strong></td>
+<td>樱花飘落特效</td>
+<td>调整花瓣数量、下落速度、季节</td>
+<td>支持其他季节花朵、风力系统</td>
+</tr>
+<tr>
+<td><strong>17 ArticleTOC</strong></td>
+<td>文章目录+滚动监听 + 返顶按钮</td>
+<td>修改TOC位置、返顶按钮样式</td>
+<td>添加目录展开/折叠、平滑滚动</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-7">导航交互模块</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>18 Mobile Nav</strong></td>
+<td>手机导航 +汉堡菜单 + 下拉菜单</td>
+<td>调整菜单项、动画时长</td>
+<td>支持子菜单、手势导航</td>
+</tr>
+<tr>
+<td><strong>19 Search Overlay</strong></td>
+<td>搜索浮窗</td>
+<td>修改搜索框样式、搜索范围</td>
+<td>添加搜索历史、智能建议</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-8">页面初始化模块</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>20 Gallery Banner</strong></td>
+<td>首页底部画廊横幅</td>
+<td>更换图片、调整排列</td>
+<td>支持图片懒加载、缩放预览</td>
+</tr>
+<tr>
+<td><strong>21 Post Page Init</strong></td>
+<td>文章页面初始化</td>
+<td>配置文章样式</td>
+<td>添加阅读时间估算、分享功能</td>
+</tr>
+<tr>
+<td><strong>22 Index Page Init</strong></td>
+<td>索引页面初始化</td>
+<td>配置列表样式</td>
+<td>添加分页、排序筛选</td>
+</tr>
+<tr>
+<td><strong>23 Main Entry</strong></td>
+<td>主入口</td>
+<td>管理模块加载顺序</td>
+<td>添加模块延迟加载、条件加载</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-9">🎨 CSS 模块详解（enhance.css）</h2>
+<h3 id="heading-10">基础样式</h3>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>00 Font Imports</strong></td>
+<td>字体导入</td>
+<td>替换字体家族、添加本地字体</td>
+<td>支持动态字体加载、字体预热</td>
+</tr>
+<tr>
+<td><strong>01 CSS Variables + Reset</strong></td>
+<td>CSS变量 + 重置</td>
+<td>修改主色调、间距单位</td>
+<td>添加更多主题变量、响应式变量</td>
+</tr>
+<tr>
+<td><strong>02 Welcome Splash</strong></td>
+<td>欢迎屏样式</td>
+<td>调整背景、文字颜色、覆盖层</td>
+<td>支持动画序列、渐变背景</td>
+</tr>
+<tr>
+<td><strong>03 Background Image</strong></td>
+<td>背景图像</td>
+<td>更换背景URL、调整位置</td>
+<td>支持多层背景、视差效果</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-11">排版与主题</h3>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>04 Typography</strong></td>
+<td>字体 / 日间=黑 / 夜间=白</td>
+<td>调整字体大小、行高、颜色对比</td>
+<td>添加高对比度模式、字体缩放</td>
+</tr>
+<tr>
+<td><strong>15 Article Theme</strong></td>
+<td>4种主题的CSS变量</td>
+<td>修改主题配色方案</td>
+<td>添加新主题、主题过渡动画</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-12">导航与布局</h3>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>05 Navbar</strong></td>
+<td>液态玻璃 + 可折叠导航</td>
+<td>调整透明度、高度、动画</td>
+<td>支持导航吸顶、背景模糊</td>
+</tr>
+<tr>
+<td><strong>06 Hero Cluster</strong></td>
+<td>头部集群样式</td>
+<td>调整头像大小、间距</td>
+<td>支持动画入场、响应式布局</td>
+</tr>
+<tr>
+<td><strong>07 Hero Banner</strong></td>
+<td>主视觉横幅样式</td>
+<td>修改高度、背景、文字位置</td>
+<td>支持视差滚动、多层叠加</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-13">组件样式</h3>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>08 Progress Bar</strong></td>
+<td>进度条样式</td>
+<td>调整颜色、宽度、位置</td>
+<td>支持渐变色、动画效果</td>
+</tr>
+<tr>
+<td><strong>09 Cards</strong></td>
+<td>首页卡片样式</td>
+<td>修改边框、阴影、圆角</td>
+<td>支持悬停动画、卡片分组</td>
+</tr>
+<tr>
+<td><strong>10 Date Badge</strong></td>
+<td>日期徽章样式</td>
+<td>调整背景、文字、形状</td>
+<td>支持相对时间显示</td>
+</tr>
+<tr>
+<td><strong>11 Pinned Section</strong></td>
+<td>置顶部分样式</td>
+<td>修改置顶标题、背景</td>
+<td>支持多级置顶、固定区域</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-14">内容展示</h3>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>12 Article Reading</strong></td>
+<td>文章阅读面板（主题特定）</td>
+<td>调整宽度、行高、背景</td>
+<td>支持字体大小调节、无衬线切换</td>
+</tr>
+<tr>
+<td><strong>13 Code Blocks</strong></td>
+<td>代码块（日间+暗夜）</td>
+<td>修改语法高亮、字体、边框</td>
+<td>支持代码行号、复制提示</td>
+</tr>
+<tr>
+<td><strong>14 Tables</strong></td>
+<td>表格（日间+暗夜）</td>
+<td>调整表格边框、背景、文字</td>
+<td>支持表格排序、固定表头</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-15">功能性样式</h3>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>16 TOC Scroll-spy</strong></td>
+<td>目录滚动监听 + 活跃高亮</td>
+<td>修改高亮颜色、动画</td>
+<td>支持目录折叠、平滑指示</td>
+</tr>
+<tr>
+<td><strong>17 Floating Toolbar</strong></td>
+<td>浮动工具栏 + 沉底菜单</td>
+<td>调整按钮样式、位置、大小</td>
+<td>支持工具栏收缩、快捷键</td>
+</tr>
+<tr>
+<td><strong>18 Prev/Next</strong></td>
+<td>前后导航</td>
+<td>修改按钮文案、样式</td>
+<td>支持缩略图预览、键盘导航</td>
+</tr>
+<tr>
+<td><strong>19 Lightbox</strong></td>
+<td>灯箱样式</td>
+<td>调整背景、过渡动画</td>
+<td>支持图片信息显示、缩放控制</td>
+</tr>
+<tr>
+<td><strong>20 Back-to-Top</strong></td>
+<td>返顶按钮</td>
+<td>修改按钮样式、位置</td>
+<td>支持滚动高度阈值、快捷键</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-16">特殊效果</h3>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>功能</th>
+<th>修改建议</th>
+<th>增强思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>21 Sakura Canvas</strong></td>
+<td>樱花画布 / 主题波纹</td>
+<td>调整花瓣颜色、密度</td>
+<td>支持季节切换、自定义粒子</td>
+</tr>
+<tr>
+<td><strong>22 Uptime</strong></td>
+<td>正常运行时间样式</td>
+<td>修改字体、颜色、格式</td>
+<td>支持历史记录展示、图表</td>
+</tr>
+<tr>
+<td><strong>23 Timeline/Archive</strong></td>
+<td>时间轴/归档</td>
+<td>调整时间轴样式、颜色</td>
+<td>支持按年/月分组、搜索</td>
+</tr>
+<tr>
+<td><strong>24 Gallery Banner</strong></td>
+<td>画廊横幅</td>
+<td>修改图片排列、间距</td>
+<td>支持图片网格、灯箱集成</td>
+</tr>
+<tr>
+<td><strong>25 Search Overlay</strong></td>
+<td>搜索浮窗</td>
+<td>调整搜索框样式、背景</td>
+<td>支持结果预览、搜索历史</td>
+</tr>
+<tr>
+<td><strong>26 Responsive</strong></td>
+<td>响应式（手机）</td>
+<td>调整断点、间距、字体</td>
+<td>支持平板/大屏优化、触摸优化</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-17">📄 JSON 配置文件说明</h2>
+<h3 id="heading-18">常见配置文件结构</h3>
+<div><pre>{
+  <span>&quot;site&quot;</span>: {
+    <span>&quot;title&quot;</span>: <span><span>&quot;</span>Luliy Blog<span>&quot;</span></span>,
+    <span>&quot;description&quot;</span>: <span><span>&quot;</span>个人博客<span>&quot;</span></span>,
+    <span>&quot;author&quot;</span>: <span><span>&quot;</span>Your Name<span>&quot;</span></span>,
+    <span>&quot;url&quot;</span>: <span><span>&quot;</span>https://your-domain.com<span>&quot;</span></span>
+  },
+  <span>&quot;theme&quot;</span>: {
+    <span>&quot;primaryColor&quot;</span>: <span><span>&quot;</span>#6366f1<span>&quot;</span></span>,
+    <span>&quot;darkMode&quot;</span>: <span>true</span>,
+    <span>&quot;themes&quot;</span>: [<span><span>&quot;</span>light<span>&quot;</span></span>, <span><span>&quot;</span>dark<span>&quot;</span></span>, <span><span>&quot;</span>sakura<span>&quot;</span></span>, <span><span>&quot;</span>midnight<span>&quot;</span></span>]
+  },
+  <span>&quot;modules&quot;</span>: {
+    <span>&quot;particles&quot;</span>: <span>false</span>,
+    <span>&quot;audioSFX&quot;</span>: <span>true</span>,
+    <span>&quot;sakuraPetals&quot;</span>: <span>true</span>,
+    <span>&quot;darkModeRipple&quot;</span>: <span>true</span>
+  },
+  <span>&quot;navbar&quot;</span>: {
+    <span>&quot;sticky&quot;</span>: <span>true</span>,
+    <span>&quot;glassEffect&quot;</span>: <span>true</span>,
+    <span>&quot;transparent&quot;</span>: <span>false</span>
+  },
+  <span>&quot;timeline&quot;</span>: {
+    <span>&quot;enabled&quot;</span>: <span>true</span>,
+    <span>&quot;groupBy&quot;</span>: <span><span>&quot;</span>year<span>&quot;</span></span>
+  }
+}</pre></div>
+<h3 id="heading-19">关键配置项修改指南</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>说明</th>
+<th>修改例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>primaryColor</code></td>
+<td>String</td>
+<td>主色调</td>
+<td><code>&quot;#ff6b6b&quot;</code></td>
+</tr>
+<tr>
+<td><code>theme</code></td>
+<td>Array</td>
+<td>启用主题列表</td>
+<td><code>[&quot;light&quot;, &quot;dark&quot;]</code></td>
+</tr>
+<tr>
+<td><code>audioSFX</code></td>
+<td>Boolean</td>
+<td>启用音效</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>sakuraPetals</code></td>
+<td>Boolean</td>
+<td>樱花效果</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>uptimeStart</code></td>
+<td>String</td>
+<td>正常运行起始日期</td>
+<td><code>&quot;2024-01-01&quot;</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="heading-20">💡 功能增强建议</h2>
+<h3 id="heading-21">建议新增模块</h3>
+<ol>
+<li><strong>24Comment System</strong> - 评论系统 / Giscus 集成</li>
+<li><strong>25 Statistics Dashboard</strong> - 阅读统计面板</li>
+<li><strong>26 Reading Mode</strong> - 专注阅读模式（无干扰）</li>
+<li><strong>27 Export Articles</strong> - 导出文章为PDF/Markdown</li>
+<li><strong>28 Dynamic Weather</strong> - 显示实时天气</li>
+<li><strong>29 Notification Center</strong> - 消息/评论通知</li>
+</ol>
+<h3 id="heading-22">建议新增CSS主题</h3>
+<ol>
+<li>高对比度模式（无障碍）</li>
+<li>护眼模式（暖色调）</li>
+<li>自动主题（跟随系统）</li>
+<li>季节主题（春/夏/秋/冬）</li>
+</ol>
+<hr>
+<p>需要我详细讲解某个具体模块或帮你修改特定功能吗？</p></article></div></main><footer><a href="/feed.xml">RSS 訂閱</a> · <a href="/#/posts">所有文章</a> · <a href="#">回到頂部 ↑</a></footer></body></html>
