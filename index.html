@@ -2609,20 +2609,16 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
     const animations=[];
     const dot=signature.querySelector('.signature-dot');
     const events=new AbortController();
-    let clockTimer=0,holdClock=0,origin=null;
+    let clockTimer=0;
     const clock=document.createElement('time');
     clock.className='home-signature-clock';clock.hidden=true;signature.append(clock);
     const tick=()=>{const now=new Date();clock.dateTime=now.toISOString();clock.textContent=now.toLocaleTimeString('en-GB',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});};
-    const cancelClockHold=()=>{clearTimeout(holdClock);holdClock=0;origin=null;dot?.classList.remove('clock-holding');};
-    const toggleClock=()=>{cancelClockHold();const enabled=!signature.classList.contains('shows-clock');signature.classList.toggle('shows-clock',enabled);clock.hidden=!enabled;clearInterval(clockTimer);if(enabled){tick();clockTimer=setInterval(tick,1000);}dot?.setAttribute('aria-pressed',String(enabled));};
+    const toggleClock=()=>{const enabled=!signature.classList.contains('shows-clock');signature.classList.toggle('shows-clock',enabled);clock.hidden=!enabled;clearInterval(clockTimer);if(enabled){tick();clockTimer=setInterval(tick,1000);}dot?.setAttribute('aria-pressed',String(enabled));};
     if(dot){
-      dot.tabIndex=0;dot.setAttribute('role','button');dot.setAttribute('aria-label','長按切換目前時間；按 Enter 或空白鍵切換');dot.setAttribute('aria-pressed','false');dot.title='長按切換目前時間';
-      dot.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.stopPropagation();cancelClockHold();origin={x:e.clientX,y:e.clientY};dot.classList.add('clock-holding');holdClock=setTimeout(toggleClock,780);},{signal:events.signal});
-      document.addEventListener('pointermove',e=>{if(origin&&Math.hypot(e.clientX-origin.x,e.clientY-origin.y)>12)cancelClockHold();},{signal:events.signal});
-      for(const type of ['pointerup','pointercancel'])document.addEventListener(type,cancelClockHold,{signal:events.signal});
-      window.addEventListener('blur',cancelClockHold,{signal:events.signal});window.addEventListener('scroll',cancelClockHold,{passive:true,signal:events.signal});
+      dot.tabIndex=0;dot.setAttribute('role','button');dot.setAttribute('aria-label','點擊切換目前時間；按 Enter 或空白鍵切換');dot.setAttribute('aria-pressed','false');dot.title='點擊切換目前時間';
+      dot.addEventListener('pointerdown',e=>e.stopPropagation(),{signal:events.signal});
       dot.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();if(!e.repeat)toggleClock();}},{signal:events.signal});
-      dot.addEventListener('click',e=>e.stopPropagation(),{signal:events.signal});
+      dot.addEventListener('click',e=>{e.stopPropagation();toggleClock();},{signal:events.signal});
       dot.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();},{signal:events.signal});
     }
     let disposed=false,timeout,offset=0,shift=0,frame,stopInk=()=>{};
@@ -2683,9 +2679,10 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
         await Promise.all(animations.map(a=>a.finished));complete();
       }catch(_){complete();}
     })();
-    return ()=>{disposed=true;events.abort();cancelClockHold();clearInterval(clockTimer);clock.remove();stopInk();clearTimeout(timeout);cancelAnimationFrame(frame);animations.forEach(a=>a.cancel());observer.disconnect();themeObserver.disconnect();window.removeEventListener('resize',measure);reduced.removeEventListener('change',motionChange);signature.dataset.writing='complete';};
+    return ()=>{disposed=true;events.abort();clearInterval(clockTimer);clock.remove();stopInk();clearTimeout(timeout);cancelAnimationFrame(frame);animations.forEach(a=>a.cancel());observer.disconnect();themeObserver.disconnect();window.removeEventListener('resize',measure);reduced.removeEventListener('change',motionChange);signature.dataset.writing='complete';};
   };
 })();
+
 </script><style>.contact-curtain .contact-signature{
   font-family:'Amalfi Coast',cursive;font-style:normal;
   font-size:clamp(64px,7.4vw,110px);line-height:1.65;
