@@ -2571,6 +2571,13 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
   opacity:1;visibility:visible;transform:none;
 }
 #main .library-home .opening-copy .signature-dot img{object-fit:contain}
+#main .library-home .opening-copy .signature-dot{pointer-events:auto;cursor:pointer;touch-action:manipulation;-webkit-touch-callout:none;user-select:none}
+#main .library-home .opening-copy .signature-dot:focus-visible{outline:2px solid var(--accent);outline-offset:5px;border-radius:3px}
+#main .library-home .opening-copy .signature-dot.clock-holding{outline:1px solid var(--accent);outline-offset:4px}
+#main .opening-copy .signature.shows-clock .signature-word{visibility:hidden!important}
+#main .opening-copy .signature.shows-clock .signature-ink,#main .opening-copy .signature.shows-clock .signature-canvas{visibility:hidden!important}
+#main .opening-copy .home-signature-clock{position:absolute;left:0;top:50%;transform:translateY(-50%);width:var(--signature-word-width);text-align:center;font-family:'Times New Roman',serif;font-size:clamp(34px,6vw,88px);font-weight:400;line-height:1.15;letter-spacing:.02em;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}
+#main .opening-copy .home-signature-clock[hidden]{display:none!important}
 @media(max-width:700px){
   #main .library-home .opening-copy .signature-dot{margin-left:8px}
 }
@@ -2600,6 +2607,24 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
     const reduced=matchMedia('(prefers-reduced-motion:reduce)');
     const mobile=matchMedia('(max-width:700px)');
     const animations=[];
+    const dot=signature.querySelector('.signature-dot');
+    const events=new AbortController();
+    let clockTimer=0,holdClock=0,origin=null;
+    const clock=document.createElement('time');
+    clock.className='home-signature-clock';clock.hidden=true;signature.append(clock);
+    const tick=()=>{const now=new Date();clock.dateTime=now.toISOString();clock.textContent=now.toLocaleTimeString('en-GB',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});};
+    const cancelClockHold=()=>{clearTimeout(holdClock);holdClock=0;origin=null;dot?.classList.remove('clock-holding');};
+    const toggleClock=()=>{cancelClockHold();const enabled=!signature.classList.contains('shows-clock');signature.classList.toggle('shows-clock',enabled);clock.hidden=!enabled;clearInterval(clockTimer);if(enabled){tick();clockTimer=setInterval(tick,1000);}dot?.setAttribute('aria-pressed',String(enabled));};
+    if(dot){
+      dot.tabIndex=0;dot.setAttribute('role','button');dot.setAttribute('aria-label','長按切換目前時間；按 Enter 或空白鍵切換');dot.setAttribute('aria-pressed','false');dot.title='長按切換目前時間';
+      dot.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.stopPropagation();cancelClockHold();origin={x:e.clientX,y:e.clientY};dot.classList.add('clock-holding');holdClock=setTimeout(toggleClock,780);},{signal:events.signal});
+      document.addEventListener('pointermove',e=>{if(origin&&Math.hypot(e.clientX-origin.x,e.clientY-origin.y)>12)cancelClockHold();},{signal:events.signal});
+      for(const type of ['pointerup','pointercancel'])document.addEventListener(type,cancelClockHold,{signal:events.signal});
+      window.addEventListener('blur',cancelClockHold,{signal:events.signal});window.addEventListener('scroll',cancelClockHold,{passive:true,signal:events.signal});
+      dot.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();if(!e.repeat)toggleClock();}},{signal:events.signal});
+      dot.addEventListener('click',e=>e.stopPropagation(),{signal:events.signal});
+      dot.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();},{signal:events.signal});
+    }
     let disposed=false,timeout,offset=0,shift=0,frame,stopInk=()=>{};
     signature.dataset.writing=firstOpening&&!reduced.matches?'pending':'complete';
     const measure=()=>{
@@ -2658,7 +2683,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
         await Promise.all(animations.map(a=>a.finished));complete();
       }catch(_){complete();}
     })();
-    return ()=>{disposed=true;stopInk();clearTimeout(timeout);cancelAnimationFrame(frame);animations.forEach(a=>a.cancel());observer.disconnect();themeObserver.disconnect();window.removeEventListener('resize',measure);reduced.removeEventListener('change',motionChange);signature.dataset.writing='complete';};
+    return ()=>{disposed=true;events.abort();cancelClockHold();clearInterval(clockTimer);clock.remove();stopInk();clearTimeout(timeout);cancelAnimationFrame(frame);animations.forEach(a=>a.cancel());observer.disconnect();themeObserver.disconnect();window.removeEventListener('resize',measure);reduced.removeEventListener('change',motionChange);signature.dataset.writing='complete';};
   };
 })();
 </script><style>.contact-curtain .contact-signature{
@@ -2741,6 +2766,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
 .signature[data-decor="pending"] .signature-dot{opacity:0;visibility:hidden}
 .signature[data-decor="complete"] .signature-dot{opacity:1;visibility:visible}
 .signature-dot img{object-fit:contain!important;filter:brightness(1.65) contrast(1.22) drop-shadow(0 0 2px rgba(255,249,226,.5))}
+#main .library-home .opening-copy .signature-dot{pointer-events:auto}
 html[data-theme="light"] .signature-dot img{filter:brightness(.68) contrast(1.6) drop-shadow(0 0 1px rgba(15,28,30,.5))}
 html[data-theme="cc"] .signature-dot img{filter:brightness(1.7) contrast(1.25) drop-shadow(0 0 2px rgba(241,234,209,.65))}
 .signature-canvas{position:absolute;pointer-events:none;display:none;contain:strict;filter:drop-shadow(0 0 3px currentColor)}
