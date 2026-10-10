@@ -92,13 +92,13 @@ main{padding-top:calc(var(--bar-height) + 94px);max-width:960px;padding-left:32p
 #e2ReviewOpen,#e2Settings{background:transparent;border-color:transparent;color:#526556}
 #e2ReviewOpen{margin-left:auto}
 #e2Notice{display:none}
-.e2-question-rail{position:fixed;z-index:34;left:clamp(198px,calc((100vw - 960px - 190px)/2 + 80px),460px);top:50%;transform:translateY(-50%);width:96px;max-height:calc(100vh - 180px);overflow:auto;overscroll-behavior:contain;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:8px;background:#f6f8f5;border:1px solid #e4eae2;border-radius:10px;box-shadow:0 3px 16px #1b33220c}
+.e2-question-rail{position:fixed;z-index:34;right:clamp(8px,calc((100vw - 1150px)/4 - 48px),300px);top:50%;transform:translateY(-50%);width:96px;max-height:calc(100vh - 180px);overflow:auto;overscroll-behavior:contain;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:8px;background:#f6f8f5;border:1px solid #e4eae2;border-radius:10px;box-shadow:0 3px 16px #1b33220c}
 .e2-rail-title{grid-column:1/-1;font-size:11px;color:#718073;padding:2px 3px 5px}
 .e2-question-rail button{min-width:0;min-height:28px;padding:3px 0;border:0;border-radius:5px;background:transparent;color:#526656;font:12px/1.4 system-ui,sans-serif}
 .e2-question-rail button:hover,.e2-question-rail button:focus-visible{background:#dfe9dd;color:#1a4c2c}
 .e2-question-rail button:focus-visible{outline:2px solid #ad6e30;outline-offset:1px}
 .e2-question,.crq,.blank{scroll-margin-top:78px}
-@media(min-width:1100px){#topbar{left:190px;padding-left:18px;padding-right:24px}.e2-question-rail{left:clamp(198px,calc((100vw - 960px - 190px)/2 + 80px),460px)}}
+@media(min-width:1100px){#topbar{left:190px;padding-left:18px;padding-right:24px}.e2-question-rail{right:clamp(8px,calc((100vw - 1150px)/4 - 48px),300px)}}
 @media(max-width:1099px){.e2-question-rail{display:none}}
 @media(max-width:700px){#topbar{left:0;top:62px;padding:6px 10px}#topbar .tools{gap:5px}#topbar .tools button{font-size:11px;padding-inline:6px}#topbar .tools select{max-width:88px}#e2ReviewOpen{margin-left:4px}main{padding-top:calc(var(--bar-height) + 88px)}}
 /* One compact toolbar row and a question index in the spare left gutter. */
@@ -107,10 +107,10 @@ main{padding-top:calc(var(--bar-height) + 94px);max-width:960px;padding-left:32p
  .e2-nav-brand{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin:0 14px 0 0}.e2-nav-brand strong{font:700 16px/1.2 Georgia,serif;color:#24442d}.e2-nav-brand span{display:none}
  .e2-types button{flex:0 0 auto;width:auto;padding:8px 11px;min-height:40px}
  #topbar{left:0;top:64px;padding:6px 12px}
- main{margin-left:max(120px,calc((100vw - 960px + 120px)/2));margin-right:18px;max-width:960px;padding-top:calc(var(--bar-height) + 84px)}
- .e2-question-rail{display:grid;left:12px;width:96px}
+ main{width:min(960px,calc(100vw - 156px));max-width:none;margin-left:24px;margin-right:auto;padding-top:calc(var(--bar-height) + 84px)}
+ .e2-question-rail{display:grid;right:clamp(12px,calc((100vw - 1080px)/2),140px);width:96px}
 }
 @media(min-width:1360px){
  #topbar{left:190px;top:0;padding:8px 18px}
- .e2-question-rail{left:clamp(198px,calc((100vw - 960px - 190px)/2 + 80px),460px)}
+ .e2-question-rail{right:clamp(8px,calc((100vw - 1150px)/4 - 48px),300px)}
 }
