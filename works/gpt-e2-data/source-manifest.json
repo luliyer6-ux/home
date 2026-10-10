@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "years": [
+    {
+      "year": 2010,
+      "newtype": 5,
+      "translationWords": 149,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2011,
+      "newtype": 5,
+      "translationWords": 150,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2012,
+      "newtype": 5,
+      "translationWords": 150,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2013,
+      "newtype": 5,
+      "translationWords": 157,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2014,
+      "newtype": 5,
+      "translationWords": 147,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2015,
+      "newtype": 5,
+      "translationWords": 156,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2016,
+      "newtype": 5,
+      "translationWords": 147,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2017,
+      "newtype": 5,
+      "translationWords": 155,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2018,
+      "newtype": 5,
+      "translationWords": 155,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2019,
+      "newtype": 5,
+      "translationWords": 151,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2020,
+      "newtype": 5,
+      "translationWords": 151,
+      "writingPrompts": 2,
+      "answerSource": "用户上传新题型汇编，第 24 页答案速查（参考答案）",
+      "source": "用户提供：光速考研工作室整理汇编，2010—2020 英语二分类资料"
+    },
+    {
+      "year": 2021,
+      "newtype": 5,
+      "translationWords": 151,
+      "writingPrompts": 2,
+      "answerSource": "Echo 题库答案（经原文核对，非官方）；https://raw.githubusercontent.com/Echo1LZJY/echo-kaoyan-english-skill/main/skills/kaoyan-english/references/papers/english-ii/2021/answers.json",
+      "source": "用户提供：2021年考研英语二.pdf · burningvocabulary.cn 整理试卷"
+    },
+    {
+      "year": 2022,
+      "newtype": 5,
+      "translationWords": 144,
+      "writingPrompts": 2,
+      "answerSource": "Echo 题库答案（经原文核对，非官方）；https://raw.githubusercontent.com/Echo1LZJY/echo-kaoyan-english-skill/main/skills/kaoyan-english/references/papers/english-ii/2022/answers.json",
+      "source": "用户提供：2022年考研英语二.pdf · burningvocabulary.cn 整理试卷"
+    },
+    {
+      "year": 2023,
+      "newtype": 5,
+      "translationWords": 150,
+      "writingPrompts": 2,
+      "answerSource": "Echo 题库答案（经原文核对，非官方）；https://raw.githubusercontent.com/Echo1LZJY/echo-kaoyan-english-skill/main/skills/kaoyan-english/references/papers/english-ii/2023/answers.json",
+      "source": "用户提供：2023年考研英语二.pdf · burningvocabulary.cn 整理试卷"
+    },
+    {
+      "year": 2024,
+      "newtype": 5,
+      "translationWords": 154,
+      "writingPrompts": 2,
+      "answerSource": "Echo 题库答案（经原文核对，非官方）；https://raw.githubusercontent.com/Echo1LZJY/echo-kaoyan-english-skill/main/skills/kaoyan-english/references/papers/english-ii/2024/answers.json",
+      "source": "用户提供：2024年考研英语二.pdf · burningvocabulary.cn 整理试卷"
+    },
+    {
+      "year": 2025,
+      "newtype": 5,
+      "translationWords": 151,
+      "writingPrompts": 2,
+      "answerSource": "Echo 题库答案（经原文核对，非官方）；https://raw.githubusercontent.com/Echo1LZJY/echo-kaoyan-english-skill/main/skills/kaoyan-english/references/papers/english-ii/2025/answers.json",
+      "source": "用户提供：2025年考研英语二.pdf · burningvocabulary.cn 整理试卷"
+    },
+    {
+      "year": 2026,
+      "newtype": 5,
+      "translationWords": 151,
+      "writingPrompts": 2,
+      "answerSource": "Echo 题库答案（经原文核对，非官方）；https://raw.githubusercontent.com/Echo1LZJY/echo-kaoyan-english-skill/main/skills/kaoyan-english/references/papers/english-ii/2026/answers.json",
+      "source": "用户提供：2026年考研英语二.pdf · burningvocabulary.cn 整理试卷"
+    }
+  ],
+  "teaching": "Independent browser implementation of task-specific evidence, translation and writing workflows inspired by Echo. No repository corpus is redistributed."
+}
