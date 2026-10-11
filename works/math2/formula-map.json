@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "updated": "2026-10-12",
+  "howto": "人工标注：每题按解题主线选 1–5 张公式卡 id（见 math2-formulas.json），按使用顺序排列。未标注的题不显示“相关公式”按钮。不要虚构——只填已核对题干的对应关系。",
+  "mappings": [
+    { "year": "2025", "qno": 1, "formula_ids": [], "note": "示例条目：formula_ids 为空表示暂未标注" }
+  ]
+}
