@@ -1,0 +1,4 @@
+/* One persistent theme preference shared by examination and vocabulary views. */
+(()=>{'use strict';const root=document.documentElement,key='gpt-e2-theme-v1';const button=document.createElement('button');button.id='e2ThemeToggle';button.type='button';button.setAttribute('aria-label','切换黑色模式');document.querySelector('.tools').append(button);
+function render(){const dark=root.classList.contains('e2-dark');button.textContent=dark?'☀ 白天':'☾ 黑色';button.setAttribute('aria-pressed',String(dark));button.title=dark?'切换白天模式':'切换黑色模式';}
+button.onclick=()=>{const dark=root.classList.toggle('e2-dark');try{localStorage.setItem(key,dark?'dark':'light');}catch{}render();};window.addEventListener('storage',e=>{if(e.key===key){root.classList.toggle('e2-dark',e.newValue==='dark');render();}});render();})();
