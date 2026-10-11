@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>考点演示</title>
+<!-- Tailwind 本地兜底（MIT，随仓库部署，离线可用） -->
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>if(window.tailwind){tailwind.config={theme:{extend:{fontFamily:{sans:['"Segoe UI"','"Microsoft YaHei"','system-ui','sans-serif'],mono:['Consolas','ui-monospace','monospace']}}}}};</script>
+<!-- KaTeX（CDN；失败时框架自带降级排版） -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.viz-topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:10px 16px;background:#fff;border-bottom:1px solid #dce4de}
+.viz-topbar h1{font-size:17px;color:#184b3a;margin:0}
+.viz-topbar .ctx{font-size:12px;color:#69776e}
+a.viz-back{display:inline-block;border:1px solid #dce4de;border-radius:8px;padding:6px 14px;
+  color:#184b3a;text-decoration:none;font-size:14px;background:#fff}
+a.viz-back:hover{background:#f0f5f1}
+.viz-license{font-size:11px;color:#9aa5a0}
+main{max-width:1100px;margin:0 auto;padding:16px 16px 64px}
+#topic-header{margin:6px 0 14px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:16px;overflow:hidden}
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+<header class="viz-topbar">
+  <a class="viz-back" id="backLink" target="_top" href="../index.html">&larr; 返回原题</a>
+  <div style="flex:1;min-width:200px">
+    <h1 id="vizTitle">考点演示</h1>
+    <div class="ctx" id="vizCtx"></div>
+  </div>
+  <span class="viz-license">可视化模块来源：ASD-0613/408-Review-Visualization-Platform（MIT）</span>
+</header>
+<main>
+  <div id="topic-header"></div>
+  <div class="card" id="theory-card">
+    <div class="flex items-center justify-between px-5 py-3 cursor-pointer select-none" id="theory-toggle">
+      <div class="flex items-center gap-2 font-bold text-slate-700"><span>&#x1F4D6;</span><span>理论知识</span></div>
+      <span id="theory-arrow" class="text-slate-400 text-sm">&#x25BC;</span>
+    </div>
+    <div id="theory-body" class="px-5 pb-5"></div>
+  </div>
+  <div class="card p-5" id="viz-card" style="padding:20px">
+    <div class="flex items-center gap-2 font-bold text-slate-700" style="margin-bottom:12px">
+      <span>&#x1F9EA;</span><span>交互式可视化</span>
+      <div class="ml-auto flex items-center gap-1 rounded-lg bg-slate-100 p-1">
+        <button id="zoom-out" title="缩小">&#xFF0D;</button>
+        <button id="zoom-reset" title="恢复 100%">100%</button>
+        <button id="zoom-in" title="放大">&#xFF0B;</button>
+      </div>
+    </div>
+    <div id="input-area"></div>
+    <div id="control-area"></div>
+    <div id="step-desc" class="hidden"></div>
+    <div id="stage"></div>
+  </div>
+  <div class="card" id="log-card">
+    <div class="flex items-center justify-between px-5 py-2.5 bg-slate-50 border-b border-slate-100">
+      <div class="flex items-center gap-2 font-bold text-slate-700 text-sm"><span>&#x1F4CB;</span><span>执行日志</span></div>
+      <button id="log-clear" class="text-xs text-slate-400">清空</button>
+    </div>
+    <div id="log-box" class="log-box h-44 overflow-y-auto px-4 py-3 font-mono text-xs leading-6"></div>
+  </div>
+</main>
+<!-- 专注模式控件：框架 mount() 需要这些 id 存在；本查看器不启用专注模式，故隐藏 -->
+<button id="focus-toggle" style="display:none" tabindex="-1"></button>
+<button id="fp-exit" style="display:none" tabindex="-1"></button>
+<select id="fp-topic" style="display:none" tabindex="-1"></select>
+<script src="js/framework.js"></script>
+<script src="js/exam-history-1.js"></script>
+<script src="js/exam-history-2.js"></script>
+<script>
+window.VIZ_MODULES = {"coa-addressing":{"label":"指令寻址方式（EA 的形成）","subject":"计算机组成原理","file":"coa-addressing.js"},"coa-assembly":{"label":"高级语言 ↔ 机器级代码","subject":"计算机组成原理","file":"coa-assembly.js"},"coa-baseconv":{"label":"进位计数制与转换（R 进制互转 · 除基取余 / 乘基取整）","subject":"计算机组成原理","file":"coa-baseconv.js"},"coa-cache-assoc":{"label":"组相联与全相联映射","subject":"计算机组成原理","file":"coa-cache-assoc.js"},"coa-cache-direct":{"label":"Cache 直接映射","subject":"计算机组成原理","file":"coa-cache-direct.js"},"coa-cisc-risc":{"label":"CISC 与 RISC 对比","subject":"计算机组成原理","file":"coa-cisc-risc.js"},"coa-datapath":{"label":"数据通路与指令执行","subject":"计算机组成原理","file":"coa-datapath.js"},"coa-disk":{"label":"磁盘存储器性能计算器","subject":"计算机组成原理","file":"coa-disk.js"},"coa-fixadd":{"label":"补码加减运算与溢出判断","subject":"计算机组成原理","file":"coa-fixadd.js"},"coa-float754":{"label":"IEEE 754 浮点数表示","subject":"计算机组成原理","file":"coa-float754.js"},"coa-floatadd":{"label":"浮点数的加/减运算（对阶 · 规格化 · 舍入）","subject":"计算机组成原理","file":"coa-floatadd.js"},"coa-inst-format":{"label":"指令格式与扩展操作码","subject":"计算机组成原理","file":"coa-inst-format.js"},"coa-interrupt":{"label":"异常与中断机制","subject":"计算机组成原理","file":"coa-interrupt.js"},"coa-io":{"label":"I/O 方式与 CPU 时间占比计算器","subject":"计算机组成原理","file":"coa-io.js"},"coa-mainmem":{"label":"主存与 CPU 连接（芯片扩展）","subject":"计算机组成原理","file":"coa-mainmem.js"},"coa-mainmem-pins":{"label":"主存芯片引脚与交叉编址","subject":"计算机组成原理","file":"coa-mainmem-pins.js"},"coa-muldiv":{"label":"乘除运算电路（原码一位乘 / 加减交替除法）","subject":"计算机组成原理","file":"coa-muldiv.js"},"coa-perf":{"label":"性能指标（CPI/MIPS/FLOPS）","subject":"计算机组成原理","file":"coa-perf.js"},"coa-pipeline":{"label":"五段流水线与冒险处理","subject":"计算机组成原理","file":"coa-pipeline.js"},"ds-binsearch":{"label":"二分查找（折半查找）与判定树","subject":"数据结构","file":"ds-binsearch.js"},"ds-bintree-traversal":{"label":"二叉树的遍历（前/中/后/层序）","subject":"数据结构","file":"ds-bintree.js"},"ds-blocksearch":{"label":"分块查找（索引顺序查找）","subject":"数据结构","file":"ds-blocksearch.js"},"ds-bst-avl":{"label":"二叉排序树与 AVL 旋转","subject":"数据结构","file":"ds-bst-avl.js"},"ds-btree":{"label":"B 树与 B+ 树","subject":"数据结构","file":"ds-btree.js"},"ds-complexity":{"label":"算法时间复杂度分析","subject":"数据结构","file":"ds-complexity.js"},"ds-dfs-bfs":{"label":"图的遍历 DFS / BFS","subject":"数据结构","file":"ds-dfs-bfs.js"},"ds-dijkstra":{"label":"Dijkstra 最短路径","subject":"数据结构","file":"ds-dijkstra.js"},"ds-dlink":{"label":"双链表与循环链表","subject":"数据结构","file":"ds-dlink.js"},"ds-expression":{"label":"中缀 → 后缀表达式求值","subject":"数据结构","file":"ds-expression.js"},"ds-extsort":{"label":"外部排序（初始归并段 / 败者树 / 最佳归并树）","subject":"数据结构","file":"ds-extsort.js"},"ds-graph-storage":{"label":"图的存储（邻接矩阵/表）","subject":"数据结构","file":"ds-graph-storage.js"},"ds-hash":{"label":"散列表与冲突处理（ASL）","subject":"数据结构","file":"ds-hash.js"},"ds-heap":{"label":"堆与优先队列（建堆 / 插入 / 删除堆顶）","subject":"数据结构","file":"ds-heap.js"},"ds-huffman":{"label":"哈夫曼树与哈夫曼编码","subject":"数据结构","file":"ds-huffman.js"},"ds-kmp":{"label":"KMP 与 next/nextval 数组","subject":"数据结构","file":"ds-kmp.js"},"ds-kruskal":{"label":"Kruskal 最小生成树","subject":"数据结构","file":"ds-kruskal.js"},"ds-linkedlist":{"label":"单链表的操作与算法设计","subject":"数据结构","file":"ds-linkedlist.js"},"ds-prim":{"label":"Prim 最小生成树（对比 Kruskal）","subject":"数据结构","file":"ds-prim.js"},"ds-radix":{"label":"基数排序（按位分配 / 收集）","subject":"数据结构","file":"ds-radix.js"},"ds-sort":{"label":"排序算法全家桶（含每趟结果）","subject":"数据结构","file":"ds-sort.js"},"ds-stack-queue":{"label":"栈与队列出入演示（序列判定）","subject":"数据结构","file":"ds-stack-queue.js"},"ds-topo":{"label":"拓扑排序与关键路径","subject":"数据结构","file":"ds-topo.js"},"ds-tree-forest":{"label":"树、森林与二叉树的转换（左孩子右兄弟）","subject":"数据结构","file":"ds-tree-forest.js"},"net-crc":{"label":"CRC 循环冗余校验","subject":"计算机网络","file":"net-crc.js"},"net-csma":{"label":"CSMA/CD 与最小帧长","subject":"计算机网络","file":"net-csma.js"},"net-dns":{"label":"DNS 域名解析过程（递归 / 迭代 / 缓存）","subject":"计算机网络","file":"net-dns.js"},"net-fragment":{"label":"IP 分片与重组","subject":"计算机网络","file":"net-fragment.js"},"net-http":{"label":"HTTP 请求与持久连接（三种连接的 RTT 计数）","subject":"计算机网络","file":"net-http.js"},"net-mail":{"label":"电子邮件与 FTP（SMTP/POP3）","subject":"计算机网络","file":"net-mail.js"},"net-routing":{"label":"路由算法与协议（RIP/OSPF/BGP）","subject":"计算机网络","file":"net-routing.js"},"net-shannon":{"label":"奈奎斯特定理与香农定理","subject":"计算机网络","file":"net-shannon.js"},"net-subnet":{"label":"IPv4 地址与子网划分","subject":"计算机网络","file":"net-subnet.js"},"net-switch":{"label":"以太网交换机自学习","subject":"计算机网络","file":"net-switch.js"},"net-tcp-cc":{"label":"TCP 拥塞控制（慢启动/拥塞避免/快重传）","subject":"计算机网络","file":"net-tcp-cc.js"},"net-tcp-conn":{"label":"TCP 连接建立与释放（三次握手/四次挥手）","subject":"计算机网络","file":"net-tcp-conn.js"},"net-window":{"label":"滑动窗口可靠传输（停等/GBN/SR）","subject":"计算机网络","file":"net-window.js"},"os-deadlock":{"label":"死锁与银行家算法","subject":"操作系统","file":"os-deadlock.js"},"os-disk-sched":{"label":"磁盘调度 SSTF / SCAN / C-SCAN","subject":"操作系统","file":"os-disk-sched.js"},"os-file-alloc":{"label":"文件物理结构与混合索引计算","subject":"操作系统","file":"os-file-alloc.js"},"os-lru":{"label":"页面置换 · LRU（含推导表）","subject":"操作系统","file":"os-lru.js"},"os-procstate":{"label":"进程状态转换（五态模型）","subject":"操作系统","file":"os-procstate.js"},"os-pv":{"label":"同步与互斥 · PV 操作（生产者-消费者）","subject":"操作系统","file":"os-pv.js"},"os-sched":{"label":"处理机调度（FCFS/SJF/HRRN/RR）","subject":"操作系统","file":"os-sched.js"},"os-vm-paging":{"label":"页式虚拟内存 · 地址转换（TLB+缺页）","subject":"操作系统","file":"os-vm.js"}};
+</script>
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var params = new URLSearchParams(location.search);
+  var moduleId = params.get('module') || '';
+  var year = params.get('year'), q = params.get('q');
+  var META = window.VIZ_MODULES || {};
+  function fail(msg){
+    $('vizTitle').textContent = '考点演示不可用';
+    $('stage').innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">' + msg + '</div>';
+  }
+  /* 白名单校验：只允许 64 个已知模块 id，防路径注入 */
+  if (!Object.prototype.hasOwnProperty.call(META, moduleId)) {
+    fail('未找到该考点演示模块（module 参数无效）。');
+    return;
+  }
+  var meta = META[moduleId];
+  /* 书籍元数据：供框架 findTopicMeta() 查中文 label 与书签徽标 */
+  var BOOKDEF = {
+    '数据结构':      {id:'ds',  name:'数据结构',       icon:'\uD83E\uDDE9', accent:'#6366f1'},
+    '计算机组成原理': {id:'coa', name:'计算机组成原理', icon:'\u2699\uFE0F', accent:'#0ea5e9'},
+    '操作系统':      {id:'os',  name:'操作系统',       icon:'\uD83D\uDDA5\uFE0F', accent:'#10b981'},
+    '计算机网络':    {id:'net', name:'计算机网络',     icon:'\uD83C\uDF10', accent:'#f59e0b'}
+  };
+  var books = [];
+  Object.keys(BOOKDEF).forEach(function(subj){
+    var b = BOOKDEF[subj];
+    var topics = Object.keys(META).filter(function(id){ return META[id].subject === subj; })
+      .map(function(id){ return {id:id, label:META[id].label, status:'ready'}; });
+    books.push({id:b.id, name:b.name, icon:b.icon, accent:b.accent,
+      chapters:[{id:'all', title:'全部', topics:topics}]});
+  });
+  if (typeof RC408 !== 'undefined') RC408.books = books;
+  document.title = '考点演示 · ' + meta.label;
+  $('vizTitle').textContent = meta.label;
+  if (year && q) {
+    $('vizCtx').textContent = year + ' 年第 ' + q + ' 题 · 关联演示';
+    document.title += '（' + year + '年第' + q + '题）';
+    $('backLink').href = '../index.html?year=' + encodeURIComponent(year) + '&q=' + encodeURIComponent(q);
+  } else {
+    $('vizCtx').textContent = meta.subject + ' · 交互式可视化';
+  }
+  var s = document.createElement('script');
+  s.src = 'modules/' + encodeURIComponent(moduleId) + '/' + meta.file;
+  s.onload = function(){
+    try {
+      Runner.mount();
+      Runner.open(moduleId);
+    } catch(e){ fail('演示初始化失败：' + e.message); }
+  };
+  s.onerror = function(){ fail('演示模块文件加载失败，请检查网络后重试。'); };
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

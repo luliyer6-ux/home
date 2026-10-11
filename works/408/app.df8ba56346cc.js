@@ -9,10 +9,47 @@ await ensureYear(first);
 const years=Object.keys(exams).sort((a,b)=>Number(a)-Number(b)),letters=['A','B','C','D'];
 const STORE='408-interactive-study-v2',LEGACY='408-interactive-answer-v1',KEY_VERSION='user-pdf-20261010';
 const $=id=>document.getElementById(id),plain=v=>v!==null&&typeof v==='object'&&!Array.isArray(v),escapeHTML=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* ===== 考点演示(viz)集成 =====
+ * 映射文件 works/408/viz/mapping.json 由考点演示侧产出,此处按需懒加载;
+ * 加载失败或某题无映射时入口按钮保持隐藏,不抛错、不影响原有功能。
+ * 不新增任何 localStorage key。 */
+const VIZ={map:null,loading:null,failed:false,labels:{}};
+function vizModuleIdOk(id){return typeof id==='string'&&/^[a-z0-9][a-z0-9-]{0,40}$/.test(id)}
+async function ensureVizMap(){
+ if(VIZ.map||VIZ.failed)return VIZ.map;
+ if(VIZ.loading)return VIZ.loading;
+ VIZ.loading=(async()=>{try{
+  const r=await fetch('./viz/mapping.json');
+  if(!r.ok)throw Error('viz mapping missing');
+  const m=await r.json(),out={};
+  if(m&&typeof m==='object'&&m.modules&&typeof m.modules==='object')
+   for(const [id,info] of Object.entries(m.modules))
+    if(vizModuleIdOk(id)&&info&&typeof info.label==='string')VIZ.labels[id]=info.label;
+  const put=(y,q,ids)=>{y=String(y);const n=Number(q);
+   if(!years.includes(y)||!Number.isInteger(n)||n<1||n>47)return;
+   const list=(Array.isArray(ids)?ids:[ids]).filter(vizModuleIdOk);
+   if(list.length)out[y+':'+n]=[...new Set(list)]};
+  if(m&&typeof m==='object'){
+   if(Array.isArray(m.entries))for(const e of m.entries){if(e&&typeof e==='object')put(e.year,e.question,e.modules)}
+   else if(Array.isArray(m))for(const e of m){if(e&&typeof e==='object')put(e.year??e.y,e.question??e.q??e.n,e.modules??e.module)}
+   else if(Array.isArray(m.links))for(const e of m.links){if(e&&typeof e==='object')put(e.year,e.question,e.modules)}
+   else for(const [y,qs] of Object.entries(m)){
+    if(y==='modules'||y==='meta'||y==='schema')continue;
+    if(qs&&typeof qs==='object')for(const [q,ids] of Object.entries(qs))put(y,q,ids)}
+  }
+  VIZ.map=out;
+ }catch(e){VIZ.failed=true;VIZ.map=null}
+ return VIZ.map})();
+ return VIZ.loading;
+}
+function vizModulesFor(y,q){const m=VIZ.map;return m?(m[String(y)+':'+Number(q)]||[]):[]}
+function vizLabel(id){return VIZ.labels[id]||id}
 let storageAvailable=true;
 function readStore(key){try{const v=JSON.parse(localStorage.getItem(key)||'{}');return plain(v)?v:{}}catch(e){return {}}}
 const saved=readStore(STORE),legacy=readStore(LEGACY),raw=plain(saved.byYear)?saved:legacy;
 let store={byYear:plain(raw.byYear)?raw.byYear:{},history:Array.isArray(raw.history)?raw.history:[],settings:plain(raw.settings)?raw.settings:{}},year=years.includes(String(raw.settings?.year))?String(raw.settings.year):'2026',mode=raw.settings?.mode==='mock'?'mock':'practice';
+try{const py=new URLSearchParams(location.search).get('year');if(py&&years.includes(py))year=py}catch(e){}
+await ensureYear(year); /* 演示模块页"返回原题"带 ?year= 时确保该年数据已加载 */
 let currentQ=0,wrongOnly=false,mockRunning=false,lastTick=Date.now(),clockVisible=!document.hidden,timerHandle=null;
 function uid(){return typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)}
 function fresh(){return {practice:Array(40).fill(null),mock:Array(40).fill(null),written:{practice:{},mock:{}},practiceDone:false,mockStarted:false,mockSubmitted:false,mockRemaining:null,mockElapsed:0,practiceElapsed:0,mockLimitMinutes:null,practiceQ:0,mockQ:0,practiceId:uid(),mockId:uid()}}
@@ -50,7 +87,7 @@ function sourceFragment(fragment,kind='paper',caption=''){const id=kind==='paper
 function optionGraphic(f){return sourceFragment(f,'paper').match(/<svg[\s\S]*?<\/svg>/)?.[0]||''}
 function renderGrid(){const ids=visibleQuestions(),a=active();$('qgrid').innerHTML=ids.length?ids.map(i=>{let c='qnum';if(i===currentQ)c+=' current';const picked=i<40?a[i]:state().written[mode][i+1];if(picked)c+=' answered';if(i<40&&(done()||mode==='practice'&&picked!==null))c+=a[i]===answerKeys[year][i]?' correct':a[i]===null?' blank-after':' wrong';return `<button class="${c}" data-q="${i}" aria-label="第 ${i+1} 题" ${i===currentQ?'aria-current="true"':''}>${i+1}</button>`}).join(''):'<p class="empty">全部答对，暂无错题。</p>';$('qgrid').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>gotoQuestion(Number(b.dataset.q)))}
 function renderQuestion(){const ids=visibleQuestions();if(!ids.length){$('questionArea').innerHTML='';$('prevQ').disabled=true;$('nextQ').disabled=true;return}if(!ids.includes(currentQ))currentQ=ids[0];const q=exams[year][currentQ],s=state(),picked=currentQ<40?active()[currentQ]:null,show=revealed(),locked=!canAnswer();
- let content=`<div class="question-title">第 ${q.n} 题 <span class="badge">${q.n<=40?'单项选择 · 2 分':'综合应用 · 自行核对'}</span></div><div class="stem">${q.preciseSource?q.stemSource.map(f=>sourceFragment(f,'paper')).join(''):q.stem.map(t=>`<p>${escapeHTML(t)}</p>`).join('')}</div>`;
+ let content=`<div class="question-title">第 ${q.n} 题 <span class="badge">${q.n<=40?'单项选择 · 2 分':'综合应用 · 自行核对'}</span><button id="vizOpen" class="viz-link-btn" hidden>关联学习</button></div><div class="stem">${q.preciseSource?q.stemSource.map(f=>sourceFragment(f,'paper')).join(''):q.stem.map(t=>`<p>${escapeHTML(t)}</p>`).join('')}</div>`;
  if(!q.preciseSource)content+=q.figures.map(f=>sourceFragment(f,'paper')).join('');
  if(q.n<=40){content+=q.imageOptions?'<p class="hint">本题选项为原题图形，点击图形或 A–D 作答。</p>':'';content+='<div class="options'+(q.optionImages?' image-options':'')+'">'+letters.map(l=>{let c='option';if(picked===l)c+=' chosen';if(show&&answerKeys[year][currentQ]===l)c+=' correct';if(show&&picked===l&&picked!==answerKeys[year][currentQ])c+=' incorrect';return `<button class="${c}" data-opt="${l}" aria-label="选项 ${l}" ${locked?'disabled':''}><span class="option-letter">${l}</span><span class="option-content">${q.optionImages?.[l]?optionGraphic(q.optionImages[l]):escapeHTML(q.options[l]||'原题图形选项 '+l)}</span></button>`}).join('')+'</div>';if(show){const ok=picked===answerKeys[year][currentQ];content+=`<div class="feedback ${ok?'ok':'bad'}">${picked?`你的答案：${picked} · ${ok?'正确':'错误'}`:'未作答'}　正确答案：<b>${answerKeys[year][currentQ]}</b></div>`}}
  else content+='<label class="response-label" for="writtenAnswer">我的作答</label><textarea id="writtenAnswer" rows="8" placeholder="记录解题过程、代码或答案要点…" '+(locked?'disabled':'')+'></textarea>';
@@ -60,6 +97,7 @@ function renderQuestion(){const ids=visibleQuestions();if(!ids.length){$('questi
  const allowAnalysis=mode==='practice'?(q.n>40||show):done();
  if(allowAnalysis){content+=`<details class="analysis" ${q.n<=40?'open':''}><summary>答案与解析 · 离线可用</summary><p class="source-name">来源：${escapeHTML(q.analysisSource||'用户提供的解析 PDF')}</p>${q.analysis.map(f=>sourceFragment(f,'answer',`解析原稿 · 第 ${f.p+1} 页`)).join('')}${q.analysis.length?'':'<p class="notice">该题解析尚未完成定位。</p>'}</details>`}else content+='<p class="hint">'+(mode==='practice'?'作答后显示本题答案与解析。':'交卷后统一显示答案与解析。')+'</p>';
  $('questionArea').innerHTML=content;$('questionArea').querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>selectAnswer(b.dataset.opt));
+ wireVizButton(q);
  if(q.n>40){const el=$('writtenAnswer');el.value=s.written[mode][q.n]||'';el.addEventListener('input',()=>{if(!canAnswer())return;state().written[mode][q.n]=el.value;save();renderGrid();renderProgress()})}
  const j=ids.indexOf(currentQ);$('prevQ').disabled=j<=0;$('nextQ').disabled=j>=ids.length-1;document.title=`${year} 年 408 真题 · 第 ${q.n} 题`;hydrateImages()}
 function selectAnswer(l){if(!letters.includes(l)||currentQ>=40||!canAnswer())return;active()[currentQ]=l;rememberQuestion();renderGrid();renderQuestion();renderProgress();renderStatus()}
@@ -90,15 +128,39 @@ async function mergeBackup(input){if(!plain(input)||!(input.schema==='408-study-
  if(!hadProgress&&plain(input.settings)){if(years.includes(String(input.settings.year)))year=String(input.settings.year);if(['practice','mock'].includes(input.settings.mode))mode=input.settings.mode}restoreQuestion();render();renderHistory();renderStatus(`导入完成：新增 ${progress} 套进度、${records} 条成绩；${conflicts} 套已有进度保留当前作答。`);return {progress,conflicts,records}}
 async function importFile(file){if(!file)return;try{if(file.size>30*1024*1024)throw Error('备份文件超过 30 MB，请检查所选文件。');await mergeBackup(JSON.parse(await file.text()))}catch(e){renderStatus('导入失败：'+e.message)}finally{$('importFile').value=''}}
 
+function vizLoadModule(body,id,q){
+ const src='./viz/index.html?module='+encodeURIComponent(id)+'&year='+encodeURIComponent(year)+'&q='+q.n;
+ body.innerHTML='<iframe title="考点演示 · '+escapeHTML(vizLabel(id))+'" src="'+src+'"></iframe>';
+}
+function openVizDrawer(mods,q){
+ $('vizTitle').textContent=year+' 年第 '+q.n+' 题 · 关联学习';
+ const body=$('vizBody');body.innerHTML='';
+ if(mods.length===1){vizLoadModule(body,mods[0],q)}
+ else{const list=document.createElement('div');list.className='viz-mod-list';
+  mods.forEach((m,i)=>{const b=document.createElement('button');b.textContent='演示 '+(i+1)+' · '+vizLabel(m);b.onclick=()=>vizLoadModule(body,m,q);list.append(b)});
+  body.append(list)}
+ $('vizDrawer').hidden=false;
+}
+function closeViz(){$('vizDrawer').hidden=true;const b=$('vizBody');if(b)b.innerHTML=''}
+function wireVizButton(q){
+ const btn=$('vizOpen');if(!btn)return;
+ if(!(mode==='practice'||done()))return; /* 模拟交卷前隐藏入口 */
+ ensureVizMap().then(()=>{
+  const mods=vizModulesFor(year,q.n),b=$('vizOpen');
+  if(!b||!mods.length)return; /* 无映射:优雅隐藏,不报错 */
+  b.hidden=false;b.textContent=mods.length>1?'关联学习('+mods.length+')':'关联学习';
+  b.onclick=()=>openVizDrawer(mods,q);
+ });
+}
 function hydrateImages(){
  const area=$('questionArea');
  const load=()=>area.querySelectorAll('image[data-src]').forEach(img=>{const detail=img.closest('details');if(!detail||detail.open){img.setAttribute('href',img.getAttribute('data-src'));img.removeAttribute('data-src')}});
  area.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',load));load();
 }
 
-$('year').innerHTML=years.map(y=>`<option value="${y}">${y} 年</option>`).join('');restoreQuestion();render();
-$('year').onchange=()=>switchYear($('year').value);$('mode').onchange=()=>switchMode($('mode').value);$('start').onclick=startMock;$('submit').onclick=()=>submitMock(false);$('finishPractice').onclick=finishPractice;$('reset').onclick=resetYear;$('wrongToggle').onclick=toggleWrong;$('prevQ').onclick=()=>moveQuestion(-1);$('nextQ').onclick=()=>moveQuestion(1);$('historyButton').onclick=openHistory;$('historyClose').onclick=closeHistory;$('exportButton').onclick=exportBackup;$('importButton').onclick=()=>$('importFile').click();$('importFile').onchange=()=>importFile($('importFile').files[0]);$('topButton').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){pauseMock();clockVisible=false}else{clockVisible=true;lastTick=Date.now()}save()});window.addEventListener('pagehide',()=>{pauseMock();clockVisible=false;save()});window.addEventListener('beforeunload',()=>{pauseMock();save()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHistory()});
+$('year').innerHTML=years.map(y=>`<option value="${y}">${y} 年</option>`).join('');restoreQuestion();try{const qn=Number(new URLSearchParams(location.search).get('q'));if(Number.isInteger(qn)&&qn>=1&&qn<=47){currentQ=qn-1;rememberQuestion()}}catch(e){}render();try{if(new URLSearchParams(location.search).get('q')!==null)$('questionArea').scrollIntoView()}catch(e){}
+$('year').onchange=()=>switchYear($('year').value);$('mode').onchange=()=>switchMode($('mode').value);$('start').onclick=startMock;$('submit').onclick=()=>submitMock(false);$('finishPractice').onclick=finishPractice;$('reset').onclick=resetYear;$('wrongToggle').onclick=toggleWrong;$('prevQ').onclick=()=>moveQuestion(-1);$('nextQ').onclick=()=>moveQuestion(1);$('historyButton').onclick=openHistory;$('historyClose').onclick=closeHistory;$('vizClose').onclick=closeViz;$('vizBack').onclick=closeViz;$('exportButton').onclick=exportBackup;$('importButton').onclick=()=>$('importFile').click();$('importFile').onchange=()=>importFile($('importFile').files[0]);$('topButton').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){pauseMock();clockVisible=false}else{clockVisible=true;lastTick=Date.now()}save()});window.addEventListener('pagehide',()=>{pauseMock();clockVisible=false;save()});window.addEventListener('beforeunload',()=>{pauseMock();save()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeHistory();closeViz()}});
 timerHandle=setInterval(()=>{syncRun();save();renderTimer();if(mode==='mock'&&mockRunning&&state().mockRemaining!==null&&state().mockRemaining<=0)submitMock(true)},1000);
 
 }catch(e){const el=document.getElementById('status');el.textContent='加载失败，请检查网络后重试。';const b=document.createElement('button');b.textContent='重新加载';b.onclick=()=>location.reload();el.append(' ',b);console.error(e)}
