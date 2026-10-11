@@ -1,8 +1,205 @@
 {
-  "version": 1,
-  "updated": "2026-10-12",
-  "howto": "人工标注：每题按解题主线选 1–5 张公式卡 id（见 math2-formulas.json），按使用顺序排列。未标注的题不显示“相关公式”按钮。不要虚构——只填已核对题干的对应关系。",
-  "mappings": [
-    { "year": "2025", "qno": 1, "formula_ids": [], "note": "示例条目：formula_ids 为空表示暂未标注" }
-  ]
+ "version": 1,
+ "updated": "2026-10-12",
+ "howto": "人工标注：每题按解题主线选 1–5 张公式卡 id（见 math2-formulas.json），按使用顺序排列。未标注的题不显示“相关公式”按钮。不要虚构——只填已核对题干的对应关系。",
+ "mappings": [
+  {
+   "formula_ids": [
+    "calc9-multivariable-implicit-diff",
+    "calc5-definite-properties"
+   ],
+   "note": "由z+ln z−∫(y→x)e^{−t²}dt=0得F(x,y,z)=0，用隐函数求偏导公式∂z/∂x=−F_x/F_z、∂z/∂y=−F_y/F_z；其中F_x、F_y由变上限积分求导算出（−e^{−x²}、e^{−y²}），F_z=1+1/z，相加得选项A。",
+   "qno": 1,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc5-definite-properties",
+    "calc3-monotone-convex",
+    "calc3-concavity-inflection"
+   ],
+   "note": "先对变上限积分求导得f′(x)=e^{x²}sin x、g′(x)含∫项；由f′(0)=0、f″(0)=1>0判x=0为f的极小点，用极值判别法；g″(0)=0但g‴(0)=4≠0即二阶导变号，判(0,0)为g的拐点，用拐点判别法。",
+   "qno": 2,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc7-ode-second-order-linear",
+    "calc5-improper-tests"
+   ],
+   "note": "列特征方程r²−2ar+(a+2)=0得通解；要求对任一解∫_0^∞y(x)dx都收敛（端点处常数解/振荡解都不收敛），必须特征根实部全为负，即和2a<0且积a+2>0，得(−2,0)，用反常积分比较/绝对收敛判别验证。",
+   "qno": 3,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc1-asymptotic-order",
+    "calc1-equivalent-infinitesimal"
+   ],
+   "note": "由题设f=o(g)即f/g→0，用o符号定义逐项验证：(A)(B)比值不趋于0；(C)中g→0时e^{g}−1~g，故f/(e^{g}−1)=(f/g)·(g/(e^{g}−1))→0成立，用等价无穷小代换。",
+   "qno": 4,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc10-order-switching"
+   ],
+   "note": "换序核心先画区域：原积分域为抛物线y=4−x²下方、y=4上方、x∈[−2,2]；换为先对x积后对y积，y∈[0,4]，每个y对应x∈[−√(4−y),√(4−y)]，得选项B。",
+   "qno": 5,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc6-physical-application-formulas"
+   ],
+   "note": "用变力做功公式W=∫Fdx：P在(x,0)处受Q的引力大小为G/(x²+1)，方向沿PQ连线，取其x方向分量Gx/(x²+1)^{3/2}，从0积到l得选项B。",
+   "qno": 6,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc2-differentiability-continuity",
+    "pre-absolute-piecewise",
+    "calc2-one-sided-derivative"
+   ],
+   "note": "用可导定义把四个极限条件转化为导数问题，绝对值分段讨论符号，左右导数相等判可导（四条件皆可推出 f 在 0 可导，答案 4）",
+   "qno": 7,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "cold-schur-complement",
+    "linear2-trace-eigen"
+   ],
+   "note": "分块对角矩阵的特征多项式分解出 b 为特征值；左上 2×2 块用迹、行列式与特征值关系（一正一负当且仅当行列式 a−4<0），得 a<4、b<0",
+   "qno": 8,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "linear2-elementary-matrices",
+    "linear3-rref-rank-pivot"
+   ],
+   "note": "初等行变换不改变矩阵的秩；目标矩阵即行最简形（秩 2），四个选项中只有 B 的行向量组秩为 2 且行空间与目标一致",
+   "qno": 9,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "linear2-rank-inequalities",
+    "linear3-fundamental-subspaces",
+    "linear3-systems"
+   ],
+   "note": "由 r(AB)≤min{r(A),r(B)} 及 r(AB)=r(BA)+1 限定秩关系，再用零空间维数公式与解结构判定证 N(ABA)∩N(BAB) 含非零向量（选项 D 成立）",
+   "qno": 10,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "pre-partial-fraction-basic",
+    "calc5-newton-leibniz-substitution"
+   ],
+   "note": "部分分式拆 a/(x(2x+a))=1/x−2/(2x+a)，用 Newton-Leibniz 求无穷限反常积分得 ln((2+a)/2)=ln2，解得 a=2",
+   "qno": 11,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc3-asymptote-curvature"
+   ],
+   "note": "斜渐近线a=lim f(x)/x=1，b=lim(f(x)-x)用立方差有理化得-1，渐近线为y=x-1。",
+   "qno": 12,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [],
+   "note": "待定：题面清晰，但解法主线需定积分定义（Riemann和）把和式化为∫(0→1)x ln x dx，公式库中没有和式→定积分定义的卡片，无法标注。",
+   "qno": 13,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc5-definite-properties",
+    "calc2-parametric-implicit-derivative-table"
+   ],
+   "note": "先对积分方程两边对t求导（变限积分求导公式）得y'(0)，再用参数方程求导dy/dx=(dy/dt)/(dx/dt)，得e。",
+   "qno": 14,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc7-separable-homogeneous-ode"
+   ],
+   "note": "P,Q同为一次齐次式，dy/dx=(3-2u)/(2-5u)，令u=y/x化为可分离变量，积分得3x²-4xy+5y²=C，代入y(1)=1定常数。",
+   "qno": 15,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "linear4-linear-dependence-route-map",
+    "linear3-general-solution-structure"
+   ],
+   "note": "题面后半段由搜索补全：方程组为Ax=α1+4α4。α1+α2-α3-α4=0给出齐次基础解系(1,1,-1,-1)ᵀ且r(A)=3；特解(1,0,0,4)ᵀ，通解=特解+k·齐次解。",
+   "qno": 16,
+   "year": "2025"
+  },
+  {
+   "formula_ids": [
+    "calc4-partial-fractions",
+    "calc4-basic-integrals"
+   ],
+   "note": "部分分式拆成A/(x+1)+(Bx+C)/(x²-2x+2)，逐项用ln与arctan基本积分，结果为(3ln2+π)/10。",
+   "qno": 17,
+   "year": "2025"
+  },
+  {
+   "year": "2025",
+   "qno": 18,
+   "formula_ids": [
+    "calc1-taylor-common-table",
+    "calc1-equivalent-replacement-workflow",
+    "calc2-differentiability-continuity"
+   ],
+   "note": "分母 ln(1+x)+ln(1−x)=ln(1−x²)~−x²、分子 e^{2sin x}−1~2x 提主项（加减抵消看首项），化为差商极限得 f(0)=2 且 lim[f(x)−f(0)]/x=3，即 f'(0)=3"
+  },
+  {
+   "year": "2025",
+   "qno": 19,
+   "formula_ids": [
+    "calc9-multivariable-derivative",
+    "calc4-integral-by-parts-table",
+    "calc9-hessian-extreme"
+   ],
+   "note": "由全微分得偏导 f_x、f_y，对 x 积分得 f=−x²e^{−y}+C(y)，分部积分求 C(y)=(y+2)e^{−y}，初值定常数得 f=e^{−y}(y+2−x²)；Hessian 判 (0,−1) 为极大值点，极大值 e"
+  },
+  {
+   "year": "2025",
+   "qno": 20,
+   "formula_ids": [
+    "calc10-polar-region-types",
+    "calc10-symmetry-odd-even",
+    "pre-trig-power-reduction-full"
+   ],
+   "note": "极坐标下 D 为 ρ≤4sinθ、ρ≤4cosθ（θ∈[0,π/2]），D 关于 y=x 对称取 θ∈[0,π/4] 一半再×2，(x−y)²=ρ²(1−sin2θ)，降幂算 ∫sin⁴θ 得 12π−104/3"
+  },
+  {
+   "year": "2025",
+   "qno": 21,
+   "formula_ids": [
+    "calc3-mvt",
+    "calc2-one-sided-derivative"
+   ],
+   "note": "⇒ 用 Lagrange 中值定理把两段割线斜率写成 f'(ξ₁)、f'(ξ₂)（ξ₁<ξ₂）；⇐ 固定 c₁<c₂，令端点趋近把割线斜率取极限化为左右导数，再用中点加密把 ≤ 升级为 <，得 f'(c₁)<f'(c₂)"
+  },
+  {
+   "year": "2025",
+   "qno": 22,
+   "formula_ids": [
+    "linear1-determinant",
+    "linear5-inertia-canonical",
+    "linear5-positive-semidefinite-table"
+   ],
+   "note": "（图仅示第(1)问）合同则 |A|=|B|=0 得 3a−12=0 即 a=4；a=4 时 A 半正定且秩为 2（正惯性指数 2），合同保惯性指数，故 B=diag(k,6,0) 须有两个正特征值，得 k>0"
+  }
+ ]
 }
