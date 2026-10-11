@@ -1,0 +1,30 @@
+/* 数学二真题 · 相关公式面板：桌面右侧边栏 / 手机底部大面板 */
+.formula-overlay{position:fixed;inset:0;z-index:400;pointer-events:none}
+.formula-overlay[hidden]{display:none}
+.formula-backdrop{position:absolute;inset:0;background:rgba(10,20,16,.45);opacity:0;transition:opacity .25s ease;pointer-events:auto}
+.formula-overlay.open .formula-backdrop{opacity:1}
+.formula-panel{position:absolute;top:0;right:0;bottom:0;width:min(430px,40vw);background:#fbfaf7;color:#1d1a14;
+  box-shadow:-8px 0 30px rgba(0,0,0,.25);display:flex;flex-direction:column;
+  transform:translateX(105%);transition:transform .28s ease;pointer-events:auto}
+.formula-overlay.open .formula-panel{transform:none}
+.formula-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #e5ddcf}
+.formula-head strong{font-size:16px}
+.formula-close{border:0;background:transparent;font-size:22px;cursor:pointer;line-height:1;padding:4px 8px}
+.formula-body{overflow-y:auto;padding:12px 14px 24px;-webkit-overflow-scrolling:touch}
+.formula-card{background:#fff;border:1px solid #e8e0d0;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.formula-topic{font-size:12px;color:#8a7a5c;margin-bottom:4px}
+.formula-name{margin:0 0 8px;font-size:15px}
+.formula-tex{overflow-x:auto;padding:8px 6px;background:#f7f4ec;border-radius:6px;margin-bottom:8px;font-size:15px}
+.formula-sec{margin:6px 0;font-size:14px}
+.formula-sec summary{cursor:pointer;font-weight:600;padding:4px 0}
+.formula-sec div{padding:2px 0 6px;color:#3a342a}
+.formula-fav{margin-top:6px;border:1px solid #d8cdb4;background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-size:13px}
+.formula-fav[aria-pressed="true"]{background:#184b3a;color:#fff;border-color:#184b3a}
+.formula-entry{margin:10px 0 0;padding:8px 14px;border:1px solid #184b3a;background:transparent;color:#184b3a;border-radius:8px;cursor:pointer;font-size:14px}
+.formula-entry:hover{background:#184b3a;color:#fff}
+body.formula-open{overflow:hidden}
+@media (max-width:900px){
+  .formula-panel{top:auto;left:0;right:0;bottom:0;width:auto;max-height:86vh;border-radius:16px 16px 0 0;
+    transform:translateY(105%)}
+  .formula-overlay.open .formula-panel{transform:none}
+}
