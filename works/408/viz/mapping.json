@@ -1,0 +1,5551 @@
+{
+ "schema": "408viz-mapping/v1",
+ "meta": {
+  "source_repo": "https://github.com/ASD-0613/408-Review-Visualization-Platform",
+  "source_file": "js/exam-history.js (RC408.examHistory) —— 64 个交互模块的\"年份+题号\"登记；另有 37 个纯理论速记卡键位未收录本文件（见 mapping-verify.md）",
+  "license": "MIT (Copyright (c) 2026 ASD-0613)",
+  "generated": "2026-10-12",
+  "module_count": 64,
+  "year_range": "2009-2026",
+  "years_total": 18,
+  "mapping_pairs": 629,
+  "multi_module_pairs": 38,
+  "modules_without_history": [],
+  "kind_note": "choice=选择题(原\"选\"), essay=大题(原\"大\")；原 k 字符串与\"·\"分隔的题号按位置一一对应，单字 k 作用于该条目全部题号"
+ },
+ "modules": {
+  "coa-addressing": {
+   "file": "js/modules/coa-addressing.js",
+   "dir": "modules/coa-addressing",
+   "label": "指令寻址方式（EA 的形成）",
+   "subject": "计算机组成原理",
+   "history_entries": 8
+  },
+  "coa-assembly": {
+   "file": "js/modules/coa-assembly.js",
+   "dir": "modules/coa-assembly",
+   "label": "高级语言 ↔ 机器级代码",
+   "subject": "计算机组成原理",
+   "history_entries": 12
+  },
+  "coa-baseconv": {
+   "file": "js/modules/coa-baseconv.js",
+   "dir": "modules/coa-baseconv",
+   "label": "进位计数制与转换（R 进制互转 · 除基取余 / 乘基取整）",
+   "subject": "计算机组成原理",
+   "history_entries": 11
+  },
+  "coa-cache-assoc": {
+   "file": "js/modules/coa-cache-assoc.js",
+   "dir": "modules/coa-cache-assoc",
+   "label": "组相联与全相联映射",
+   "subject": "计算机组成原理",
+   "history_entries": 11
+  },
+  "coa-cache-direct": {
+   "file": "js/modules/coa-cache-direct.js",
+   "dir": "modules/coa-cache-direct",
+   "label": "Cache 直接映射",
+   "subject": "计算机组成原理",
+   "history_entries": 8
+  },
+  "coa-cisc-risc": {
+   "file": "js/modules/coa-cisc-risc.js",
+   "dir": "modules/coa-cisc-risc",
+   "label": "CISC 与 RISC 对比",
+   "subject": "计算机组成原理",
+   "history_entries": 4
+  },
+  "coa-datapath": {
+   "file": "js/modules/coa-datapath.js",
+   "dir": "modules/coa-datapath",
+   "label": "数据通路与指令执行",
+   "subject": "计算机组成原理",
+   "history_entries": 12
+  },
+  "coa-disk": {
+   "file": "js/modules/coa-disk.js",
+   "dir": "modules/coa-disk",
+   "label": "磁盘存储器性能计算器",
+   "subject": "计算机组成原理",
+   "history_entries": 4
+  },
+  "coa-fixadd": {
+   "file": "js/modules/coa-fixadd.js",
+   "dir": "modules/coa-fixadd",
+   "label": "补码加减运算与溢出判断",
+   "subject": "计算机组成原理",
+   "history_entries": 15
+  },
+  "coa-float754": {
+   "file": "js/modules/coa-float754.js",
+   "dir": "modules/coa-float754",
+   "label": "IEEE 754 浮点数表示",
+   "subject": "计算机组成原理",
+   "history_entries": 13
+  },
+  "coa-floatadd": {
+   "file": "js/modules/coa-floatadd.js",
+   "dir": "modules/coa-floatadd",
+   "label": "浮点数的加/减运算（对阶 · 规格化 · 舍入）",
+   "subject": "计算机组成原理",
+   "history_entries": 3
+  },
+  "coa-inst-format": {
+   "file": "js/modules/coa-inst-format.js",
+   "dir": "modules/coa-inst-format",
+   "label": "指令格式与扩展操作码",
+   "subject": "计算机组成原理",
+   "history_entries": 9
+  },
+  "coa-interrupt": {
+   "file": "js/modules/coa-interrupt.js",
+   "dir": "modules/coa-interrupt",
+   "label": "异常与中断机制",
+   "subject": "计算机组成原理",
+   "history_entries": 17
+  },
+  "coa-io": {
+   "file": "js/modules/coa-io.js",
+   "dir": "modules/coa-io",
+   "label": "I/O 方式与 CPU 时间占比计算器",
+   "subject": "计算机组成原理",
+   "history_entries": 16
+  },
+  "coa-mainmem": {
+   "file": "js/modules/coa-mainmem.js",
+   "dir": "modules/coa-mainmem",
+   "label": "主存与 CPU 连接（芯片扩展）",
+   "subject": "计算机组成原理",
+   "history_entries": 6
+  },
+  "coa-mainmem-pins": {
+   "file": "js/modules/coa-mainmem-pins.js",
+   "dir": "modules/coa-mainmem-pins",
+   "label": "主存芯片引脚与交叉编址",
+   "subject": "计算机组成原理",
+   "history_entries": 6
+  },
+  "coa-muldiv": {
+   "file": "js/modules/coa-muldiv.js",
+   "dir": "modules/coa-muldiv",
+   "label": "乘除运算电路（原码一位乘 / 加减交替除法）",
+   "subject": "计算机组成原理",
+   "history_entries": 7
+  },
+  "coa-perf": {
+   "file": "js/modules/coa-perf.js",
+   "dir": "modules/coa-perf",
+   "label": "性能指标（CPI/MIPS/FLOPS）",
+   "subject": "计算机组成原理",
+   "history_entries": 12
+  },
+  "coa-pipeline": {
+   "file": "js/modules/coa-pipeline.js",
+   "dir": "modules/coa-pipeline",
+   "label": "五段流水线与冒险处理",
+   "subject": "计算机组成原理",
+   "history_entries": 11
+  },
+  "ds-binsearch": {
+   "file": "js/modules/ds-binsearch.js",
+   "dir": "modules/ds-binsearch",
+   "label": "二分查找（折半查找）与判定树",
+   "subject": "数据结构",
+   "history_entries": 7
+  },
+  "ds-bintree-traversal": {
+   "file": "js/modules/ds-bintree.js",
+   "dir": "modules/ds-bintree-traversal",
+   "label": "二叉树的遍历（前/中/后/层序）",
+   "subject": "数据结构",
+   "history_entries": 12
+  },
+  "ds-blocksearch": {
+   "file": "js/modules/ds-blocksearch.js",
+   "dir": "modules/ds-blocksearch",
+   "label": "分块查找（索引顺序查找）",
+   "subject": "数据结构",
+   "history_entries": 1
+  },
+  "ds-bst-avl": {
+   "file": "js/modules/ds-bst-avl.js",
+   "dir": "modules/ds-bst-avl",
+   "label": "二叉排序树与 AVL 旋转",
+   "subject": "数据结构",
+   "history_entries": 13
+  },
+  "ds-btree": {
+   "file": "js/modules/ds-btree.js",
+   "dir": "modules/ds-btree",
+   "label": "B 树与 B+ 树",
+   "subject": "数据结构",
+   "history_entries": 12
+  },
+  "ds-complexity": {
+   "file": "js/modules/ds-complexity.js",
+   "dir": "modules/ds-complexity",
+   "label": "算法时间复杂度分析",
+   "subject": "数据结构",
+   "history_entries": 8
+  },
+  "ds-dfs-bfs": {
+   "file": "js/modules/ds-dfs-bfs.js",
+   "dir": "modules/ds-dfs-bfs",
+   "label": "图的遍历 DFS / BFS",
+   "subject": "数据结构",
+   "history_entries": 6
+  },
+  "ds-dijkstra": {
+   "file": "js/modules/ds-dijkstra.js",
+   "dir": "modules/ds-dijkstra",
+   "label": "Dijkstra 最短路径",
+   "subject": "数据结构",
+   "history_entries": 5
+  },
+  "ds-dlink": {
+   "file": "js/modules/ds-dlink.js",
+   "dir": "modules/ds-dlink",
+   "label": "双链表与循环链表",
+   "subject": "数据结构",
+   "history_entries": 5
+  },
+  "ds-expression": {
+   "file": "js/modules/ds-expression.js",
+   "dir": "modules/ds-expression",
+   "label": "中缀 → 后缀表达式求值",
+   "subject": "数据结构",
+   "history_entries": 4
+  },
+  "ds-extsort": {
+   "file": "js/modules/ds-extsort.js",
+   "dir": "modules/ds-extsort",
+   "label": "外部排序（初始归并段 / 败者树 / 最佳归并树）",
+   "subject": "数据结构",
+   "history_entries": 6
+  },
+  "ds-graph-storage": {
+   "file": "js/modules/ds-graph-storage.js",
+   "dir": "modules/ds-graph-storage",
+   "label": "图的存储（邻接矩阵/表）",
+   "subject": "数据结构",
+   "history_entries": 5
+  },
+  "ds-hash": {
+   "file": "js/modules/ds-hash.js",
+   "dir": "modules/ds-hash",
+   "label": "散列表与冲突处理（ASL）",
+   "subject": "数据结构",
+   "history_entries": 9
+  },
+  "ds-heap": {
+   "file": "js/modules/ds-heap.js",
+   "dir": "modules/ds-heap",
+   "label": "堆与优先队列（建堆 / 插入 / 删除堆顶）",
+   "subject": "数据结构",
+   "history_entries": 8
+  },
+  "ds-huffman": {
+   "file": "js/modules/ds-huffman.js",
+   "dir": "modules/ds-huffman",
+   "label": "哈夫曼树与哈夫曼编码",
+   "subject": "数据结构",
+   "history_entries": 14
+  },
+  "ds-kmp": {
+   "file": "js/modules/ds-kmp.js",
+   "dir": "modules/ds-kmp",
+   "label": "KMP 与 next/nextval 数组",
+   "subject": "数据结构",
+   "history_entries": 3
+  },
+  "ds-kruskal": {
+   "file": "js/modules/ds-kruskal.js",
+   "dir": "modules/ds-kruskal",
+   "label": "Kruskal 最小生成树",
+   "subject": "数据结构",
+   "history_entries": 4
+  },
+  "ds-linkedlist": {
+   "file": "js/modules/ds-linkedlist.js",
+   "dir": "modules/ds-linkedlist",
+   "label": "单链表的操作与算法设计",
+   "subject": "数据结构",
+   "history_entries": 6
+  },
+  "ds-prim": {
+   "file": "js/modules/ds-prim.js",
+   "dir": "modules/ds-prim",
+   "label": "Prim 最小生成树（对比 Kruskal）",
+   "subject": "数据结构",
+   "history_entries": 3
+  },
+  "ds-radix": {
+   "file": "js/modules/ds-radix.js",
+   "dir": "modules/ds-radix",
+   "label": "基数排序（按位分配 / 收集）",
+   "subject": "数据结构",
+   "history_entries": 3
+  },
+  "ds-sort": {
+   "file": "js/modules/ds-sort.js",
+   "dir": "modules/ds-sort",
+   "label": "排序算法全家桶（含每趟结果）",
+   "subject": "数据结构",
+   "history_entries": 18
+  },
+  "ds-stack-queue": {
+   "file": "js/modules/ds-stack-queue.js",
+   "dir": "modules/ds-stack-queue",
+   "label": "栈与队列出入演示（序列判定）",
+   "subject": "数据结构",
+   "history_entries": 13
+  },
+  "ds-topo": {
+   "file": "js/modules/ds-topo.js",
+   "dir": "modules/ds-topo",
+   "label": "拓扑排序与关键路径",
+   "subject": "数据结构",
+   "history_entries": 14
+  },
+  "ds-tree-forest": {
+   "file": "js/modules/ds-tree-forest.js",
+   "dir": "modules/ds-tree-forest",
+   "label": "树、森林与二叉树的转换（左孩子右兄弟）",
+   "subject": "数据结构",
+   "history_entries": 8
+  },
+  "net-crc": {
+   "file": "js/modules/net-crc.js",
+   "dir": "modules/net-crc",
+   "label": "CRC 循环冗余校验",
+   "subject": "计算机网络",
+   "history_entries": 1
+  },
+  "net-csma": {
+   "file": "js/modules/net-csma.js",
+   "dir": "modules/net-csma",
+   "label": "CSMA/CD 与最小帧长",
+   "subject": "计算机网络",
+   "history_entries": 15
+  },
+  "net-dns": {
+   "file": "js/modules/net-dns.js",
+   "dir": "modules/net-dns",
+   "label": "DNS 域名解析过程（递归 / 迭代 / 缓存）",
+   "subject": "计算机网络",
+   "history_entries": 3
+  },
+  "net-fragment": {
+   "file": "js/modules/net-fragment.js",
+   "dir": "modules/net-fragment",
+   "label": "IP 分片与重组",
+   "subject": "计算机网络",
+   "history_entries": 2
+  },
+  "net-http": {
+   "file": "js/modules/net-http.js",
+   "dir": "modules/net-http",
+   "label": "HTTP 请求与持久连接（三种连接的 RTT 计数）",
+   "subject": "计算机网络",
+   "history_entries": 5
+  },
+  "net-mail": {
+   "file": "js/modules/net-mail.js",
+   "dir": "modules/net-mail",
+   "label": "电子邮件与 FTP（SMTP/POP3）",
+   "subject": "计算机网络",
+   "history_entries": 9
+  },
+  "net-routing": {
+   "file": "js/modules/net-routing.js",
+   "dir": "modules/net-routing",
+   "label": "路由算法与协议（RIP/OSPF/BGP）",
+   "subject": "计算机网络",
+   "history_entries": 10
+  },
+  "net-shannon": {
+   "file": "js/modules/net-shannon.js",
+   "dir": "modules/net-shannon",
+   "label": "奈奎斯特定理与香农定理",
+   "subject": "计算机网络",
+   "history_entries": 12
+  },
+  "net-subnet": {
+   "file": "js/modules/net-subnet.js",
+   "dir": "modules/net-subnet",
+   "label": "IPv4 地址与子网划分",
+   "subject": "计算机网络",
+   "history_entries": 15
+  },
+  "net-switch": {
+   "file": "js/modules/net-switch.js",
+   "dir": "modules/net-switch",
+   "label": "以太网交换机自学习",
+   "subject": "计算机网络",
+   "history_entries": 11
+  },
+  "net-tcp-cc": {
+   "file": "js/modules/net-tcp-cc.js",
+   "dir": "modules/net-tcp-cc",
+   "label": "TCP 拥塞控制（慢启动/拥塞避免/快重传）",
+   "subject": "计算机网络",
+   "history_entries": 11
+  },
+  "net-tcp-conn": {
+   "file": "js/modules/net-tcp-conn.js",
+   "dir": "modules/net-tcp-conn",
+   "label": "TCP 连接建立与释放（三次握手/四次挥手）",
+   "subject": "计算机网络",
+   "history_entries": 9
+  },
+  "net-window": {
+   "file": "js/modules/net-window.js",
+   "dir": "modules/net-window",
+   "label": "滑动窗口可靠传输（停等/GBN/SR）",
+   "subject": "计算机网络",
+   "history_entries": 11
+  },
+  "os-deadlock": {
+   "file": "js/modules/os-deadlock.js",
+   "dir": "modules/os-deadlock",
+   "label": "死锁与银行家算法",
+   "subject": "操作系统",
+   "history_entries": 11
+  },
+  "os-disk-sched": {
+   "file": "js/modules/os-disk-sched.js",
+   "dir": "modules/os-disk-sched",
+   "label": "磁盘调度 SSTF / SCAN / C-SCAN",
+   "subject": "操作系统",
+   "history_entries": 9
+  },
+  "os-file-alloc": {
+   "file": "js/modules/os-file-alloc.js",
+   "dir": "modules/os-file-alloc",
+   "label": "文件物理结构与混合索引计算",
+   "subject": "操作系统",
+   "history_entries": 14
+  },
+  "os-lru": {
+   "file": "js/modules/os-lru.js",
+   "dir": "modules/os-lru",
+   "label": "页面置换 · LRU（含推导表）",
+   "subject": "操作系统",
+   "history_entries": 7
+  },
+  "os-procstate": {
+   "file": "js/modules/os-procstate.js",
+   "dir": "modules/os-procstate",
+   "label": "进程状态转换（五态模型）",
+   "subject": "操作系统",
+   "history_entries": 12
+  },
+  "os-pv": {
+   "file": "js/modules/os-pv.js",
+   "dir": "modules/os-pv",
+   "label": "同步与互斥 · PV 操作（生产者-消费者）",
+   "subject": "操作系统",
+   "history_entries": 16
+  },
+  "os-sched": {
+   "file": "js/modules/os-sched.js",
+   "dir": "modules/os-sched",
+   "label": "处理机调度（FCFS/SJF/HRRN/RR）",
+   "subject": "操作系统",
+   "history_entries": 16
+  },
+  "os-vm-paging": {
+   "file": "js/modules/os-vm.js",
+   "dir": "modules/os-vm-paging",
+   "label": "页式虚拟内存 · 地址转换（TLB+缺页）",
+   "subject": "操作系统",
+   "history_entries": 18
+  }
+ },
+ "entries": [
+  {
+   "year": 2026,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-dlink"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-tree-forest"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-graph-storage"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-radix",
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-extsort",
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem-pins"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 20,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-http"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-inst-format"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2026,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-tcp-cc",
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-complexity"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-tree-forest"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-blocksearch"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-baseconv"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-cisc-risc"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-lru"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-mail"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-interrupt",
+    "coa-muldiv"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2025,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-linkedlist"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-expression"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-graph-storage"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-binsearch"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-kmp"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-heap"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-extsort"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-baseconv"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-muldiv"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-direct"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 23,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-http"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-datapath",
+    "coa-fixadd",
+    "coa-inst-format"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2024,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-complexity"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-dlink"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-dfs-bfs"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-binsearch"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-baseconv"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-addressing"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 31,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-crc"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-graph-storage"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-extsort"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2023,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-mail",
+    "net-tcp-cc",
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-complexity"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-baseconv",
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem-pins"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-inst-format"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 31,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-http"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-heap"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-disk"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2022,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-csma",
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-dlink"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-tree-forest"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-dijkstra"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-radix",
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-heap"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-baseconv",
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-direct"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-lru"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-fragment"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-fixadd",
+    "coa-inst-format",
+    "coa-interrupt",
+    "coa-mainmem",
+    "coa-muldiv"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2021,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-tree-forest"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-dfs-bfs"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-kruskal"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-heap"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-inst-format"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 20,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 23,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 31,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-dns"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-interrupt",
+    "coa-muldiv"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2020,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "coa-baseconv",
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-complexity"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-tree-forest"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-kmp"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-extsort"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 20,
+   "kind": "choice",
+   "modules": [
+    "coa-disk"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-lru"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 31,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-linkedlist"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-dlink"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-interrupt",
+    "coa-muldiv"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2019,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-heap"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-baseconv"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem-pins"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-addressing"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 20,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-mail"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-kruskal",
+    "ds-prim"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-cache-assoc",
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "coa-baseconv"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2018,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-fragment",
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-complexity"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-binsearch"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem-pins"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-direct"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-addressing"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-inst-format"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 23,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 31,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-mail"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-expression"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-kruskal",
+    "ds-prim"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-baseconv",
+    "coa-floatadd"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-cisc-risc"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2017,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-linkedlist"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-dlink"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-dfs-bfs"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-dijkstra"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-binsearch"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-extsort",
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-direct"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-addressing"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 20,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 33,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-dns"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-interrupt",
+    "coa-io",
+    "coa-muldiv"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "coa-cache-assoc",
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2016,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-dfs-bfs"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-prim"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-binsearch"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-kmp"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-heap"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-floatadd"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-direct"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-addressing"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem-pins"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 20,
+   "kind": "choice",
+   "modules": [
+    "coa-disk"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 23,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-lru"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 33,
+   "kind": "choice",
+   "modules": [
+    "net-mail"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-http"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-linkedlist"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-graph-storage"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-inst-format"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2015,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-complexity"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-expression"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-tree-forest"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem-pins"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-direct"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-inst-format"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 23,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-mail"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-dijkstra",
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "net-routing",
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2014,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-graph-storage"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-dfs-bfs"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-radix",
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-addressing"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-disk"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 23,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 31,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-mail"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-binsearch"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2013,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-complexity"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-expression"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-dfs-bfs"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-dijkstra"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-kruskal"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-mail"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-extsort",
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-linkedlist"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-baseconv",
+    "coa-fixadd",
+    "coa-io",
+    "coa-muldiv"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-lru",
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2012,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-csma",
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-complexity"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-tree-forest"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 7,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-heap"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-perf"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-float754"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-addressing"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-cisc-risc"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 23,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 32,
+   "kind": "choice",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-conn"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2011,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-http"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 1,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-huffman"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-topo"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-binsearch"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 11,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 19,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 26,
+   "kind": "choice",
+   "modules": [
+    "os-procstate"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 31,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-routing"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-subnet"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 38,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-dns"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-hash"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-assembly",
+    "coa-inst-format",
+    "coa-mainmem"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-cache-direct"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-lru",
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2010,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 2,
+   "kind": "choice",
+   "modules": [
+    "ds-stack-queue"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 3,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 4,
+   "kind": "choice",
+   "modules": [
+    "ds-bst-avl"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 5,
+   "kind": "choice",
+   "modules": [
+    "ds-bintree-traversal"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 6,
+   "kind": "choice",
+   "modules": [
+    "ds-tree-forest"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 8,
+   "kind": "choice",
+   "modules": [
+    "ds-btree"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 9,
+   "kind": "choice",
+   "modules": [
+    "ds-heap"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 10,
+   "kind": "choice",
+   "modules": [
+    "ds-sort"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 12,
+   "kind": "choice",
+   "modules": [
+    "coa-fixadd"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 13,
+   "kind": "choice",
+   "modules": [
+    "coa-floatadd"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 14,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-assoc"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 15,
+   "kind": "choice",
+   "modules": [
+    "coa-mainmem"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 16,
+   "kind": "choice",
+   "modules": [
+    "coa-addressing"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 17,
+   "kind": "choice",
+   "modules": [
+    "coa-cisc-risc"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 18,
+   "kind": "choice",
+   "modules": [
+    "coa-pipeline"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 21,
+   "kind": "choice",
+   "modules": [
+    "coa-cache-direct"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 22,
+   "kind": "choice",
+   "modules": [
+    "coa-interrupt"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 24,
+   "kind": "choice",
+   "modules": [
+    "os-sched"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 25,
+   "kind": "choice",
+   "modules": [
+    "os-deadlock"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 27,
+   "kind": "choice",
+   "modules": [
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 28,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 29,
+   "kind": "choice",
+   "modules": [
+    "os-disk-sched"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 30,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 31,
+   "kind": "choice",
+   "modules": [
+    "os-file-alloc"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 34,
+   "kind": "choice",
+   "modules": [
+    "net-shannon"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 35,
+   "kind": "choice",
+   "modules": [
+    "net-window"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 36,
+   "kind": "choice",
+   "modules": [
+    "net-switch"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 37,
+   "kind": "choice",
+   "modules": [
+    "net-csma"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 39,
+   "kind": "choice",
+   "modules": [
+    "net-tcp-cc"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 40,
+   "kind": "choice",
+   "modules": [
+    "net-mail"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 41,
+   "kind": "essay",
+   "modules": [
+    "ds-dijkstra"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 42,
+   "kind": "essay",
+   "modules": [
+    "ds-linkedlist"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 43,
+   "kind": "essay",
+   "modules": [
+    "coa-io"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 44,
+   "kind": "essay",
+   "modules": [
+    "coa-baseconv",
+    "coa-datapath"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 45,
+   "kind": "essay",
+   "modules": [
+    "os-pv"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 46,
+   "kind": "essay",
+   "modules": [
+    "os-lru",
+    "os-vm-paging"
+   ]
+  },
+  {
+   "year": 2009,
+   "question": 47,
+   "kind": "essay",
+   "modules": [
+    "net-routing",
+    "net-subnet"
+   ]
+  }
+ ]
+}
