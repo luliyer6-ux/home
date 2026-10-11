@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#184b3a">
+  <title>数学二真题 · 互动学习版</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./vendor/katex.min.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../../#/projects" aria-label="返回作品区">数学二真题</a>
+    <div class="top-controls">
+      <label>年份 <select id="yearSelect" aria-label="年份"></select></label>
+      <label>模式 <select id="modeSelect" aria-label="作答模式"><option value="practice">逐题练习</option><option value="mock">整套模拟</option></select></label>
+      <label id="durationLabel" hidden>时长 <input id="durationInput" type="number" min="1" max="300" value="180"> 分钟</label>
+      <button id="startMock" class="primary" hidden>开始模拟</button>
+      <button id="submitMock" class="primary" hidden>交卷</button>
+      <button id="finishPractice">完成练习</button>
+      <button id="resetYear">重做本年</button>
+      <span id="timer" class="timer" aria-live="off"></span>
+    </div>
+    <div class="top-actions">
+      <button id="aiSettings">AI 设置</button>
+      <button id="historyButton">记录</button>
+      <button id="backupExport">导出</button>
+      <button id="backupImport">导入</button>
+      <input id="backupFile" type="file" accept="application/json,.json" hidden>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="question-rail" aria-label="题目导航">
+      <div class="rail-head"><div><strong id="answeredCount">已答 0/0</strong><small id="currentPosition">当前题目</small></div><button id="filterWrong" aria-pressed="false">错题</button></div>
+      <nav id="questionGrid" class="question-grid" aria-label="题号"></nav>
+      <p class="rail-note">答案与解析在作答后开放</p>
+    </aside>
+    <section class="work-area">
+      <div class="year-heading"><div><p class="eyebrow">MATHEMATICS II · EXAM PAPERS</p><h1 id="pageTitle">考研数学（二）真题</h1><p id="yearMeta" class="muted">正在加载年份资料…</p></div><div id="scoreSummary" class="score-summary" hidden></div></div>
+      <div class="progress-track"><span id="progressBar"></span></div>
+      <div id="questionContent" aria-live="polite"></div>
+      <nav class="question-actions" aria-label="前后题目"><button id="prevQuestion">← 上一题</button><button id="nextQuestion" class="primary">下一题 →</button></nav>
+      <p id="status" role="status" class="status"></p>
+    </section>
+  </main>
+
+  <dialog id="imageDialog" class="image-dialog"><button class="dialog-close" data-close="imageDialog" aria-label="关闭">×</button><img id="largeImage" alt="真题原稿放大预览"></dialog>
+  <dialog id="settingsDialog" class="settings-dialog"><form method="dialog" class="dialog-head"><strong>AI 设置</strong><button aria-label="关闭">×</button></form><div class="dialog-body"><p class="muted">密钥仅保存在此浏览器。仅在点击 AI 讲解后发送当前题目。</p><label>模型<select id="providerSelect"><option value="deepseek">DeepSeek</option><option value="glm">智谱 GLM</option></select></label><label>模型名称<input id="modelInput" autocomplete="off" placeholder="deepseek-flash"></label><label>API Key<input id="keyInput" type="password" autocomplete="new-password" placeholder="粘贴 API Key"></label><button id="saveSettings" class="primary">保存设置</button><p id="settingsStatus" class="muted"></p></div></dialog>
+  <dialog id="historyDialog" class="history-dialog"><form method="dialog" class="dialog-head"><strong>练习与模拟记录</strong><button aria-label="关闭">×</button></form><div id="historyList" class="dialog-body"></div></dialog>
+  <dialog id="aiDialog" class="ai-dialog"><form method="dialog" class="dialog-head"><strong id="aiTitle">AI 讲解 · AI 参考</strong><button aria-label="关闭">×</button></form><div class="ai-body"><p id="aiContext" class="muted"></p><div id="aiOutput" class="ai-output" aria-live="polite"></div><p id="aiError" class="error"></p><label class="ai-question-label" for="aiFollowup">继续追问</label><textarea id="aiFollowup" rows="3" placeholder="针对这道题继续提问"></textarea><div class="ai-actions"><button id="stopAI">停止</button><button id="retryAI">重试</button><button id="sendFollowup" class="primary">发送</button></div></div></dialog>
+
+  <script src="./vendor/katex.min.js"></script>
+  <script src="./app.js" defer></script>
+</body>
+</html>
