@@ -24,6 +24,17 @@
     return safe.replace(/@@K(\d+)@@/g, (_, i) => parts[Number(i)]).replace(/\n/g, '<br>');
   }
 
+  // 公式字段是裸 LaTeX（无 \(...\) 分隔符），沿用 math-handbook 的做法：
+  // 包进 gathered 的 display math 交给 KaTeX 渲染
+  function texDisplay(s) {
+    const body = String(s ?? '');
+    try {
+      return window.katex.renderToString('\\begin{gathered}' + body + '\\end{gathered}', { displayMode: true, throwOnError: false, trust: false });
+    } catch (e) {
+      return '<code>' + esc(s) + '</code>';
+    }
+  }
+
   function loadData() {
     if (!cachePromise) {
       cachePromise = Promise.all([
@@ -74,7 +85,7 @@
     return '<article class="formula-card">' +
       '<div class="formula-topic">' + tex(c.topic) + (c.importance ? ' · ' + esc(c.importance) : '') + '</div>' +
       '<h4 class="formula-name">' + tex(c.title) + '</h4>' +
-      '<div class="formula-tex">' + tex(c.formula) + '</div>' +
+      '<div class="formula-tex">' + texDisplay(c.formula) + '</div>' +
       '<details class="formula-sec" open><summary>适用条件</summary><div>' + tex(c.conditions) + '</div></details>' +
       (hasExample ? '<details class="formula-sec"><summary>例子</summary><div>' + tex(c.example) + '</div></details>' : '') +
       '<details class="formula-sec"><summary>常见误用</summary><div>' + tex(c.pitfalls) + '</div></details>' +
