@@ -7,6 +7,7 @@
   <title>数学二真题 · 互动学习版</title>
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./formula-panel.css">
+  <link rel="stylesheet" href="./formula-study.css">
   <link rel="stylesheet" href="./vendor/katex.min.css">
 </head>
 <body>
@@ -31,7 +32,12 @@
     </div>
   </header>
 
-  <main class="layout">
+  <nav class="study-tabs" aria-label="数学二学习内容">
+    <button id="examTab" class="study-tab active" type="button" aria-current="page">历年真题</button>
+    <button id="formulaTab" class="study-tab" type="button">公式背诵 <span id="formulaTabCount">333</span></button>
+  </nav>
+
+  <main id="examView" class="layout">
     <aside class="question-rail" aria-label="题目导航">
       <div class="rail-head"><div><strong id="answeredCount">已答 0/0</strong><small id="currentPosition">当前题目</small></div><button id="filterWrong" aria-pressed="false">错题</button></div>
       <nav id="questionGrid" class="question-grid" aria-label="题号"></nav>
@@ -45,6 +51,12 @@
       <p id="status" role="status" class="status"></p>
     </section>
   </main>
+  <main id="formulaView" class="formula-study" hidden>
+    <div class="formula-study-head"><div><p class="eyebrow">MATHEMATICS II · FORMULA CARDS</p><h1>公式背诵</h1><p id="formulaSummary" class="muted">正在准备公式库…</p></div><button id="formulaReset" type="button">重置本轮</button></div>
+    <div class="formula-toolbar"><label>章节 <select id="formulaTopic"><option value="">全部章节</option></select></label><label>状态 <select id="formulaStatus"><option value="all">全部</option><option value="due">待背</option><option value="known">已会</option><option value="favorite">收藏</option></select></label><label class="formula-search">搜索 <input id="formulaSearch" type="search" placeholder="名称、公式、关键词"></label></div>
+    <div class="formula-study-layout"><aside class="formula-list-wrap" aria-label="公式卡片列表"><div id="formulaList" class="formula-list"></div></aside><section id="formulaCard" class="formula-card" aria-live="polite"></section></div>
+    <p id="formulaMessage" class="status" role="status"></p>
+  </main>
 
   <dialog id="imageDialog" class="image-dialog"><button class="dialog-close" data-close="imageDialog" aria-label="关闭">×</button><img id="largeImage" alt="真题原稿放大预览"></dialog>
   <dialog id="settingsDialog" class="settings-dialog"><form method="dialog" class="dialog-head"><strong>AI 设置</strong><button aria-label="关闭">×</button></form><div class="dialog-body"><p class="muted">密钥仅保存在此浏览器。仅在点击 AI 讲解后发送当前题目。</p><label>模型<select id="providerSelect"><option value="deepseek">DeepSeek</option><option value="glm">智谱 GLM</option></select></label><label>模型名称<input id="modelInput" autocomplete="off" placeholder="deepseek-flash"></label><label>API Key<input id="keyInput" type="password" autocomplete="new-password" placeholder="粘贴 API Key"></label><button id="saveSettings" class="primary">保存设置</button><p id="settingsStatus" class="muted"></p></div></dialog>
@@ -53,6 +65,7 @@
 
   <script src="./vendor/katex.min.js"></script>
   <script src="./formula-panel.js" defer></script>
+  <script src="./formula-study.js" defer></script>
   <script src="./app.js" defer></script>
 </body>
 </html>

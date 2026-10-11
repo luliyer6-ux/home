@@ -1,0 +1,34 @@
+.study-tabs{display:flex;align-items:center;gap:6px;padding:10px clamp(14px,2vw,32px) 0;border-bottom:1px solid var(--line);background:var(--paper)}
+#examView[hidden],#formulaView[hidden]{display:none!important}
+body.formula-mode .top-controls,body.formula-mode .top-actions{display:none}
+.study-tab{border:0;border-bottom:3px solid transparent;border-radius:0;padding:10px 17px;color:var(--muted);background:transparent;font-weight:650}
+.study-tab:hover{background:var(--surface)}.study-tab.active{color:var(--green);border-bottom-color:var(--green)}
+.study-tab span{font-size:11px;font-variant-numeric:tabular-nums;margin-left:3px}
+.formula-study{width:min(1440px,100%);margin:0 auto;padding:28px 28px 64px;min-width:0}
+.formula-study-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.formula-study-head h1{margin:0;color:var(--green);font:700 clamp(25px,3vw,34px)/1.3 Georgia,"Microsoft YaHei",serif}
+.formula-study-head .muted{margin:7px 0 0}.formula-study-head button{white-space:nowrap}
+.formula-toolbar{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.formula-toolbar label{display:grid;gap:5px;color:var(--muted);font-size:12px;font-weight:600}
+.formula-toolbar select,.formula-toolbar input{height:39px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:7px 10px}
+.formula-toolbar select{min-width:148px}.formula-search{flex:1;min-width:200px}.formula-search input{width:100%}
+.formula-study-layout{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:20px;align-items:start}
+.formula-list-wrap{position:sticky;top:74px;border:1px solid var(--line);border-radius:11px;background:var(--surface);max-height:calc(100dvh - 100px);overflow:auto}
+.formula-list{padding:6px}.formula-list-item{display:flex;width:100%;align-items:center;gap:9px;text-align:left;border:0;background:transparent;color:var(--ink);padding:9px 10px;min-height:42px}
+.formula-list-item:hover{background:var(--paper)}.formula-list-item.selected{background:#e5f0e9;color:var(--green);font-weight:700}
+.formula-list-number{font-size:11px;color:var(--muted);min-width:24px;font-variant-numeric:tabular-nums}
+.formula-list-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.formula-list-mark{color:var(--green);white-space:nowrap}
+.formula-card{min-height:430px;border:1px solid var(--line);border-radius:13px;background:var(--paper);padding:clamp(18px,3vw,35px);box-shadow:0 8px 28px #173f2b0a}
+.formula-card-meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+.formula-card h2{margin:18px 0 24px;color:var(--green);font-size:clamp(23px,2.5vw,32px);line-height:1.3}
+.formula-expression{overflow-x:auto;border-radius:10px;background:var(--surface);padding:14px;color:var(--ink)}
+.formula-expression .katex-display{margin:0;overflow-x:auto;overflow-y:hidden;padding:6px 2px;text-align:left}
+.formula-detail{border-top:1px solid var(--line);margin-top:19px;padding-top:13px}.formula-detail h3{font-size:13px;color:var(--green);margin:0 0 5px}.formula-detail p{margin:0;white-space:normal;line-height:1.85}
+.formula-concealed{min-height:150px;display:grid;place-items:center;border:1px dashed var(--line);border-radius:10px;color:var(--muted);background:var(--surface)}
+.formula-concealed[hidden],.formula-answer[hidden]{display:none}
+.formula-card-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:22px}.formula-card-actions.secondary{margin-top:12px}.formula-card-actions button{min-width:108px;min-height:42px}
+.formula-empty{padding:24px 15px;text-align:center;color:var(--muted);font-size:14px}
+@media(max-width:900px){.formula-study{padding:20px 18px 50px}.formula-study-layout{grid-template-columns:220px minmax(0,1fr);gap:12px}.formula-card{padding:18px}}
+@media(max-width:700px){.study-tabs{padding:5px 10px 0}.study-tab{min-height:44px;padding:8px 13px}.formula-study{padding:15px 12px 45px}.formula-study-head{align-items:start}.formula-study-head h1{font-size:25px}.formula-toolbar{gap:8px}.formula-toolbar label{flex:1;min-width:130px}.formula-toolbar select{width:100%;min-width:0}.formula-search{flex-basis:100%}.formula-study-layout{display:flex;flex-direction:column}.formula-list-wrap{position:static;max-height:155px;width:100%}.formula-list{display:flex;overflow:auto;gap:4px;padding:5px}.formula-list-item{flex:0 0 auto;max-width:190px;border:1px solid var(--line);border-radius:7px;background:var(--paper);padding:6px 8px}.formula-list-number{display:none}.formula-card{width:100%;min-height:0;padding:18px 14px}.formula-card h2{font-size:24px;margin:13px 0 18px}.formula-card-actions button{flex:1;min-width:95px}}
+@media(prefers-reduced-motion:reduce){.study-tab,.formula-list-item{transition:none!important}}
+@media print{.study-tabs,.formula-toolbar,.formula-list-wrap,.formula-card-actions{display:none!important}.formula-study-layout{display:block}.formula-card{border:0;box-shadow:none}}
