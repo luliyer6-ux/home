@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1160" role="img" aria-label="你一定能考上·考研行动仪表盘封面">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#102f23"/><stop offset=".58" stop-color="#1a5a40"/><stop offset="1" stop-color="#23654a"/></linearGradient><linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fffdf5"/><stop offset="1" stop-color="#e7e8dc"/></linearGradient></defs>
+<rect width="900" height="1160" fill="#151a16"/><rect x="26" y="26" width="848" height="1108" rx="8" fill="url(#paper)"/><rect x="50" y="50" width="800" height="1060" rx="4" fill="url(#bg)"/>
+<g fill="none" stroke="#d8c998" opacity=".46"><circle cx="694" cy="330" r="214"/><circle cx="694" cy="330" r="161"/><circle cx="694" cy="330" r="105"/><path d="M694 115v430M479 330h430M542 178l304 304M846 178 542 482"/></g>
+<path d="M110 147h190" stroke="#d8c998" stroke-width="3"/><text x="110" y="122" fill="#e5d5a7" font-family="Georgia,serif" font-size="23" letter-spacing="7">LULIY / EXAM PLAN</text>
+<text x="110" y="610" fill="#fffdf4" font-family="Georgia,'Microsoft YaHei',serif" font-weight="700" font-size="66">你一定能</text><text x="110" y="694" fill="#fffdf4" font-family="Georgia,'Microsoft YaHei',serif" font-weight="700" font-size="82">考上</text>
+<path d="M110 739h285" stroke="#e3c6a2" stroke-width="4"/><text x="110" y="798" fill="#d7e5da" font-family="Arial,sans-serif" font-size="24" letter-spacing="5">68 DAYS · FOUR SUBJECTS</text>
+<text x="110" y="931" fill="#ffb5a8" font-family="Georgia,serif" font-size="88" font-weight="700">315</text><text x="294" y="925" fill="#d7e5da" font-family="Arial,sans-serif" font-size="23">目标总分 / 500</text>
+<path d="M110 1002h670" stroke="#8dad95" opacity=".55"/><text x="110" y="1052" fill="#d7e5da" font-family="Arial,sans-serif" font-size="18" letter-spacing="3">DAILY ACTION · REVIEW · MOCK TRACKING</text>
+</svg>
+
