@@ -1,0 +1,56 @@
+/* Touch layouts shared by the three independent exam tools. */
+[data-exam] [hidden]{display:none!important}
+[data-exam] textarea{max-width:100%}
+[data-exam] dialog{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px)}
+[data-exam] .source-figure{max-width:100%;margin-inline:0}
+@media(pointer:coarse){
+ [data-exam] button,[data-exam] select,[data-exam] summary,[data-exam] .optbtn,[data-exam] .e2-option{min-height:44px!important}
+ [data-exam] input,[data-exam] textarea,[data-exam] select{font-size:16px!important}
+ [data-exam="english"] #topbar .tools button,[data-exam="english"] #topbar .tools select{min-height:44px}
+}
+@media(max-width:1359px){
+ [data-exam="english"] .e2-types{position:fixed;inset:0 0 auto;width:100%;height:64px;min-height:64px;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:8px 12px;border-right:0}
+ [data-exam="english"] .e2-nav-brand{display:none}
+ [data-exam="english"] .e2-types button{flex:0 0 auto;width:auto;min-height:44px}
+ [data-exam="english"] #topbar{left:0;right:0;top:64px;padding:6px 12px}
+ [data-exam="english"] main{width:100%;max-width:960px;margin-inline:auto;padding:calc(var(--bar-height) + 84px) 24px 110px}
+ [data-exam="english"] .passage,[data-exam="english"] .e2-original{text-align:left}
+ [data-exam="english"] #tip{max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain}
+ [data-exam="english"] #e2RailToggle{right:12px;max-width:calc(100vw - 84px);font-size:12px}
+}
+@media(max-width:1100px){
+ [data-exam="408"] header .bar{gap:8px;padding:8px 14px}
+ [data-exam="408"] header .brand{width:100%;font-size:18px;line-height:1.4}
+ [data-exam="408"] header .controls{width:100%;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior:contain;scrollbar-width:thin;gap:6px}
+ [data-exam="408"] header .controls>*{flex:none;white-space:nowrap}
+ [data-exam="408"] header button{padding:6px 9px}
+ [data-exam="408"] .grid-head{gap:6px;flex-wrap:wrap}
+ [data-exam="408"] .grid-head span{font-size:12px}
+ [data-exam="408"] .question-navigation .qgrid{grid-template-columns:repeat(6,minmax(0,1fr));max-height:156px;overflow-y:auto;overscroll-behavior:contain;padding:3px;margin-bottom:14px;gap:6px}
+ [data-exam="408"] .question-navigation.exam-nav-collapsed .qgrid{display:none}
+ [data-exam="408"] .question-navigation .qnum{min-height:44px}
+ [data-exam="408"] .exam-nav-toggle{margin-left:auto;min-height:44px;white-space:nowrap}
+ [data-exam="408"] main{margin-top:18px}
+}
+@media(min-width:1101px){.exam-nav-toggle{display:none}}
+@media(max-width:900px){
+ [data-exam="math2"] .layout{display:block;padding:16px 16px 50px}
+ [data-exam="math2"] .question-rail{position:static;max-height:none;margin-bottom:16px}
+ [data-exam="math2"] .question-grid{display:flex;overflow-x:auto;padding:5px 2px;gap:6px}
+ [data-exam="math2"] .q-button{flex:none;min-width:44px;min-height:44px}
+ [data-exam="math2"] .rail-head{margin-bottom:6px}
+ [data-exam="math2"] .question-rail>.rail-note{display:none}
+}
+@media(max-width:700px){
+ [data-exam="english"] main{padding-inline:18px}
+ [data-exam="math2"] .topbar{gap:6px;padding:8px 12px}
+ [data-exam="math2"] .top-controls{overscroll-behavior:contain}
+ [data-exam] .image-dialog{width:calc(100vw - 16px);max-width:calc(100vw - 16px);overflow:auto}
+ [data-exam] .image-dialog img{max-width:100%;max-height:calc(100dvh - 68px)}
+ [data-exam] .dialog-head{gap:8px}
+ [data-exam] .dialog-head strong{min-width:0;overflow-wrap:anywhere}
+}
+@media(max-height:500px) and (pointer:coarse){
+ [data-exam="408"] header,[data-exam="math2"] .topbar{position:relative}
+ [data-exam] .dialog-body,[data-exam] .ai-body{max-height:calc(100dvh - 70px);overflow:auto}
+}

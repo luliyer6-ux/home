@@ -1,0 +1,7 @@
+.per-question-answer { margin-top: 1.25rem; padding: 1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.per-question-answer h3 { margin: 0 0 .65rem; font-size: 1rem; color: var(--green); }
+.per-question-answer .answer-value { margin: 0 0 .75rem; }
+.per-question-answer .answer-value strong { display: inline-grid; place-items: center; min-width: 2rem; min-height: 2rem; margin-left: .4rem; border-radius: 50%; background: var(--green); color: #fff; }
+.annual-sources { margin-top: .75rem; opacity: .85; }
+.annual-sources > .source-status { margin: .65rem 0; }
+.annual-sources .source-drawer { margin: .5rem 0; }
