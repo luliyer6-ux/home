@@ -2506,7 +2506,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
 .about-live ol li,.about-live ul li{display:list-item!important;color:inherit;min-height:1em}.about-live li>p{display:block;color:inherit}
 .photo-card img,.project-card img{object-position:center 42%}.directory-preview.preview-about img{object-fit:contain;object-position:center}
 @media(max-width:700px){.home-records #recordMount{min-height:1050px}.home-records .records-loading{min-height:380px}}
-</style><style>.site-information{max-width:860px}
+</style><link rel="stylesheet" href="/reading-timeline.css?v=20261013-release4"><style>.site-information{max-width:860px}
 .site-info-links{display:flex;flex-wrap:wrap;gap:14px 24px;margin:0 0 28px;font-size:14px}
 .site-info-links a{padding:6px 0;border-bottom:1px solid var(--line)}
 .site-info-links a:hover{color:var(--accent)}
@@ -2862,7 +2862,7 @@ html[data-theme="cc"] .signature-dot img{filter:brightness(1.7) contrast(1.25) d
     return ()=>{disposed=true;observer.disconnect();attrs.disconnect();entrance.disconnect();window.removeEventListener('resize',measure)};
   };
 })();
-</script><style id="mobile-performance-styles">
+</script><style id="works-exams-layout">.works-exams-section{margin-top:clamp(48px,5vw,80px)}.works-exams-section .project-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:1000px){.works-exams-section .project-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.works-exams-section .project-gallery-grid{grid-template-columns:minmax(0,1fr)}}</style><style id="mobile-performance-styles">
 @media (max-width:760px),(pointer:coarse){
  html{scroll-behavior:auto!important}
  *,*::before,*::after{animation:none!important;transition:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;will-change:auto!important}
@@ -2872,7 +2872,7 @@ html[data-theme="cc"] .signature-dot img{filter:brightness(1.7) contrast(1.25) d
  .project-cover,.archive-cover,.space-link,.ld-card,.site-header{box-shadow:none!important}
  .reveal.pending{opacity:1!important;transform:none!important}
 }
-</style><style id="works-exams-layout">.works-exams-section{margin-top:clamp(48px,5vw,80px)}.works-exams-section .project-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:1000px){.works-exams-section .project-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.works-exams-section .project-gallery-grid{grid-template-columns:minmax(0,1fr)}}</style></head>
+</style></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
 <div class="reading-progress" aria-hidden="true"></div>
@@ -12187,5 +12187,5 @@ function update(){scheduled=false;const lang=new URLSearchParams(location.hash.s
 function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update);}}
 new MutationObserver(schedule).observe(document.querySelector('#main'),{childList:true,subtree:true});addEventListener('hashchange',schedule);schedule();
 })();
-</script></body>
+</script><script src="/reading-timeline.js?v=20261013-release4" defer></script></body>
 </html>

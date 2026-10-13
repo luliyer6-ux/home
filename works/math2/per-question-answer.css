@@ -5,3 +5,14 @@
 .annual-sources { margin-top: .75rem; opacity: .85; }
 .annual-sources > .source-status { margin: .65rem 0; }
 .annual-sources .source-drawer { margin: .5rem 0; }
+body[data-exam=math2] .answer-options { display: flex !important; flex-wrap: nowrap !important; justify-content: flex-start; gap: 12px; margin: 18px 0; }
+body[data-exam=math2] .answer-options .choice { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px !important; padding: 0 !important; border: 0 !important; border-radius: 50% !important; background: transparent !important; box-shadow: none !important; }
+body[data-exam=math2] .choice-letter { display: grid; place-items: center; width: 40px; height: 40px; min-width: 40px; border-radius: 50%; background: #192820; color: #fff; font-size: 16px; font-weight: 650; }
+body[data-exam=math2] .choice:hover:enabled .choice-letter { background: var(--x-accent); color: var(--x-paper); }
+body[data-exam=math2] .choice.selected .choice-letter { background: var(--x-accent); color: var(--x-paper); outline: 2px solid var(--x-accent); outline-offset: 3px; }
+body[data-exam=math2] .choice.correct .choice-letter { background: #287643; color: #fff; }
+body[data-exam=math2] .choice.incorrect .choice-letter { background: #b83a34; color: #fff; }
+html.exam-dark body[data-exam=math2] .choice-letter { background: #35414c; }
+html.exam-dark body[data-exam=math2] .choice.selected .choice-letter { background: var(--x-accent); color: var(--x-paper); }
+html.exam-dark body[data-exam=math2] .choice.correct .choice-letter { background: #287643; color: #fff; }
+html.exam-dark body[data-exam=math2] .choice.incorrect .choice-letter { background: #b83a34; color: #fff; }
