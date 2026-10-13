@@ -11,6 +11,7 @@ for(const node of header.querySelectorAll('button,input[type=file]')){if(primary
 if(english&&$('statusTxt')){const clock=document.createElement('span');clock.className='x-exam-clock';clock.id='xEnglishClock';primary.append(clock);}
 header.append(brand,primary,countdown,more);for(const node of originalChildren){if(node.id==='statusTxt')continue;node.hidden=true;}
 header.classList.add('x-top');header.classList.remove('folded');
+const examLinks=document.createElement('nav');examLinks.className='x-exam-links';examLinks.setAttribute('aria-label','其他真题页面');examLinks.innerHTML='<span>其他真题</span>'+[{id:'english',label:'英语二真题',href:'/works/gpt-english-2-exams.html'},{id:'math2',label:'数学二真题',href:'/works/math2/'},{id:'408',label:'408 真题',href:'/works/408/'}].filter(item=>item.id!==kind).map(item=>'<a href="'+item.href+'" target="_blank" rel="noopener noreferrer">'+item.label+' ↗</a>').join('');menu.append(examLinks);
 const theme=document.createElement('button');theme.type='button';const themeKey='luliy-exam-theme-v1';menu.append(theme);
 function applyTheme(dark){document.documentElement.classList.toggle('exam-dark',dark);document.documentElement.classList.toggle('e2-dark',dark);theme.textContent=dark?'切换浅色模式':'切换黑色模式';theme.setAttribute('aria-pressed',String(dark));}
 try{applyTheme((localStorage.getItem(themeKey)||localStorage.getItem('gpt-e2-theme-v1'))==='dark')}catch{applyTheme(false)}
