@@ -28,8 +28,8 @@
       pupilX: 0.5,
       pupilY: 0.5
     },
-    title: '世界以痛吻我，要我报之以歌',
-    subtitle: 'The world has kissed my soul with its pain, asking for its return in songs.',
+    title: '世界以痛吻我，我却报之以歌',
+    subtitle: 'The world has kissed my soul with its pain, and I return it in songs.',
     titleAt: 4.5,            // 标题出现的时间点（秒）
     revealMs: 1300,          // 从瞳孔扩开、露出网站的时长
     startTimeoutMs: 4000,    // 视频这么久还没开始播，就直接放行
@@ -72,8 +72,8 @@ html.intro-pending:not(.intro-ready) body{visibility:hidden}
   opacity:0;transition:opacity 1.4s ease;
 }
 #luliy-intro .li-zh{
-  margin:0;padding-left:.45em;letter-spacing:.45em;
-  font:600 clamp(28px,7vw,56px)/1.3 "Songti SC","Noto Serif SC","Source Han Serif SC",STSong,serif;
+  margin:0;padding-left:.18em;letter-spacing:.18em;white-space:nowrap;
+  font:600 clamp(22px,4.5vw,48px)/1.3 "Songti SC","Noto Serif SC","Source Han Serif SC",STSong,serif;
   text-shadow:0 2px 18px rgba(0,0,0,.6);
 }
 #luliy-intro .li-en{
