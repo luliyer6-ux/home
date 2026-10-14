@@ -49,3 +49,7 @@ html.exam-dark .exam-shell dialog,html.exam-dark .exam-shell .drawer,html.exam-d
 @media print{.x-top,.x-left,.x-right,.x-edge,.x-handle,.x-mobile-bar,.x-pom-bubble,.x-pom-panel,#e2Dock{display:none!important}.exam-shell .x-main{margin:0!important;width:100%!important;padding:0!important}}
 
 .x-exam-links{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:9px 2px 5px;border-top:1px solid var(--x-line);margin-top:8px}.x-exam-links>span{grid-column:1/-1;color:var(--x-muted);font-size:11px;letter-spacing:.08em;padding:0 5px}.x-exam-links a{display:block;padding:7px 8px;border:1px solid var(--x-line);border-radius:7px;color:var(--x-ink);text-decoration:none;font-size:12px;white-space:nowrap}.x-exam-links a:hover{background:var(--x-soft);border-color:var(--x-accent);color:var(--x-accent)}
+
+/* The former horizontal English tabs now live in the scrollable sidebar. */
+.exam-shell .x-left .e2-types{height:auto!important;max-height:none!important;overflow:visible!important;flex:none!important}
+.exam-shell .x-left .e2-types button{flex:none!important;white-space:normal;overflow-wrap:anywhere}
