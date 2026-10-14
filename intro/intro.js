@@ -1,213 +1,33 @@
-/*!
- * luliy.me 开场动画：单文件，无依赖
- *
- * 用法：把 intro 文件夹放到站点根目录，然后在首页 index.html 的 <head> 里加一行：
- *   <script src="intro/intro.js"></script>
- * 文件夹内容：intro.js  intro.mp4（竖屏）  intro-wide.mp4（横屏，可选）  poster.jpg（可选）
- * 只会下载当前屏幕用得上的那一个视频
- *
- * 调试：网址后加 ?intro=1 强制重播，?intro=0 强制跳过
- */
-(function () {
-  'use strict';
-
-  /* ============ 只需要改这里 ============ */
-  var CFG = {
-    // 竖屏版（手机，屏幕宽 < 高时用）。路径相对于本脚本所在目录
-    portrait: {
-      video: 'intro.mp4',
-      poster: 'poster.jpg',  // 视频加载前显示的首帧图，没有就留着也行
-      pupilX: 0.5,           // 视频结尾"瞳孔"中心的位置，0~1，按视频画面算
-      pupilY: 0.5
-    },
-    // 横屏版（电脑、横着拿的手机，屏幕宽 ≥ 高时用）
-    // 16:9 版还没做好就把 video 留空，横屏会自动用竖屏版
-    landscape: {
-      video: 'intro-wide.mp4',
-      poster: 'poster-wide.jpg',
-      pupilX: 0.5,
-      pupilY: 0.5
-    },
-    title: '世界以痛吻我，我却报之以歌',
-    subtitle: 'The world has kissed my soul with its pain, and I return it in songs.',
-    titleAt: 4.5,            // 标题出现的时间点（秒）
-    revealMs: 1300,          // 从瞳孔扩开、露出网站的时长
-    startTimeoutMs: 4000,    // 视频这么久还没开始播，就直接放行
-    storageKey: 'luliy_intro_seen_v1'
-  };
-  /* ===================================== */
-
-  var root = document.documentElement;
-  var scriptSrc = (document.currentScript && document.currentScript.src) || '';
-  var base = scriptSrc.replace(/[^\/]*$/, '');
-  var q = location.search;
-  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function seen() {
-    try { return localStorage.getItem(CFG.storageKey) === '1'; } catch (e) { return false; }
-  }
-  function mark() {
-    try { localStorage.setItem(CFG.storageKey, '1'); } catch (e) {}
-  }
-
-  if (/[?&]intro=0(&|$)/.test(q)) return;
-  if (!/[?&]intro=1(&|$)/.test(q) && (seen() || reduceMotion)) return;
-
-  var FEATHER = 80; // 瞳孔扩开时边缘的柔化宽度（px）
-
-  var CSS = `
-html.intro-pending:not(.intro-ready){background:#000}
-html.intro-pending,html.intro-pending body{overflow:hidden}
-html.intro-pending:not(.intro-ready) body{visibility:hidden}
-#luliy-intro{
-  --x:50%;--y:50%;--r:0px;
-  position:fixed;inset:0;z-index:2147483000;background:#000;overflow:hidden;
-  -webkit-mask-image:radial-gradient(circle at var(--x) var(--y),transparent calc(var(--r) - ${FEATHER}px),#000 var(--r));
-          mask-image:radial-gradient(circle at var(--x) var(--y),transparent calc(var(--r) - ${FEATHER}px),#000 var(--r));
-}
-#luliy-intro video{position:absolute;inset:0;width:100%;height:100%;display:block;background:#000}
-#luliy-intro .li-title{
-  position:absolute;left:0;right:0;bottom:calc(12% + env(safe-area-inset-bottom,0px));
-  text-align:center;color:#e9d6ac;pointer-events:none;
-  opacity:0;transition:opacity 1.4s ease;
-}
-#luliy-intro .li-zh{
-  margin:0;padding-left:.18em;letter-spacing:.18em;white-space:nowrap;
-  font:600 clamp(22px,4.5vw,48px)/1.3 "Songti SC","Noto Serif SC","Source Han Serif SC",STSong,serif;
-  text-shadow:0 2px 18px rgba(0,0,0,.6);
-}
-#luliy-intro .li-en{
-  margin:.7em 0 0;letter-spacing:.06em;opacity:.72;
-  font:italic 400 clamp(13px,3.2vw,20px)/1.4 Georgia,"Times New Roman",serif;
-}
-#luliy-intro.show-title .li-title{opacity:1}
-#luliy-intro .li-skip{
-  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;
-  padding:6px 14px;border-radius:999px;cursor:pointer;
-  color:rgba(255,255,255,.78);background:rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.25);font:13px/1.4 system-ui,sans-serif;
-}
-#luliy-intro .li-skip:focus-visible{outline:2px solid #e9d6ac;outline-offset:2px}
-#luliy-intro.is-revealing .li-title,
-#luliy-intro.is-revealing .li-skip{opacity:0;transition:opacity .3s}
-`;
-
-  root.classList.add('intro-pending');
-  var style = document.createElement('style');
-  style.textContent = CSS;
-  document.head.appendChild(style);
-
-  var el, video, cur;
-  var px = 0, py = 0, far = 0;
-
-  // 按屏幕比例选视频：宽 ≥ 高用横屏版（没填就退回竖屏版），否则用竖屏版
-  function pick() {
-    var wide = window.innerWidth >= window.innerHeight;
-    return wide && CFG.landscape.video ? CFG.landscape : CFG.portrait;
-  }
-  var fading = false, finished = false, startTimer;
-
-  // 算出瞳孔在屏幕上的位置，以及它到最远屏幕角的距离
-  function layout() {
-    if (!el || !video) return;
-    var cw = el.clientWidth, ch = el.clientHeight;
-    var vw = video.videoWidth, vh = video.videoHeight;
-    if (!vw || !vh || !cw || !ch) return;
-    // 屏幕比例和视频接近就铺满（会裁掉一点边）；差得多就完整显示，留黑边
-    var r = (cw / ch) / (vw / vh);
-    var cover = r >= 1 / 1.3 && r <= 1.3;
-    video.style.objectFit = cover ? 'cover' : 'contain';
-    var s = cover ? Math.max(cw / vw, ch / vh) : Math.min(cw / vw, ch / vh);
-    px = (cw - vw * s) / 2 + cur.pupilX * vw * s;
-    py = (ch - vh * s) / 2 + cur.pupilY * vh * s;
-    far = Math.max(
-      Math.hypot(px, py), Math.hypot(cw - px, py),
-      Math.hypot(px, ch - py), Math.hypot(cw - px, ch - py)
-    );
-    el.style.setProperty('--x', px + 'px');
-    el.style.setProperty('--y', py + 'px');
-  }
-
-  function finish(remember) {
-    if (finished) return;
-    finished = true;
-    clearTimeout(startTimer);
-    if (remember) mark();
-    video.pause();
-    el.remove();
-    root.classList.remove('intro-pending', 'intro-ready');
-    style.remove();
-    window.removeEventListener('resize', layout);
-    document.removeEventListener('keydown', onKey);
-  }
-
-  function fadeOut(remember) {
-    if (finished || fading) return;
-    fading = true;
-    el.style.transition = 'opacity .4s';
-    el.style.opacity = '0';
-    setTimeout(function () { finish(remember); }, 420);
-  }
-
-  // 视频播完：从瞳孔位置扩开一个圆，露出真实网站
-  function reveal() {
-    if (finished || fading) return;
-    fading = true;
-    layout();
-    el.classList.add('is-revealing');
-    var max = far + FEATHER;
-    var t0 = performance.now();
-    (function tick(now) {
-      var k = Math.min(1, (now - t0) / CFG.revealMs);
-      var e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; // easeInOutCubic
-      el.style.setProperty('--r', (max * e) + 'px');
-      if (k < 1) requestAnimationFrame(tick); else finish(true);
-    })(t0);
-  }
-
-  function onKey(e) { if (e.key === 'Escape') fadeOut(true); }
-
-  function build() {
-    el = document.createElement('div');
-    el.id = 'luliy-intro';
-    el.innerHTML =
-      '<video></video>' +
-      '<div class="li-title"><p class="li-zh"></p><p class="li-en"></p></div>' +
-      '<button class="li-skip" type="button">跳过</button>';
-    video = el.querySelector('video');
-    el.querySelector('.li-zh').textContent = CFG.title;
-    el.querySelector('.li-en').textContent = CFG.subtitle;
-
-    video.muted = true;
-    video.autoplay = true;
-    video.playsInline = true;
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', '');
-    video.preload = 'auto';
-    cur = pick();
-    if (cur.poster) video.poster = base + cur.poster;
-    video.src = base + cur.video;
-
-    document.body.insertBefore(el, document.body.firstChild);
-    root.classList.add('intro-ready');
-
-    video.addEventListener('loadedmetadata', layout);
-    video.addEventListener('playing', function () { clearTimeout(startTimer); });
-    video.addEventListener('timeupdate', function () {
-      if (video.currentTime >= CFG.titleAt) el.classList.add('show-title');
-    });
-    video.addEventListener('ended', reveal);
-    video.addEventListener('error', function () { fadeOut(false); }); // 加载失败：直接放行，下次还会再试
-    el.querySelector('.li-skip').addEventListener('click', function () { fadeOut(true); });
-    window.addEventListener('resize', layout);
-    document.addEventListener('keydown', onKey);
-
-    startTimer = setTimeout(function () { fadeOut(false); }, CFG.startTimeoutMs);
-
-    var p = video.play();
-    if (p && p.catch) p.catch(function () { fadeOut(false); }); // 被浏览器拦截自动播放：直接放行
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
-  else build();
+/* LULIY eye portal: the original, live homepage is visible inside the pupil. */
+(()=>{'use strict';
+const root=document.documentElement,base=(document.currentScript?.src||'').replace(/[^/]*$/,''),query=new URLSearchParams(location.search),media=matchMedia('(prefers-reduced-motion: reduce)'),key='luliy_intro_seen_v1';
+let seen=false;try{seen=localStorage.getItem(key)==='1'}catch{}
+if(query.get('intro')==='0'||media.matches||(query.get('intro')!=='1'&&seen)||(location.hash&&!/^#\/?(?:\?|$)/.test(location.hash))||!('showPopover' in HTMLElement.prototype))return;
+const wide=innerWidth>=innerHeight;
+// Normalized pupil geometry, sampled from the two existing videos.
+const cfg=wide?{video:'intro-wide.mp4',poster:'poster-wide.jpg',w:1280,h:720,points:[[0,.502,.486,.096,.145],[1,.505,.486,.114,.174],[2,.507,.482,.145,.217],[3,.507,.476,.176,.268],[4,.508,.47,.219,.328],[5,.506,.468,.261,.397],[6,.505,.465,.305,.455],[7,.503,.462,.35,.515],[8,.502,.459,.399,.565],[10,.5,.455,.465,.635]]}:{video:'intro.mp4',poster:'poster.jpg',w:720,h:1280,points:[[0,.5,.51,.27,.15],[2,.5,.51,.30,.17],[3,.5,.503,.53,.245],[5,.5,.5,.65,.31],[7,.5,.495,.82,.39],[10,.5,.49,1,.48]]};
+const style=document.createElement('style');style.textContent=`
+html.intro-pending,html.intro-pending body{overflow:hidden!important}
+html.intro-pending{background:#000}
+html.intro-live-home[data-theme="dark"]{--bg:#000}
+html.intro-live-home body{height:100vh!important;height:100dvh!important;overflow:hidden!important;contain:paint;transform-origin:50vw 50vh;transform:translate(var(--intro-tx,0px),var(--intro-ty,0px)) scale(var(--intro-scale,1));will-change:transform}
+#luliy-intro[popover]{position:fixed;inset:0;margin:0;padding:0;border:0;max-width:none;max-height:none;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:transparent;color:white;z-index:2147483000}
+#luliy-intro::backdrop{background:transparent}
+#luliy-intro video{position:absolute;inset:0;display:block;width:100%;height:100%;background:#000;-webkit-mask-image:radial-gradient(ellipse var(--intro-rx) var(--intro-ry) at var(--intro-x) var(--intro-y),transparent 93%,#000 100%);mask-image:radial-gradient(ellipse var(--intro-rx) var(--intro-ry) at var(--intro-x) var(--intro-y),transparent 93%,#000 100%)}
+#luliy-intro .li-skip{position:absolute;right:max(16px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));padding:7px 14px;border:1px solid #ffffff40;border-radius:999px;background:#0006;color:#fff;font:13px/1.4 system-ui;cursor:pointer}
+#luliy-intro .li-skip:focus-visible{outline:2px solid #e9d6ac;outline-offset:3px}
+#luliy-intro.is-revealing .li-skip{opacity:0;pointer-events:none;transition:opacity .25s}
+`;document.head.append(style);root.classList.add('intro-pending');
+let el,video,frame=0,startTimer,watchdog,finished=false,revealing=false,state=null;const previousFocus=document.activeElement,inert=[];
+function point(t){let a=cfg.points[0],b=cfg.points.at(-1);for(let i=1;i<cfg.points.length;i++){if(t<=cfg.points[i][0]){a=cfg.points[i-1];b=cfg.points[i];break}a=b=cfg.points[i]}const k=b[0]===a[0]?0:Math.max(0,Math.min(1,(t-a[0])/(b[0]-a[0])));return a.map((v,i)=>i?v+(b[i]-v)*k:t)}
+function geometry(t){const p=point(t),w=innerWidth,h=innerHeight,vw=video.videoWidth||cfg.w,vh=video.videoHeight||cfg.h,ratio=(w/h)/(vw/vh),cover=ratio>=1/1.3&&ratio<=1.3,s=cover?Math.max(w/vw,h/vh):Math.min(w/vw,h/vh);video.style.objectFit=cover?'cover':'contain';const x=(w-vw*s)/2+p[1]*vw*s,y=(h-vh*s)/2+p[2]*vh*s,rx=p[3]*vw*s,ry=p[4]*vh*s;return {x,y,rx,ry,scale:.93/Math.hypot(w/(2*rx),h/(2*ry))}}
+function paint(g){state=g;el.style.setProperty('--intro-x',g.x+'px');el.style.setProperty('--intro-y',g.y+'px');el.style.setProperty('--intro-rx',g.rx+'px');el.style.setProperty('--intro-ry',g.ry+'px');root.style.setProperty('--intro-tx',(g.x-innerWidth/2)+'px');root.style.setProperty('--intro-ty',(g.y-innerHeight/2)+'px');root.style.setProperty('--intro-scale',String(g.scale));}
+function tick(){if(finished||revealing)return;paint(geometry(video.currentTime));frame=requestAnimationFrame(tick)}
+function finish(remember){if(finished)return;finished=true;cancelAnimationFrame(frame);clearTimeout(startTimer);clearTimeout(watchdog);video?.pause();if(remember)try{localStorage.setItem(key,'1')}catch{}for(const [node,value]of inert)if(node.isConnected)node.inert=value;root.classList.remove('intro-pending','intro-live-home');for(const name of ['--intro-tx','--intro-ty','--intro-scale'])root.style.removeProperty(name);el?.remove();style.remove();document.removeEventListener('keydown',onKey,true);media.removeEventListener('change',onMotion);window.removeEventListener('resize',onResize);window.removeEventListener('hashchange',onRoute);if(previousFocus?.isConnected&&previousFocus!==document.body)previousFocus.focus({preventScroll:true});window.dispatchEvent(new Event('resize'));window.dispatchEvent(new CustomEvent('luliy:intro-complete'));}
+function skip(remember=true){if(finished)return;revealing=true;cancelAnimationFrame(frame);root.style.setProperty('--intro-tx','0px');root.style.setProperty('--intro-ty','0px');root.style.setProperty('--intro-scale','1');el.style.transition='opacity .25s';el.style.opacity='0';setTimeout(()=>finish(remember),260)}
+function reveal(){if(finished||revealing)return;revealing=true;cancelAnimationFrame(frame);video.pause();const from=geometry(video.currentTime),x=innerWidth/2,y=innerHeight/2,far=Math.hypot(innerWidth,innerHeight)*.65,start=performance.now();el.classList.add('is-revealing');function zoom(now){if(finished)return;const k=Math.min(1,(now-start)/1800),e=k*k*(3-2*k);paint({x:from.x+(x-from.x)*e,y:from.y+(y-from.y)*e,rx:from.rx+(far-from.rx)*e,ry:from.ry+(far-from.ry)*e,scale:from.scale+(1-from.scale)*e});if(k<1)frame=requestAnimationFrame(zoom);else finish(true)}frame=requestAnimationFrame(zoom)}
+function onKey(e){if(e.key==='Escape'){e.preventDefault();skip()}else if(e.key==='Tab'){e.preventDefault();el.querySelector('button').focus()}}
+function onMotion(){if(media.matches)finish(false)}function onRoute(){finish(false)}function onResize(){if(revealing)finish(true);else if(video)paint(geometry(video.currentTime))}
+function build(){el=document.createElement('div');el.id='luliy-intro';el.setAttribute('popover','manual');el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','从眼睛进入 LULIY 首页');el.innerHTML='<video aria-hidden="true"></video><button class="li-skip" type="button">跳过</button>';video=el.querySelector('video');video.muted=true;video.playsInline=true;video.setAttribute('playsinline','');video.preload='auto';video.poster=base+cfg.poster;video.src=base+cfg.video;document.body.append(el);try{el.showPopover()}catch{finish(false);return}for(const node of document.body.children)if(node!==el&&!/^(SCRIPT|STYLE|LINK)$/.test(node.tagName)){inert.push([node,node.inert]);node.inert=true}root.classList.add('intro-live-home');paint(geometry(0));tick();el.querySelector('button').onclick=()=>skip();el.querySelector('button').focus({preventScroll:true});video.addEventListener('playing',()=>clearTimeout(startTimer));video.addEventListener('ended',reveal);video.addEventListener('error',()=>skip(false));video.addEventListener('loadedmetadata',onResize);document.addEventListener('keydown',onKey,true);media.addEventListener('change',onMotion);window.addEventListener('resize',onResize);window.addEventListener('hashchange',onRoute);startTimer=setTimeout(()=>skip(false),4000);watchdog=setTimeout(()=>skip(false),22000);const play=video.play();play?.catch(()=>skip(false));}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build,{once:true});else build();
 })();
