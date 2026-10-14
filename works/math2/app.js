@@ -29,7 +29,7 @@ function sourceDrawers(q){
   if(combined)html+='<details class="source-drawer"><summary>本题答案与解析 · '+quick.length+' 页</summary><div class="source-pages">'+openSources('quick',q,quick)+'</div></details>';
   else{
    if(quick.length)html+='<details class="source-drawer"><summary>本题答案 · '+quick.length+' 页</summary><div class="source-pages">'+openSources('quick',q,quick)+'</div></details>';
-   if(detail.length)html+='<details class="source-drawer"'+(app.year==='2025'?' open':'')+'><summary>本题详细解析 · '+detail.length+' 页</summary><div class="source-pages">'+openSources('detail',q,detail)+'</div></details>';
+   if(detail.length)html+='<details class="source-drawer" open><summary>本题详细解析 · '+detail.length+' 页</summary><div class="source-pages">'+openSources('detail',q,detail)+'</div></details>';
   }
  }
  if(!quick.length&&!detail.length&&(annualQuick.length||annualDetail.length)){
