@@ -17,16 +17,16 @@
     portrait: {
       video: 'intro.mp4',
       poster: 'poster.jpg',  // 视频加载前显示的首帧图，没有就留着也行
-      pupilX: 0.503,         // 视频结尾"瞳孔"中心的位置，0~1，按视频画面算
-      pupilY: 0.478
+      pupilX: 0.5,           // 视频结尾"瞳孔"中心的位置，0~1，按视频画面算
+      pupilY: 0.5
     },
     // 横屏版（电脑、横着拿的手机，屏幕宽 ≥ 高时用）
     // 16:9 版还没做好就把 video 留空，横屏会自动用竖屏版
     landscape: {
       video: 'intro-wide.mp4',
       poster: 'poster-wide.jpg',
-      pupilX: 0.493,
-      pupilY: 0.490
+      pupilX: 0.5,
+      pupilY: 0.5
     },
     title: '世界以痛吻我，要我报之以歌',
     subtitle: 'The world has kissed my soul with its pain, asking for its return in songs.',
