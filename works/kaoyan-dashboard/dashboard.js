@@ -84,4 +84,3 @@ function initialize(){const current=localDate();updateHeader();document.document
 }
 initialize();
 })();
-

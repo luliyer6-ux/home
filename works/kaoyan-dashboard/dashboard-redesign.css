@@ -111,4 +111,3 @@ html[data-theme=dark] .calendar-date.selected{background:var(--green);color:#102
 html[data-theme=dark] .calendar-date.selected small{color:#183354}
 @media(max-width:940px){html:not([data-theme=dark]) .focus-column,html:not([data-theme=dark]) .calendar-column{padding:18px;border:1px solid #c6d1df;border-radius:12px;background:#fff}html:not([data-theme=dark]) .overview-layout{gap:16px}}
 @media(max-width:760px){html:not([data-theme=dark]) .focus-column,html:not([data-theme=dark]) .calendar-column{padding:15px}html:not([data-theme=dark]) .overview-target-band{padding:12px;border-radius:9px}}
-

@@ -1,0 +1,19 @@
+{
+  "2004": {"image":"images/quick-16-p072.webp","first":7,"answers":"BCBCADDA"},
+  "2005": {"image":"images/quick-16-p073.webp","first":7,"answers":"CAADBDBC"},
+  "2006": {"image":"images/quick-16-p074.webp","first":7,"answers":"ABCDCDAB"},
+  "2009": {"image":"images/quick-20-p003.webp","answers":"CADCBDBA"},
+  "2010": {"image":"images/quick-23-p001.webp","answers":"BACDBDAD"},
+  "2011": {"image":"images/quick-24-p001.webp","answers":"CBCCABDD"},
+  "2012": {"image":"images/quick-25-p001.webp","answers":"CABDDDCB"},
+  "2013": {"image":"images/quick-26-p001.webp","answers":"CACDABBB"},
+  "2014": {"image":"images/quick-27-p001.webp","answers":"BCDCDABA"},
+  "2015": {"image":"images/quick-28-p001.webp","answers":"DBACDBDA"},
+  "2016": {"image":"images/quick-29-p001.webp","answers":"BDBBADCC"},
+  "2017": {"image":"images/quick-30-p001.webp","answers":"ABDCDCBB"},
+  "2018": {"image":"images/quick-31-p001.webp","answers":"BDDDCCAA"},
+  "2019": {"image":"images/quick-32-p001.webp","answers":"CBDDAAAC"},
+  "2021": {"image":"images/quick-33-p001.webp","answers":"CDCADCBBDC"},
+  "2022": {"image":"images/quick-34-p001.webp","answers":"D??C?DABDC","evidence":{"1":"images/quick-34-p001.webp","4":"images/quick-34-p002.webp","6":"images/quick-34-p002.webp","7":"images/quick-34-p003.webp","8":"images/quick-34-p003.webp","9":"images/quick-34-p003.webp","10":"images/quick-34-p004.webp"}},
+  "2023": {"image":"images/quick-35-p001.webp","answers":"BDBCCACDBD"}
+}

@@ -1,0 +1,32 @@
+{
+  "source": "https://luliy.me/",
+  "captured": "2026-10-15",
+  "font": "5868d251589c8c465ccc.woff2",
+  "themes": {
+    "dark": {
+      "bg": "#151614",
+      "ink": "#f2eee3",
+      "text": "#e1ded4",
+      "muted": "#b9b6ad",
+      "line": "#41443d",
+      "paper": "#1e201d",
+      "accent": "#d8ae78",
+      "gold": "#d8ae78",
+      "background": "#151614",
+      "scheme": "dark"
+    },
+    "light": {
+      "bg": "#faf9f5",
+      "ink": "#141413",
+      "text": "#30302d",
+      "muted": "#615e56",
+      "line": "#dedbd2",
+      "paper": "#f0eee7",
+      "accent": "#805536",
+      "gold": "#805536",
+      "background": "linear-gradient(#faf9f5,#faf9f5)",
+      "scheme": "light"
+    }
+  },
+  "description": "Dashboard day/night design; main-site typography retained. Independent preference."
+}

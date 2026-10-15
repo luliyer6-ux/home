@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>考点演示</title>
-<!-- Tailwind 本地兜底（MIT，随仓库部署，离线可用） -->
-<script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<script>if(window.tailwind){tailwind.config={theme:{extend:{fontFamily:{sans:['"Segoe UI"','"Microsoft YaHei"','system-ui','sans-serif'],mono:['Consolas','ui-monospace','monospace']}}}}};</script>
-<!-- KaTeX（CDN；失败时框架自带降级排版） -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<!-- 与演示模块一同构建的本地样式，离线可用。 -->
+<link rel="stylesheet" href="vendor/tailwind.css">
+<!-- 数学排版资源随本站发布，离线时仍可阅读公式。 -->
+<link rel="stylesheet" href="vendor/katex.min.css">
+<script src="vendor/katex.min.js"></script>
+<script src="vendor/auto-render.min.js"></script>
 <link rel="stylesheet" href="css/style.css">
 <style>
 .viz-topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
@@ -20,12 +19,13 @@
 a.viz-back{display:inline-block;border:1px solid #dce4de;border-radius:8px;padding:6px 14px;
   color:#184b3a;text-decoration:none;font-size:14px;background:#fff}
 a.viz-back:hover{background:#f0f5f1}
+html.in-embedded-viz .viz-back{display:none}
 .viz-license{font-size:11px;color:#9aa5a0}
 main{max-width:1100px;margin:0 auto;padding:16px 16px 64px}
 #topic-header{margin:6px 0 14px}
 .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:16px;overflow:hidden}
 </style>
-</head>
+<link rel="stylesheet" href="../../fullscreen-control.css?v=20261015-studies"></head>
 <body class="bg-slate-100 text-slate-800">
 <header class="viz-topbar">
   <a class="viz-back" id="backLink" target="_top" href="../index.html">&larr; 返回原题</a>
@@ -79,6 +79,7 @@ window.VIZ_MODULES = {"coa-addressing":{"label":"指令寻址方式（EA 的形�
 <script>
 (function(){
   "use strict";
+  if(window.parent!==window)document.documentElement.classList.add('in-embedded-viz');
   var $ = function(id){ return document.getElementById(id); };
   var params = new URLSearchParams(location.search);
   var moduleId = params.get('module') || '';
@@ -131,5 +132,5 @@ window.VIZ_MODULES = {"coa-addressing":{"label":"指令寻址方式（EA 的形�
   document.head.appendChild(s);
 })();
 </script>
-</body>
+<script src="../../fullscreen-control.js?v=20261015-studies" defer></script></body>
 </html>
