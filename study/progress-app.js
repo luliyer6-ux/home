@@ -20,7 +20,7 @@ function translate(root=document.body){
  const traditional=localStorageSafe('luliy-chinese-script')==='traditional';document.documentElement.lang=traditional?'zh-Hant':'zh-Hans';
  const convert=s=>traditional&&window.KaoyanScript?window.KaoyanScript(s):s;
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(n){return n.parentElement?.closest('[data-original],script,style,textarea,input')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}});let n;while(n=walker.nextNode()){if(!originalText.has(n))originalText.set(n,n.nodeValue);n.nodeValue=convert(originalText.get(n));}
- for(const el of root.querySelectorAll?.('[aria-label],[placeholder]')||[])if(!el.closest('[data-original]'))for(const k of ['aria-label','placeholder'])if(el.hasAttribute(k)){let attrs=originalAttributes.get(el);if(!attrs){attrs={};originalAttributes.set(el,attrs);}if(!(k in attrs))attrs[k]=el.getAttribute(k);el.setAttribute(k,convert(attrs[k]));}
+ for(const el of root.querySelectorAll?.('[aria-label],[placeholder],[title]')||[])if(!el.closest('[data-original]'))for(const k of ['aria-label','placeholder','title'])if(el.hasAttribute(k)){let attrs=originalAttributes.get(el);if(!attrs){attrs={};originalAttributes.set(el,attrs);}if(!(k in attrs))attrs[k]=el.getAttribute(k);el.setAttribute(k,convert(attrs[k]));}
 }
 function localStorageSafe(k){try{return localStorage.getItem(k)||''}catch{return ''}}
 function parseRoute(){const [path,query='']=location.hash.slice(1).split('?'),parts=path.split('/').filter(Boolean),q=new URLSearchParams(query);return {page:['subject','records','settings'].includes(parts[0])?parts[0]:'overview',subject:ids.includes(parts[1])?parts[1]:'math2',tab:['daily','mocks','reviews','practice','legacy'].includes(parts[1])?parts[1]:'practice',view:q.get('view')==='map'?'map':'tree',node:q.get('node')||'',q:q.get('q')||'',unfinished:q.get('unfinished')==='1',day:q.get('day')||today()};}
@@ -30,11 +30,21 @@ const pct=n=>{const ls=leafMap.get(n.id),done=ls.filter(x=>data.topics[x.id]?.do
 const liquidHistory=new Map();
 const bar=p=>`<div class="bar" role="progressbar" ${loaded?'aria-valuenow="'+p+'"':'aria-valuetext="进度尚未读取"'} aria-valuemin="0" aria-valuemax="100" aria-label="知识点完成比例"><span style="width:${p}%"></span></div>`;
 const heading=(en,title,desc,action='')=>`<div class="page-heading"><div><p class="eyebrow">${en}</p><h1>${title}</h1><p>${desc}</p></div>${action}</div>`;
+const examLinks=[
+ ['english','英语二真题','阅读、完形与整套模拟','https://luliy.me/works/gpt-english-2-exams.html','M4 4h6a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4z M20 4h-4a3 3 0 0 0-3 3v14a4 4 0 0 1 4-2h3z'],
+ ['math','数学二真题','历年真题与逐题解析','https://luliy.me/works/math2/','M5 5h14 M8 5l8 7-8 7h11 M5 19h2'],
+ ['cs','408 真题','计算机真题与模拟练习','https://luliy.me/works/408/','M7 7h10v10H7z M10 10h4v4h-4z M9 3v4 M15 3v4 M9 17v4 M15 17v4 M3 9h4 M3 15h4 M17 9h4 M17 15h4'],
+ ['formula','数学公式','数学一公式卡与复习工具','https://luliy.me/works/math-handbook/index.html','M4 13l4 6 4-14h8 M15 11l5 6 M20 11l-5 6'],
+ ['all','22408 复习站','四科复习与练习工具','https://408.luliy.me/','M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z']
+];
 function frame(){
  $('#navigation').innerHTML=[['#/overview','总览',route.page==='overview'],...ids.map(id=>['#/subject/'+id,roots.get(id).title,route.page==='subject'&&route.subject===id]),['#/records/practice','学习记录',route.page==='records'],['#/settings','设置与资料',route.page==='settings']].map(([url,label,on])=>`<a href="${url}" ${on?'aria-current="page"':''}>${label}</a>`).join('');
  $('#todayLabel').textContent=new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',month:'long',day:'numeric',weekday:'long'}).format(new Date());
  $('#lastUpdated').textContent=lastUpdated?'最近更新 '+new Date(lastUpdated).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'}):demo?'本地演示记录':'尚未取得更新时间';
  $('#loginButton').textContent=demo?'本地演示':writable()?'立即同步':'管理员登录';
+ if(!$('#examLinks')){
+  const section=document.createElement('section');section.className='exam-shortcuts';section.innerHTML='<h2>真题与工具</h2><nav id="examLinks" aria-label="真题与复习工具">'+examLinks.map(([color,title,description,url,path])=>`<a class="exam-link exam-${color}" href="${url}" target="_blank" rel="noopener" title="${description}（新标签页打开）" aria-label="${title}：${description}，新标签页打开"><span class="exam-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${path}"/></svg></span><span>${title}</span><span class="exam-external" aria-hidden="true">↗</span></a>`).join('')+'</nav>';$('.sidebar-foot').before(section);
+ }
 }
 function overview(){
  const day=data.settings.examDate||'2026-12-19',left=Math.round((Date.parse(day+'T00:00:00+08:00')-Date.parse(today()+'T00:00:00+08:00'))/86400000);

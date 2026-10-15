@@ -28,3 +28,11 @@
 @media(max-width:767px){.subject-card{min-height:200px}.subject-card .number{font-size:40px}}
 
 html{background:var(--bg)}
+.sidebar{overflow-y:auto;overscroll-behavior:contain}
+.exam-shortcuts{border-top:1px solid var(--line);padding-top:18px}.exam-shortcuts h2{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.08em;margin:0 0 9px 12px}
+.sidebar #examLinks{display:grid;gap:3px}.sidebar #examLinks a{display:flex;align-items:center;gap:10px;padding:5px 9px;min-height:44px;border:0;border-radius:6px;color:var(--text);font-size:13px;white-space:nowrap}.sidebar #examLinks a:hover{background:var(--hover);color:var(--ink)}
+.exam-icon{display:flex;align-items:center;justify-content:center;flex:0 0 29px;height:29px;border-radius:8px;background:color-mix(in srgb,var(--exam-color) 12%,transparent);color:var(--exam-color)}.exam-icon svg{width:19px;height:19px}.exam-external{margin-left:auto;color:var(--muted);font-size:12px}
+.exam-english{--exam-color:#28735d}.exam-math{--exam-color:#356b9d}.exam-cs{--exam-color:#79549b}.exam-formula{--exam-color:#92652a}.exam-all{--exam-color:#a1533b}
+:root[data-appearance=dark] .exam-english{--exam-color:#83c5ad}:root[data-appearance=dark] .exam-math{--exam-color:#8bb9e4}:root[data-appearance=dark] .exam-cs{--exam-color:#bea0dc}:root[data-appearance=dark] .exam-formula{--exam-color:#d5b477}:root[data-appearance=dark] .exam-all{--exam-color:#db9a83}
+@media(max-width:850px){.sidebar{overflow:visible}.exam-shortcuts{margin-top:9px;padding-top:10px}.exam-shortcuts h2{margin-left:12px;margin-bottom:6px}.sidebar #examLinks{display:flex;overflow-x:auto;max-width:100%;padding:3px 2px 7px;gap:7px;scrollbar-width:thin}.sidebar #examLinks a{flex-shrink:0;padding:5px 9px;gap:7px}.exam-external{display:none}}
+@media print{.exam-shortcuts{display:none}}
