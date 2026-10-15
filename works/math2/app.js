@@ -18,18 +18,20 @@ function setControls(){const mock=yrState().mock;$('modeSelect').value=app.mode;
 function displayGroups(){const visible=new Set(shownQs());return (app.data?.originalSections||allQs().map((q,i)=>({label:q.short||q.n,indices:[i]}))).filter(g=>g.indices.some(i=>visible.has(allQs()[i])))}
 function rail(){const all=allQs(),groups=displayGroups(),state=yrState();$('questionGrid').innerHTML=groups.map(g=>{const items=g.indices.map(i=>all[i]),active=g.indices.includes(app.index),done=items.every(answered),marked=items.filter(answered),wrong=marked.some(q=>app.data.keys?.[q.n]?!isCorrect(q):state.self[qid(q)]!==undefined&&Number(state.self[qid(q)])<Number(q.points));let cls='q-button'+(active?' current':'')+(done?' answered':'');if((app.mode==='practice'||state.mock.submitted)&&marked.length){if(wrong)cls+=' wrong';else if(done&&items.every(q=>app.data.keys?.[q.n]||state.self[qid(q)]!==undefined))cls+=' correct'}return `<button class="${cls}" data-index="${g.indices[0]}" aria-label="${esc(g.label)}" ${active?'aria-current="true"':''}>${esc(g.label)}</button>`}).join('')||'<p class="muted">当前没有错题。</p>';const count=all.filter(answered).length;$('answeredCount').textContent=`已答 ${count}/${all.length}`;const g=groups.find(g=>g.indices.includes(app.index));$('currentPosition').textContent=app.data.originalSections?`第${g?.label||''}大题`:current()?.label||'';$('questionGrid').querySelectorAll('[data-index]').forEach(b=>b.onclick=()=>go(Number(b.dataset.index)));}
 function openSources(kind,q,items=null,annual=false){const list=items??q.sources?.[kind]??app.data?.sources?.[kind]??[];if(!list.length)return'<p class="source-status">本年份没有匹配到'+(kind==='quick'?'答案速查':'详细解析')+'资料。</p>';return list.map((p,i)=>{const page=p.page||i+1;const caption=annual?app.year+' 年全年'+(kind==='quick'?'答案速查':'详细解析')+' · 第 '+page+' 页':app.year+' 年'+(q.label||('第 '+q.n+' 题'))+(kind==='quick'?'答案':'详细解析')+' · 第 '+page+' 页';return imageHTML(sourceUrl(p),caption,'',true)}).join('')}
+function tutorDrawer(t){const section=(title,body)=>`<section class="math2-tutor-section"><h4>${title}</h4><p>${esc(body)}</p></section>`;return `<details class="source-drawer tutor-drawer" open><summary>逐题文字讲解 · ${esc(t.topic)}</summary><div class="math2-tutor-body">${section('一句话抓住本质',t.core)}${section('直觉 / 切入点',t.intuition)}<section class="math2-tutor-section"><h4>板书推导</h4><ol>${(t.steps||[]).map(step=>`<li>${esc(step)}</li>`).join('')}</ol></section>${section('答案',t.answer)}${section('易错点',t.pitfall)}${section('考研小贴士',t.card)}</div></details>`}
 function sourceDrawers(q){
- const key=app.data.keys?.[q.n],quick=q.sources?.quick||[],detail=q.sources?.detail||[];
+ const tutor=window.Math2TutorExplanations?.[app.year]?.[String(q.n)];const key=app.data.keys?.[q.n],quick=q.sources?.quick||[],detail=q.sources?.detail||[];
  const annualQuick=app.data.sources?.quick||[],annualDetail=app.data.sources?.detail||[];
  let html='<section class="per-question-answer" aria-label="本题答案与解析"><h3>本题答案与解析</h3>';
  if(q.type==='选择')html+=key?'<p class="answer-value">参考答案：<strong>'+esc(key)+'</strong></p>':'<p class="source-status">本题答案尚未核实，暂不自动给出字母。</p>';
  else if(!quick.length&&!detail.length)html+='<p class="source-status">本题答案尚未逐题定位，请查阅下方全年原始资料核对。</p>';
+ if(tutor)html+=tutorDrawer(tutor);
  if(quick.length||detail.length){
   const combined=quick.length===detail.length&&quick.every((p,i)=>p.image===detail[i].image);
   if(combined)html+='<details class="source-drawer"><summary>本题答案与解析 · '+quick.length+' 页</summary><div class="source-pages">'+openSources('quick',q,quick)+'</div></details>';
   else{
    if(quick.length)html+='<details class="source-drawer"><summary>本题答案 · '+quick.length+' 页</summary><div class="source-pages">'+openSources('quick',q,quick)+'</div></details>';
-   if(detail.length)html+='<details class="source-drawer" open><summary>本题详细解析 · '+detail.length+' 页</summary><div class="source-pages">'+openSources('detail',q,detail)+'</div></details>';
+   if(detail.length)html+='<details class="source-drawer"'+(tutor?'':' open')+'><summary>本题详细解析 · '+detail.length+' 页</summary><div class="source-pages">'+openSources('detail',q,detail)+'</div></details>';
   }
  }
  if(!quick.length&&!detail.length&&(annualQuick.length||annualDetail.length)){
