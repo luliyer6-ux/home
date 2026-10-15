@@ -16,3 +16,11 @@ html.exam-dark body[data-exam=math2] .choice-letter { background: #35414c; }
 html.exam-dark body[data-exam=math2] .choice.selected .choice-letter { background: var(--x-accent); color: var(--x-paper); }
 html.exam-dark body[data-exam=math2] .choice.correct .choice-letter { background: #287643; color: #fff; }
 html.exam-dark body[data-exam=math2] .choice.incorrect .choice-letter { background: #b83a34; color: #fff; }
+
+.math2-tutor-body { padding: .15rem .15rem .7rem; line-height: 1.8; }
+.math2-tutor-section { margin: .9rem 0; }
+.math2-tutor-section h4 { margin: 0 0 .35rem; color: var(--green); font-size: .98rem; }
+.math2-tutor-section p { margin: 0; white-space: pre-wrap; }
+.math2-tutor-section ol { margin: .25rem 0 0; padding-left: 1.4rem; }
+.math2-tutor-section li { margin: .45rem 0; padding-left: .2rem; }
+.tutor-drawer { border-color: color-mix(in srgb, var(--green) 34%, var(--line)); }
