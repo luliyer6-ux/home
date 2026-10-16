@@ -2809,13 +2809,21 @@ html[data-theme="cc"] .signature-dot img{filter:brightness(1.7) contrast(1.25) d
         return {path,points,width:Number(path.getAttribute('stroke-width')),animation:animations[[...ink.querySelectorAll('[data-signature-stroke]')].indexOf(path)]};
       }),full:null};
     });
-    let frame=0,disposed=false,visible=true,key='',scale=1,color='',lastDraw=0;
+    let frame=0,disposed=false,visible=true,key='',scale=1,color='',goldGradient=null,lastDraw=0;
     function configure(){
-      const style=getComputedStyle(signature),size=parseFloat(style.fontSize),ratio=Math.min((window.LuliyMobileLite?.9:devicePixelRatio)||1,2),next=size+'|'+ratio+'|'+style.color;
+      const style=getComputedStyle(signature),size=parseFloat(style.fontSize),ratio=Math.min((window.LuliyMobileLite?.9:devicePixelRatio)||1,2),goldStops=['--signature-gold-top','--signature-gold-mid','--signature-gold-bottom'].map(name=>style.getPropertyValue(name).trim()),next=size+'|'+ratio+'|'+style.color+'|'+goldStops.join('|');
       canvas.style.left=ink.style.left;canvas.style.top=ink.style.top;canvas.style.width=3.6*size+'px';canvas.style.height=3.153*size+'px';
       if(key===next)return;key=next;color=style.color;scale=size*ratio/1000;
       canvas.width=Math.ceil(3600*scale);canvas.height=Math.ceil(3153*scale);
       scratch.width=mask.width=canvas.width;scratch.height=mask.height=canvas.height;
+      goldGradient=null;
+      if(goldStops.every(Boolean)){
+        const word=signature.querySelector('.signature-word'),rect=word&&(window.LuliyLayoutRect?.(word)||word.getBoundingClientRect()),height=rect?.height||3.153*size,range=document.createRange();
+        if(word)range.selectNodeContents(word);
+        const textRect=word&&(window.LuliyLayoutRect?.(range)||range.getBoundingClientRect()),offset=rect&&textRect?rect.top-textRect.top:0,pixelRatio=canvas.width/(3.6*size);
+        goldGradient=ctx.createLinearGradient(0,offset*pixelRatio,0,(offset+height)*pixelRatio);
+        goldGradient.addColorStop(.12,goldStops[0]);goldGradient.addColorStop(.48,goldStops[1]);goldGradient.addColorStop(.88,goldStops[2]);
+      }
       glyphs.forEach(g=>{if(g.full){g.full.width=0;g.full=null}});
     }
     function progress(stroke){
@@ -2846,6 +2854,7 @@ html[data-theme="cc"] .signature-dot img{filter:brightness(1.7) contrast(1.25) d
         if(values.every(v=>v===1)){g.full=document.createElement('canvas');g.full.width=canvas.width;g.full.height=canvas.height;g.full.getContext('2d').drawImage(scratch,0,0)}
         ctx.drawImage(scratch,0,0);
       });
+      if(goldGradient){ctx.globalCompositeOperation='source-in';ctx.fillStyle=goldGradient;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.globalCompositeOperation='source-over';}
       frame=requestAnimationFrame(draw);
     }
     function request(){if(!frame&&!disposed&&visible&&!document.hidden)frame=requestAnimationFrame(draw)}
@@ -3009,6 +3018,31 @@ html[data-theme="cc"] .signature-dot img{filter:brightness(1.7) contrast(1.25) d
 /* Blend the scene's baked black clear colour into the warmer page surface. */
 :root[data-appearance="dark"] .galaxy-field{background:var(--bg)}
 :root[data-appearance="dark"] .galaxy-field canvas{mix-blend-mode:lighten}
+</style><style id="luliy-gold-signature">/* Homepage only: the supplied matte gold reference, with the existing font and motion. */
+#main .library-home .opening-copy .signature{
+ --signature-gold-top:#f1e2b4;
+ --signature-gold-mid:#c5a369;
+ --signature-gold-bottom:#89662e;
+ color:var(--signature-gold-mid);
+ text-shadow:none!important;
+}
+@supports ((background-clip:text) or (-webkit-background-clip:text)){
+ #main .library-home .opening-copy .signature-word{
+  display:inline-block;padding-top:.5em;padding-bottom:1em;margin-top:-.5em;margin-bottom:-1em;
+  background-image:linear-gradient(180deg,var(--signature-gold-top) 12%,var(--signature-gold-mid) 48%,var(--signature-gold-bottom) 88%);
+  background-clip:text;-webkit-background-clip:text;
+  color:transparent;-webkit-text-fill-color:transparent;
+  text-shadow:none!important;
+ }
+}
+#main .library-home .opening-copy :is(.signature-canvas,.signature-ink){filter:none!important}
+:root[data-appearance="light"] #main .library-home .opening-copy .signature{
+ --signature-gold-top:#956d33;--signature-gold-mid:#87602a;--signature-gold-bottom:#65451e;
+}
+@media(forced-colors:active){
+ #main .library-home .opening-copy .signature{color:CanvasText;--signature-gold-top:initial}
+ #main .library-home .opening-copy .signature-word{background:none;color:CanvasText;-webkit-text-fill-color:CanvasText}
+}
 </style></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
