@@ -2984,6 +2984,31 @@ html[data-theme="cc"] .signature-dot img{filter:brightness(1.7) contrast(1.25) d
   }
   #main .ambient-dust { display: none !important; }
 }
+</style><style id="luliy-charcoal-palette">/* Approved dark appearance. Reading preferences remain inline and take precedence. */
+:root[data-appearance="dark"]{
+ --bg:#111110;--ink:#e8e3d9;--text:#e8e3d9;--muted:#a6a198;
+ --paper:#191918;--line:#3b3935;--control-line:#777168;
+ --accent:#b89a6a;--gold:#b89a6a;--focus-ring:#b89a6a;
+ --surface-base:var(--bg);--surface-raised:var(--paper);--surface-overlay:#222220;
+ --text-primary:var(--ink);--text-body:var(--text);--text-muted:var(--muted);
+ --border-subtle:var(--line);--border-active:var(--control-line);
+ --reader-body-color:var(--text);--reader-heading-color:var(--ink);
+ color-scheme:dark;
+}
+:root[data-appearance="dark"] :is(.lr-room,.lr-mini){
+ --lr-paper:var(--bg);--lr-ink:var(--ink);--lr-muted:var(--muted);
+ --lr-line:var(--line);--lr-accent:var(--accent);--lr-soft:var(--paper);
+}
+:root[data-appearance="dark"] :is(.ld,.ld-modal){
+ --ld-bg:var(--bg);--ld-surface:var(--paper);--ld-raised:var(--surface-overlay);
+ --ld-border:var(--line);--ld-muted:var(--muted);--ld-ink:var(--ink);
+ --ld-accent:var(--accent);--ld-focus:var(--focus-ring);
+}
+:root[data-appearance="dark"] :is(.reader-panel,.reader-settings){background:var(--paper)}
+:root[data-appearance="dark"] :is(.directory-other-options,.directory-language-options){background:var(--surface-overlay)}
+/* Blend the scene's baked black clear colour into the warmer page surface. */
+:root[data-appearance="dark"] .galaxy-field{background:var(--bg)}
+:root[data-appearance="dark"] .galaxy-field canvas{mix-blend-mode:lighten}
 </style></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
