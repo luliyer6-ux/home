@@ -2666,6 +2666,17 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
     observer.observe(stage);window.addEventListener('resize',measure);
     (async()=>{
       try{
+        // Wait for the covering prologue before starting the handwriting clock.
+        if(firstOpening&&!reduced.matches&&document.documentElement.classList.contains('intro-pending')){
+          await new Promise(resolve=>{
+            const done=()=>{window.removeEventListener('luliy:intro-complete',done);events.signal.removeEventListener('abort',done);resolve();};
+            window.addEventListener('luliy:intro-complete',done,{once:true});
+            events.signal.addEventListener('abort',done,{once:true});
+            if(!document.documentElement.classList.contains('intro-pending'))done();
+          });
+        }
+        if(disposed)return;
+        if(!firstOpening||reduced.matches){complete();return;}
         const font='400 '+getComputedStyle(signature).fontSize+' "Amalfi Coast"';
         const faces=await Promise.race([
           document.fonts.load(font,'Luliy'),
