@@ -107,3 +107,40 @@ body.v-word-only #vTestCard h2[lang="en"]{margin:0;cursor:pointer}
 #vWordOnly:not([aria-pressed="true"]){color:var(--x-muted,#65746b)}
 @media(max-width:700px){body.v-immersive #vTest{padding:16px 12px;gap:8px}body.v-immersive #vTestCard{min-height:180px}body.v-immersive #vTestCard h2[lang="en"]{font-size:clamp(48px,12vw,90px);margin:8px 0 24px}body.v-immersive #vTest .v-test-tools{gap:5px}body.v-immersive #vTest .v-test-tools button{padding:6px 8px}body.v-immersive #vTestProgress{font-size:11px}}
 @media(max-height:500px){body.v-immersive #vTestCard{min-height:120px;gap:6px}body.v-immersive #vTestCard h2[lang="en"]{margin:0 0 10px}body.v-immersive #vTest{gap:4px}body.v-immersive .v-test-basic{max-height:20dvh}}
+
+/* Recall is a temporary learning stage, not an exit from the word-only preference. */
+body.v-memory-focus #vTest>:not(#vTestCard){display:none!important}
+body.v-memory-focus #vTestCard>.v-test-frequency{display:none!important}
+body.v-memory-focus #vTestCard{flex:1;min-height:0;justify-content:center;padding-block:16px;overflow-y:auto}
+.v-memory-recall,.v-memory-answer{width:min(680px,100%);text-align:left;color:var(--x-ink,#272724)}
+.v-memory-recall{display:grid;gap:14px}.v-memory-recall p{margin:0;font-size:16px}.v-memory-recall label{font-size:13px}.v-memory-recall label span,.v-memory-recall small,.v-memory-hint{color:var(--x-muted,#706f68);font-size:12px}
+#vMeaningDraft{width:100%;box-sizing:border-box;min-height:86px;max-height:25dvh;resize:vertical;line-height:1.7;padding:12px 14px;font-size:16px;border:1px solid var(--x-line,#deddd5);background:var(--x-paper,#f8f7f3);border-radius:4px}
+.v-memory-recall>button{justify-self:start;min-height:44px;padding:8px 18px}.v-memory-draft{padding:12px 16px;border-left:2px solid #b08b42;background:var(--x-surface,#f0efea);overflow-wrap:anywhere}.v-memory-draft small{color:var(--x-muted)}.v-memory-draft p{margin:6px 0 0;white-space:pre-wrap}
+.v-memory-answer{max-height:48dvh;overflow-y:auto;overscroll-behavior:contain;padding:0 6px 6px;box-sizing:border-box}.v-memory-answer .v-test-basic{width:100%;max-height:none;overflow:visible;margin-top:14px}.v-memory-choices{display:flex;flex-wrap:wrap;gap:8px}.v-memory-choices button{flex:1;min-width:130px;min-height:46px;padding:8px 10px;font-size:13px!important;border:1px solid var(--x-line);background:var(--x-paper)}
+.v-memory-choices [data-v-final=known]{color:#327557!important}.v-memory-choices [data-v-final=fuzzy]{color:#8c682c!important}.v-memory-choices [data-v-final=unknown]{color:var(--x-red,#a73d36)!important}
+#vMemoryFeedback{position:fixed;z-index:2147483646;pointer-events:none;opacity:0;padding:14px 20px;border-radius:6px;font-size:14px;font-weight:600;transition:opacity .08s;max-width:calc(100vw - 48px)}
+#vMemoryFeedback.is-visible{opacity:1;animation:v-memory-pulse .16s ease-out}
+#vMemoryFeedback[data-rating=known]{left:24px;top:48%;color:#236444;background:#e4f0e7;border-left:3px solid #327557}
+#vMemoryFeedback[data-rating=unknown]{right:24px;top:48%;color:#983d34;background:#f7e7e2;border-right:3px solid #a74c43}
+#vMemoryFeedback[data-rating=fuzzy]{left:50%;bottom:24px;transform:translateX(-50%);color:#805f26;background:#f5ecd7;border-bottom:3px solid #b08b42}
+html.exam-dark #vMemoryFeedback[data-rating=known]{background:#253e30;color:#a4d9b7}html.exam-dark #vMemoryFeedback[data-rating=unknown]{background:#492c29;color:#f1b2a8}html.exam-dark #vMemoryFeedback[data-rating=fuzzy]{background:#403821;color:#e3cb92}
+@keyframes v-memory-pulse{from{opacity:.3;filter:blur(1px)}to{opacity:1;filter:blur(0)}}
+body.v-word-only #vTestCard{touch-action:none}#vTestCard h2[lang=en]{cursor:pointer}
+@media(max-width:700px){.v-memory-answer{max-height:51dvh}.v-memory-choices{gap:6px}.v-memory-choices button{min-width:90px;line-height:1.6;font-size:12px!important}.v-memory-recall{gap:10px}#vMemoryFeedback{padding:10px 12px;font-size:12px}#vMemoryFeedback[data-rating=known]{left:12px}#vMemoryFeedback[data-rating=unknown]{right:12px}}
+@media(max-height:500px){body.v-memory-focus #vTestCard{justify-content:flex-start}.v-memory-answer{max-height:50dvh}}
+@media(prefers-reduced-motion:reduce){#vMemoryFeedback.is-visible{animation:none}#vMemoryFeedback{transition:none}}
+
+#vGestureHint{position:fixed;z-index:2147483645;left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom));width:max-content;max-width:calc(100vw - 32px);margin:auto;box-sizing:border-box;padding:10px 14px;background:var(--x-surface,#f0efea);color:var(--x-muted,#706f68);border:1px solid var(--x-line,#deddd5);border-radius:5px;font-size:12px;text-align:center;pointer-events:none}#vGestureHint[hidden]{display:none!important}
+
+/* Keep the classification controls outside the scrollable explanation. */
+body.v-memory-focus #vTestCard{gap:12px}
+body.v-memory-focus #vTestCard h2[lang=en]{margin:0 0 18px}
+#vTestCard .v-memory-answer{display:flex;flex-direction:column;gap:10px;max-height:none;overflow:visible}
+#vTestCard .v-memory-answer .v-test-basic{font-size:18px;line-height:1.65;max-height:30dvh!important;overflow-y:auto!important;overscroll-behavior:contain;padding:0 10px 4px 0;margin:0;text-align:left}
+#vTestCard .v-memory-answer .v-test-basic p{font-size:inherit;line-height:inherit;margin:6px 0;text-align:left;color:var(--x-ink,#272724)}
+#vTestCard .v-memory-answer .v-test-basic .v-test-pos{font-size:12px;color:var(--x-muted,#706f68)}
+#vTestCard .v-memory-draft p{font-size:14px;text-align:left;line-height:1.7}
+#vTestCard .v-memory-hint{font-size:12px;line-height:1.6;margin:0;text-align:left}
+#vTest .v-test-next{background:var(--x-ink,#272724)!important;color:var(--x-paper,#f8f7f3)!important;border-color:var(--x-ink)!important;font-size:13px;padding:10px 16px;min-height:44px}
+html.exam-dark .v-memory-choices [data-v-final=known]{color:#8ac5a3!important}html.exam-dark .v-memory-choices [data-v-final=fuzzy]{color:#ddc38b!important}
+@media(max-width:700px){#vTestCard .v-memory-answer .v-test-basic{font-size:17px;max-height:26dvh!important}body.v-memory-focus #vTestCard h2[lang=en]{margin-bottom:12px}.v-memory-draft{padding:8px 12px}.v-memory-choices button{padding:6px!important}}
