@@ -1,6 +1,6 @@
 /* Map colours describe diagnostic coverage, never mastery. */
 #vMap{--map-paper:#fff;--map-soft:#f5f8f5;--map-line:#ccd8cf;--map-ink:#1d3428;--map-muted:#52675a;--map-green:#16603d;--map-green-bg:#e5f3e9;--map-red:#9b332b;--map-red-bg:#fcece9;margin:22px 0 30px;color:var(--map-ink)}
-.e2-dark #vMap{--map-paper:#171e19;--map-soft:#1b251f;--map-line:#43564a;--map-ink:#e8eee9;--map-muted:#b0c1b6;--map-green:#a2e4b8;--map-green-bg:#1d402b;--map-red:#ffb7ae;--map-red-bg:#442420}
+.e2-dark #vMap{--map-paper:#1b1c1d;--map-soft:#242527;--map-line:#3b3c3e;--map-ink:#e5e1d9;--map-muted:#a8a49c;--map-green:#89b29a;--map-green-bg:#242527;--map-red:#c58b83;--map-red-bg:#242527}
 #vMap h3,#vMap h4{margin:0;color:var(--map-ink);border:0;padding:0}
 #vMap h3{font-size:23px}#vMap h4{font-size:16px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
 #vMap h4 small{font:12px/1.6 system-ui,sans-serif;color:var(--map-muted)}

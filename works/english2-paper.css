@@ -1,6 +1,6 @@
 /* English II paper UI: restrained ink, warm paper, semantic grading colors retained. */
 body.exam-shell[data-exam=english],body.exam-shell:not([data-exam]){--x-paper:#f8f7f3;--x-surface:#f0efea;--x-ink:#272724;--x-muted:#706f68;--x-line:#deddd5;--x-accent:#45483e;--x-soft:#eaeae2;--x-red:#a73d36;--accent:var(--x-accent);--green:var(--x-accent);--green2:var(--x-accent);--ink:var(--x-ink);--muted:var(--x-muted);--line:var(--x-line);--border:var(--x-line);--paper:var(--x-paper);--surface:var(--x-surface)}
-html.exam-dark body.exam-shell{--x-paper:#20211f;--x-surface:#292a27;--x-ink:#e7e5dc;--x-muted:#b0afa5;--x-line:#42433d;--x-accent:#cfcebc;--x-soft:#35362f;--x-red:#ed9a91}
+html.exam-dark body.exam-shell{--x-paper:#1b1c1d;--x-surface:#242527;--x-ink:#e5e1d9;--x-muted:#a8a49c;--x-line:#363739;--x-accent:#c3ad8e;--x-soft:#2c2c2d;--x-red:#ce9186}
 body.exam-shell{background:var(--x-paper)!important;color:var(--x-ink)!important}
 .exam-shell .card,.exam-shell .drawer,.exam-shell .aipanel,.exam-shell #tip,.exam-shell #v5530Card,.exam-shell #e2Learning,.exam-shell .pompanel{background:var(--x-paper)!important;color:var(--x-ink)!important;border-color:var(--x-line)!important;box-shadow:0 8px 24px #00000008;border-radius:6px}
 .exam-shell .card{box-shadow:none;border:0;border-bottom:1px solid var(--x-line);border-radius:0;padding-block:28px}
