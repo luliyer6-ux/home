@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>静钟 · Luliy</title><meta name="description" content="静钟：日程规划、番茄专注与白噪音，留一段安静的时间。"><link rel="canonical" href="https://jin.luliy.me/">
+<script>try{var s=JSON.parse(localStorage.getItem('jingzhong-v2')||'{}');document.documentElement.dataset.theme=(s.theme==='dark'?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
+<style>
+:root{--bg:#FFF6E8;--card:#fff;--ink:#1C1917;--mute:#78716C;--line:#F0E4D0;--soft:#FFF1E7;--red:#C2410C;--on:#fff;--inp:#fff;--nbg:#F0FDF4;--nink:#166534;--nbd:#BBF7D0;--wbg:#FFFBEB;--wink:#92400E;--wbd:#FDE68A;color-scheme:light}
+:root[data-theme=dark]{--bg:#15120F;--card:#1F1B17;--ink:#F3EDE4;--mute:#A1988A;--line:#342D25;--soft:#2E2018;--red:#F26B3A;--on:#1A0C04;--inp:#15120F;--nbg:#12261A;--nink:#86EFAC;--nbd:#1F4A2E;--wbg:#2B2210;--wink:#FCD34D;--wbd:#4F3E12;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 18px 36px}
+header{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--bg);border-bottom:1px solid var(--line)}
+.logo{width:40px;height:40px;flex:none}
+h1{margin:0;font-size:28px;letter-spacing:.15em}
+.sp{flex:1}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:14px;white-space:nowrap}
+.card{background:var(--card);border-radius:18px;border:1px solid var(--line);padding:18px;box-shadow:0 6px 24px rgba(0,0,0,.05)}
+.card+.card{margin-top:18px}
+.card h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px}
+.num{width:26px;height:26px;border-radius:50%;background:var(--soft);color:var(--red);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none}
+.layout{display:flex;gap:18px;align-items:flex-start}
+.view{flex:1;min-width:0}
+.side{flex:none;width:400px;max-height:calc(100vh - 92px);position:sticky;top:76px;overflow-x:hidden;overflow-y:auto;transition:width .25s,opacity .25s,margin .25s,visibility .25s}
+.side>div{min-width:330px;padding-bottom:2px}
+.layout.shut .side{width:0;opacity:0;margin-left:-18px;visibility:hidden}
+.scrim{display:none}
+.th{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.th b{font-size:18px}.th span,.mu{color:var(--mute);font-size:13px}
+.chip{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;background:var(--soft);color:var(--mute);margin-right:8px}
+.chip.on{background:var(--red);color:var(--on)}
+.gate{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;padding:16px;overflow:auto}
+.gbox{width:min(480px,100%);margin:auto;text-align:center}
+.mwrap{position:relative;width:104px;margin:34px auto 0;cursor:pointer}
+.mwrap .logo{width:104px;height:104px;display:block}
+.sh{position:absolute;left:16px;right:16px;bottom:-10px;height:10px;border-radius:50%;background:rgba(0,0,0,.28);animation:sh 1.8s cubic-bezier(.3,0,.3,1) infinite}
+.gbox h2{margin:26px 0 2px;font-size:26px}
+.gadd{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 12px;text-align:left}
+.gadd #gn{flex:1 1 100%}.gadd select{flex:1}.gadd input[type=number]{width:64px}
+.gl{padding:4px 16px;max-height:34vh;overflow:auto;text-align:left}
+.gl .task .name{white-space:normal}
+.gs{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px;text-align:left}
+.gbtn{display:flex;gap:10px;margin-top:16px}.gbtn .btn{flex:1;padding:13px;font-size:15px}
+.logo{overflow:visible}
+.bell.l{transform-origin:15px 16px}.bell.r{transform-origin:29px 16px}
+.eyes{transform-box:fill-box;transform-origin:center}
+.mascot{transform-origin:50% 100%;animation:hop 1.8s cubic-bezier(.3,0,.3,1) infinite}
+.mascot .bell,header .logo:hover .bell{animation:ring .3s ease-in-out infinite alternate}
+.mascot .bell.r,header .logo:hover .bell.r{animation-direction:alternate-reverse}
+.mascot .eyes{animation:blink 3.4s infinite}
+.pu{animation:look 3s ease-in-out infinite}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1,1)}12%{transform:translateY(0) scale(1.08,.9)}40%{transform:translateY(-16px) scale(.96,1.05)}60%{transform:translateY(-16px)}88%{transform:translateY(0) scale(1.08,.9)}}
+@keyframes sh{0%,100%{transform:scale(1)}40%,60%{transform:scale(.55);opacity:.5}}
+@keyframes ring{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes look{0%,100%{transform:translate(0,0)}25%{transform:translate(1.4px,.6px)}50%{transform:translate(-1.4px,-.4px)}75%{transform:translate(.6px,1px)}}
+.tbody{display:flex;gap:10px}
+.ruler{width:52px;position:relative;flex:none;color:var(--mute);font-size:12px}
+.ruler i{position:absolute;left:0;font-style:normal;transform:translateY(-6px)}
+.ruler i::after{content:"";position:absolute;left:38px;top:6px;width:14px;height:1px;background:var(--line)}
+.blocks{flex:1;position:relative;min-width:0}
+.block{position:absolute;left:0;right:0;border-radius:12px;padding:8px 12px;color:#fff;overflow:hidden;transition:box-shadow .12s}
+.block[data-a]{cursor:pointer}
+.block[data-a]:hover{box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.block small{display:block;opacity:.92;font-size:12px}
+.block b{display:block;font-size:15px;line-height:1.35}
+.block.s{display:flex;align-items:center;gap:8px;padding:0 12px}
+.block.s small,.block.s b{display:inline;white-space:nowrap}
+.block.s b{overflow:hidden;text-overflow:ellipsis;font-size:14px}
+.block.ok{opacity:.5}.block.ok b{text-decoration:line-through}
+.block.active{outline:3px solid var(--ink);outline-offset:2px}
+.dur{position:absolute;right:10px;top:8px;background:rgba(255,255,255,.28);padding:1px 8px;border-radius:999px;font-size:12px}
+.block.s .dur{position:static;margin-left:auto;flex:none}
+.now{position:absolute;left:-6px;right:0;height:0;border-top:2px solid var(--red);z-index:2;pointer-events:none}
+.now::before{content:"";position:absolute;left:-4px;top:-6px;width:10px;height:10px;border-radius:50%;background:var(--red)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--mute)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none;margin-right:5px}
+.row{display:flex;align-items:center;gap:10px;margin:12px 0}
+.row label{font-size:13.5px;min-width:64px}
+input[type=time],input[type=number],input[type=text],select{font:inherit;font-size:14px;color:inherit;background:var(--inp);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+input[type=time]{flex:1}
+input[type=number]{width:70px;text-align:center}
+.inl{display:flex;gap:6px;align-items:center;flex:1;flex-wrap:wrap}
+.btn{border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-size:13.5px;background:var(--soft)}
+.btn.p{border:0;background:var(--red);color:var(--on);font-weight:700}
+.btn.g{background:var(--card)}
+.btn.sm{padding:6px 12px;font-size:12.5px}
+.btn:disabled{opacity:.4;cursor:default}
+.big{width:100%;padding:13px;font-size:16px;margin-top:14px}
+.ib{width:28px;height:28px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--card);padding:0;line-height:1}
+.ib:hover{background:var(--soft)}
+.go{color:var(--red)}
+.acts{display:flex;gap:8px;margin-top:6px}
+.bar{display:flex;height:16px;border-radius:999px;overflow:hidden;margin:12px 0 10px;background:var(--line)}
+.bar div{height:100%}
+.rr{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14px}
+.rr+.rr{border-top:1px solid var(--line)}
+.note,.warn{border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.6;margin-top:10px;border:1px solid var(--nbd);background:var(--nbg);color:var(--nink)}
+.warn{border-color:var(--wbd);background:var(--wbg);color:var(--wink)}
+.task{display:flex;align-items:center;gap:8px;padding:9px 0}
+.task+.task{border-top:1px solid var(--line)}
+.task .name{flex:1;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task.ok .name{opacity:.45;text-decoration:line-through}
+.task input[type=checkbox]{width:18px;height:18px;accent-color:var(--red);flex:none}
+.task input[type=number]{width:62px;padding:6px}
+.add{display:flex;gap:8px;margin-top:12px}
+.add input[type=text]{flex:1}
+.add select{width:104px}
+.sug{margin-top:12px}.sug .btn{margin:4px 6px 0 0}
+.counter{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding:14px;background:var(--soft);border-radius:14px}
+.counter .n{font-size:34px;font-weight:800;line-height:1}
+.counter .n small{font-size:14px;font-weight:400;color:var(--mute)}
+.fs{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px}
+.mode{color:var(--red);letter-spacing:.5em;margin-right:-.5em}
+.ft{font-size:20px;text-align:center;max-width:90vw;min-height:30px}
+.ring{position:relative;width:min(72vw,56vh,340px);aspect-ratio:1}
+.ring svg{width:100%;height:100%}
+.trk{fill:none;stroke:var(--line);stroke-width:4}
+.arc{fill:none;stroke:var(--red);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .25s linear}
+#ftime{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(44px,13vw,68px);font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:2px}
+.ctl,.noise{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.noise button{border:1px solid var(--line);background:none;border-radius:999px;padding:6px 14px;font-size:13px;color:var(--mute)}
+.noise button.on{border-color:var(--red);color:var(--red)}
+#vol{width:200px;accent-color:var(--red)}
+@media(max-width:900px){
+.side{position:fixed;top:0;right:0;bottom:0;max-height:none;z-index:8;width:min(400px,92vw);padding:14px;background:var(--bg);box-shadow:-8px 0 24px rgba(0,0,0,.25);transition:transform .25s,visibility .25s}
+.layout.shut .side{width:min(400px,92vw);margin:0;opacity:1;transform:translateX(105%)}
+.layout:not(.shut) .scrim{display:block;position:fixed;inset:0;z-index:7;background:rgba(0,0,0,.4)}
+.side>div{min-width:0}
+}
+@media(max-width:560px){.pill{display:none}header{padding:10px 14px}}
+@media(prefers-reduced-motion:reduce){.arc,.side{transition:none}.mascot,.mascot .bell,.mascot .eyes,.pu,.sh{animation:none!important}}
+
+/* Touch layouts, safe areas and short landscape screens. */
+header{padding-top:max(10px,env(safe-area-inset-top));padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+.btn,.ib{touch-action:manipulation}.ib{width:44px;height:44px}.btn{min-height:44px}
+.gate,.fs{overscroll-behavior:contain}.fs{min-height:100dvh;overflow:auto;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.side{overscroll-behavior:contain;padding-bottom:max(14px,env(safe-area-inset-bottom))}.ft{overflow-wrap:anywhere}
+@media(max-width:600px){
+.wrap{padding:14px 10px 24px}.card{padding:14px}.th{gap:8px;flex-wrap:wrap}.th span{overflow-wrap:anywhere}
+header{gap:6px}h1{font-size:24px;letter-spacing:.08em}header .logo{width:34px;height:34px}#sideBtn{padding:8px 10px}
+.gate{padding:16px 12px}.gbox{min-width:0}.gbox h2{font-size:23px}.gl{padding:4px 10px;max-height:35dvh}.gadd input,.gadd select,.add input,.add select{font-size:16px}
+.gadd #gn{min-height:44px}.gadd select{min-width:100px}.gs{flex-wrap:wrap}.gbtn{position:sticky;bottom:0;padding:8px 0;background:var(--bg)}
+.add{flex-wrap:wrap}.add input[type=text]{flex-basis:100%;min-height:44px}.add select{flex:1;width:auto;min-height:44px}
+.task{gap:6px}.task .name{white-space:normal;overflow-wrap:anywhere}.task input[type=number]{width:54px}.task .dot{margin-right:0}
+.ruler{width:42px}.ruler i::after{left:32px;width:10px}.block{padding-left:8px}.block.s{padding:0 8px;gap:5px}.block.s .dur{padding:1px 4px}.block b{overflow-wrap:anywhere}
+.fs{gap:16px}.ring{width:min(72vw,45dvh,340px)}#vol{max-width:70vw}.noise{gap:8px}.noise button{min-height:44px}.counter{gap:8px;flex-wrap:wrap}
+}
+@media(max-height:550px){.fs{justify-content:flex-start;gap:10px}.ring{width:min(38dvh,200px)}.mwrap{margin-top:10px}.gl{max-height:30dvh}}
+</style>
+</head>
+<body>
+<header>
+<span id="hlogo" style="display:flex"></span>
+<h1>静钟</h1><div class="sp"></div>
+<span class="pill" id="date"></span>
+<button class="btn sm g" id="sideBtn" aria-controls="side-p"></button>
+<button class="ib" id="theme" aria-label="切换日夜模式"></button>
+</header>
+<div class="wrap">
+<main class="layout" id="layout">
+<section class="card view">
+<div class="th"><b>今日时间轴</b><span id="daySummary"></span></div>
+<div class="tbody" id="tl"></div>
+<div class="legend" id="legend"></div>
+</section>
+<aside class="side" id="side-p"><div id="side"></div></aside>
+<div class="scrim" id="scrim"></div>
+</main>
+</div>
+
+<div class="gate" id="gate" hidden>
+<div class="gbox">
+<div class="mwrap" id="mascot" title="点我"></div>
+<h2>今天想要完成什么？</h2>
+<div class="mu" id="gdate"></div>
+<div class="gadd"><input type="text" id="gn" placeholder="例如：背政、跑步、回信" maxlength="40"><select id="gc" aria-label="类别"></select><input type="number" id="gh" value="1" min="0.5" max="12" step="0.5" aria-label="小时"><span class="mu">小时</span><button class="btn p" id="gaddb">添加</button></div>
+<div class="card gl" id="glist"></div>
+<div class="gs"><span class="mu" id="gsum"></span><button class="btn sm g" id="gclear">清空</button></div>
+<div id="gwarn"></div>
+<div class="gbtn"><button class="btn g" id="glater">暂不部署</button><button class="btn p" id="gdeploy">开始部署</button></div>
+</div>
+</div>
+
+<div class="fs" id="fs" hidden>
+<div class="mode" id="fmode"></div>
+<div class="ft" id="ftask"></div>
+<div class="ring"><svg viewBox="0 0 200 200"><circle class="trk" cx="100" cy="100" r="92"/><circle class="arc" id="arc" cx="100" cy="100" r="92" transform="rotate(-90 100 100)"/></svg><div id="ftime">25:00</div></div>
+<div class="ctl"><button class="btn p" id="fpause">暂停</button><button class="btn g" id="fstop">放弃</button></div>
+<div class="noise" id="noise"></div>
+<input type="range" id="vol" min="0" max="1" step="0.05" aria-label="音量">
+</div>
+
+<script>
+const KEY='jingzhong-v2',$=s=>document.querySelector(s),PX=72;
+const CATS=[
+ {key:'kaoyan',name:'考研主攻',color:'#C2410C',target:48},
+ {key:'psy',name:'心理事业',color:'#D97706',target:20},
+ {key:'sport',name:'运动身体',color:'#16A34A',target:12},
+ {key:'rel',name:'关系交流',color:'#0D9488',target:12},
+ {key:'beauty',name:'美玩灵气',color:'#7C3AED',target:8},
+ {key:'life',name:'生活必需',color:'#78716C',target:0}];
+const CM=Object.fromEntries(CATS.map(c=>[c.key,c]));
+const DT=[['起床·早餐','life',.5],['考研·专注①','kaoyan',2.5],['午饭·朋友交流','rel',1.5],['午睡·放空','life',.5],['心理项目','psy',2],['运动','sport',1.5],['晚饭·撸猫狗','rel',1],['考研·专注②','kaoyan',2.5],['娱乐·关机','beauty',1]];
+const defTasks=()=>DT.map((t,i)=>({id:'t'+(i+1),name:t[0],cat:t[1],hours:t[2],done:0,checked:false}));
+const D={start:'09:00',end:'22:00',pom:25,brk:5,noise:'off',vol:.5,phase:'plan',pomN:0,date:'',timer:null};
+const POOL={kaoyan:[['考研·错题复盘',.5],['考研·真题限时练',1.5],['考研·背政',.5]],psy:[['心理·项目收尾',1],['心理·复盘总结',.5]],sport:[['运动·散步',.5],['运动·拉伸',.5]],rel:[['关系·给朋友回信',.5],['关系·给家人打电话',.5]],beauty:[['美玩·看闲书',.5],['美玩·听歌放空',.5]]};
+const dstr=()=>new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'}).replace(/\//g,'-');
+const today=()=>new Date().toLocaleDateString('sv');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const toMin=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
+const minStr=m=>{m=(m%1440+1440)%1440;return String(m/60|0).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+const fh=h=>{const m=Math.round(h*60),a=m/60|0,b=m%60;return a?a+'h'+(b?b+'min':''):b+'min'};
+let S=load(),sug=[];
+const avail=()=>((toMin(S.end)-toMin(S.start)+1440)%1440||1440)/60;
+const total=()=>S.tasks.reduce((a,t)=>a+(+t.hours||0),0);
+const plan=t=>Math.max(1,Math.round(t.hours*60/(S.pom+S.brk)));
+function load(){
+ let p={};
+ try{p=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem('volcano-pomodoro-v1')||'{}')}catch(e){}
+ if(p.settings){p.pomN=p.pom;Object.assign(p,p.settings);delete p.settings}
+ const s={...D,tasks:defTasks(),...p};
+ s.tasks=s.tasks.map(t=>({done:0,checked:false,...t}));
+ if(s.date!==today()){s.date=today();s.pomN=0;s.phase='plan';s.timer=null;s.tasks.forEach(t=>{t.done=0;t.checked=false})}
+ return s;
+}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+const nowTop=()=>{const d=new Date(),m=d.getHours()*60+d.getMinutes()-toMin(S.start);return m>=0&&m<Math.max(avail(),total())*60?m/60*PX:-1};
+function posNow(){const n=$('.now');if(n){const t=nowTop();n.style.display=t<0?'none':'';n.style.top=t+'px'}}
+
+function render(){
+ const run=S.phase==='run',av=avail(),tot=total(),T=S.tasks,sm=toMin(S.start),H=Math.max(av,tot);
+ $('#date').textContent=dstr();
+ $('#theme').textContent=document.documentElement.dataset.theme==='dark'?'☀':'☾';
+ $('#daySummary').innerHTML=`<i class="chip${run?' on':''}" style="font-style:normal">${run?'部署中':'待部署'}</i>${S.start}–${S.end}，共${+av.toFixed(1)}h`;
+ $('#legend').innerHTML=CATS.map(c=>`<span><i class="dot" style="background:${c.color}"></i>${c.name}</span>`).join('');
+ let c=0,rul='';
+ for(let i=0;i<=Math.ceil(H);i++)rul+=`<i style="top:${i*PX}px">${minStr(sm+i*60)}</i>`;
+ const blocks=T.map((t,i)=>{
+  const h=Math.max(26,t.hours*PX-3),st=sm+c,n=plan(t);
+  const o=`<div class="block${h<56?' s':''}${t.checked?' ok':''}${S.timer&&S.timer.id===t.id?' active':''}" ${run?'data-a="go" ':''}data-i="${i}" style="top:${c/60*PX}px;height:${h}px;background:${CM[t.cat]?.color||'#78716C'}"><small>${minStr(st)} · ${fh(t.hours)}</small><b>${esc(t.name)}</b>${run?`<span class="dur">${Math.min(t.done,n)}/${n}</span>`:''}</div>`;
+  c+=Math.round(t.hours*60);return o;
+ }).join('');
+ $('#tl').innerHTML=`<div class="ruler" style="height:${H*PX}px">${rul}</div><div class="blocks" style="height:${H*PX}px">${blocks}<div class="now"></div></div>`;
+ posNow();
+ const diff=+Math.abs(tot-av).toFixed(1);
+ const hint=Math.abs(tot-av)<.01?`<div class="note">✓ 事项合计 ${tot}h，正好排满</div>`:tot>av?`<div class="warn">⚠ 超出可用时间 ${diff}h</div>`:`<div class="warn">⚠ 还有 ${diff}h 未安排</div>`;
+ const sums={};CATS.forEach(k=>sums[k.key]=0);T.forEach(t=>sums[t.cat]=(sums[t.cat]||0)+(+t.hours||0));
+ const nl=Math.max(.01,tot-sums.life),main=CATS.filter(k=>k.key!=='life'),miss=main.filter(k=>!sums[k.key]).map(k=>k.name);
+ const nn=$('#nn')?$('#nn').value:'',cat=$('#nc')?$('#nc').value:'kaoyan';
+ $('#side').innerHTML=
+ `<section class="card"><h3><span class="num">①</span>今日可用时间<button class="ib" data-a="side" style="margin-left:auto" aria-label="收起任务栏">›</button></h3>
+ <div class="row"><label>开始</label><input type="time" data-s="start" value="${S.start}"></div>
+ <div class="row"><label>结束</label><input type="time" data-s="end" value="${S.end}"></div>
+ <div class="row"><label>番茄 / 休息</label><span class="inl">番茄 <input type="number" data-s="pom" value="${S.pom}" min="5" max="90"> 分钟 / 休息 <input type="number" data-s="brk" value="${S.brk}" min="0" max="30"> 分钟</span></div>
+ <div class="acts"><button class="btn g" data-a="restore">恢复默认一天</button><button class="btn" data-a="clear">清空事项</button></div>${hint}</section>
+ <section class="card"><h3><span class="num">②</span>需求配比<button class="btn sm p" data-a="auto" style="margin-left:auto">自动校重</button></h3>
+ <div class="bar">${CATS.map(k=>`<div style="width:${tot?sums[k.key]/tot*100:0}%;background:${k.color}" title="${k.name} ${sums[k.key]}h"></div>`).join('')}</div>
+ ${main.map(k=>`<div class="rr"><span><i class="dot" style="background:${k.color}"></i>${k.name}</span><span><b>${Math.round(sums[k.key]/nl*100)}%</b> <span class="mu">/ 目标 ${k.target}%</span> · ${sums[k.key]}h</span></div>`).join('')}
+ ${miss.length?`<div class="warn">⚠ 今日缺少：${miss.join('、')}</div>`:''}</section>
+ <section class="card"><h3><span class="num">③</span>今日事项 <span class="mu" style="font-weight:400">${T.length}项</span></h3>
+ ${T.map((t,i)=>`<div class="task${t.checked?' ok':''}">${run?`<input type="checkbox" data-c="${i}" ${t.checked?'checked':''} aria-label="完成">`:''}<span class="dot" style="background:${CM[t.cat]?.color}"></span><span class="name" title="${esc(t.name)}">${esc(t.name)}</span><input type="number" step="0.5" min="0" max="12" data-h="${i}" value="${t.hours}" aria-label="小时">${run?`<button class="ib go" data-a="go" data-i="${i}" aria-label="开始番茄">▶</button>`:''}<button class="ib" data-a="up" data-i="${i}" aria-label="上移">↑</button><button class="ib" data-a="dn" data-i="${i}" aria-label="下移">↓</button><button class="ib" data-a="del" data-i="${i}" aria-label="删除">×</button></div>`).join('')}
+ <div class="add"><input type="text" id="nn" placeholder="添加事项" maxlength="40"><select id="nc">${CATS.map(k=>`<option value="${k.key}">${k.name}</option>`).join('')}</select><button class="btn p" data-a="add">加入</button></div>
+ <div class="sug"><button class="btn g sm" data-a="ai">+ 建议事项</button><div>${sug.map((s,i)=>`<button class="btn g sm" data-a="sg" data-i="${i}">+ ${esc(s.name)}</button>`).join('')}</div></div>
+ <div class="counter"><div class="n">${S.pomN} <small>个番茄 已完成</small></div><button class="btn sm" data-a="zero">番茄数清零</button></div>
+ <button class="btn p big" data-a="deploy" ${T.length?'':'disabled'}>${run?'重新部署':'确定，开始部署'}</button></section>`;
+ $('#nn').value=nn;$('#nc').value=cat;
+}
+function setSide(v){
+ S.side=v;save();$('#layout').classList.toggle('shut',!v);
+ const b=$('#sideBtn');b.textContent='任务栏 '+(v?'›':'‹');b.setAttribute('aria-expanded',v);
+}
+function autoWeight(){
+ const av=avail(),T=S.tasks,life=T.filter(t=>t.cat==='life').reduce((a,t)=>a+t.hours,0),budget=av-life;
+ if(budget<=0)return alert('可用时间不足');
+ CATS.filter(c=>c.key!=='life').forEach(c=>{
+  const th=budget*c.target/100,items=T.filter(t=>t.cat===c.key);
+  if(!items.length)T.push({id:Date.now()+c.key,name:c.name.slice(0,2)+'·待安排',cat:c.key,hours:Math.max(.5,Math.round(th*2)/2),done:0,checked:false});
+  else{const sum=items.reduce((a,t)=>a+t.hours,0)||1;items.forEach(t=>t.hours=Math.max(.5,Math.round(t.hours/sum*th*2)/2))}
+ });
+ const drift=Math.round((av-total())*2)/2;
+ if(Math.abs(drift)>=.5){const m=[...T].filter(t=>t.cat!=='life').sort((a,b)=>b.hours-a.hours)[0];if(m)m.hours=Math.max(.5,m.hours+drift)}
+}
+function suggest(){
+ const tot=total(),nl=Math.max(1,tot-S.tasks.filter(t=>t.cat==='life').reduce((a,t)=>a+t.hours,0));
+ const gaps=CATS.filter(c=>c.key!=='life').map(c=>({c,g:c.target-S.tasks.filter(t=>t.cat===c.key).reduce((a,t)=>a+t.hours,0)/nl*100})).sort((a,b)=>b.g-a.g).slice(0,2);
+ sug=gaps.flatMap(({c})=>POOL[c.key].map(([name,hours])=>({name,hours,cat:c.key})));
+}
+
+$('#layout').addEventListener('click',e=>{
+ const b=e.target.closest('[data-a]');if(!b)return;
+ const a=b.dataset.a,i=+b.dataset.i,T=S.tasks;
+ if(a==='side')return setSide(!S.side);
+ if(a==='go')return startTimer(T[i]);
+ if(a==='add'){
+  const n=$('#nn').value.trim();if(!n)return $('#nn').focus();
+  T.push({id:Date.now(),name:n,cat:$('#nc').value,hours:.5,done:0,checked:false});$('#nn').value='';
+ }else if(a==='sg')T.push({id:Date.now(),name:sug[i].name,cat:sug[i].cat,hours:sug[i].hours,done:0,checked:false});
+ else if(a==='up'&&i>0)[T[i-1],T[i]]=[T[i],T[i-1]];
+ else if(a==='dn'&&i<T.length-1)[T[i+1],T[i]]=[T[i],T[i+1]];
+ else if(a==='del')T.splice(i,1);
+ else if(a==='auto')autoWeight();
+ else if(a==='ai')suggest();
+ else if(a==='zero')S.pomN=0;
+ else if(a==='restore'){if(!confirm('恢复成默认一天？会覆盖当前事项和时间。'))return;Object.assign(S,{start:D.start,end:D.end,tasks:defTasks(),phase:'plan'})}
+ else if(a==='clear'){if(!confirm('清空全部事项？'))return;S.tasks=[];S.phase='plan'}
+ else if(a==='deploy'){S.phase='run';setSide(false)}
+ save();render();
+ if(a==='add')$('#nn').focus();
+});
+$('#layout').addEventListener('change',e=>{
+ const x=e.target,d=x.dataset,T=S.tasks;
+ if(d.h!=null)T[+d.h].hours=clamp(parseFloat(x.value)||0,0,12);
+ else if(d.c!=null){T[+d.c].checked=x.checked}
+ else if(d.s){const k=d.s;if(k==='start'||k==='end'){if(x.value)S[k]=x.value}else{const v=parseInt(x.value);S[k]=isNaN(v)?D[k]:clamp(v,k==='pom'?5:0,k==='pom'?90:30)}}
+ else return;
+ save();render();
+});
+$('#layout').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='nn')$('[data-a=add]').click()});
+$('#sideBtn').onclick=()=>setSide(!S.side);
+$('#scrim').onclick=()=>setSide(false);
+$('#theme').onclick=()=>{const r=document.documentElement;r.dataset.theme=S.theme=r.dataset.theme==='dark'?'light':'dark';save();render()};
+// Day mode is the default; only an explicit choice enables night mode.
+setInterval(posNow,60000);
+
+/* 音频：由 Web Audio 实时生成，无需外部文件 */
+let AC,gain,src;
+function ensureAudio(){
+ if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();gain=AC.createGain();gain.connect(AC.destination)}
+ gain.gain.value=S.vol**2;AC.resume();
+}
+function stopNoise(){try{src&&src.stop()}catch(e){}src=null}
+function applyNoise(){
+ stopNoise();if(!AC||S.noise==='off')return;
+ const n=AC.sampleRate*4,buf=AC.createBuffer(1,n,AC.sampleRate),d=buf.getChannelData(0),k=S.noise;
+ let l=0,b0=0,b1=0,b2=0;
+ for(let i=0;i<n;i++){
+  const w=Math.random()*2-1;
+  if(k==='brown'){l=(l+.02*w)/1.02;d[i]=l*3.5}
+  else if(k==='pink'){b0=.99765*b0+w*.099046;b1=.963*b1+w*.2965164;b2=.57*b2+w*1.0526913;d[i]=(b0+b1+b2+w*.1848)*.2}
+  else d[i]=w*.5;
+ }
+ src=AC.createBufferSource();src.buffer=buf;src.loop=true;
+ if(k==='rain'){const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=2200;f.Q.value=.4;src.connect(f).connect(gain)}
+ else src.connect(gain);
+ src.start();
+}
+function chime(){
+ if(!AC)return;const t=AC.currentTime;
+ [523,1047,1568].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.setValueAtTime(.2/(i+1),t);g.gain.exponentialRampToValueAtTime(.0001,t+3);o.connect(g).connect(AC.destination);o.start();o.stop(t+3)});
+}
+const NOISES=[['off','静音'],['white','白噪音'],['pink','粉噪音'],['brown','棕噪音'],['rain','雨声']];
+$('#noise').innerHTML=NOISES.map(([k,n])=>`<button data-n="${k}">${n}</button>`).join('');
+$('#noise').onclick=e=>{const k=e.target.dataset.n;if(!k)return;S.noise=k;save();ensureAudio();applyNoise();drawFS()};
+$('#vol').value=S.vol;
+$('#vol').oninput=e=>{S.vol=+e.target.value;save();if(gain)gain.gain.value=S.vol**2};
+
+/* 全屏计时：以结束时间戳计算，后台和刷新后依然准确 */
+const fs=$('#fs'),C=2*Math.PI*92;let tick=null,wl=null,arm=0;
+$('#arc').style.strokeDasharray=C;
+const left=()=>S.timer.paused||Math.max(0,S.timer.end-Date.now());
+function startTimer(t){
+ ensureAudio();
+ S.timer={id:t.id,mode:'focus',total:S.pom*60000,end:Date.now()+S.pom*60000,paused:0};
+ save();render();openFS();
+}
+function openFS(){
+ fs.hidden=false;document.body.style.overflow='hidden';
+ document.documentElement.requestFullscreen?.().catch(()=>{});
+ navigator.wakeLock?.request('screen').then(l=>wl=l).catch(()=>{});
+ applyNoise();clearInterval(tick);tick=setInterval(update,250);drawFS();update();
+}
+function drawFS(){
+ const T=S.timer;if(!T)return;
+ const t=S.tasks.find(x=>x.id===T.id);
+ $('#fmode').textContent=T.mode==='focus'?'专注':'休息';
+ $('#ftask').textContent=T.mode==='focus'&&t?t.name:'';
+ $('#fpause').textContent=T.paused?'继续':'暂停';
+ $('#fstop').textContent=T.mode==='focus'?'放弃':'跳过休息';
+ document.querySelectorAll('#noise button').forEach(b=>b.classList.toggle('on',b.dataset.n===S.noise));
+}
+function update(){
+ const T=S.timer;if(!T)return;
+ const l=left(),s=Math.ceil(l/1000),m=String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+ $('#ftime').textContent=m;document.title=m+' 静钟';
+ $('#arc').style.strokeDashoffset=C*(1-l/T.total);
+ if(!T.paused&&l<=0)finish();
+}
+function finish(){
+ const T=S.timer;chime();
+ if(T.mode==='focus'){
+  const t=S.tasks.find(x=>x.id===T.id);
+  if(t){t.done++;if(t.done>=plan(t))t.checked=true}
+  S.pomN++;
+  if(S.brk>0){
+   S.timer={...T,mode:'break',total:S.brk*60000,end:Date.now()+S.brk*60000,paused:0};
+   stopNoise();save();render();return drawFS();
+  }
+ }
+ closeFS();
+}
+function closeFS(){
+ clearInterval(tick);S.timer=null;save();
+ fs.hidden=true;document.body.style.overflow='';document.title='静钟';
+ stopNoise();if(wl){wl.release();wl=null}
+ if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+ render();
+}
+$('#fpause').onclick=()=>{
+ const T=S.timer;
+ if(T.paused){T.end=Date.now()+T.paused;T.paused=0}else T.paused=left();
+ save();drawFS();update();
+};
+$('#fstop').onclick=e=>{
+ if(S.timer.mode==='break')return closeFS();
+ if(!arm){arm=1;e.target.textContent='再点一次放弃';setTimeout(()=>{arm=0;drawFS()},3000)}
+ else{arm=0;closeFS()}
+};
+
+const LOGO=m=>`<svg class="logo${m?' mascot':''}" viewBox="0 0 44 44" aria-label="Jin"><g class="bell l"><path d="M15 16L9 10" stroke="#B45309" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="9" r="5" fill="#D97706"/></g><g class="bell r"><path d="M29 16L35 10" stroke="#B45309" stroke-width="2" stroke-linecap="round"/><circle cx="36" cy="9" r="5" fill="#D97706"/></g><circle cx="22" cy="26" r="17" fill="var(--red)"/><path d="M22 11c-5-6-10-4-12 0 5-1 8 1 12 0zm0 0c5-6 10-4 12 0-5-1-8 1-12 0z" fill="#16A34A"/>${m?'<g class="eyes"><circle cx="16" cy="22" r="3.4" fill="#fff"/><circle cx="28" cy="22" r="3.4" fill="#fff"/><circle class="pu" cx="16" cy="22" r="1.7" fill="#1C1917"/><circle class="pu" cx="28" cy="22" r="1.7" fill="#1C1917"/></g>':''}<text x="22" y="${m?36:32}" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="${m?13:15}" fill="#fff">Jin</text></svg>`;
+$('#hlogo').innerHTML=LOGO(0);
+$('#gc').innerHTML=CATS.map(k=>`<option value="${k.key}">${k.name}</option>`).join('');
+const gate=$('#gate');
+function gateList(){
+ const T=S.tasks,tot=total(),av=avail(),np=T.reduce((a,t)=>a+plan(t),0);
+ $('#glist').innerHTML=T.map((t,i)=>`<div class="task"><span class="dot" style="background:${CM[t.cat]?.color}"></span><span class="name">${esc(t.name)}</span><input type="number" step="0.5" min="0" max="12" data-gh="${i}" value="${t.hours}" aria-label="小时"><span class="mu">小时</span><button class="ib" data-g="${i}" aria-label="删除">×</button></div>`).join('');
+ $('#glist').hidden=!T.length;
+ $('#gsum').textContent=T.length?`共 ${T.length} 项，约 ${np} 个番茄，${+tot.toFixed(1)}h / 可用 ${+av.toFixed(1)}h`:'先写下第一件事吧';
+ $('#gwarn').innerHTML=!T.length||Math.abs(tot-av)<.01?'':`<div class="warn">⚠ ${tot>av?'超出可用时间':'还有'} ${+Math.abs(tot-av).toFixed(1)}h${tot>av?'':' 未安排'}</div>`;
+ $('#gdeploy').disabled=!T.length;$('#gclear').hidden=!T.length;
+}
+function showGate(){$('#mascot').innerHTML=LOGO(1)+'<i class="sh"></i>';$('#gdate').textContent=dstr();gateList();gate.hidden=false;if(!matchMedia('(pointer:coarse)').matches)$('#gn').focus()}
+function gAdd(){
+ const n=$('#gn').value.trim();if(!n)return $('#gn').focus();
+ S.tasks.push({id:Date.now(),name:n,cat:$('#gc').value,hours:clamp(parseFloat($('#gh').value)||1,.5,12),done:0,checked:false});
+ $('#gn').value='';save();gateList();$('#gn').focus();
+}
+$('#gaddb').onclick=gAdd;
+$('#gn').onkeydown=e=>{if(e.key==='Enter')gAdd()};
+$('#mascot').onclick=()=>{ensureAudio();chime()};
+$('#glist').onclick=e=>{const b=e.target.closest('[data-g]');if(b){S.tasks.splice(+b.dataset.g,1);save();gateList()}};
+$('#glist').onchange=e=>{const i=e.target.dataset.gh;if(i!=null){S.tasks[+i].hours=clamp(parseFloat(e.target.value)||0,0,12);save();gateList()}};
+$('#gclear').onclick=()=>{S.tasks=[];save();gateList()};
+$('#gdeploy').onclick=()=>{S.phase='run';setSide(false);gate.hidden=true;render()};
+$('#glater').onclick=()=>{gate.hidden=true;setSide(innerWidth>900);render()};
+
+setSide(S.side===undefined?innerWidth>900:S.side);
+render();
+if(S.timer&&(S.timer.paused||S.timer.end>Date.now()))openFS();
+else{if(S.timer){S.timer=null;save()}if(S.phase==='plan')showGate()}
+</script>
+</body>
+</html>
