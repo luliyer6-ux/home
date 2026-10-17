@@ -1,0 +1,26 @@
+/* English II paper UI: restrained ink, warm paper, semantic grading colors retained. */
+body.exam-shell[data-exam=english],body.exam-shell:not([data-exam]){--x-paper:#f8f7f3;--x-surface:#f0efea;--x-ink:#272724;--x-muted:#706f68;--x-line:#deddd5;--x-accent:#45483e;--x-soft:#eaeae2;--x-red:#a73d36;--accent:var(--x-accent);--green:var(--x-accent);--green2:var(--x-accent);--ink:var(--x-ink);--muted:var(--x-muted);--line:var(--x-line);--border:var(--x-line);--paper:var(--x-paper);--surface:var(--x-surface)}
+html.exam-dark body.exam-shell{--x-paper:#20211f;--x-surface:#292a27;--x-ink:#e7e5dc;--x-muted:#b0afa5;--x-line:#42433d;--x-accent:#cfcebc;--x-soft:#35362f;--x-red:#ed9a91}
+body.exam-shell{background:var(--x-paper)!important;color:var(--x-ink)!important}
+.exam-shell .card,.exam-shell .drawer,.exam-shell .aipanel,.exam-shell #tip,.exam-shell #v5530Card,.exam-shell #e2Learning,.exam-shell .pompanel{background:var(--x-paper)!important;color:var(--x-ink)!important;border-color:var(--x-line)!important;box-shadow:0 8px 24px #00000008;border-radius:6px}
+.exam-shell .card{box-shadow:none;border:0;border-bottom:1px solid var(--x-line);border-radius:0;padding-block:28px}
+.exam-shell button,.exam-shell input,.exam-shell select,.exam-shell textarea,.exam-shell .x-more>summary{border-radius:4px;box-shadow:none;background:var(--x-paper);color:var(--x-ink)}
+.exam-shell button:hover:enabled{background:var(--x-soft);border-color:var(--x-muted)}
+.exam-shell h2,.exam-shell h3,.exam-shell h4,.exam-shell .x-brand{color:var(--x-ink)}
+.exam-shell .x-rail,.exam-shell .x-pom,.exam-shell .e2-editor,.exam-shell .e2-review-row{background:var(--x-surface)!important;border-color:var(--x-line)!important;border-radius:5px;box-shadow:none}
+.exam-shell .x-left button.active,.exam-shell .x-left button[aria-pressed=true]{background:var(--x-soft)!important;color:var(--x-ink)!important}
+.exam-shell #v5530{--map-paper:var(--x-paper);--map-soft:var(--x-surface);--map-ink:var(--x-ink);--map-muted:var(--x-muted);--map-line:var(--x-line);--map-green:#327557;--map-red:#a74c43;background:var(--x-paper)!important;color:var(--x-ink)}
+html.exam-dark .exam-shell #v5530{--map-green:#8ac5a3;--map-red:#e79b90}
+.exam-shell #v5530 button,.exam-shell #v5530Card button{background:var(--x-paper);color:var(--x-ink);border-color:var(--x-line)}
+.exam-shell #vTestCard{background:var(--x-surface);border-radius:5px}
+.exam-shell #vTestCard h2{color:var(--x-ink)!important}
+.exam-shell #vMapDetail,.exam-shell .v-map-word,.exam-shell .v-map-list{border-radius:4px!important;box-shadow:none!important}
+.exam-shell .v-test-tabs button[aria-pressed=true]{color:var(--x-ink)!important;border-bottom-color:var(--x-ink)!important;background:transparent!important}
+.exam-shell #vTest .v-test-ratings button{border-radius:4px;background:var(--x-paper)!important}
+.exam-shell #vTest .v-test-ratings [data-v-rating=known]{color:var(--map-green,#327557)!important}
+.exam-shell #vTest .v-test-ratings [data-v-rating=unknown]{color:var(--x-red)!important}
+.exam-shell .v-test-tools kbd,.exam-shell .v-test-ratings kbd{background:transparent;border:1px solid var(--x-line);border-radius:3px}
+.exam-shell .book-tip-header{background:var(--x-paper)!important;color:var(--x-ink)!important;border-color:var(--x-line)!important}
+.exam-shell .book-tip-translation,.exam-shell #tip .ph,.exam-shell .pos{color:var(--x-muted)!important}
+@media print{body.exam-shell{--x-paper:#fff;--x-ink:#000;background:#fff!important}}
+
