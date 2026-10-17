@@ -24,3 +24,25 @@ html.exam-dark .exam-shell #v5530{--map-green:#8ac5a3;--map-red:#e79b90}
 .exam-shell .book-tip-translation,.exam-shell #tip .ph,.exam-shell .pos{color:var(--x-muted)!important}
 @media print{body.exam-shell{--x-paper:#fff;--x-ink:#000;background:#fff!important}}
 
+
+/* Night paper: neutral charcoal, warm ink, status color only where meaningful. */
+html.exam-dark body.exam-shell[data-exam=english]{--x-paper:#1b1c1d;--x-surface:#242527;--x-ink:#e5e1d9;--x-muted:#a8a49c;--x-line:#363739;--x-accent:#c3ad8e;--x-soft:#2c2c2d;--x-red:#ce9186;color-scheme:dark}
+html.exam-dark body.exam-shell #v5530{background:var(--x-paper)!important;color:var(--x-ink);--v-border:var(--x-line);--v-muted:var(--x-muted);--v-accent:var(--x-accent)}
+html.exam-dark body.exam-shell #vMap{--map-paper:#1b1c1d;--map-soft:#242527;--map-ink:#e5e1d9;--map-muted:#a8a49c;--map-line:#3b3c3e;--map-green:#89b29a;--map-amber:#c2a36b;--map-red:#c58b83;--map-green-bg:#26332c;--map-red-bg:#362a29}
+html.exam-dark body.exam-shell #v5530 #vMap .v-map-list{border:1px solid #2b2c2e;border-radius:6px!important;transition:background-color .14s,border-color .14s}
+html.exam-dark body.exam-shell #v5530 #vMap .v-map-list:hover{background:#2c2d2f!important;border-color:#505052}
+html.exam-dark body.exam-shell #v5530 #vMap .v-map-list[aria-current=true]{border-color:#746653}
+html.exam-dark body.exam-shell #v5530 #vMap .v-map-list[aria-expanded=true]{outline:none;border-color:#9c896d;background:#292a2c!important}
+html.exam-dark body.exam-shell #vMap :is(button,input):focus-visible{outline:2px solid #c3ad8e;outline-offset:3px}
+html.exam-dark body.exam-shell #vMap .v-map-meter{height:4px;background:#3b3c3e}
+html.exam-dark body.exam-shell #vMap .v-map-list strong{color:#a8a49c}
+html.exam-dark body.exam-shell #vMap .v-list-number{color:#e5e1d9;font-weight:400}
+html.exam-dark body.exam-shell #vMap .v-map-group{border-color:#363739}
+html.exam-dark body.exam-shell .x-left button.active,html.exam-dark body.exam-shell .x-left button[aria-pressed=true]{background:#2c2c2d!important;color:#e5e1d9!important}
+html.exam-dark body.exam-shell #vTestCard{background:var(--x-surface)!important}
+html.exam-dark body.exam-shell.v-immersive #vTestCard{background:transparent!important}
+@media(prefers-reduced-motion:reduce){html.exam-dark body.exam-shell #v5530 #vMap .v-map-list{transition:none}}
+
+html.exam-dark body.exam-shell .v5530-controls :is(input,select),html.exam-dark body.exam-shell #v5530Card button,html.exam-dark body.exam-shell #v5530 button{background:var(--x-paper);color:var(--x-ink);border-color:var(--x-line)}
+html.exam-dark body.exam-shell :is(.v5530-row,#v5530Contexts,.v5530-popup,.v-diagnostic-popup){border-color:var(--x-line)}
+html.exam-dark body.exam-shell #vMapDetail,html.exam-dark body.exam-shell #vTestCard{color:var(--x-ink)}

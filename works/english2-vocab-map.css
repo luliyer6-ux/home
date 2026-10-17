@@ -144,3 +144,22 @@ body.v-memory-focus #vTestCard h2[lang=en]{margin:0 0 18px}
 #vTest .v-test-next{background:var(--x-ink,#272724)!important;color:var(--x-paper,#f8f7f3)!important;border-color:var(--x-ink)!important;font-size:13px;padding:10px 16px;min-height:44px}
 html.exam-dark .v-memory-choices [data-v-final=known]{color:#8ac5a3!important}html.exam-dark .v-memory-choices [data-v-final=fuzzy]{color:#ddc38b!important}
 @media(max-width:700px){#vTestCard .v-memory-answer .v-test-basic{font-size:17px;max-height:26dvh!important}body.v-memory-focus #vTestCard h2[lang=en]{margin-bottom:12px}.v-memory-draft{padding:8px 12px}.v-memory-choices button{padding:6px!important}}
+
+/* Distribution uses all words as denominator; untested words stay neutral. */
+#vMap{--map-amber:#916a29}.e2-dark #vMap{--map-amber:#e0bf7b}
+#v5530 #vMap .v-map-list{min-height:76px!important;background:var(--map-soft)!important;color:var(--map-ink)!important;gap:5px}
+#vMap .v-map-meter{display:flex;width:84%;height:5px;flex-shrink:0;background:var(--map-line);opacity:1;margin:2px 0 1px}
+#vMap .v-map-meter i{height:100%;flex:none;min-width:0;border-radius:0}
+#vMap [data-rating=known]{color:var(--map-green)}#vMap [data-rating=fuzzy]{color:var(--map-amber)}#vMap [data-rating=unknown]{color:var(--map-red)}
+#vMap .v-map-meter [data-rating=known]{background:var(--map-green)}#vMap .v-map-meter [data-rating=fuzzy]{background:var(--map-amber)}#vMap .v-map-meter [data-rating=unknown]{background:var(--map-red)}
+#vMap .v-map-breakdown{display:flex;flex-direction:column;gap:2px;font:10px/1.4 system-ui,sans-serif;white-space:nowrap;font-variant-numeric:tabular-nums}
+#vMap .v-map-known{color:var(--map-green)}#vMap .v-map-fuzzy{color:var(--map-amber)}#vMap .v-map-unknown{color:var(--map-red)}#vMap .v-map-untested{color:var(--map-muted)}
+#vMap .v-map-legend span:not(:last-child)::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor}
+@media(max-width:700px){#v5530 #vMap .v-map-list{padding-inline:2px}.v-map-breakdown{letter-spacing:-.02em}}
+
+/* Compact visual List tile: number, true-proportion bar, measured count. */
+#v5530 #vMap .v-map-list{gap:9px;padding-block:12px}
+#vMap .v-map-list .v-map-meter{height:6px;margin:0;width:82%;border-radius:3px}
+#vMap .v-map-detail-distribution{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;color:var(--map-muted);font-size:12px;line-height:1.8}
+#vMapListTip{position:fixed;z-index:2147483645;pointer-events:none;width:max-content;max-width:min(300px,calc(100vw - 16px));box-sizing:border-box;padding:9px 12px;background:var(--x-paper,#f8f7f3);color:var(--x-ink,#272724);border:1px solid var(--x-line,#deddd5);border-radius:5px;box-shadow:0 4px 16px #00000012;font-size:12px;line-height:1.7}
+#vMapListTip[hidden]{display:none!important}

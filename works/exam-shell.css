@@ -59,3 +59,22 @@ html.exam-dark .exam-shell dialog,html.exam-dark .exam-shell .drawer,html.exam-d
 .exam-shell #tip p,.exam-shell #tip li,.exam-shell #tip .zh,.exam-shell #tip .w,.exam-shell #tip .tw{max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:normal}
 .exam-shell #tip .book-tip-word{min-width:0;flex:1}
 .exam-shell #tip .book-tip-actions{flex-shrink:0}
+
+/* Shared night paper palette for all three examination subjects. */
+html.exam-dark body.exam-shell[data-exam]{--x-paper:#1b1c1d;--x-surface:#242527;--x-ink:#e5e1d9;--x-muted:#a8a49c;--x-line:#363739;--x-accent:#c3ad8e;--x-soft:#2c2c2d;--x-red:#ce9186;color-scheme:dark}
+html.exam-dark body.exam-shell :is(.card,.question-card,.question,.q-card,.passage,.translation,.answer-panel,.abody,.review-panel,.formula-card,.formula-list-wrap,.subjective-review,.topic-item,.topic-queue){background:var(--x-paper)!important;color:var(--x-ink)!important;border-color:var(--x-line)!important;box-shadow:none}
+html.exam-dark body.exam-shell :is(.x-rail,.x-pom,.x-menu,.drawer,.aipanel,.modal-content,.modal-card,.dialog-content,.e2-editor,.e2-review-row){background:var(--x-surface)!important;color:var(--x-ink)!important;border-color:var(--x-line)!important;box-shadow:none}
+html.exam-dark body.exam-shell :is(button,input,select,textarea){background:var(--x-paper);color:var(--x-ink);border-color:var(--x-line)}
+html.exam-dark body.exam-shell :is(h1,h2,h3,h4,.x-brand){color:var(--x-ink)}
+html.exam-dark body.exam-shell :is(.x-left button.active,.x-left button[aria-pressed=true]){background:var(--x-soft)!important;color:var(--x-ink)!important}
+html.exam-dark body.exam-shell :is(button.primary,button.on,button.active,[aria-selected=true]){background:var(--x-soft);color:var(--x-ink);border-color:#746653}
+html.exam-dark body.exam-shell :is(button,input,select,textarea,summary):focus-visible{outline-color:var(--x-accent)}
+html.exam-dark body.exam-shell :is(.option.correct,.choice.correct,.optbtn.correct,.e2-option.correct,.qnum.correct,.q-button.correct){background:#26362c!important;color:#a5c7ae!important}
+html.exam-dark body.exam-shell :is(.incorrect,.wrong){background:#3b2c2b!important;color:#dfaaa2!important}
+
+html.exam-dark body.exam-shell :is(button,input,select,textarea){background:var(--x-paper)!important;color:var(--x-ink)!important;border-color:var(--x-line)!important;box-shadow:none}
+html.exam-dark body.exam-shell button:disabled{background:var(--x-surface)!important;color:var(--x-muted)!important;opacity:.6}
+html.exam-dark body.exam-shell button:hover:enabled{background:var(--x-soft)!important;border-color:#746653!important}
+html.exam-dark body.exam-shell :is(details,details>summary){background:var(--x-surface)!important;color:var(--x-ink)!important;border-color:var(--x-line)!important}
+html.exam-dark body.exam-shell :is(.option.correct,.choice.correct,.optbtn.correct,.e2-option.correct,.qnum.correct,.q-button.correct){background:#26362c!important;color:#a5c7ae!important}
+html.exam-dark body.exam-shell :is(button.incorrect,button.wrong){background:#3b2c2b!important;color:#dfaaa2!important}
