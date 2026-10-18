@@ -2,6 +2,8 @@
 (()=>{'use strict';
 const root=document.documentElement,base=(document.currentScript?.src||'').replace(/[^/]*$/,''),query=new URLSearchParams(location.search),media=matchMedia('(prefers-reduced-motion: reduce)'),key='luliy_intro_seen_v1';
 if(query.get('intro')==='0')return;
+// Returning visitors skip the prologue for a week; ?intro=1 always shows it.
+try{const seen=Number(localStorage.getItem(key))||0;if(query.get('intro')!=='1'&&seen>1&&Date.now()-seen<7*864e5)return}catch{}
 const home=()=>{const path=location.pathname.replace(/\/+$/,'');const entry=path===''||/^\/(?:index|optimized)\.html$/i.test(path)||(location.protocol==='file:'&&/\/(?:index|optimized)\.html$/i.test(path));return entry&&(!location.hash||/^#\/?(?:\?|$)/.test(location.hash))};
 const wide=innerWidth>=innerHeight;
 const photoFiles=['028a7efece46c088a4b3.jpg','1982d00386ea76976007.webp','2db47885e6b038279c67.jpg','307fceafdddbf5c3eb9d.webp','3346d3fd6aa97e896c8a.webp','37cca2f354ec875f822b.webp','4c634428dedfaaad9fe3.webp','a05158b9ac9d41495ba6.webp','66f0195b3268b8f223b5.webp','51d8aa192fa1e25ebfc8.png','4832a64192609350f901.webp','541f3773aab3baa245ef.webp','70198aad8b0ef8aaf332.jpg','5e03e2b4aea7e4e0e099.webp','72975f4403b24f44fe2b.webp','7568e5809d06f2ef9256.webp','797c80add68b4e8a3094.jpg','76579b4072eda18f617c.webp','7b4c0ab051ad44312c7f.webp','81e5b5829adca30de16f.webp','94e9e218d513b30ffcf3.webp','a664cee2bebd378a0fa6.webp','aac6e0dd39f855845c40.webp','b390d7a49ad8546f102e.webp','beab717d6ede520e2b73.webp','dd19e9869e757d5c0817.webp','df76eff43ae25f830757.jpg','e94109b210d06e9db290.webp','ecc9d141dd673055516d.webp','f7adcfc1d96e2209f69e.webp','feeccb59c79e9a171e13.webp'];
@@ -135,7 +137,7 @@ function isolate(){
  const protect=()=>{for(const node of document.body.children){if(node===prologue||node===eye||/^(SCRIPT|STYLE|LINK)$/.test(node.tagName))continue;if(!inert.has(node))inert.set(node,node.inert);node.inert=true}};
  protect();if(!isolationObserver){isolationObserver=new MutationObserver(protect);isolationObserver.observe(document.body,{childList:true})}
 }
-function finishIntro(remember){if(finished)return;finished=true;cancelReadiness?.();prologueUI?.destroy();clearTimeout(watchdog);clearTimeout(prologueFinishTimer);cancelAnimationFrame(frame);video?.pause();isolationObserver?.disconnect();eye?.remove();prologue?.remove();eye=null;video=null;prologue=null;for(const [node,value]of inert)if(node.isConnected)node.inert=value;inert.clear();root.classList.remove('intro-pending','intro-mounted','intro-live-home');for(const n of ['--intro-tx','--intro-ty','--intro-scale'])root.style.removeProperty(n);style.remove();if(remember)try{localStorage.setItem(key,'1')}catch{}if(failed&&home())showRetry();window.dispatchEvent(new CustomEvent('luliy:intro-complete'))}
+function finishIntro(remember){if(finished)return;finished=true;cancelReadiness?.();prologueUI?.destroy();clearTimeout(watchdog);clearTimeout(prologueFinishTimer);cancelAnimationFrame(frame);video?.pause();isolationObserver?.disconnect();eye?.remove();prologue?.remove();eye=null;video=null;prologue=null;for(const [node,value]of inert)if(node.isConnected)node.inert=value;inert.clear();root.classList.remove('intro-pending','intro-mounted','intro-live-home');for(const n of ['--intro-tx','--intro-ty','--intro-scale'])root.style.removeProperty(n);style.remove();if(remember)try{localStorage.setItem(key,String(Date.now()))}catch{}if(failed&&home())showRetry();window.dispatchEvent(new CustomEvent('luliy:intro-complete'))}
 function mountPrologueEffects({overlay,lead,ending,head,content,animated}){
  const tasks=new Set(),abort=new AbortController();let disposed=false,exiting=false,played=false,paused=document.hidden,pausedAnimations=[],pointerFrame=0,exitFrame=0,exitPromise,resolveExit;
  function arm(task){task.deadline=performance.now()+task.remaining;task.id=setTimeout(()=>{tasks.delete(task);if(!disposed)task.fn()},task.remaining)}
@@ -192,7 +194,7 @@ function mountPrologueEffects({overlay,lead,ending,head,content,animated}){
   exit(){
    if(exitPromise)return exitPromise;if(disposed||!animated||media.matches)return Promise.resolve();
    exiting=true;clearTasks();overlay.classList.remove('lp-glitch','lp-holding');overlay.classList.add('lp-warm','lp-exit');
-   exitPromise=new Promise(resolve=>{resolveExit=resolve;const startAt=performance.now()+750;const open=now=>{if(disposed){resolve();return}if(now<startAt){exitFrame=requestAnimationFrame(open);return}overlay.classList.add('lp-opening');const k=Math.min(1,(now-startAt)/1900),ease=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;overlay.style.setProperty('--lp-open',ease*175+'vmax');if(k<1)exitFrame=requestAnimationFrame(open);else resolve()};exitFrame=requestAnimationFrame(open)});
+   exitPromise=new Promise(resolve=>{resolveExit=resolve;const startAt=performance.now()+250;const open=now=>{if(disposed){resolve();return}if(now<startAt){exitFrame=requestAnimationFrame(open);return}overlay.classList.add('lp-opening');const k=Math.min(1,(now-startAt)/1100),ease=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;overlay.style.setProperty('--lp-open',ease*175+'vmax');if(k<1)exitFrame=requestAnimationFrame(open);else resolve()};exitFrame=requestAnimationFrame(open)});
    return exitPromise;
   },
   destroy(){if(disposed)return;disposed=true;abort.abort();clearTasks();cancelAnimationFrame(pointerFrame);cancelAnimationFrame(exitFrame);for(const animation of pausedAnimations)animation.cancel();pausedAnimations=[];resolveExit?.()}
@@ -203,7 +205,7 @@ function showPrologue({animated=false}={}){
  prologue=document.createElement('section');prologue.id='luliy-prologue';prologue.tabIndex=-1;prologue.lang=lang();
  prologue.setAttribute('role','dialog');prologue.setAttribute('aria-modal','true');prologue.setAttribute('aria-label',w.lead.replace('\n',' ')+w.end);
  const grid=document.createElement('div');grid.className='lp-photos';grid.setAttribute('aria-hidden','true');
- photoFiles.forEach(file=>{const img=document.createElement('img');img.className='lp-photo'+(portraitPhotos.has(file)?' lp-photo--person':'')+(recordCovers.has(file)?' lp-photo--record':'');img.alt='';img.decoding='async';img.src=base+'../assets/site/'+file;grid.append(img)});
+ photoFiles.forEach(file=>{const img=document.createElement('img');img.className='lp-photo'+(portraitPhotos.has(file)?' lp-photo--person':'')+(recordCovers.has(file)?' lp-photo--record':'');img.alt='';img.decoding='async';img.src=base+'../assets/site/prologue/'+file.replace(/\.\w+$/,'.webp');grid.append(img)});
  const shade=document.createElement('div');shade.className='lp-shade';shade.setAttribute('aria-hidden','true');
  const head=document.createElement('div');head.className='lp-corner';head.innerHTML='<strong>LULIY</strong><span>PROLOGUE · 序</span>';
  const content=document.createElement('div');content.className='lp-content';

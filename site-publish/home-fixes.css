@@ -1,0 +1,15 @@
+/* Layout fixes injected by optimize-home.py. Keep this file small. */
+/* Mobile/tablet: the fixed header gets a soft backdrop once the page scrolls,
+   so the logo and menu no longer sit on top of section titles. */
+@media (max-width: 1024px) {
+  #header { transition: background-color .3s ease, -webkit-backdrop-filter .3s ease, backdrop-filter .3s ease; }
+  html[data-scrolled] #header {
+    background-color: rgba(12, 12, 12, .78);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+    backdrop-filter: blur(12px) saturate(1.1);
+  }
+  html[data-theme="light"][data-scrolled] #header { background-color: rgba(246, 241, 231, .82); }
+}
+@media (prefers-reduced-transparency: reduce) and (max-width: 1024px) {
+  html[data-scrolled] #header { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: rgb(12, 12, 12); }
+}
