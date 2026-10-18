@@ -7,7 +7,7 @@ Run after every rebuild of index.html, before publishing:
 What it does (idempotent, safe to re-run):
   1. Applies small text/conversion fixes (see PATCHES).
   2. Injects site-publish/home-fixes.css / home-fixes.js (layout fixes).
-  3. Moves large inline <script>/<style> blocks into content-hashed files under
+  3. Moves large inline <body> scripts and the main <style> block into content-hashed files under
      assets/site/home/ so browsers can cache them for a year (see _headers).
      Execution order is preserved: inline blocks become synchronous
      <script src> / <link rel=stylesheet> at the same position.
@@ -86,7 +86,9 @@ def main():
         (OUT / name).write_text(body, encoding='utf-8'); used.add(name)
         return f'<link rel="stylesheet"{attrs} href="/assets/site/home/{name}">'
 
-    s = re.sub(r'<script([^>]*)>(.*?)</script>', ext_script, s, flags=re.S)
+    # Head scripts stay inline (small, and external ones would block first paint).
+    b = s.find('<body')
+    s = s[:b] + re.sub(r'<script([^>]*)>(.*?)</script>', ext_script, s[b:], flags=re.S)
     s = re.sub(r'<style([^>]*)>(.*?)</style>', ext_style, s, flags=re.S)
 
     # Remove stale generated files from previous runs (keep everything still referenced).
