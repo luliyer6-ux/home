@@ -6,3 +6,6 @@
 /works/english-2-complete.html /#/projects 302
 /works/english-2-complete /#/projects 302
 # End retired English readers
+# Old path-style article links are rendered by the homepage router.
+/article/* / 200
+/post/* / 200

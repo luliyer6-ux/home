@@ -145,6 +145,7 @@ python package-drive.py
 1. 先保留上一版更新包与提交号，明确本次发布范围。
 2. 将新包解压到独立文件夹，核对 `index.html` 与资源齐全。
 3. 将发布文件放到 home 仓库对应根目录，保留其他仍在使用的文件。
+   放入新生成的 `index.html` 后，先运行 `python3 site-publish/optimize-home.py`：它会把首页里的大段内联脚本和样式移到 `assets/site/home/`（带内容哈希、长期缓存），注入 `site-publish/home-fixes.css/js`，并修正几处简转繁用字。脚本可重复运行。
 4. 检查差异后提交。Git 集成开启时，Cloudflare Pages 会因连接分支的新提交触发部署。
 5. 在 Pages 部署列表看状态和对应提交号；成功后再访问 `https://luliy.me/` 检查，而不是只看 GitHub 上传成功。
 6. 核对字体、图片、文档组件、文章、RSS、登录与播放。资源可能命中浏览器缓存，可用新标签或强制刷新作对比。
