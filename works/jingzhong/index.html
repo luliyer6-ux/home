@@ -226,7 +226,7 @@ function load(){
  if(p.settings){p.pomN=p.pom;Object.assign(p,p.settings);delete p.settings}
  const s={...D,tasks:defTasks(),...p};
  s.tasks=s.tasks.map(t=>({done:0,checked:false,...t}));
- if(s.date!==today()){s.date=today();s.pomN=0;s.phase='plan';s.timer=null;s.tasks.forEach(t=>{t.done=0;t.checked=false})}
+ if(s.date!==today()){s.date=today();s.pomN=0;s.phase=s.timer?'run':'plan';s.tasks.forEach(t=>{t.done=0;t.checked=false})}
  return s;
 }
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -392,6 +392,8 @@ function update(){
  $('#arc').style.strokeDashoffset=C*(1-l/T.total);
  if(!T.paused&&l<=0)finish();
 }
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.timer)update()});
+window.addEventListener('pageshow',()=>{if(S.timer)update()});
 function finish(){
  const T=S.timer;chime();
  if(T.mode==='focus'){
@@ -453,7 +455,8 @@ $('#glater').onclick=()=>{gate.hidden=true;setSide(innerWidth>900);render()};
 setSide(S.side===undefined?innerWidth>900:S.side);
 render();
 if(S.timer&&(S.timer.paused||S.timer.end>Date.now()))openFS();
-else{if(S.timer){S.timer=null;save()}if(S.phase==='plan')showGate()}
+else if(S.timer){finish();if(S.timer)openFS()}
+else if(S.phase==='plan')showGate()
 </script>
 </body>
 </html>
