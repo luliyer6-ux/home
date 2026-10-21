@@ -11,7 +11,8 @@ What it does (idempotent, safe to re-run):
      assets/site/home/ so browsers can cache them for a year (see _headers).
      Execution order is preserved: inline blocks become synchronous
      <script src> / <link rel=stylesheet> at the same position.
-  4. Runs site-publish/design-tokens.py (single source for theme colours and motion).
+  4. Runs site-publish/design-tokens.py (single source for theme colours, motion and fonts).
+  5. Runs site-publish/runtime-fixes.py (performance / accessibility patches).
 """
 import hashlib, pathlib, re, sys
 
@@ -106,4 +107,7 @@ if __name__ == '__main__':
     # Design tokens: rewrite retired colour/motion variables and inject site-publish/design-tokens.css.
     import importlib.util; sys.dont_write_bytecode = True
     spec = importlib.util.spec_from_file_location('design_tokens', ROOT / 'site-publish' / 'design-tokens.py')
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()
+    # Runtime fixes: performance and accessibility patches (see the file's FIXES list).
+    spec = importlib.util.spec_from_file_location('runtime_fixes', ROOT / 'site-publish' / 'runtime-fixes.py')
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()

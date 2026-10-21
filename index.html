@@ -92,7 +92,18 @@
  --font-display:'Times New Roman','Luliy Canger Kai','Songti SC',serif;
  --font-script:'Amalfi Coast',cursive;
  --font-mono:'Luliy Anthropic Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
-}</style>
+}
+
+/* Accent wash and layout widths.
+   accent-soft  faint accent background (selected rows, tags, focus wash); 14% dark/cc, 10% light
+   shell-max    page column (.shell)   prose-max  reading column (.source-body)
+   Spacing (--space-1 ... --space-10 = 4 ... 128px, --space-section, --space-block) and the type scale
+   (--step--2 ... --step-6) already live in the main stylesheet's ds-v2 layer; use those, do not add a second scale. */
+:root{
+ --accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);
+ --shell-max:1120px;--prose-max:740px;
+}
+:root[data-appearance=light]{--accent-soft:color-mix(in srgb,var(--accent) 10%,transparent)}</style>
 <style id="content-light">/* Pointer-responsive holographic colour, with no decorative rectangular frame. */
 :root{--foil-a:#efcf7e;--foil-b:#79d4d8;--foil-c:#c198e5;--foil-glow:.28;--foil-blend:screen}
 :root[data-appearance=light]{--foil-a:#cc9a37;--foil-b:#519da7;--foil-c:#a573c4;--foil-glow:.23;--foil-blend:multiply}
@@ -832,7 +843,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 }
 </style>
 
-<link rel="stylesheet" href="/site-publish/home-fixes.css?v=7dc578a5" data-home-fixes></head>
+<link rel="stylesheet" href="/site-publish/home-fixes.css?v=d3c0d39f" data-home-fixes></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
 <div class="reading-progress" aria-hidden="true"></div>
@@ -888,8 +899,8 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 <noscript><style>body{visibility:visible!important}.site-header,.contact-curtain{display:none}.page-above{margin:0}</style><div style="padding:60px;max-width:800px;margin:auto"><h1>Luliy</h1><p>个人书房、作品、文章与唱片。</p><p><a href="https://blog.luliy.me">博客 A</a>　<a href="https://mini.luliy.me">博客 B</a>　<a href="https://web.telegram.org/a/#-1002032433504">Telegram</a></p><p>开启 JavaScript 可浏览完整内容。</p></div></noscript>
 <!-- 可编辑内容在 LULIY_DATA；样式与交互均已内嵌。书房与文章列表读取 Gmeek 数据。 -->
 <script src="/assets/site/home/2fa33e6f3a90.js"></script>
-<script src="/assets/site/home/1e1349a99877.js"></script>
-<script src="/assets/site/home/576f796b8212.js"></script>
+<script src="/assets/site/home/749fec1d3355.js"></script>
+<script src="/assets/site/home/c3963e5651e0.js"></script>
 <script src="/assets/site/home/10b3a8384aa3.js"></script>
 <script src="/assets/site/home/71ef4ea092f2.js"></script>
 <script src="/assets/site/home/79bacafa9deb.js"></script>
@@ -968,12 +979,12 @@ new MutationObserver(()=>document.querySelectorAll('.lr-mini').forEach(attach)).
 </script><script>(()=>{
 let scheduled=false;
 function correctText(root,pattern,replacement){const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while(n=walker.nextNode()){if(n.parentElement?.closest('pre,code,script,style,a'))continue;if(pattern.test(n.nodeValue)){pattern.lastIndex=0;n.nodeValue=n.nodeValue.replace(pattern,replacement);}pattern.lastIndex=0;}}
-function update(){scheduled=false;const lang=new URLSearchParams(location.hash.split('?')[1]||'').get('lang')||localStorage.getItem('luliy-language')||'zh';document.documentElement.lang=lang==='en'?'en':lang==='ja'?'ja':'zh-Hant';if(!/^#\/(?:article|post)\//.test(location.hash)){const desc=lang==='en'?'Luliy’s personal site: writing, reading, works and music.':lang==='ja'?'Luliy の個人サイト。文章、読書、作品、音楽。':'Luliy 的個人博客：文章、閱讀、作品與音樂。';for(const query of ['meta[name=\"description\"]','meta[property=\"og:description\"]','meta[name=\"twitter:description\"]']){const n=document.querySelector(query);if(n)n.content=desc;}}const main=document.querySelector('#main');if(!main)return;
- document.querySelectorAll('[data-rss-label]').forEach(n=>{n.textContent=lang==='en'?'RSS Subscribe':lang==='ja'?'RSS 購読':'RSS 訂閱';});
+function update(){scheduled=false;const lang=new URLSearchParams(location.hash.split('?')[1]||'').get('lang')||localStorage.getItem('luliy-language')||'zh';{const v=lang==='en'?'en':lang==='ja'?'ja':'zh-Hant';if(document.documentElement.lang!==v)document.documentElement.lang=v;}if(!/^#\/(?:article|post)\//.test(location.hash)){const desc=lang==='en'?'Luliy’s personal site: writing, reading, works and music.':lang==='ja'?'Luliy の個人サイト。文章、読書、作品、音楽。':'Luliy 的個人博客：文章、閱讀、作品與音樂。';for(const query of ['meta[name=\"description\"]','meta[property=\"og:description\"]','meta[name=\"twitter:description\"]']){const n=document.querySelector(query);if(n&&n.content!==desc)n.content=desc;}}const main=document.querySelector('#main');if(!main)return;
+ document.querySelectorAll('[data-rss-label]').forEach(n=>{const v=lang==='en'?'RSS Subscribe':lang==='ja'?'RSS 購読':'RSS 訂閱';if(n.textContent!==v)n.textContent=v;});
  const about=main.querySelector('#aboutLive');if(about)correctText(about,/我利[于於]claude/gi,'我利用 Claude');
  if(location.hash.match(/^#\/(?:article|post)\/P51(?:\?|$)/)){const body=main.querySelector('.source-body');if(body)correctText(body,/(?<=[\u3400-\u9fff])[,.](?=[\u3400-\u9fff\s]|$)/g,m=>m===','?'，':'。');}
  main.querySelectorAll('a[href*="/article/P51"] .source-summary,a[href*="/article/P51"] .article-summary').forEach(n=>correctText(n,/(?<=[\u3400-\u9fff])[,.](?=[\u3400-\u9fff\s]|$)/g,m=>m===','?'，':'。'));
- document.querySelectorAll('#directory a[href^="#/uses"],footer a[href^="#/uses"]').forEach(n=>{n.hidden=true;});
+ document.querySelectorAll('#directory a[href^="#/uses"],footer a[href^="#/uses"]').forEach(n=>{if(!n.hidden)n.hidden=true;});
  const meta=main.querySelector('.source-meta,.article-meta'),match=location.hash.match(/^#\/(?:article|post)\/(P\d+)/);if(meta&&match&&!meta.querySelector('.source-share')){const b=document.createElement('button');b.type='button';b.className='source-share';b.textContent=lang==='en'?'Share':lang==='ja'?'共有':'分享';b.onclick=async()=>{const url='https://luliy.me/articles/'+match[1]+'/',title=document.title;try{if(navigator.share)await navigator.share({title,url});else{await navigator.clipboard.writeText(url);b.textContent=lang==='en'?'Link copied':'連結已複製';}}catch(error){if(error.name!=='AbortError'){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.textContent=url;b.after(a);}}};meta.append(b);}
  // A dormant tool shelf keeps its URL, without advertising unfinished content.
  if(location.hash.match(/^#\/uses(?:\?|$)/)){const old=main.querySelector('.uses-construction');if(!old){main.innerHTML='<section class="shell subpage uses-construction"><h1>Luliy Uses</h1><p>工具架正在整理，稍後公開。</p><a href="#/">返回首頁</a></section>';}}
@@ -1013,5 +1024,5 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script>
 
-</body>
+<script src="/site-publish/home-fixes.js?v=03cec715" defer data-home-fixes></script></body>
 </html>
