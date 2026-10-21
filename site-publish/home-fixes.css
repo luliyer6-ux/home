@@ -105,7 +105,7 @@
   }
   /* When the header comes back mid-article, a soft wash keeps it off the text. */
   html body.luliy-reading #header.is-scrolled {
-    background: linear-gradient(var(--bg) 40%, color-mix(in srgb, var(--bg) 70%, transparent) 70%, transparent) !important;
+    background: linear-gradient(var(--bg) 55%, color-mix(in srgb, var(--bg) 75%, transparent) 78%, transparent) !important;
   }
 }
 /* Touch: the section-link button keeps its small glyph but gets a finger-sized target. */
