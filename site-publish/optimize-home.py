@@ -11,6 +11,7 @@ What it does (idempotent, safe to re-run):
      assets/site/home/ so browsers can cache them for a year (see _headers).
      Execution order is preserved: inline blocks become synchronous
      <script src> / <link rel=stylesheet> at the same position.
+  4. Runs site-publish/color-tokens.py (single source for theme colours).
 """
 import hashlib, pathlib, re, sys
 
@@ -102,3 +103,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # Colour tokens: rewrite retired colour variables and inject site-publish/color-tokens.css.
+    import importlib.util; sys.dont_write_bytecode = True
+    spec = importlib.util.spec_from_file_location('color_tokens', ROOT / 'site-publish' / 'color-tokens.py')
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()
