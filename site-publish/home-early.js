@@ -3,7 +3,8 @@
    The full home stays one tap away (directory -> 首頁) and is kept for ?home, ?intro=1 and every deep link. */
 (function () {
   try {
-    if (!matchMedia('(max-width: 768px) and (pointer: coarse)').matches) return;
+    // Use the screen, not the viewport: this runs before <meta name=viewport>, when phones still report 980px.
+    if (!matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) >= 600) return;
     var q = new URLSearchParams(location.search);
     if (q.has('home') || q.get('intro') === '1' || q.get('intro') === 'eye') return;
     var path = location.pathname.replace(/\/+$/, '');

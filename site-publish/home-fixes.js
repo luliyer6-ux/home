@@ -101,12 +101,10 @@
   /* 3. Phones: the article list is home (see home-early.js), so the ULIY logo leads there too.
      The full galaxy home stays in the directory (首頁). */
   (() => {
-    const phone = matchMedia('(max-width: 768px) and (pointer: coarse)');
+    // Same phone test as home-early.js.
+    const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
     const brand = document.querySelector('#header a.brand');
-    if (!brand) return;
-    const sync = () => { const href = phone.matches ? '#/posts' : '#/'; if (brand.getAttribute('href') !== href) brand.setAttribute('href', href); };
-    phone.addEventListener('change', sync);
-    sync();
+    if (phone && brand && brand.getAttribute('href') === '#/') brand.setAttribute('href', '#/posts');
   })();
 
   /* 4. Phones, article pages: the header and the two floating buttons step aside while reading down,
