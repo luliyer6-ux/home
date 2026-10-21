@@ -1,16 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 60 60">
   <defs>
     <linearGradient id="thinker" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff8e5"/>
-      <stop offset=".38" stop-color="#f2dfb0"/>
-      <stop offset="1" stop-color="#c59a56"/>
+      <stop offset="0" stop-color="#fffdf6"/>
+      <stop offset=".38" stop-color="#f4e7c5"/>
+      <stop offset="1" stop-color="#cba15f"/>
     </linearGradient>
     <linearGradient id="plinth" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#d8b36e"/>
-      <stop offset="1" stop-color="#a87935"/>
+      <stop offset="0" stop-color="#b18a48"/>
+      <stop offset="1" stop-color="#815f2f"/>
     </linearGradient>
   </defs>
-  <rect width="60" height="60" rx="10" fill="#111010"/>
   <g fill="url(#thinker)">
     <path d="M30 52 L30 44 Q30 38 34 35 L38 35 Q38 41 36 44 L36 52 Z" opacity=".68"/>
     <path d="M16 52 L16 42 Q16 38 20 37 L25 39 Q24 43 22 44 L22 52 Z"/>

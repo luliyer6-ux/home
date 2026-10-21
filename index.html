@@ -7,8 +7,8 @@
 <meta name="theme-color" content="#050505">
 <link rel="preconnect" href="https://cloud.luliy.me">
 <title>Luliy</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=thinker-20261020">
-<link rel="alternate icon" type="image/x-icon" href="/favicon.ico?v=thinker-20261020">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=thinker-transparent-20261021">
+<link rel="alternate icon" type="image/x-icon" href="/favicon.ico?v=thinker-transparent-20261021">
 <script>(()=>{try{if(localStorage.getItem('luliy-defaults-version')!=='traditional-reader-type-2'){localStorage.removeItem('luliy-reader-prefs');localStorage.setItem('luliy-language','zh');localStorage.setItem('luliy-chinese-script','traditional');localStorage.setItem('luliy-defaults-version','traditional-reader-type-2');}}catch(e){}const r=document.documentElement;let a='dark';try{a=localStorage.getItem('luliy-appearance')||(localStorage.getItem('luliy-paper-ink')==='light'?'cc':'dark');}catch(e){}if(!['dark','light','cc'].includes(a))a='dark';r.dataset.appearance=a;r.dataset.theme=a==='dark'?'dark':'light';r.dataset.font='unified';})();</script>
 
 
@@ -170,7 +170,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
 .about-live ol li,.about-live ul li{display:list-item!important;color:inherit;min-height:1em}.about-live li>p{display:block;color:inherit}
 .photo-card img,.project-card img{object-position:center 42%}.directory-preview.preview-about img{object-fit:contain;object-position:center}
 @media(max-width:700px){.home-records #recordMount{min-height:1050px}.home-records .records-loading{min-height:380px}}
-</style><link rel="stylesheet" href="/reading-timeline.css?v=20261013-release4"><style>.site-information{max-width:860px}
+</style><link rel="stylesheet" href="/reading-timeline.css?v=20261021-theme-fix"><style>.site-information{max-width:860px}
 .site-info-links{display:flex;flex-wrap:wrap;gap:14px 24px;margin:0 0 28px;font-size:14px}
 .site-info-links a{padding:6px 0;border-bottom:1px solid var(--line)}
 .site-info-links a:hover{color:var(--accent)}
@@ -760,7 +760,57 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
  :root[data-appearance="cc"] .cc-opening .wide-meta{display:block}
 }
 @media print{.cc-frame,.cc-ambient,.cc-skip,.scene-static-status{display:none!important}.cc-letter{animation:none!important;opacity:1!important}}
-</style></head>
+</style>
+<style id="brand-system-fixes">
+/* Keep Source Han Sans for interface/display text; use Canger Kai only for reading copy. */
+@font-face{
+  font-family:'Luliy Canger Kai';
+  src:url('https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/static/doc/%E4%BB%93%E8%80%B3%E4%BB%8A%E6%A5%B701-W04.ttf') format('truetype');
+  font-style:normal;font-weight:400;font-display:swap
+}
+:root{
+  --site-body-font:'Luliy Canger Kai',serif;
+  --site-heading-font:'Source Han Sans SC','Noto Sans SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif;
+  --site-ui-font:var(--site-heading-font);
+  --reading-accent:var(--gold,#d2b878)
+}
+html body{font-family:var(--site-ui-font)}
+html body :is(.article-body,.source-body){font-family:var(--site-body-font)!important}
+html body :is(.article-body,.source-body) :is(p,li,blockquote,span,div,font){font-family:inherit!important}
+html body :is(h1,h2,h3,h4,h5,h6,.brand,.directory-home-brand,.signature,.contact-signature){font-family:var(--site-heading-font)}
+html body :is(button,input,select,textarea,.directory-links,.directory-bottom,.reader-panel,.reader-settings){font-family:var(--site-ui-font)}
+/* Reading indicators follow the site's warm metallic palette in both themes. */
+.reading-progress{background:linear-gradient(90deg,var(--gold),var(--accent),var(--gold))!important;box-shadow:0 0 8px color-mix(in srgb,var(--gold) 28%,transparent)!important}
+/* Keep the cross attached to the upper-right corner of the final glyph. */
+#header .brand-group .brand-cross-anchor::before,#header .brand-group .brand-cross-anchor::after{left:100%!important;top:0!important}
+/* Keep only the logo and directory control in the floating header. */
+#header .header-navigation,#header .tools{display:none!important}
+#header .brand-group{display:flex;width:100%;margin-right:0;gap:0}
+#header .brand-mark{display:flex!important}
+#header #studyGlobalOpen{margin-left:auto}
+#header,#header .header-inner{background:transparent!important;box-shadow:none!important;border:0!important;backdrop-filter:none!important}
+#header::before,#header::after{content:none!important;display:none!important}
+/* Match the section label to the Luliy wordmark and its Y center. */
+#header .brand-group .brand-page-name{
+  top:4px!important;
+  font-family:inherit!important;
+  font-size:clamp(13px,1.02vw,17px)!important;
+  font-weight:400!important;
+  letter-spacing:.12em!important;
+  line-height:1!important;
+}
+/* The thinker remains still; only its warm metallic fill changes. */
+#header .brand-mark svg,#directory .directory-brand-mark svg{overflow:visible}
+#header .brand-mark svg path,#header .brand-mark svg ellipse,
+#directory .directory-brand-mark svg path,#directory .directory-brand-mark svg ellipse{
+  transition:none!important;animation:none!important;filter:none!important
+}
+@media(max-width:650px){
+  #header .brand-group .brand-page-name{font-size:13px!important;margin-left:6px;max-width:78px}
+}
+</style>
+
+</head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
 <div class="reading-progress" aria-hidden="true"></div>
@@ -909,7 +959,7 @@ function update(){scheduled=false;const lang=new URLSearchParams(location.hash.s
 function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update);}}
 new MutationObserver(schedule).observe(document.querySelector('#main'),{childList:true,subtree:true});addEventListener('hashchange',schedule);schedule();
 })();
-</script><script src="/reading-timeline.js?v=20261013-release4" defer></script><script src="/site-publish/home-fixes.js?v=f9b3194c" defer data-home-fixes></script><script id="experience-layer-js">(()=>{
+</script><script src="/reading-timeline.js?v=20261021-theme-fix" defer></script><script src="/site-publish/home-fixes.js?v=f9b3194c" defer data-home-fixes></script><script id="experience-layer-js">(()=>{
  'use strict';
  const root=document.documentElement,reduce=matchMedia('(prefers-reduced-motion:reduce)'),touch=matchMedia('(max-width:1024px),(pointer:coarse)');
  const cc=()=>root.dataset.appearance==='cc';
@@ -1029,5 +1079,37 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
  reduce.addEventListener('change',syncCC);
  if(document.readyState==='loading')addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
-</script></body>
+</script>
+<script id="thinker-brand-gradient">
+(()=> {
+  const NS='http://www.w3.org/2000/svg';
+  document.querySelectorAll('#header .brand-mark svg,#directory .directory-brand-mark svg').forEach((svg,index)=>{
+    const bodyId='luliy-thinker-body-'+index;
+    const baseId='luliy-thinker-base-'+index;
+    const defs=document.createElementNS(NS,'defs');
+    const gradient=(id,stops)=>{
+      const node=document.createElementNS(NS,'linearGradient');
+      node.setAttribute('id',id);
+      node.setAttribute('x1','0');node.setAttribute('y1','0');
+      node.setAttribute('x2','0');node.setAttribute('y2','1');
+      stops.forEach(([offset,color])=>{
+        const stop=document.createElementNS(NS,'stop');
+        stop.setAttribute('offset',offset);stop.setAttribute('stop-color',color);node.append(stop);
+      });
+      return node;
+    };
+    defs.append(
+      gradient(bodyId,[['0%','#fffdf6'],['42%','#f4e7c5'],['78%','#e0c58d'],['100%','#cba15f']]),
+      gradient(baseId,[['0%','#b18a48'],['100%','#815f2f']])
+    );
+    svg.insertBefore(defs,svg.firstChild);
+    svg.querySelectorAll('path,ellipse').forEach(el=>el.setAttribute('fill','url(#'+bodyId+')'));
+    const plinth=svg.querySelector('rect');
+    if(plinth)plinth.setAttribute('fill','url(#'+baseId+')');
+    svg.dataset.thinkerGradient='true';
+  });
+})();
+</script>
+
+</body>
 </html>
