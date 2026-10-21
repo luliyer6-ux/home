@@ -11,7 +11,7 @@
   (() => {
     const contact = document.getElementById('contact');
     if (!contact) return;
-    let far = null, covered = null, queued = 0;
+    let far = null, queued = 0;
     const measure = () => {
       queued = 0;
       const above = document.querySelector('.page-above');
@@ -20,12 +20,14 @@
       const nextFar = far ? gap > innerHeight * 0.6 : gap > innerHeight; // hysteresis
       const nextCovered = gap >= 1;
       if (nextFar !== far) { far = nextFar; contact.classList.toggle('luliy-far', far); }
-      if (nextCovered !== covered) { covered = nextCovered; contact.inert = covered; }
+      // Compare with the live value: the prologue saves and restores inert on its own.
+      if (contact.inert !== nextCovered) contact.inert = nextCovered;
     };
     const queue = () => { if (!queued) queued = requestAnimationFrame(measure); };
     addEventListener('scroll', queue, { passive: true });
     addEventListener('resize', queue);
     addEventListener('hashchange', queue);
+    addEventListener('luliy:intro-complete', queue);
     const above = document.querySelector('.page-above');
     if (above && 'ResizeObserver' in window) new ResizeObserver(queue).observe(above);
     queue();

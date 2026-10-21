@@ -145,7 +145,7 @@ assets/site/prologue/        开场照片墙缩略图
 assets/drive/                Drive 阅读与解析组件
 intro/                       开场脚本、视频与海报
 articles/Pxx/                独立文章静态页（Actions 生成）
-site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js
+site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、design-tokens.*、runtime-fixes.py
 study/                       考研进度子应用（有自己的 _headers）
 works/                       作品子应用：408、英语二、数学、静钟（jingzhong）、考研看板等
 feed.xml / sitemap.xml / robots.txt / public-articles.json
@@ -226,10 +226,11 @@ python package-drive.py
 
 1. **拆分大块内嵌资源**：`<body>` 里超过 4 KB 的内嵌脚本和主样式表（`#site-styles`）会移到 `assets/site/home/<内容哈希>.js/.css`，原位置换成外部引用，**执行顺序不变**。`<head>` 里的脚本保持内嵌，避免拖慢首屏。CSS 里的相对路径 `url(assets/...)` 会自动改成 `/assets/...`。
 2. **长期缓存**：`assets/site/*` 由 `_headers` 设置为一年缓存且内容不变（immutable）。文件名就是内容哈希，内容一变文件名就变，不会读到旧缓存。
-3. **注入修复文件**：在 `</head>` 前加入 `site-publish/home-fixes.css`，在 `</body>` 前加入 `home-fixes.js`（目前的作用是：手机和平板滚动后，顶栏加半透明背景）。
+3. **注入修复文件**：在 `</head>` 前加入 `site-publish/home-fixes.css`，在 `</body>` 前加入 `home-fixes.js`（`async`，不排在大脚本后面）。见下方 5.2。
 4. **繁简修正**：钟→鐘，补上 着→著，并修正 詞彙、字彙、語彙、乾淨、乾燥、餅乾、鍾情、鍾愛 等词组。
 5. **开场脚本版本号**：按 `intro/intro.js` 的内容自动更新 `?v=`。
 6. **设计变量（颜色、动效、字体）**：最后运行 `site-publish/design-tokens.py`（也可单独运行）。见下方 5.1。
+7. **运行时修正（性能、无障碍）**：再运行 `site-publish/runtime-fixes.py`（也可单独运行）。见下方 5.3。
 
 用法：
 
@@ -291,6 +292,35 @@ python3 site-publish/optimize-home.py
 - 源工程重建后旧变量名会回来，跑一遍 `optimize-home.py` 即可重新收拢；长期仍建议在本机源模块里直接改用这些变量。
 - `--reader-body-color` 保留：阅读设置会把用户选的正文颜色写在 `<html>` 上，默认值是 `--text`。
 - 场景专用颜色不进这张表：卡片烫金 `--foil-*`、首页签名金 `--signature-gold-*`、唱片封面插画、唱机材质。
+
+另有 3 个辅助变量：
+
+| 变量 | 值 | 用途 |
+|---|---|---|
+| `--accent-soft` | 强调色 14%（浅色 10%）的淡底 | 选中行、标签、焦点底色 |
+| `--shell-max` | 1120px | 页面主栏宽度（与 `.shell` 一致） |
+| `--prose-max` | 740px | 阅读栏宽度（与 `.source-body` 一致） |
+
+间距 `--space-1`…`--space-10`（4–128px）和字号 `--step--2`…`--step-6` 已在主样式的 ds-v2 层里，直接用，不要再加第二套。
+
+### 5.2 首页细节：`home-fixes.css` / `home-fixes.js`
+
+| 效果 | 做法 |
+|---|---|
+| 页面切换 | 旧页上浮 2.5% 并淡出（400ms），新页淡入（450ms）；书房保留自己的交叉淡入，顶栏和文章标题的过渡不变 |
+| 首页题词逐字出现 | 每字间隔 26ms，逗号句号后停 105ms，换行停 300ms，每字 1150ms，从 16% 亮度浮起；只在第一次打开首页、中文或日文时生效；读屏软件读整句 |
+| 悬停时其他卡片退后 | 文章列表、首页项目展、关于页链接：悬停一张，其余降到 55%；只对鼠标和触控板生效 |
+| 页脚月亮休眠 | 页脚还远在一屏以外时隐藏月亮画布，WebGL 停止绘制；滚到底前约半屏重新出现 |
+| 被盖住的页脚不可聚焦 | 页脚完全被盖住时设为 `inert`，按 Tab 不会跳进看不见的链接 |
+
+系统开启“减弱动态效果”时，切换、逐字出现和退后的过渡都关闭。
+
+### 5.3 运行时修正：`site-publish/runtime-fixes.py`
+
+线上首页有一个每帧都在重写属性的循环（语言同步脚本反复写 `lang`、`meta`、按钮的 `aria-pressed`，月亮和尘埃脚本反复写 `data-*`），互相触发 MutationObserver，桌面每秒上百次写入。`runtime-fixes.py` 按 `FIXES` 表做精确替换：只有值真的变了才写。改动过的缓存文件换新哈希名。
+
+- 可重复运行；源码变了找不到原文时会提示 `fix skipped (not found)`，页面照常工作，只是那条修正没生效。
+- 长期仍建议在本机源模块里直接改。
 
 ---
 
@@ -506,7 +536,7 @@ python site-publish/generate.py preview
 | 换电脑后无法生成界面 | 原始 HTML 快照、源模块、字体、组件和构建依赖是否齐全；快照路径是否已改 |
 | 音乐列表不同步 | 各个点歌入口是否都用共享队列；文件身份、来源和当前曲目是否一致 |
 | 页尾动画卡顿 | 局部绘制和离屏停止是否生效；在同一浏览器里分别测签名和背景粒子的开销 |
-| 手机顶栏压住内容 | `home-fixes.css/js` 是否已注入（查看首页源码里的 `data-home-fixes`） |
+| 手机顶栏压住内容、首页细节不见了 | `home-fixes.css/js` 是否已注入（查看首页源码里的 `data-home-fixes`） |
 
 ---
 
