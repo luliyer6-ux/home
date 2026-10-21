@@ -81,7 +81,7 @@ def main():
         if len(body) < MIN_STYLE or 'media=' in attrs:
             return m.group(0)
         # Relative url(assets/...) must become root-relative once the CSS moves.
-        body = re.sub(r"url\(\s*(['\"]?)(?!data:|https?:|/|#)", r"url(\1/", body)
+        body = re.sub(r"url\(\s*(['\"]?)(?!['\"]|data:|https?:|/|#)", r"url(\1/", body)
         name = f'{h(body)}.css'
         (OUT / name).write_text(body, encoding='utf-8'); used.add(name)
         return f'<link rel="stylesheet"{attrs} href="/assets/site/home/{name}">'
