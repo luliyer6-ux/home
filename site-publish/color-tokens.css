@@ -1,0 +1,26 @@
+/* LULIY colour tokens: the single place where theme colours are defined.
+   Edit values here only. site-publish/color-tokens.py injects this file into index.html
+   and rewrites old variable names (--gold, --lr-*, --ld-*, --sp-*, ...) to these tokens.
+   Roles: bg page | paper card/panel | raised popover | ink heading | text body | muted secondary
+          line divider | line-strong control border | accent the one brand colour (gold) | focus-ring keyboard focus
+   Scene-only colours (--foil-*, --signature-gold-*, turntable materials) stay with their components. */
+:root,:root[data-appearance=dark]{
+ --bg:#111110;--paper:#191918;--raised:#222220;
+ --ink:#f2ede4;--text:#e8e3d9;--muted:#a6a198;
+ --line:#3b3935;--line-strong:#777168;
+ --accent:#b89a6a;--focus-ring:#b89a6a;
+}
+:root[data-appearance=light]{
+ --bg:#faf9f5;--paper:#f0eee7;--raised:#e9e6dd;
+ --ink:#141413;--text:#30302d;--muted:#66645e;
+ --line:#d8d5cd;--line-strong:#918b80;
+ --accent:#8b6840;--focus-ring:#9b4a32;
+}
+:root[data-appearance=cc]{
+ --bg:#101116;--paper:#1b1a1a;--raised:#242320;
+ --ink:#eadfbe;--text:#d5c8a5;--muted:#b3a487;
+ --line:#494334;--line-strong:#82745c;
+ --accent:#d2b878;--focus-ring:#e9ad88;
+}
+@media(prefers-contrast:more){:root[data-appearance]{--muted:var(--text)}}
+@media print{:root,:root[data-appearance]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
