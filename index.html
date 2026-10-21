@@ -171,7 +171,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
 .about-live ol li,.about-live ul li{display:list-item!important;color:inherit;min-height:1em}.about-live li>p{display:block;color:inherit}
 .photo-card img,.project-card img{object-position:center 42%}.directory-preview.preview-about img{object-fit:contain;object-position:center}
 @media(max-width:700px){.home-records #recordMount{min-height:1050px}.home-records .records-loading{min-height:380px}}
-</style><link rel="stylesheet" href="/reading-timeline.css?v=20261022-contrast"><style>.site-information{max-width:860px}
+</style><link rel="stylesheet" href="/reading-timeline.css?v=20261022-mobile"><style>.site-information{max-width:860px}
 .site-info-links{display:flex;flex-wrap:wrap;gap:14px 24px;margin:0 0 28px;font-size:14px}
 .site-info-links a{padding:6px 0;border-bottom:1px solid var(--line)}
 .site-info-links a:hover{color:var(--accent)}
@@ -796,7 +796,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 }
 </style>
 
-<link rel="stylesheet" href="/site-publish/home-fixes.css?v=bfa5d46c" data-home-fixes></head>
+<link rel="stylesheet" href="/site-publish/home-fixes.css?v=7dc578a5" data-home-fixes></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
 <div class="reading-progress" aria-hidden="true"></div>
@@ -945,7 +945,7 @@ function update(){scheduled=false;const lang=new URLSearchParams(location.hash.s
 function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update);}}
 new MutationObserver(schedule).observe(document.querySelector('#main'),{childList:true,subtree:true});addEventListener('hashchange',schedule);schedule();
 })();
-</script><script src="/reading-timeline.js?v=20261021-theme-fix" defer></script><script id="experience-layer-js" src="/assets/site/home/376035395307.js"></script>
+</script><script src="/reading-timeline.js?v=20261022-mobile" defer></script><script id="experience-layer-js" src="/assets/site/home/376035395307.js"></script>
 <script id="thinker-brand-gradient">
 (()=> {
   const NS='http://www.w3.org/2000/svg';
@@ -977,5 +977,5 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script>
 
-<script src="/site-publish/home-fixes.js?v=f9b3194c" defer data-home-fixes></script></body>
+</body>
 </html>

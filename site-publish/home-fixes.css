@@ -1,14 +1,55 @@
-/* Layout fixes injected by optimize-home.py. Keep this file small. */
-/* Mobile/tablet: the header stays transparent at the top (by design). After the
-   page scrolls, a soft top-down fade (no solid bar, no blur) keeps the logo and
-   menu readable without sitting on top of section titles. */
-@media (max-width: 1024px) {
-  html[data-scrolled] #header {
-    background: linear-gradient(to bottom,
-      var(--bg, #111110) 0%,
-      color-mix(in srgb, var(--bg, #111110) 82%, transparent) 60%,
-      transparent 100%) !important;
+/* Layout fixes injected by optimize-home.py. Keep this file small.
+   "Mobile" = phones in portrait (<=768px) or landscape (short + touch). */
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  /* Header: fully transparent and pinned; only thinker + ULIY + menu icon. */
+  html body #header,
+  html body #header.is-scrolled {
+    position: fixed !important;
+    background: transparent !important;
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+  html body #header .brand-page-name { display: none !important; }
+
+  /* No reading progress on phones (top bar + side rail). */
+  html body .reading-progress,
+  html body .reading-timeline { display: none !important; }
+
+  /* Article TOC button sits directly above the back-to-top button (right side). */
+  html body .reader-toc-toggle,
+  html body #main .reader-toc-toggle {
+    left: auto !important;
+    right: 14px !important;
+    top: auto !important;
+    bottom: calc(max(17px, env(safe-area-inset-bottom)) + 56px) !important;
+    border-radius: 50% !important;
+  }
+  /* Contents panel opens from the right, just above the TOC button. */
+  html body #main :is(.source-toc, .article-toc) {
+    left: auto !important;
+    right: 14px !important;
+    top: auto !important;
+    bottom: calc(max(17px, env(safe-area-inset-bottom)) + 108px) !important;
+    width: min(330px, calc(100vw - 28px)) !important;
+    max-height: min(60dvh, 520px) !important;
+    transform-origin: bottom right;
+  }
+  html body:has(.lr-mini:not([hidden])) #main :is(.source-toc, .article-toc) {
+    bottom: calc(122px + env(safe-area-inset-bottom) + 108px) !important;
+    max-height: min(48dvh, 420px) !important;
+  }
+  html body.reader-music-docked #main :is(.source-toc, .article-toc) {
+    bottom: calc(var(--media-card-height, 150px) + 24px + 108px) !important;
+    max-height: max(100px, calc(100dvh - var(--media-card-height, 150px) - 220px)) !important;
+  }
+  html body:has(.lr-mini:not([hidden])) .reader-toc-toggle,
+  html body:has(.lr-mini:not([hidden])) #main .reader-toc-toggle {
+    bottom: calc(122px + env(safe-area-inset-bottom) + 56px) !important;
+  }
+  html body.reader-music-docked .reader-toc-toggle,
+  html body.reader-music-docked #main .reader-toc-toggle {
+    bottom: calc(var(--media-card-height, 150px) + 24px + 56px) !important;
   }
 }
