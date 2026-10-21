@@ -6,7 +6,7 @@ Run after every rebuild of index.html, before publishing:
 
 What it does (idempotent, safe to re-run):
   1. Applies small text/conversion fixes (see PATCHES).
-  2. Injects site-publish/home-fixes.css / home-fixes.js (layout fixes).
+  2. Injects site-publish/home-fixes.css / home-fixes.js (layout fixes) and inlines home-early.js at the top of <head>.
   3. Moves large inline <body> scripts and the main <style> block into content-hashed files under
      assets/site/home/ so browsers can cache them for a year (see _headers).
      Execution order is preserved: inline blocks become synchronous
@@ -54,6 +54,13 @@ def main():
     intro = ROOT / 'intro' / 'intro.js'
     if intro.exists():
         s = re.sub(r'(src="intro/intro\.js)\?v=[^"]*"', lambda m: m.group(1) + '?v=' + h(intro.read_text(encoding='utf-8'))[:10] + '"', s, count=1)
+
+    # Early routing (phones open on the article list): inline, first thing in <head>, before intro.js.
+    s = re.sub(r'<script data-home-early>.*?</script>', '', s, flags=re.S)
+    early = ROOT / 'site-publish' / 'home-early.js'
+    if early.exists():
+        i = s.find('<head>') + len('<head>')
+        s = s[:i] + '<script data-home-early>' + early.read_text(encoding='utf-8').strip() + '</script>' + s[i:]
 
     # Layout fixes: CSS right before </head>, JS (async, so it is not queued behind the large deferred bundles) right before </body>.
     s = re.sub(r'<link[^>]*data-home-fixes[^>]*>|<script[^>]*data-home-fixes[^>]*></script>', '', s)

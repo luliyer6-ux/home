@@ -1,6 +1,19 @@
 <!doctype html>
 <html lang="zh-Hant" data-theme="dark">
-<head><script src="intro/intro.js?v=7172b464ca"></script><script id="mobile-performance-policy">(()=>{const phone=matchMedia('(max-width: 767px)'),tablet=matchMedia('(min-width: 768px) and (max-width: 1024px)'),coarse=matchMedia('(pointer: coarse)');const sync=()=>{window.LuliyMobilePhone=phone.matches;window.LuliyMobileTablet=tablet.matches;window.LuliyMobileLite=phone.matches||tablet.matches||coarse.matches;document.documentElement.dataset.performance=window.LuliyMobileLite?'lite':'full';};sync();for(const query of [phone,tablet,coarse])query.addEventListener('change',sync);})();</script><!-- intro-layout-coordinates-v1 --><script>(function(){if(/^\/(?:article|post)\/P\d+\/?$/.test(location.pathname)){var b=document.createElement("base");b.href="/";document.head.appendChild(b)}})();</script>
+<head><script data-home-early>/* LULIY early routing, inlined at the very top of <head> by optimize-home.py (runs before intro.js and the router).
+   Phones open on the article list: a bare https://luliy.me/ becomes #/posts, so the prologue and galaxy home are skipped.
+   The full home stays one tap away (directory -> 首頁) and is kept for ?home, ?intro=1 and every deep link. */
+(function () {
+  try {
+    if (!matchMedia('(max-width: 768px) and (pointer: coarse)').matches) return;
+    var q = new URLSearchParams(location.search);
+    if (q.has('home') || q.get('intro') === '1' || q.get('intro') === 'eye') return;
+    var path = location.pathname.replace(/\/+$/, '');
+    if (path !== '' && !/^\/index\.html$/i.test(path)) return;
+    if (location.hash && !/^#\/?(?:\?|$)/.test(location.hash)) return;
+    history.replaceState(history.state, '', location.pathname + location.search + '#/posts');
+  } catch (e) {}
+})();</script><script src="intro/intro.js?v=7172b464ca"></script><script id="mobile-performance-policy">(()=>{const phone=matchMedia('(max-width: 767px)'),tablet=matchMedia('(min-width: 768px) and (max-width: 1024px)'),coarse=matchMedia('(pointer: coarse)');const sync=()=>{window.LuliyMobilePhone=phone.matches;window.LuliyMobileTablet=tablet.matches;window.LuliyMobileLite=phone.matches||tablet.matches||coarse.matches;document.documentElement.dataset.performance=window.LuliyMobileLite?'lite':'full';};sync();for(const query of [phone,tablet,coarse])query.addEventListener('change',sync);})();</script><!-- intro-layout-coordinates-v1 --><script>(function(){if(/^\/(?:article|post)\/P\d+\/?$/.test(location.pathname)){var b=document.createElement("base");b.href="/";document.head.appendChild(b)}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Luliy 的網路小宇宙。寫作、閱讀、技術與生活，記錄成長、思考與熱愛。">
@@ -843,7 +856,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 }
 </style>
 
-<link rel="stylesheet" href="/site-publish/home-fixes.css?v=d3c0d39f" data-home-fixes></head>
+<link rel="stylesheet" href="/site-publish/home-fixes.css?v=1377c59d" data-home-fixes></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
 <div class="reading-progress" aria-hidden="true"></div>
@@ -1024,5 +1037,5 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script>
 
-<script src="/site-publish/home-fixes.js?v=b614c114" async data-home-fixes></script></body>
+<script src="/site-publish/home-fixes.js?v=1f093589" async data-home-fixes></script></body>
 </html>
