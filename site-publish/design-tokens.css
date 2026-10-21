@@ -1,4 +1,4 @@
-/* LULIY design tokens: the single place where theme colours and motion are defined.
+/* LULIY design tokens: the single place where theme colours, motion and fonts are defined.
    Edit values here only. site-publish/design-tokens.py injects this file into index.html
    and rewrites old variable names (--gold, --lr-*, --ld-*, --sp-*, ...) to these tokens.
    Roles: bg page | paper card/panel | raised popover | ink heading | text body | muted secondary
@@ -38,3 +38,18 @@
  --dur-fast:200ms;--dur-base:400ms;--dur-slow:800ms;
 }
 @media(prefers-reduced-motion:reduce){:root{--dur-fast:1ms;--dur-base:1ms;--dur-slow:1ms}}
+
+/* Fonts: five roles. Chinese always falls back to Luliy Canger Kai.
+   font-body    reading text, site default
+   font-ui      buttons, dates, meta, reader controls
+   font-display Times numerals, archive titles, large italic headings
+   font-script  the Luliy signature
+   font-mono    code
+   Georgia on record covers / galaxy labels and canvas fonts stay literal (cover design). */
+:root{
+ --font-body:'Anthropic Preview Serif','Luliy Canger Kai',serif;
+ --font-ui:'Anthropic Preview Sans','Luliy Canger Kai',sans-serif;
+ --font-display:'Times New Roman','Luliy Canger Kai','Songti SC',serif;
+ --font-script:'Amalfi Coast',cursive;
+ --font-mono:'Luliy Anthropic Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
+}

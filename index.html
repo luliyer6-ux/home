@@ -37,8 +37,8 @@
 
 
 <link rel="stylesheet" href="/assets/site/fonts/canger-kai-8f7fc3906ad5.css">
-<link rel="stylesheet" id="site-styles" href="/assets/site/home/24e5a23d878f.css">
-<style id="design-tokens">/* LULIY design tokens: the single place where theme colours and motion are defined.
+<link rel="stylesheet" id="site-styles" href="/assets/site/home/e4bd313dd534.css">
+<style id="design-tokens">/* LULIY design tokens: the single place where theme colours, motion and fonts are defined.
    Edit values here only. site-publish/design-tokens.py injects this file into index.html
    and rewrites old variable names (--gold, --lr-*, --ld-*, --sp-*, ...) to these tokens.
    Roles: bg page | paper card/panel | raised popover | ink heading | text body | muted secondary
@@ -77,7 +77,22 @@
  --ease-in-out:cubic-bezier(.65,0,.35,1);
  --dur-fast:200ms;--dur-base:400ms;--dur-slow:800ms;
 }
-@media(prefers-reduced-motion:reduce){:root{--dur-fast:1ms;--dur-base:1ms;--dur-slow:1ms}}</style>
+@media(prefers-reduced-motion:reduce){:root{--dur-fast:1ms;--dur-base:1ms;--dur-slow:1ms}}
+
+/* Fonts: five roles. Chinese always falls back to Luliy Canger Kai.
+   font-body    reading text, site default
+   font-ui      buttons, dates, meta, reader controls
+   font-display Times numerals, archive titles, large italic headings
+   font-script  the Luliy signature
+   font-mono    code
+   Georgia on record covers / galaxy labels and canvas fonts stay literal (cover design). */
+:root{
+ --font-body:'Anthropic Preview Serif','Luliy Canger Kai',serif;
+ --font-ui:'Anthropic Preview Sans','Luliy Canger Kai',sans-serif;
+ --font-display:'Times New Roman','Luliy Canger Kai','Songti SC',serif;
+ --font-script:'Amalfi Coast',cursive;
+ --font-mono:'Luliy Anthropic Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
+}</style>
 <style id="content-light">/* Pointer-responsive holographic colour, with no decorative rectangular frame. */
 :root{--foil-a:#efcf7e;--foil-b:#79d4d8;--foil-c:#c198e5;--foil-glow:.28;--foil-blend:screen}
 :root[data-appearance=light]{--foil-a:#cc9a37;--foil-b:#519da7;--foil-c:#a573c4;--foil-glow:.23;--foil-blend:multiply}
@@ -116,7 +131,7 @@
 #main .reader-toc-fold[aria-expanded=true] svg{transform:rotate(90deg)}
 #main .reader-toc-fold:focus-visible,#main .reader-toc-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 #main .reader-toc-tree [hidden]{display:none!important}
-.lr-mini.reader-music-card{left:auto;right:var(--reader-music-right,24px);top:var(--reader-music-top,145px);bottom:auto;width:var(--reader-music-width,300px);border-radius:12px;padding:16px;grid-template-columns:1fr;gap:12px;background:var(--bg);border-color:var(--line-strong,var(--line));font-family:var(--site-ui-font);box-shadow:0 8px 28px #0002}
+.lr-mini.reader-music-card{left:auto;right:var(--reader-music-right,24px);top:var(--reader-music-top,145px);bottom:auto;width:var(--reader-music-width,300px);border-radius:12px;padding:16px;grid-template-columns:1fr;gap:12px;background:var(--bg);border-color:var(--line-strong,var(--line));font-family:var(--font-ui);box-shadow:0 8px 28px #0002}
 .lr-mini.reader-music-card .lr-mini-controls{justify-content:flex-end}
 .lr-mini.reader-music-card .lr-mini-progress{grid-column:1/-1}
 .lr-mini.reader-music-card .lr-mini-title{font-size:16px;line-height:1.5}
@@ -176,7 +191,7 @@ body.reader-music-docked .source-toc{max-height:calc(100dvh - 260px)}
 @media(max-width:700px){.lr-mini.lm-mini:not(.reader-music-card){right:12px;bottom:12px;width:calc(100vw - 24px)}body.lm-player-visible #main{padding-bottom:170px}.lm-collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.lm-collection{padding-inline:18px}.lm-collection-head h2{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.lm-mini,.lm-collection *{scroll-behavior:auto!important}}
 
-.lm-cover{container-type:inline-size}.lm-cover>.lr-cover{width:100%;height:100%;aspect-ratio:1}.lm-collection-card .lr-cover-title{font-family:Times New Roman,serif}
+.lm-cover{container-type:inline-size}.lm-cover>.lr-cover{width:100%;height:100%;aspect-ratio:1}.lm-collection-card .lr-cover-title{font-family:var(--font-display)}
 
 body.reader-music-docked #main{padding-bottom:calc(var(--media-card-height,150px) + 48px)}
 body.reader-music-docked .reader-back-top,body.reader-music-docked .reader-toc-toggle{bottom:calc(var(--media-card-height,150px) + 24px)}
@@ -211,7 +226,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
 .about-live ol li,.about-live ul li{display:list-item!important;color:inherit;min-height:1em}.about-live li>p{display:block;color:inherit}
 .photo-card img,.project-card img{object-position:center 42%}.directory-preview.preview-about img{object-fit:contain;object-position:center}
 @media(max-width:700px){.home-records #recordMount{min-height:1050px}.home-records .records-loading{min-height:380px}}
-</style><link rel="stylesheet" href="/reading-timeline.css?v=44b1819d"><style>.site-information{max-width:860px}
+</style><link rel="stylesheet" href="/reading-timeline.css?v=192a8ba0"><style>.site-information{max-width:860px}
 .site-info-links{display:flex;flex-wrap:wrap;gap:14px 24px;margin:0 0 28px;font-size:14px}
 .site-info-links a{padding:6px 0;border-bottom:1px solid var(--line)}
 .site-info-links a:hover{color:var(--accent)}
@@ -254,7 +269,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
  };
 })();
 
-</script><style>@font-face{font-family:'Amalfi Coast';src:url('assets/site/amalfi-coast-5def918eb501.otf') format('opentype');font-style:normal;font-weight:400;font-display:swap}#main .opening-copy .signature{font-family:'Amalfi Coast',cursive;font-style:normal;font-size:clamp(64px,7.4vw,110px);line-height:1.65;letter-spacing:0;padding:.14em 0 .3em;clip-path:none!important}</style><style>#main .library-home .opening-copy .signature{
+</script><style>@font-face{font-family:'Amalfi Coast';src:url('assets/site/amalfi-coast-5def918eb501.otf') format('opentype');font-style:normal;font-weight:400;font-display:swap}#main .opening-copy .signature{font-family:var(--font-script);font-style:normal;font-size:clamp(64px,7.4vw,110px);line-height:1.65;letter-spacing:0;padding:.14em 0 .3em;clip-path:none!important}</style><style>#main .library-home .opening-copy .signature{
   animation:none!important;
   clip-path:none!important;
   opacity:1!important;
@@ -281,7 +296,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
 #main .library-home .opening-copy .signature-dot.clock-holding{outline:1px solid var(--accent);outline-offset:4px}
 #main .opening-copy .signature.shows-clock .signature-word{visibility:hidden!important}
 #main .opening-copy .signature.shows-clock .signature-ink,#main .opening-copy .signature.shows-clock .signature-canvas{visibility:hidden!important}
-#main .opening-copy .home-signature-clock{position:absolute;left:0;top:50%;transform:translateY(-50%);width:var(--signature-word-width);text-align:center;font-family:'Times New Roman',serif;font-size:clamp(34px,6vw,88px);font-weight:400;line-height:1.15;letter-spacing:.02em;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}
+#main .opening-copy .home-signature-clock{position:absolute;left:0;top:50%;transform:translateY(-50%);width:var(--signature-word-width);text-align:center;font-family:var(--font-display);font-size:clamp(34px,6vw,88px);font-weight:400;line-height:1.15;letter-spacing:.02em;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}
 #main .opening-copy .home-signature-clock[hidden]{display:none!important}
 @media(max-width:700px){
   #main .library-home .opening-copy .signature-dot{margin-left:8px}
@@ -405,7 +420,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
 })();
 
 </script><style>.contact-curtain .contact-signature{
-  font-family:'Amalfi Coast',cursive;font-style:normal;
+  font-family:var(--font-script);font-style:normal;
   font-size:clamp(64px,7.4vw,110px);line-height:1.65;
   letter-spacing:0;padding:.14em 0 .3em;
   clip-path:none!important;transform:none!important;
@@ -744,7 +759,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 .scene-static-poster img{width:100%;height:100%;object-fit:contain;opacity:.7}
 .scene-static-host:not(.scene-static-active)>.scene-static-poster{display:none}
 .scene-static-host.scene-static-active>canvas{visibility:hidden!important}
-.scene-static-status{position:absolute;left:16px;right:16px;bottom:12px;z-index:5;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 14px;padding:10px 14px;background:var(--bg,#111110);color:var(--muted);font:13px/1.6 var(--site-ui-font,serif)}
+.scene-static-status{position:absolute;left:16px;right:16px;bottom:12px;z-index:5;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 14px;padding:10px 14px;background:var(--bg,#111110);color:var(--muted);font:13px/1.6 var(--font-ui)}
 .scene-static-status button,.scene-static-status a{min-height:44px;display:inline-flex;align-items:center;padding:4px 8px;color:var(--ink)}
 .scene-static-host:not(.scene-static-active)>.scene-static-status{display:none}
 .galaxy-field.scene-static-active>.scene-static-poster{z-index:0}
@@ -761,7 +776,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 :root[data-appearance="cc"] .cc-opening .opening-copy{z-index:6}
 :root[data-appearance="cc"] .cc-opening .photo-plane{z-index:4}
 :root[data-appearance="cc"] .galaxy-orbits button span{background:color-mix(in srgb,var(--bg) 85%,transparent);padding:3px 5px;border-radius:2px}
-:root[data-appearance="cc"] .cc-skip{display:inline-flex;position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:9;min-height:44px;align-items:center;padding:8px 16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);font:13px/1.5 var(--site-ui-font,serif)}
+:root[data-appearance="cc"] .cc-skip{display:inline-flex;position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:9;min-height:44px;align-items:center;padding:8px 16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);font:13px/1.5 var(--font-ui)}
 .cc-letter{animation:cc-letter-in 600ms var(--ease-soft) both;animation-delay:var(--cc-letter-delay,0ms)}
 @keyframes cc-letter-in{from{opacity:.12}to{opacity:1}}
 @media(max-width:700px){
