@@ -37,9 +37,9 @@
 
 
 <link rel="stylesheet" href="/assets/site/fonts/canger-kai-8f7fc3906ad5.css">
-<link rel="stylesheet" id="site-styles" href="/assets/site/home/6fda86a80af7.css">
-<style id="color-tokens">/* LULIY colour tokens: the single place where theme colours are defined.
-   Edit values here only. site-publish/color-tokens.py injects this file into index.html
+<link rel="stylesheet" id="site-styles" href="/assets/site/home/24e5a23d878f.css">
+<style id="design-tokens">/* LULIY design tokens: the single place where theme colours and motion are defined.
+   Edit values here only. site-publish/design-tokens.py injects this file into index.html
    and rewrites old variable names (--gold, --lr-*, --ld-*, --sp-*, ...) to these tokens.
    Roles: bg page | paper card/panel | raised popover | ink heading | text body | muted secondary
           line divider | line-strong control border | accent the one brand colour (gold) | focus-ring keyboard focus
@@ -63,7 +63,21 @@
  --accent:#d2b878;--focus-ring:#e9ad88;
 }
 @media(prefers-contrast:more){:root[data-appearance]{--muted:var(--text)}}
-@media print{:root,:root[data-appearance]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}</style>
+@media print{:root,:root[data-appearance]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
+
+/* Motion: three curves, three durations. `linear` stays literal (spins, progress, loops).
+   ease        main curve: things appearing, opening, moving
+   ease-soft   small changes: hover, colour, opacity
+   ease-in-out back-and-forth, loops, leaving
+   dur-fast 200ms hover/press | dur-base 400ms panels/menus/cards | dur-slow 800ms large reveals, scene changes
+   Keyframe choreography (intro, moon, curtain) keeps its own timings. */
+:root{
+ --ease:cubic-bezier(.19,1,.22,1);
+ --ease-soft:cubic-bezier(.22,.61,.36,1);
+ --ease-in-out:cubic-bezier(.65,0,.35,1);
+ --dur-fast:200ms;--dur-base:400ms;--dur-slow:800ms;
+}
+@media(prefers-reduced-motion:reduce){:root{--dur-fast:1ms;--dur-base:1ms;--dur-slow:1ms}}</style>
 <style id="content-light">/* Pointer-responsive holographic colour, with no decorative rectangular frame. */
 :root{--foil-a:#efcf7e;--foil-b:#79d4d8;--foil-c:#c198e5;--foil-glow:.28;--foil-blend:screen}
 :root[data-appearance=light]{--foil-a:#cc9a37;--foil-b:#519da7;--foil-c:#a573c4;--foil-glow:.23;--foil-blend:multiply}
@@ -98,7 +112,7 @@
 #main :is(.source-toc,.article-toc) .reader-toc-item.level-h2{font-size:16px;font-weight:500}
 #main .reader-toc-item.current{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
 #main .reader-toc-fold{flex:0 0 28px;width:28px;min-height:38px;padding:0;border:0;background:transparent;color:var(--muted);cursor:pointer}
-#main .reader-toc-fold svg{width:12px;height:12px;transform:rotate(0);transition:transform .18s ease}
+#main .reader-toc-fold svg{width:12px;height:12px;transform:rotate(0);transition:transform var(--dur-fast) var(--ease-soft)}
 #main .reader-toc-fold[aria-expanded=true] svg{transform:rotate(90deg)}
 #main .reader-toc-fold:focus-visible,#main .reader-toc-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 #main .reader-toc-tree [hidden]{display:none!important}
@@ -127,17 +141,17 @@ body.reader-music-docked .source-toc{max-height:calc(100dvh - 260px)}
 @media(max-width:700px){body.reader-music-docked .source-toc{bottom:155px;top:auto;max-height:calc(100dvh - 260px)}body.reader-music-docked .source-toc nav{max-height:calc(100dvh - 335px)}}
 </style><style id="directory-mark">/* Book-page directory mark; both controls retain their original hit targets. */
 :root{--menu-shift:8px}
-#header #studyGlobalOpen{transform:translateX(var(--menu-shift));padding:12px;background:none;border:0;border-radius:0;transition:color 180ms}
-#directory .plain-close{right:calc(var(--header-gutter) - var(--menu-shift));padding:12px;background:none;border:0;border-radius:0;transition:color 180ms}
+#header #studyGlobalOpen{transform:translateX(var(--menu-shift));padding:12px;background:none;border:0;border-radius:0;transition:color var(--dur-fast)}
+#directory .plain-close{right:calc(var(--header-gutter) - var(--menu-shift));padding:12px;background:none;border:0;border-radius:0;transition:color var(--dur-fast)}
 #header #studyGlobalOpen:hover,#directory .plain-close:hover{background:none;color:var(--accent)}
 #header #studyGlobalOpen svg,#directory .plain-close svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;overflow:visible}
-#header #studyGlobalOpen .menu-line,#directory .menu-line{transform-box:view-box;transform-origin:16px 16px;transition:transform 180ms ease,opacity 240ms ease;vector-effect:non-scaling-stroke}
+#header #studyGlobalOpen .menu-line,#directory .menu-line{transform-box:view-box;transform-origin:16px 16px;transition:transform var(--dur-fast) var(--ease-soft),opacity var(--dur-fast) var(--ease-soft);vector-effect:non-scaling-stroke}
 #header #studyGlobalOpen .line-middle,#directory .line-middle{transform:translateX(3px) scaleX(.76923077)}
 #header #studyGlobalOpen .line-bottom,#directory .line-bottom{transform:translateX(6px) scaleX(.53846154)}
 @media(hover:hover){#header #studyGlobalOpen:hover .menu-line,#directory:not(.icon-open) .plain-close:hover .menu-line{transform:none}}
-#directory.icon-open .line-top{transform:translateY(8px) rotate(45deg);transform-origin:16px 8px;transition-duration:240ms}
+#directory.icon-open .line-top{transform:translateY(8px) rotate(45deg);transform-origin:16px 8px;transition-duration:var(--dur-fast)}
 #directory.icon-open .line-middle{opacity:0}
-#directory.icon-open .line-bottom{transform:translateY(-8px) rotate(-45deg);transform-origin:16px 24px;transition-duration:240ms}
+#directory.icon-open .line-bottom{transform:translateY(-8px) rotate(-45deg);transform-origin:16px 24px;transition-duration:var(--dur-fast)}
 #header #studyGlobalOpen:focus-visible,#directory .plain-close:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media(max-width:700px){:root{--menu-shift:4px}}
 @media(prefers-reduced-motion:reduce){#header #studyGlobalOpen,#directory .plain-close,#header #studyGlobalOpen .menu-line,#directory .menu-line{transition:none!important}}
@@ -145,7 +159,7 @@ body.reader-music-docked .source-toc{max-height:calc(100dvh - 260px)}
 #header #studyGlobalOpen{position:relative}
 #header #studyGlobalOpen,#directory .plain-close{-webkit-touch-callout:none;user-select:none;touch-action:manipulation}
 #header #studyGlobalOpen::after,#directory .plain-close::after{content:'';position:absolute;pointer-events:none;left:15px;bottom:7px;width:26px;height:2px;background:var(--accent,var(--ink));transform:scaleX(0);transform-origin:left;opacity:0}
-#header #studyGlobalOpen.directory-holding::after,#directory .plain-close.directory-holding::after{opacity:1;transform:scaleX(1);transition:transform 650ms linear}
+#header #studyGlobalOpen.directory-holding::after,#directory .plain-close.directory-holding::after{opacity:1;transform:scaleX(1);transition:transform var(--dur-slow) linear}
 .directory-fullscreen-status{position:fixed;z-index:2147483646;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);max-width:calc(100vw - 32px);padding:10px 16px;border:1px solid var(--line);border-radius:8px;background:var(--paper,var(--bg));color:var(--ink);font:inherit;font-size:13px;pointer-events:none;text-align:center}
 .directory-fullscreen-status[hidden]{display:none}
 @media(prefers-reduced-motion:reduce){#header #studyGlobalOpen.directory-holding::after,#directory .plain-close.directory-holding::after{transition:none;transform:scaleX(0)}#header #studyGlobalOpen.directory-hold-ready::after,#directory .plain-close.directory-hold-ready::after{transform:scaleX(1)}}
@@ -256,7 +270,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
   flex-shrink:0;width:clamp(32px,3.05vw,44px);height:clamp(32px,3.05vw,44px);
   padding:3px;margin-left:12px;box-sizing:border-box;overflow:visible;
   opacity:0;visibility:hidden;transform:translateY(4px);
-  transition:opacity .32s ease,transform .32s ease,visibility 0s;
+  transition:opacity var(--dur-base) var(--ease-soft),transform var(--dur-base) var(--ease-soft),visibility 0s;
 }
 #main .library-home .opening-copy .signature[data-writing="complete"] .signature-dot{
   opacity:1;visibility:visible;transform:none;
@@ -405,7 +419,7 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
 .contact-signature .signature-dot{
   width:clamp(32px,3.05vw,44px);height:clamp(32px,3.05vw,44px);
   margin-left:12px;padding:3px;box-sizing:border-box;flex-shrink:0;
-  overflow:visible;opacity:0;visibility:hidden;transition:opacity .32s ease;
+  overflow:visible;opacity:0;visibility:hidden;transition:opacity var(--dur-base) var(--ease-soft);
 }
 .contact-signature .signature-dot img{object-fit:contain}
 .contact-signature[data-writing="complete"] .signature-dot{opacity:1;visibility:visible}
@@ -466,8 +480,8 @@ body:has(.study-room-player) .lr-mini:not(.lm-positioned){display:none!important
   position:absolute;margin:0;padding:2px;
   width:clamp(36px,3.5vw,50px);height:clamp(36px,3.5vw,50px);
   transform:translateY(3px);pointer-events:none;
-  transition:opacity 1.2s cubic-bezier(.22,.61,.36,1) .45s,
-    transform 1.2s cubic-bezier(.22,.61,.36,1) .45s;
+  transition:opacity 1.2s var(--ease-soft) .45s,
+    transform 1.2s var(--ease-soft) .45s;
 }
 .contact-signature[data-writing="complete"] .signature-dot,
 .signature[data-decor="complete"] .signature-dot{transform:none}
@@ -722,9 +736,7 @@ html[data-theme="cc"] .signature-dot img{filter:brightness(1.7) contrast(1.25) d
  #main .library-home .opening-copy .signature-word{background:none;color:CanvasText;-webkit-text-fill-color:CanvasText}
 }
 </style><style id="experience-layer">/* Shared interaction rhythm. These rules never change article type or measure. */
-:root{--luliy-ui-time:220ms;--luliy-panel-time:320ms;--luliy-ui-ease:cubic-bezier(.19,1,.22,1)}
-html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not(.contact-signature){transition-timing-function:var(--luliy-ui-ease)!important;transition-duration:var(--luliy-ui-time)!important}
-:where(.ld-modal,.reader-panel,.reader-settings,.article-filter-panel){--ease:var(--luliy-ui-ease);--t-ui:var(--luliy-ui-time)}
+html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not(.contact-signature){transition-timing-function:var(--ease)!important;transition-duration:var(--dur-fast)!important}
 :where(.ld-toolbar button,.reader-panel button,.lr-transport button){min-width:44px;min-height:44px}
 :where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{outline:2px solid var(--accent,#b89a6a);outline-offset:4px}
 .scene-static-host{position:relative}
@@ -750,7 +762,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 :root[data-appearance="cc"] .cc-opening .photo-plane{z-index:4}
 :root[data-appearance="cc"] .galaxy-orbits button span{background:color-mix(in srgb,var(--bg) 85%,transparent);padding:3px 5px;border-radius:2px}
 :root[data-appearance="cc"] .cc-skip{display:inline-flex;position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:9;min-height:44px;align-items:center;padding:8px 16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);font:13px/1.5 var(--site-ui-font,serif)}
-.cc-letter{animation:cc-letter-in 600ms ease-out both;animation-delay:var(--cc-letter-delay,0ms)}
+.cc-letter{animation:cc-letter-in 600ms var(--ease-soft) both;animation-delay:var(--cc-letter-delay,0ms)}
 @keyframes cc-letter-in{from{opacity:.12}to{opacity:1}}
 @media(max-width:700px){
  :root[data-appearance="cc"]{--cc-frame:7px}
@@ -866,17 +878,17 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 <script src="/assets/site/home/10b3a8384aa3.js"></script>
 <script src="/assets/site/home/71ef4ea092f2.js"></script>
 <script src="/assets/site/home/79bacafa9deb.js"></script>
-<script src="/assets/site/home/c0f120b10ba7.js"></script>
+<script src="/assets/site/home/f290a1faea96.js"></script>
 <script src="/assets/site/home-cc-0563166b0a25.js"></script>
 <script src="/assets/site/home/1decb7dd1fbc.js"></script>
 
 <script id="guide-optimization-js">(()=>{'use strict';const fine=matchMedia('(hover:hover) and (pointer:fine)'),calm=matchMedia('(prefers-reduced-motion:reduce)');let frame=0,point=null;
 document.addEventListener('pointermove',e=>{if(!fine.matches||calm.matches)return;point={target:e.target,x:e.clientX};if(frame)return;frame=requestAnimationFrame(()=>{frame=0;const el=point.target.closest?.('.project-card,.space-link');if(el)el.style.setProperty('--mx',(point.x-el.getBoundingClientRect().left)+'px')})},{passive:true});})();</script><script id="directory-motion-js">(()=>{'use strict';const d=document.querySelector('#directory'),button=d.querySelector('[data-close="directory"]'),reduce=matchMedia('(prefers-reduced-motion:reduce)');let closing=false,animations=[];
 function cancel(){animations.forEach(a=>a.cancel());animations=[]}
-window.LuliyDirectoryMotion={open(dialog){closing=false;cancel();dialog.classList.add('icon-open');if(reduce.matches||document.documentElement.dataset.input==='keyboard')return;animations=[...dialog.querySelectorAll('.directory-main,.directory-bottom')].map(el=>el.animate([{transform:'translateX(40px)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:260,easing:'cubic-bezier(.32,.72,0,1)'}))}};
-function close(e){e.preventDefault();e.stopImmediatePropagation();if(closing||!d.open)return;closing=true;const panels=[...d.querySelectorAll('.directory-main,.directory-bottom')],starts=panels.map(el=>({transform:getComputedStyle(el).transform,opacity:getComputedStyle(el).opacity}));cancel();d.classList.remove('icon-open');if(reduce.matches||e.type==='cancel'||document.documentElement.dataset.input==='keyboard'){closing=false;d.close();return}animations=panels.map((el,i)=>el.animate([starts[i],{transform:'translateX(32px)',opacity:0}],{duration:180,easing:'cubic-bezier(.4,0,1,1)',fill:'forwards'}));Promise.all(animations.map(a=>a.finished)).then(()=>{closing=false;if(d.open)d.close()},()=>{closing=false})}
+window.LuliyDirectoryMotion={open(dialog){closing=false;cancel();dialog.classList.add('icon-open');if(reduce.matches||document.documentElement.dataset.input==='keyboard')return;animations=[...dialog.querySelectorAll('.directory-main,.directory-bottom')].map(el=>el.animate([{transform:'translateX(40px)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:260,easing:'cubic-bezier(.19,1,.22,1)'}))}};
+function close(e){e.preventDefault();e.stopImmediatePropagation();if(closing||!d.open)return;closing=true;const panels=[...d.querySelectorAll('.directory-main,.directory-bottom')],starts=panels.map(el=>({transform:getComputedStyle(el).transform,opacity:getComputedStyle(el).opacity}));cancel();d.classList.remove('icon-open');if(reduce.matches||e.type==='cancel'||document.documentElement.dataset.input==='keyboard'){closing=false;d.close();return}animations=panels.map((el,i)=>el.animate([starts[i],{transform:'translateX(32px)',opacity:0}],{duration:180,easing:'cubic-bezier(.65,0,.35,1)',fill:'forwards'}));Promise.all(animations.map(a=>a.finished)).then(()=>{closing=false;if(d.open)d.close()},()=>{closing=false})}
 button.addEventListener('click',close,true);d.addEventListener('cancel',close,true);d.addEventListener('close',()=>{closing=false;cancel();d.classList.remove('icon-open')});})();
-</script><script>(()=>{const d=document.querySelector('#directory'),top=d.querySelector('.directory-top'),home=document.createElement('a');home.className='directory-home-brand';home.href='#/';home.textContent='LULIY';home.setAttribute('aria-label','首页');top.prepend(home);home.addEventListener('click',()=>d.close());const toggle=d.querySelector('.directory-language-toggle'),options=d.querySelector('.directory-language-options');function close(){options.hidden=true;toggle.setAttribute('aria-expanded','false')}toggle.addEventListener('click',()=>{options.hidden=!options.hidden;toggle.setAttribute('aria-expanded',String(!options.hidden))});options.addEventListener('click',close);d.addEventListener('close',close);d.addEventListener('click',e=>{if(!e.target.closest('.directory-quiet-language'))close()});function sync(){const lang=document.documentElement.lang.slice(0,2);toggle.querySelector('span').textContent=lang==='en'?'English':lang==='ja'?'日本語':'中文';}new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});sync();})();</script><script>(()=>{const d=document.querySelector('#directory'),home=d.querySelector('.directory-home-brand'),logo=document.querySelector('#header .brand-mark svg');if(home&&logo)home.prepend(logo.cloneNode(true));const other=d.querySelector('.directory-other');other.addEventListener('click',e=>{if(e.target.closest('.directory-other-options a,.directory-other-options button'))other.open=false});d.querySelector('.directory-other-home').addEventListener('click',()=>d.close());d.addEventListener('close',()=>other.open=false);d.addEventListener('click',e=>{if(!e.target.closest('.directory-other'))other.open=false});})();</script><script>(()=>{const d=document.querySelector('#directory'),bar=d.querySelector('.directory-other-bar'),other=bar.querySelector('.directory-other'),lang=bar.querySelector('.directory-quiet-language'),cloud=other.querySelector('a[href="https://cloud.luliy.me/"]'),theme=other.querySelector('[data-theme]');const left=document.createElement('div'),right=document.createElement('div');left.className='directory-other-left';right.className='directory-display-right';cloud.setAttribute('aria-label','云盘');cloud.title='云盘';const icon=document.querySelector('#header .cloud-link svg');cloud.replaceChildren(icon.cloneNode(true));theme.setAttribute('aria-label','切换纸墨');theme.title='切换纸墨';theme.querySelector('[data-i18n]')?.remove();left.append(other,cloud);right.append(theme,lang);bar.append(left,right);})();</script><script>(()=>{const d=document.querySelector('#directory'),home=d.querySelector('.directory-home-brand'),original=document.querySelector('#header .brand-mark');if(!home||!original)return;const group=document.createElement('div');group.className='directory-brand-group';home.before(group);const link=original.cloneNode(true);link.className='directory-brand-mark';home.querySelector('svg')?.remove();group.append(link,home);})();</script><script>(()=>{document.querySelector('#header .brand').textContent='ULIY';const home=document.querySelector('.directory-home-brand');if(home)home.textContent='ULIY';const data=window.LULIY_DATA;for(const type of ['books','posts','music']){const root=document.querySelector('.preview-'+type);if(!root)continue;root.classList.add('directory-composite');const shelf=document.createElement('img'),reader=document.createElement('img');shelf.className='directory-composite-shelf';shelf.src=data.collections.shelfPhotos[2];reader.className='directory-composite-reader';reader.src='https://cloud.luliy.me/api/image?path=shared%2F'+({books:'wei.png',posts:'Written.png',music:'listen.png'}[type]);for(const img of [shelf,reader]){img.alt='';img.decoding='async';img.setAttribute('aria-hidden','true');}root.prepend(shelf,reader);}})();</script><script>(()=>{const root=document.querySelector('.preview-projects'),img=document.createElement('img');img.className='directory-project-portrait';img.src=window.LULIY_DATA.scenes.sidePortrait||window.LULIY_DATA.scenes.portrait;img.alt='';img.setAttribute('aria-hidden','true');img.decoding='async';root.prepend(img);})();</script><script>(()=>{const root=document.querySelector('#directory .preview-about'),text=document.createElement('p');text.className='about-traditional-verse';text.textContent='長余佩之陸離';text.setAttribute('aria-hidden','true');root.append(text);})();</script><script>(()=>{for(const el of document.querySelectorAll('#header .brand,.directory-home-brand')){el.replaceChildren(document.createTextNode('ULI'));const y=document.createElement('span');y.className='brand-cross-anchor';y.textContent='Y';el.append(y);}})();</script><script>(()=>{const points=[[25,40],[32,30],[44,44],[36,59],[52,20],[56,44],[49,71],[66,65],[68,33],[76,52]],edges=[[0,1],[1,2],[2,3],[3,0],[2,4],[4,5],[5,2],[2,6],[6,7],[7,5],[5,8],[8,9],[9,7],[3,6]];function mount(){const nav=document.querySelector('.galaxy-orbits');if(!nav||nav.dataset.sagittarius)return;nav.dataset.sagittarius='true';const svg=nav.querySelector('svg'),ns='http://www.w3.org/2000/svg',path=document.createElementNS(ns,'path');path.setAttribute('class','sagittarius-lines');path.setAttribute('d',edges.map(([a,b])=>'M'+points[a][0]*8+' '+points[a][1]*6+'L'+points[b][0]*8+' '+points[b][1]*6).join(' '));svg.replaceChildren(path);points.forEach(([x,y],i)=>{const star=document.createElement('span');star.className='sagittarius-node';star.style.left=x+'%';star.style.top=y+'%';star.setAttribute('aria-hidden','true');star.dataset.constellationStar=i;nav.append(star)});const map={books:[0,'STUDY','edge-left'],posts:[4,'ARTICLES','edge-top'],projects:[9,'WORKS','edge-right'],music:[6,'RECORDS','edge-bottom']};for(const button of nav.querySelectorAll('[data-galaxy-entry]')){const [index,label,position]=map[button.dataset.galaxyEntry];button.querySelector('span').textContent=label;button.style.left=points[index][0]+'%';button.style.top=points[index][1]+'%';button.style.right='auto';button.style.bottom='auto';button.classList.add(position);}}new MutationObserver(mount).observe(document.querySelector('#main'),{childList:true});mount();})();</script><script>document.documentElement.classList.add("luliy-first-paint-ready");</script><script id="craftsmanship-js" src="/assets/site/home/8e68ac794cf2.js"></script>
+</script><script>(()=>{const d=document.querySelector('#directory'),top=d.querySelector('.directory-top'),home=document.createElement('a');home.className='directory-home-brand';home.href='#/';home.textContent='LULIY';home.setAttribute('aria-label','首页');top.prepend(home);home.addEventListener('click',()=>d.close());const toggle=d.querySelector('.directory-language-toggle'),options=d.querySelector('.directory-language-options');function close(){options.hidden=true;toggle.setAttribute('aria-expanded','false')}toggle.addEventListener('click',()=>{options.hidden=!options.hidden;toggle.setAttribute('aria-expanded',String(!options.hidden))});options.addEventListener('click',close);d.addEventListener('close',close);d.addEventListener('click',e=>{if(!e.target.closest('.directory-quiet-language'))close()});function sync(){const lang=document.documentElement.lang.slice(0,2);toggle.querySelector('span').textContent=lang==='en'?'English':lang==='ja'?'日本語':'中文';}new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});sync();})();</script><script>(()=>{const d=document.querySelector('#directory'),home=d.querySelector('.directory-home-brand'),logo=document.querySelector('#header .brand-mark svg');if(home&&logo)home.prepend(logo.cloneNode(true));const other=d.querySelector('.directory-other');other.addEventListener('click',e=>{if(e.target.closest('.directory-other-options a,.directory-other-options button'))other.open=false});d.querySelector('.directory-other-home').addEventListener('click',()=>d.close());d.addEventListener('close',()=>other.open=false);d.addEventListener('click',e=>{if(!e.target.closest('.directory-other'))other.open=false});})();</script><script>(()=>{const d=document.querySelector('#directory'),bar=d.querySelector('.directory-other-bar'),other=bar.querySelector('.directory-other'),lang=bar.querySelector('.directory-quiet-language'),cloud=other.querySelector('a[href="https://cloud.luliy.me/"]'),theme=other.querySelector('[data-theme]');const left=document.createElement('div'),right=document.createElement('div');left.className='directory-other-left';right.className='directory-display-right';cloud.setAttribute('aria-label','云盘');cloud.title='云盘';const icon=document.querySelector('#header .cloud-link svg');cloud.replaceChildren(icon.cloneNode(true));theme.setAttribute('aria-label','切换纸墨');theme.title='切换纸墨';theme.querySelector('[data-i18n]')?.remove();left.append(other,cloud);right.append(theme,lang);bar.append(left,right);})();</script><script>(()=>{const d=document.querySelector('#directory'),home=d.querySelector('.directory-home-brand'),original=document.querySelector('#header .brand-mark');if(!home||!original)return;const group=document.createElement('div');group.className='directory-brand-group';home.before(group);const link=original.cloneNode(true);link.className='directory-brand-mark';home.querySelector('svg')?.remove();group.append(link,home);})();</script><script>(()=>{document.querySelector('#header .brand').textContent='ULIY';const home=document.querySelector('.directory-home-brand');if(home)home.textContent='ULIY';const data=window.LULIY_DATA;for(const type of ['books','posts','music']){const root=document.querySelector('.preview-'+type);if(!root)continue;root.classList.add('directory-composite');const shelf=document.createElement('img'),reader=document.createElement('img');shelf.className='directory-composite-shelf';shelf.src=data.collections.shelfPhotos[2];reader.className='directory-composite-reader';reader.src='https://cloud.luliy.me/api/image?path=shared%2F'+({books:'wei.png',posts:'Written.png',music:'listen.png'}[type]);for(const img of [shelf,reader]){img.alt='';img.decoding='async';img.setAttribute('aria-hidden','true');}root.prepend(shelf,reader);}})();</script><script>(()=>{const root=document.querySelector('.preview-projects'),img=document.createElement('img');img.className='directory-project-portrait';img.src=window.LULIY_DATA.scenes.sidePortrait||window.LULIY_DATA.scenes.portrait;img.alt='';img.setAttribute('aria-hidden','true');img.decoding='async';root.prepend(img);})();</script><script>(()=>{const root=document.querySelector('#directory .preview-about'),text=document.createElement('p');text.className='about-traditional-verse';text.textContent='長余佩之陸離';text.setAttribute('aria-hidden','true');root.append(text);})();</script><script>(()=>{for(const el of document.querySelectorAll('#header .brand,.directory-home-brand')){el.replaceChildren(document.createTextNode('ULI'));const y=document.createElement('span');y.className='brand-cross-anchor';y.textContent='Y';el.append(y);}})();</script><script>(()=>{const points=[[25,40],[32,30],[44,44],[36,59],[52,20],[56,44],[49,71],[66,65],[68,33],[76,52]],edges=[[0,1],[1,2],[2,3],[3,0],[2,4],[4,5],[5,2],[2,6],[6,7],[7,5],[5,8],[8,9],[9,7],[3,6]];function mount(){const nav=document.querySelector('.galaxy-orbits');if(!nav||nav.dataset.sagittarius)return;nav.dataset.sagittarius='true';const svg=nav.querySelector('svg'),ns='http://www.w3.org/2000/svg',path=document.createElementNS(ns,'path');path.setAttribute('class','sagittarius-lines');path.setAttribute('d',edges.map(([a,b])=>'M'+points[a][0]*8+' '+points[a][1]*6+'L'+points[b][0]*8+' '+points[b][1]*6).join(' '));svg.replaceChildren(path);points.forEach(([x,y],i)=>{const star=document.createElement('span');star.className='sagittarius-node';star.style.left=x+'%';star.style.top=y+'%';star.setAttribute('aria-hidden','true');star.dataset.constellationStar=i;nav.append(star)});const map={books:[0,'STUDY','edge-left'],posts:[4,'ARTICLES','edge-top'],projects:[9,'WORKS','edge-right'],music:[6,'RECORDS','edge-bottom']};for(const button of nav.querySelectorAll('[data-galaxy-entry]')){const [index,label,position]=map[button.dataset.galaxyEntry];button.querySelector('span').textContent=label;button.style.left=points[index][0]+'%';button.style.top=points[index][1]+'%';button.style.right='auto';button.style.bottom='auto';button.classList.add(position);}}new MutationObserver(mount).observe(document.querySelector('#main'),{childList:true});mount();})();</script><script>document.documentElement.classList.add("luliy-first-paint-ready");</script><script id="craftsmanship-js" src="/assets/site/home/694a05b1a358.js"></script>
 <script id="luliy-drive-js" src="/assets/site/home/c3b7c6555451.js"></script><script id="site-route-tail">(()=>{'use strict';
 const group=document.querySelector('#header .brand-group');
 if(!group)return;
@@ -894,7 +906,7 @@ let previousName,activeAnchor=logoAnchor,flight=null,initialized=false;
 function pointAt(anchor){const r=anchor.getBoundingClientRect();return{x:r.right,y:r.top};}
 function stopFlight(){if(!flight)return null;const r=flight.el.getBoundingClientRect(),point={x:r.left,y:r.top};flight.animation.cancel();flight.el.remove();flight=null;return point;}
 function settle(anchor){anchor.classList.remove('brand-cross-in-transit','brand-star-arrive');void anchor.offsetWidth;anchor.classList.add('brand-star-arrive');}
-function moveStar(from,target){if(!target)return;if(!from||reduced.matches||typeof target.animate!=='function'){settle(target);return;}target.classList.add('brand-cross-in-transit');const to=pointAt(target),star=document.createElement('span');star.className='brand-star-flight brand-cross-anchor';star.setAttribute('aria-hidden','true');document.body.append(star);const animation=star.animate([{transform:`translate3d(${from.x}px,${from.y}px,0) scale(.72)`,opacity:.55},{transform:`translate3d(${to.x}px,${to.y}px,0) scale(1)`,opacity:1}],{duration:520,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});flight={el:star,animation};animation.onfinish=()=>{if(flight?.el!==star)return;star.remove();flight=null;settle(target);};}
+function moveStar(from,target){if(!target)return;if(!from||reduced.matches||typeof target.animate!=='function'){settle(target);return;}target.classList.add('brand-cross-in-transit');const to=pointAt(target),star=document.createElement('span');star.className='brand-star-flight brand-cross-anchor';star.setAttribute('aria-hidden','true');document.body.append(star);const animation=star.animate([{transform:`translate3d(${from.x}px,${from.y}px,0) scale(.72)`,opacity:.55},{transform:`translate3d(${to.x}px,${to.y}px,0) scale(1)`,opacity:1}],{duration:520,easing:'cubic-bezier(.19,1,.22,1)',fill:'forwards'});flight={el:star,animation};animation.onfinish=()=>{if(flight?.el!==star)return;star.remove();flight=null;settle(target);};}
 function update(){const route=decodeURIComponent((location.hash||'#/').slice(2).split('?')[0]).split('/')[0];let name=names[route]||'';if(route==='article'&&document.querySelector('#chapterNav a[href*="#/books"][aria-current="page"]'))name='Study';if(name===previousName&&initialized)return;const from=stopFlight()||pointAt(activeAnchor);suffix.textContent=name;suffix.hidden=!name;suffix.classList.toggle('brand-cross-anchor',!!name);logoAnchor.classList.toggle('brand-cross-anchor',!name);group.classList.toggle('has-page-name',!!name);suffix.setAttribute('aria-label',name?name+' · 刷新目前頁面':'頁面名稱');suffix.title='刷新目前頁面';const target=name?suffix:logoAnchor;activeAnchor=target;if(initialized)moveStar(from,target);else settle(target);previousName=name;initialized=true;}
 addEventListener('hashchange',()=>{update();requestAnimationFrame(update);});
 update();

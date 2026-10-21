@@ -5744,7 +5744,7 @@ window.LuliyRecordExtras={configure,attach,update,volume:syncNoise,onPlay:syncNo
       if(!homeTour||homeTour.transfer)return;
       // Render at a stable size while fading. Only resize once, behind the fade,
       // instead of reallocating WebGL and refraction buffers on every wheel tick.
-      const fade=scene.animate([{opacity:1},{opacity:0}],{duration:180,easing:'ease-out',fill:'forwards'});
+      const fade=scene.animate([{opacity:1},{opacity:0}],{duration:180,easing:'cubic-bezier(.22,.61,.36,1)',fill:'forwards'});
       const transfer={fade,timer:0};homeTour.transfer=transfer;
       transfer.timer=setTimeout(()=>{
         if(destroyed||!homeTour||homeTour.transfer!==transfer)return;
@@ -5752,7 +5752,7 @@ window.LuliyRecordExtras={configure,attach,update,volume:syncNoise,onPlay:syncNo
         homeTour.completed=true;
         endHomeTour();view={rx:48,rz:708,zoom:1,tx:0,ty:.12,tz:0};updateView();
         window.scrollTo({top,behavior:'instant'});
-        homeTour.reveal?.cancel();homeTour.reveal=layout.animate([{opacity:0,translate:'0 8px'},{opacity:1,translate:'0 0'}],{duration:360,easing:'cubic-bezier(.2,.7,.2,1)'});
+        homeTour.reveal?.cancel();homeTour.reveal=layout.animate([{opacity:0,translate:'0 8px'},{opacity:1,translate:'0 0'}],{duration:360,easing:'cubic-bezier(.19,1,.22,1)'});
       },180);
     }
     function updateHomeTour(force=false){

@@ -1,5 +1,5 @@
-/* LULIY colour tokens: the single place where theme colours are defined.
-   Edit values here only. site-publish/color-tokens.py injects this file into index.html
+/* LULIY design tokens: the single place where theme colours and motion are defined.
+   Edit values here only. site-publish/design-tokens.py injects this file into index.html
    and rewrites old variable names (--gold, --lr-*, --ld-*, --sp-*, ...) to these tokens.
    Roles: bg page | paper card/panel | raised popover | ink heading | text body | muted secondary
           line divider | line-strong control border | accent the one brand colour (gold) | focus-ring keyboard focus
@@ -24,3 +24,17 @@
 }
 @media(prefers-contrast:more){:root[data-appearance]{--muted:var(--text)}}
 @media print{:root,:root[data-appearance]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
+
+/* Motion: three curves, three durations. `linear` stays literal (spins, progress, loops).
+   ease        main curve: things appearing, opening, moving
+   ease-soft   small changes: hover, colour, opacity
+   ease-in-out back-and-forth, loops, leaving
+   dur-fast 200ms hover/press | dur-base 400ms panels/menus/cards | dur-slow 800ms large reveals, scene changes
+   Keyframe choreography (intro, moon, curtain) keeps its own timings. */
+:root{
+ --ease:cubic-bezier(.19,1,.22,1);
+ --ease-soft:cubic-bezier(.22,.61,.36,1);
+ --ease-in-out:cubic-bezier(.65,0,.35,1);
+ --dur-fast:200ms;--dur-base:400ms;--dur-slow:800ms;
+}
+@media(prefers-reduced-motion:reduce){:root{--dur-fast:1ms;--dur-base:1ms;--dur-slow:1ms}}

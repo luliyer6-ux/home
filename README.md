@@ -229,7 +229,7 @@ python package-drive.py
 3. **注入修复文件**：在 `</head>` 前加入 `site-publish/home-fixes.css`，在 `</body>` 前加入 `home-fixes.js`（目前的作用是：手机和平板滚动后，顶栏加半透明背景）。
 4. **繁简修正**：钟→鐘，补上 着→著，并修正 詞彙、字彙、語彙、乾淨、乾燥、餅乾、鍾情、鍾愛 等词组。
 5. **开场脚本版本号**：按 `intro/intro.js` 的内容自动更新 `?v=`。
-6. **颜色变量**：最后运行 `site-publish/color-tokens.py`（也可单独运行）。见下方 5.1。
+6. **设计变量（颜色、动效）**：最后运行 `site-publish/design-tokens.py`（也可单独运行）。见下方 5.1。
 
 用法：
 
@@ -243,9 +243,9 @@ python3 site-publish/optimize-home.py
 
 建议以后把这一步并入本机的 `build-preview.py` 或 `package-drive.py`，从源头上避免漏跑。
 
-### 5.1 颜色变量：`site-publish/color-tokens.css`
+### 5.1 设计变量：`site-publish/design-tokens.css`
 
-三套外观（深色 dark / 浅色 light / cc）的界面颜色**只在这一个文件里定义**，每套 10 个：
+三套外观（深色 dark / 浅色 light / cc）的界面颜色和全站动效**只在这一个文件里定义**。颜色每套 10 个：
 
 | 变量 | 用途 | 深色 | 浅色 | cc |
 |---|---|---|---|---|
@@ -260,8 +260,21 @@ python3 site-publish/optimize-home.py
 | `--accent` | 唯一强调色（金） | #b89a6a | #8b6840 | #d2b878 |
 | `--focus-ring` | 键盘焦点框 | #b89a6a | #9b4a32 | #e9ad88 |
 
-- 改颜色：只改 `color-tokens.css`，然后运行 `python3 site-publish/optimize-home.py`（或 `python3 site-publish/color-tokens.py`）。
-- `color-tokens.py` 会把旧变量名改成上面的 10 个（`--gold`→`--accent`，`--lr-*`、`--ld-*`、`--sp-*`、`--surface-*`、`--text-*`、`--border-*`、`--control-line`、`--reading-accent`、`--rt-accent`、`--reader-heading-color` 等），删除其他地方对这些颜色的定义，把文件内嵌为 `<style id="color-tokens">`，并给改动过的缓存文件换新哈希名。可重复运行。
+动效 3 条曲线、3 档时长（`linear` 照旧用于旋转、进度和循环）：
+
+| 变量 | 值 | 用途 |
+|---|---|---|
+| `--ease` | cubic-bezier(.19,1,.22,1) | 主曲线：出现、展开、移动 |
+| `--ease-soft` | cubic-bezier(.22,.61,.36,1) | 小变化：悬停、颜色、透明度 |
+| `--ease-in-out` | cubic-bezier(.65,0,.35,1) | 往返、循环、离场 |
+| `--dur-fast` | 200ms | 悬停、按下 |
+| `--dur-base` | 400ms | 面板、菜单、卡片 |
+| `--dur-slow` | 800ms | 大块出现、场景切换 |
+
+- 过渡时长按就近归档：<283ms→fast，<566ms→base，≤1100ms→slow；更长的（开场、月亮、幕布）和关键帧动画时长、延迟都保留原值。系统开启“减弱动态效果”时三档都变成 1ms。
+- 脚本里的 Web Animations（`easing:'…'`）不能用变量，脚本会写入对应曲线的字面值。
+- 改颜色或动效：只改 `design-tokens.css`，然后运行 `python3 site-publish/optimize-home.py`（或 `python3 site-publish/design-tokens.py`）。
+- `design-tokens.py` 会把旧变量名改成上面的 10 个（颜色：`--gold`→`--accent`，`--lr-*`、`--ld-*`、`--sp-*`、`--surface-*`、`--text-*`、`--border-*`、`--control-line`、`--reading-accent`、`--rt-accent`、`--reader-heading-color` 等；动效：`--ease-out`、`--ease-settle`、`--ease-spring`、`--ui-ease`、`--luliy-ui-*`、`--dur-instant`、`--t-ui` 等），删除其他地方对这些颜色的定义，把文件内嵌为 `<style id="design-tokens">`，并给改动过的缓存文件换新哈希名。可重复运行。
 - 源工程重建后旧变量名会回来，跑一遍 `optimize-home.py` 即可重新收拢；长期仍建议在本机源模块里直接改用这 10 个变量。
 - `--reader-body-color` 保留：阅读设置会把用户选的正文颜色写在 `<html>` 上，默认值是 `--text`。
 - 场景专用颜色不进这张表：卡片烫金 `--foil-*`、首页签名金 `--signature-gold-*`、唱片封面插画、唱机材质。
