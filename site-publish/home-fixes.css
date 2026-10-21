@@ -24,6 +24,25 @@
     right: 14px !important;
     top: auto !important;
     bottom: calc(max(17px, env(safe-area-inset-bottom)) + 56px) !important;
+    border-radius: 50% !important;
+  }
+  /* Contents panel opens from the right, just above the TOC button. */
+  html body #main :is(.source-toc, .article-toc) {
+    left: auto !important;
+    right: 14px !important;
+    top: auto !important;
+    bottom: calc(max(17px, env(safe-area-inset-bottom)) + 108px) !important;
+    width: min(330px, calc(100vw - 28px)) !important;
+    max-height: min(60dvh, 520px) !important;
+    transform-origin: bottom right;
+  }
+  html body:has(.lr-mini:not([hidden])) #main :is(.source-toc, .article-toc) {
+    bottom: calc(122px + env(safe-area-inset-bottom) + 108px) !important;
+    max-height: min(48dvh, 420px) !important;
+  }
+  html body.reader-music-docked #main :is(.source-toc, .article-toc) {
+    bottom: calc(var(--media-card-height, 150px) + 24px + 108px) !important;
+    max-height: max(100px, calc(100dvh - var(--media-card-height, 150px) - 220px)) !important;
   }
   html body:has(.lr-mini:not([hidden])) .reader-toc-toggle,
   html body:has(.lr-mini:not([hidden])) #main .reader-toc-toggle {
