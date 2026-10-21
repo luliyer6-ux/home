@@ -23,7 +23,7 @@ RENAME = {
     'surface-base': 'bg', 'surface-raised': 'paper', 'surface-overlay': 'raised',
     'text-primary': 'ink', 'text-body': 'text', 'text-muted': 'muted', 'reader-heading-color': 'ink',
     'border-subtle': 'line', 'border-active': 'line-strong', 'control-line': 'line-strong',
-    'lr-paper': 'bg', 'lr-soft': 'paper', 'lr-ink': 'ink', 'lr-muted': 'muted', 'lr-line': 'line', 'lr-accent': 'accent',
+    'lr-paper': 'bg', 'lr-soft': 'paper', 'lr-ink': 'ink', 'lr-muted': 'muted', 'lr-line': 'line-strong', 'lr-accent': 'accent',
     'ld-bg': 'bg', 'ld-surface': 'paper', 'ld-raised': 'raised', 'ld-border': 'line',
     'ld-muted': 'muted', 'ld-ink': 'ink', 'ld-accent': 'accent', 'ld-focus': 'focus-ring',
     'sp-line': 'line', 'sp-accent': 'accent', 'sp-muted': 'muted',
@@ -52,6 +52,14 @@ def drop_defs(css):
 TIDY = [
     (r'var\(--([\w-]+),\s*var\(--\1\)\)', r'var(--\1)'),
     (r'linear-gradient\(90deg,var\(--accent\),var\(--accent\),var\(--accent\)\)', 'var(--accent)'),
+    # Leftover terracotta UI accents (current record, article mode tabs, study panels) -> the one accent.
+    (r'(\.lr-record\[aria-current=true\] \.lr-cover\{outline:1px solid )#c66d50', r'\1var(--accent)'),
+    (r'(\.lr-record\[aria-current=true\] \.lr-record-name\{color:)#(?:e49a7e|9e4d32)', r'\1var(--accent)'),
+    (r'(\.article-modes a\[aria-current\]:after\{[^}]*background:)#c77c55', r'\1var(--accent)'),
+    (r'(\.article-modes a:focus-visible,\.chronicle-status button:focus-visible\{outline:1px solid )#c77c55', r'\1var(--focus-ring)'),
+    (r'#c5755115', 'color-mix(in srgb,var(--accent) 8%,transparent)'),
+    (r'#c5755117', 'color-mix(in srgb,var(--accent) 9%,transparent)'),
+    (r'#98482b0d', 'color-mix(in srgb,var(--accent) 5%,transparent)'),
 ]
 
 def tidy(css):

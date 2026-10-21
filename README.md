@@ -229,6 +229,7 @@ python package-drive.py
 3. **注入修复文件**：在 `</head>` 前加入 `site-publish/home-fixes.css`，在 `</body>` 前加入 `home-fixes.js`（目前的作用是：手机和平板滚动后，顶栏加半透明背景）。
 4. **繁简修正**：钟→鐘，补上 着→著，并修正 詞彙、字彙、語彙、乾淨、乾燥、餅乾、鍾情、鍾愛 等词组。
 5. **开场脚本版本号**：按 `intro/intro.js` 的内容自动更新 `?v=`。
+6. **颜色变量**：最后运行 `site-publish/color-tokens.py`（也可单独运行）。见下方 5.1。
 
 用法：
 
@@ -241,6 +242,29 @@ python3 site-publish/optimize-home.py
 - 实测效果（2026-10-19，桌面）：首页 HTML 压缩后从 572 KB 降到 54 KB；首次访问总传输从 3.67 MB 降到 2.33 MB；再次访问从 572 KB 降到约 54 KB。
 
 建议以后把这一步并入本机的 `build-preview.py` 或 `package-drive.py`，从源头上避免漏跑。
+
+### 5.1 颜色变量：`site-publish/color-tokens.css`
+
+三套外观（深色 dark / 浅色 light / cc）的界面颜色**只在这一个文件里定义**，每套 10 个：
+
+| 变量 | 用途 | 深色 | 浅色 | cc |
+|---|---|---|---|---|
+| `--bg` | 页面底色 | #111110 | #faf9f5 | #101116 |
+| `--paper` | 卡片、面板 | #191918 | #f0eee7 | #1b1a1a |
+| `--raised` | 弹层、浮层 | #222220 | #e9e6dd | #242320 |
+| `--ink` | 标题、最深的字 | #f2ede4 | #141413 | #eadfbe |
+| `--text` | 正文 | #e8e3d9 | #30302d | #d5c8a5 |
+| `--muted` | 次要文字 | #a6a198 | #66645e | #b3a487 |
+| `--line` | 分隔线 | #3b3935 | #d8d5cd | #494334 |
+| `--line-strong` | 按钮、输入框边框 | #777168 | #918b80 | #82745c |
+| `--accent` | 唯一强调色（金） | #b89a6a | #8b6840 | #d2b878 |
+| `--focus-ring` | 键盘焦点框 | #b89a6a | #9b4a32 | #e9ad88 |
+
+- 改颜色：只改 `color-tokens.css`，然后运行 `python3 site-publish/optimize-home.py`（或 `python3 site-publish/color-tokens.py`）。
+- `color-tokens.py` 会把旧变量名改成上面的 10 个（`--gold`→`--accent`，`--lr-*`、`--ld-*`、`--sp-*`、`--surface-*`、`--text-*`、`--border-*`、`--control-line`、`--reading-accent`、`--rt-accent`、`--reader-heading-color` 等），删除其他地方对这些颜色的定义，把文件内嵌为 `<style id="color-tokens">`，并给改动过的缓存文件换新哈希名。可重复运行。
+- 源工程重建后旧变量名会回来，跑一遍 `optimize-home.py` 即可重新收拢；长期仍建议在本机源模块里直接改用这 10 个变量。
+- `--reader-body-color` 保留：阅读设置会把用户选的正文颜色写在 `<html>` 上，默认值是 `--text`。
+- 场景专用颜色不进这张表：卡片烫金 `--foil-*`、首页签名金 `--signature-gold-*`、唱片封面插画、唱机材质。
 
 ---
 
