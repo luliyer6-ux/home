@@ -11,7 +11,8 @@ What it does (idempotent, safe to re-run):
      assets/site/home/ so browsers can cache them for a year (see _headers).
      Execution order is preserved: inline blocks become synchronous
      <script src> / <link rel=stylesheet> at the same position.
-  4. Runs site-publish/design-tokens.py (single source for theme colours and motion).
+  4. Runs site-publish/design-tokens.py (single source for theme colours, motion and fonts).
+  5. Runs site-publish/runtime-fixes.py (performance / accessibility patches).
 """
 import hashlib, pathlib, re, sys
 
@@ -54,11 +55,11 @@ def main():
     if intro.exists():
         s = re.sub(r'(src="intro/intro\.js)\?v=[^"]*"', lambda m: m.group(1) + '?v=' + h(intro.read_text(encoding='utf-8'))[:10] + '"', s, count=1)
 
-    # Layout fixes: CSS right before </head>, JS (deferred) right before </body>.
+    # Layout fixes: CSS right before </head>, JS (async, so it is not queued behind the large deferred bundles) right before </body>.
     s = re.sub(r'<link[^>]*data-home-fixes[^>]*>|<script[^>]*data-home-fixes[^>]*></script>', '', s)
     for name, tag, anchor in [
         ('home-fixes.css', '<link rel="stylesheet" href="/site-publish/home-fixes.css?v={v}" data-home-fixes>', '</head>'),
-        ('home-fixes.js', '<script src="/site-publish/home-fixes.js?v={v}" defer data-home-fixes></script>', '</body>'),
+        ('home-fixes.js', '<script src="/site-publish/home-fixes.js?v={v}" async data-home-fixes></script>', '</body>'),
     ]:
         f = ROOT / 'site-publish' / name
         if f.exists():
@@ -106,4 +107,7 @@ if __name__ == '__main__':
     # Design tokens: rewrite retired colour/motion variables and inject site-publish/design-tokens.css.
     import importlib.util; sys.dont_write_bytecode = True
     spec = importlib.util.spec_from_file_location('design_tokens', ROOT / 'site-publish' / 'design-tokens.py')
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()
+    # Runtime fixes: performance and accessibility patches (see the file's FIXES list).
+    spec = importlib.util.spec_from_file_location('runtime_fixes', ROOT / 'site-publish' / 'runtime-fixes.py')
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()

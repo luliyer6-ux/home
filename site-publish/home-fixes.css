@@ -53,3 +53,41 @@
     bottom: calc(var(--media-card-height, 150px) + 24px + 56px) !important;
   }
 }
+
+/* ---- Quiet details (borrowed from the Ungetsu teardown) ---- */
+/* Footer curtain far below the fold: hide the moon canvas so its render loop sleeps (home-fixes.js). */
+#contact.luliy-far #footerMoon{display:none}
+
+/* Page change: the old page lifts 2.5% and fades, the new one settles in. The study room keeps its own crossfade;
+   the header and article-title morphs keep their own rules. */
+@media(prefers-reduced-motion:no-preference){
+  :root:not([data-vt-dir=study])::view-transition-old(root){animation:luliy-vt-lift var(--dur-base) var(--ease-soft) both}
+  :root:not([data-vt-dir=study])::view-transition-new(root){animation:luliy-vt-settle calc(var(--dur-base) + 50ms) var(--ease) both}
+}
+@keyframes luliy-vt-lift{to{opacity:0;transform:translateY(-2.5%)}}
+@keyframes luliy-vt-settle{from{opacity:0}}
+
+/* Opening verse breathes in character by character (home-fixes.js adds .lv-breath / .lv-run). */
+.library-home .opening-copy p.opening-verse.lv-breath{animation:none;opacity:1;transform:none}
+.lv-breath .lv-c{display:inline-block;opacity:.16;transform:translateY(.16em)}
+.lv-breath.lv-run .lv-c{animation:luliy-breathe 1150ms var(--ease-soft) calc(var(--lv-base,1150ms) + var(--d,0ms)) both}
+@keyframes luliy-breathe{from{opacity:.16;transform:translateY(.16em)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.lv-breath .lv-c{opacity:1;transform:none;animation:none}}
+
+/* Hovering one card lets its siblings step back. Mouse and trackpad only. */
+@media(hover:hover) and (pointer:fine){
+  .article-list:has(>.study-entry:hover)>.study-entry:not(:hover),
+  .project-exhibition-track:has(>.project-exhibit-item:hover)>.project-exhibit-item:not(:hover),
+  .space-links:has(>.space-link:hover)>.space-link:not(:hover){opacity:.55}
+}
+/* Links get a site-wide 200ms !important transition; add opacity at 400ms without changing the existing parts. */
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  html body .article-list>a.study-entry:not(.lr-record):not(.signature):not(.contact-signature){
+    transition-property:color,background,opacity!important;
+    transition-duration:var(--dur-fast),var(--dur-fast),var(--dur-base)!important;
+    transition-timing-function:var(--ease),var(--ease),var(--ease-soft)!important}
+  html body .space-links>a.space-link:not(.lr-record):not(.signature):not(.contact-signature){
+    transition-property:rotate,opacity!important;
+    transition-duration:var(--dur-fast),var(--dur-base)!important;
+    transition-timing-function:var(--ease),var(--ease-soft)!important}
+}

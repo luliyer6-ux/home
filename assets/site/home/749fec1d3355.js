@@ -64,7 +64,7 @@ function mount(canvas,stage){
     ctx.beginPath();ctx.arc(x+pushX,y+pushY,p.r,0,Math.PI*2);ctx.fill();
    }
   }
-  canvas.dataset.dustVisible=String(fade>.005);
+  {const v=String(fade>.005);if(canvas.dataset.dustVisible!==v)canvas.dataset.dustVisible=v;}
   if(!reduce.matches&&progress<.67)frame=requestAnimationFrame(draw);
  }
  function request(){if(disposed||!visible||document.hidden||frame)return;frame=requestAnimationFrame(draw);}

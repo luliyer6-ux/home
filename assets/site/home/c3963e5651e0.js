@@ -331,11 +331,11 @@
       if(dirty||now-drawn>=32||motion.matches){
         dirty=false;
         let transition=0;if(switchStart>=0){const t=Math.min(1,(now-switchStart)/1450);transition=Math.sin(t*Math.PI);if(t>=.5)scene=targetScene;if(t===1)switchStart=-1;}
-        canvas.dataset.scene=Object.keys(sceneIds).find(k=>sceneIds[k]===scene);canvas.dataset.transition=String(transition);canvas.dataset.morph=String(morph);canvas.dataset.journey=String(journey);
+        {const ds=canvas.dataset,set=(k,v)=>{if(ds[k]!==v)ds[k]=v;};set('scene',Object.keys(sceneIds).find(k=>sceneIds[k]===scene));set('transition',String(transition));set('morph',String(morph));set('journey',String(journey));}
         gl.disable(gl.BLEND);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(at);gl.vertexAttribPointer(at,2,gl.FLOAT,false,0,0);gl.uniform2f(uniform.resolution,width,height);gl.uniform1f(uniform.time,motion.matches?0:(now-start)/1000);gl.uniform1f(uniform.progress,p);gl.uniform1f(uniform.lightTheme,theme==='light'?1:0);gl.uniform1f(uniform.scene,scene);gl.uniform1f(uniform.transition,transition);gl.uniform1f(uniform.morph,morph);gl.uniform1f(uniform.journey,journey);gl.uniform1f(uniform.portraitLayout,options.portraitLayout==='footer-side'?1:0);
         gl.drawArrays(gl.TRIANGLES,0,6);
         if(!motion.matches&&(scene===0||p>.08||transition>.01)){gl.useProgram(pp);gl.bindBuffer(gl.ARRAY_BUFFER,points);gl.enableVertexAttribArray(pa);gl.vertexAttribPointer(pa,3,gl.FLOAT,false,0,0);gl.uniform2f(pu.resolution,width,height);gl.uniform1i(pu.surface,0);gl.uniform1i(pu.portraitImage,1);gl.uniform1i(pu.earthImage,2);gl.uniform1i(pu.studyImage,3);gl.uniform1i(pu.lichImage,4);gl.uniform1f(pu.time,(now-start)/1000);gl.uniform1f(pu.progress,p);gl.uniform1f(pu.scene,scene);gl.uniform1f(pu.transition,transition);gl.uniform1f(pu.morph,morph);gl.uniform1f(pu.journey,journey);gl.uniform1f(pu.lightTheme,theme==='light'?1:0);gl.uniform1f(pu.pixelRatio,canvas.width/width);gl.uniform1f(pu.portraitLayout,options.portraitLayout==='footer-side'?1:0);gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.drawArrays(gl.POINTS,0,count*count);gl.disable(gl.BLEND);}
-        drawn=now;canvas.dataset.moonReady='true';
+        drawn=now;if(canvas.dataset.moonReady!=='true')canvas.dataset.moonReady='true';
       }
       if(visible&&!motion.matches&&!document.hidden&&p<1&&morph<.98)frame=requestAnimationFrame(draw);
     }

@@ -53,3 +53,14 @@
  --font-script:'Amalfi Coast',cursive;
  --font-mono:'Luliy Anthropic Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
 }
+
+/* Accent wash and layout widths.
+   accent-soft  faint accent background (selected rows, tags, focus wash); 14% dark/cc, 10% light
+   shell-max    page column (.shell)   prose-max  reading column (.source-body)
+   Spacing (--space-1 ... --space-10 = 4 ... 128px, --space-section, --space-block) and the type scale
+   (--step--2 ... --step-6) already live in the main stylesheet's ds-v2 layer; use those, do not add a second scale. */
+:root{
+ --accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);
+ --shell-max:1120px;--prose-max:740px;
+}
+:root[data-appearance=light]{--accent-soft:color-mix(in srgb,var(--accent) 10%,transparent)}
