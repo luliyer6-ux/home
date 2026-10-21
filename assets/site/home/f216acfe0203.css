@@ -407,7 +407,7 @@ html[lang="en"] .directory-links a>em{display:none}.directory-links{min-width:0}
 .post-archive>.page-title{margin-bottom:30px}
 
 /* Latin stays in Times New Roman; Chinese glyphs fall through to the owner's Kai font. */
-@font-face{font-family:"Luliy Canger Kai";src:url(/"https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/static/doc/%E4%BB%93%E8%80%B3%E4%BB%8A%E6%A5%B701-W04.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
+
 body,button,input,select{font-family:"Times New Roman","Luliy Canger Kai","Songti SC",serif}
 .chapter-nav,.tools .lang-trigger,.tools .directory-trigger,.directory-links,.post-archive .post-filters,.post-archive .study-list,.post-archive .post-year h2,.post-archive .section-more{font-family:"Times New Roman","Luliy Canger Kai","Songti SC",serif}
 .directory-bottom{font-family:"Times New Roman","Luliy Canger Kai","Songti SC",serif}
