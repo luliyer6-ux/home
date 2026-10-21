@@ -229,7 +229,7 @@ python package-drive.py
 3. **注入修复文件**：在 `</head>` 前加入 `site-publish/home-fixes.css`，在 `</body>` 前加入 `home-fixes.js`（目前的作用是：手机和平板滚动后，顶栏加半透明背景）。
 4. **繁简修正**：钟→鐘，补上 着→著，并修正 詞彙、字彙、語彙、乾淨、乾燥、餅乾、鍾情、鍾愛 等词组。
 5. **开场脚本版本号**：按 `intro/intro.js` 的内容自动更新 `?v=`。
-6. **设计变量（颜色、动效）**：最后运行 `site-publish/design-tokens.py`（也可单独运行）。见下方 5.1。
+6. **设计变量（颜色、动效、字体）**：最后运行 `site-publish/design-tokens.py`（也可单独运行）。见下方 5.1。
 
 用法：
 
@@ -245,7 +245,7 @@ python3 site-publish/optimize-home.py
 
 ### 5.1 设计变量：`site-publish/design-tokens.css`
 
-三套外观（深色 dark / 浅色 light / cc）的界面颜色和全站动效**只在这一个文件里定义**。颜色每套 10 个：
+三套外观（深色 dark / 浅色 light / cc）的界面颜色、全站动效和字体**只在这一个文件里定义**。颜色每套 10 个：
 
 | 变量 | 用途 | 深色 | 浅色 | cc |
 |---|---|---|---|---|
@@ -271,11 +271,24 @@ python3 site-publish/optimize-home.py
 | `--dur-base` | 400ms | 面板、菜单、卡片 |
 | `--dur-slow` | 800ms | 大块出现、场景切换 |
 
+字体 5 个角色（中文一律回退到仓耳楷体 `Luliy Canger Kai`）：
+
+| 变量 | 字体 | 用途 |
+|---|---|---|
+| `--font-body` | Anthropic Preview Serif | 正文，也是全站默认字体 |
+| `--font-ui` | Anthropic Preview Sans | 按钮、日期、文章信息、阅读设置 |
+| `--font-display` | Times New Roman（+宋体） | 编号、年份、文章列表标题、大号斜体标题 |
+| `--font-script` | Amalfi Coast | 签名 Luliy |
+| `--font-mono` | Luliy Anthropic Mono | 代码 |
+
+- 唱片封面和星系标签上的 Georgia 小字、canvas 绘制的文字、开场 `intro.js` 保留原写法，属于封面和场景设计的一部分。
+- `design-tokens.py` 按 `FAMILY` 表把写死的字体列表换成变量，旧变量 `--site-body-font`、`--site-ui-font`、`--site-heading-font`、`--site-code-font` 一并收拢；一直被覆盖、从没显示出来的写法（思源黑体、SimSun、system-ui）直接删除。`@font-face` 不动。
+
 - 过渡时长按就近归档：<283ms→fast，<566ms→base，≤1100ms→slow；更长的（开场、月亮、幕布）和关键帧动画时长、延迟都保留原值。系统开启“减弱动态效果”时三档都变成 1ms。
 - 脚本里的 Web Animations（`easing:'…'`）不能用变量，脚本会写入对应曲线的字面值。
-- 改颜色或动效：只改 `design-tokens.css`，然后运行 `python3 site-publish/optimize-home.py`（或 `python3 site-publish/design-tokens.py`）。
+- 改颜色、动效或字体：只改 `design-tokens.css`，然后运行 `python3 site-publish/optimize-home.py`（或 `python3 site-publish/design-tokens.py`）。
 - `design-tokens.py` 会把旧变量名改成上面的 10 个（颜色：`--gold`→`--accent`，`--lr-*`、`--ld-*`、`--sp-*`、`--surface-*`、`--text-*`、`--border-*`、`--control-line`、`--reading-accent`、`--rt-accent`、`--reader-heading-color` 等；动效：`--ease-out`、`--ease-settle`、`--ease-spring`、`--ui-ease`、`--luliy-ui-*`、`--dur-instant`、`--t-ui` 等），删除其他地方对这些颜色的定义，把文件内嵌为 `<style id="design-tokens">`，并给改动过的缓存文件换新哈希名。可重复运行。
-- 源工程重建后旧变量名会回来，跑一遍 `optimize-home.py` 即可重新收拢；长期仍建议在本机源模块里直接改用这 10 个变量。
+- 源工程重建后旧变量名会回来，跑一遍 `optimize-home.py` 即可重新收拢；长期仍建议在本机源模块里直接改用这些变量。
 - `--reader-body-color` 保留：阅读设置会把用户选的正文颜色写在 `<html>` 上，默认值是 `--text`。
 - 场景专用颜色不进这张表：卡片烫金 `--foil-*`、首页签名金 `--signature-gold-*`、唱片封面插画、唱机材质。
 
