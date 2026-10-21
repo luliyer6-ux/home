@@ -55,11 +55,11 @@ def main():
     if intro.exists():
         s = re.sub(r'(src="intro/intro\.js)\?v=[^"]*"', lambda m: m.group(1) + '?v=' + h(intro.read_text(encoding='utf-8'))[:10] + '"', s, count=1)
 
-    # Layout fixes: CSS right before </head>, JS (deferred) right before </body>.
+    # Layout fixes: CSS right before </head>, JS (async, so it is not queued behind the large deferred bundles) right before </body>.
     s = re.sub(r'<link[^>]*data-home-fixes[^>]*>|<script[^>]*data-home-fixes[^>]*></script>', '', s)
     for name, tag, anchor in [
         ('home-fixes.css', '<link rel="stylesheet" href="/site-publish/home-fixes.css?v={v}" data-home-fixes>', '</head>'),
-        ('home-fixes.js', '<script src="/site-publish/home-fixes.js?v={v}" defer data-home-fixes></script>', '</body>'),
+        ('home-fixes.js', '<script src="/site-publish/home-fixes.js?v={v}" async data-home-fixes></script>', '</body>'),
     ]:
         f = ROOT / 'site-publish' / name
         if f.exists():

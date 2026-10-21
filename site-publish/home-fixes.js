@@ -33,7 +33,7 @@
 
   /* 2. Opening verse: characters light up one by one, with breath at punctuation and line breaks
      (26ms per character, 105ms after punctuation, 300ms between lines, 1150ms each).
-     Only on the first opening (not .intro-complete), only for Chinese/Japanese, never with reduced motion.
+     Only on the first opening (not .intro-complete), only for Chinese/Japanese text, never with reduced motion.
      Screen readers get the whole line once; the per-character copy is aria-hidden. */
   (() => {
     const main = document.getElementById('main');
@@ -79,17 +79,19 @@
       const go = () => { p.style.setProperty('--lv-base', '450ms'); p.classList.add('lv-run'); };
       addEventListener('luliy:intro-complete', go, { once: true });
     };
+    const CJK = /[\u3040-\u30ff\u3400-\u9fff]/;
     const check = () => {
-      if (reduced.matches || !/^(zh|ja)/i.test(root.lang || '')) return;
+      if (reduced.matches) return;
       const p = main.querySelector('.library-home:not(.intro-complete) .opening-verse');
-      if (!p || done.has(p)) return;
+      if (!p || done.has(p) || !CJK.test(p.textContent)) return;
       done.add(p);
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        if (!p.isConnected || p.closest('.intro-complete')) return;
-        split(p);
-        p.classList.add('lv-breath');
-        start(p);
-      }));
+      // Too late (the paragraph's own fade is already under way): leave it alone rather than flash.
+      const fade = p.getAnimations?.().find(a => a.animationName === 'opening-text');
+      if (fade && fade.currentTime > 1000) return;
+      // Split right away, before the paragraph's own 1.15s fade starts, so nothing shows twice.
+      split(p);
+      p.classList.add('lv-breath');
+      start(p);
     };
     new MutationObserver(check).observe(main, { childList: true });
     check();
