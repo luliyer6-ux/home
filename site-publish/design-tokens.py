@@ -10,8 +10,9 @@ Idempotent. It:
   3. Motion: maps every cubic-bezier and the ease keywords to three curves, and snaps
      transition durations to 200 / 400 / 800 ms (delays and keyframe durations are kept;
      anything over 1100 ms is treated as choreography and kept). JS Web-Animation easings follow.
-  4. Injects design-tokens.css into <head> as <style id="design-tokens">.
-  5. Re-hashes changed files under assets/site/home/ (they are cached as immutable).
+  4. Fonts: maps literal family lists to five roles (see FAMILY), removes dead declarations.
+  5. Injects design-tokens.css into <head> as <style id="design-tokens">.
+  6. Re-hashes changed files under assets/site/home/ (they are cached as immutable).
 """
 import hashlib, pathlib, re, sys
 
@@ -35,6 +36,9 @@ RENAME = {
     'ui-ease': 'ease', 'ui-drawer': 'ease',
     'dur-instant': 'dur-fast', 'luliy-ui-time': 'dur-fast', 'ui-fast': 'dur-fast', 'ui-enter': 'dur-fast',
     'ui-exit': 'dur-fast', 't-ui': 'dur-fast', 'luliy-panel-time': 'dur-base',
+    # fonts
+    'site-body-font': 'font-body', 'site-heading-font': 'font-body', 'site-ui-font': 'font-ui',
+    'site-code-font': 'font-mono',
 }
 MOTION = ['ease', 'ease-soft', 'ease-in-out', 'dur-fast', 'dur-base', 'dur-slow']
 CURVES = {
@@ -46,7 +50,29 @@ CURVES = {
 CURVE_OF = {c: k for k, cs in CURVES.items() for c in cs}
 LITERAL = {'ease': '.19,1,.22,1', 'ease-soft': '.22,.61,.36,1', 'ease-in-out': '.65,0,.35,1'}
 # --reader-body-color stays: reader settings set it inline on <html>. Only its stylesheet defaults go.
-DROP = set(CORE) | set(MOTION) | set(RENAME) | {'reader-body-color'}
+FONTS = ['font-body', 'font-ui', 'font-display', 'font-script', 'font-mono']
+# Literal family lists (normalised: no quotes, lower case) -> font role. None = declaration is dead
+# (always overridden or its element no longer exists) and is removed. Georgia (record covers,
+# galaxy labels) is deliberately absent: it stays literal. @font-face blocks are never touched.
+FAMILY = {
+    'anthropic preview serif,luliy canger kai,serif': 'font-body',
+    'kaiti,stkaiti,luliy canger kai,serif': 'font-body',
+    'luliy serif,eb garamond,noto serif sc,songti sc,stsong,simsun,serif': 'font-body',  # old body base
+    'anthropic preview sans,luliy canger kai,sans-serif': 'font-ui',
+    'times new roman,luliy canger kai,songti sc,serif': 'font-display',
+    'times new roman,luliy canger kai,serif': 'font-display',
+    'times new roman,times,serif': 'font-display',
+    'times new roman,serif': 'font-display',
+    'amalfi coast,cursive': 'font-script',
+    'luliy anthropic mono,monospace': 'font-mono',
+    'ui-monospace,sfmono-regular,consolas,monospace': 'font-mono',
+    'monospace': 'font-mono',
+    'source han sans sc,noto sans sc,noto sans cjk sc,microsoft yahei,sans-serif': None,
+    'simsun,serif': None,
+    'system-ui': None,
+    'system-ui,-apple-system,segoe ui,sans-serif': None,
+}
+DROP = set(CORE) | set(MOTION) | set(FONTS) | set(RENAME) | {'reader-body-color'}
 NAME = r'(?![\w-])'
 
 def h(text):
@@ -78,6 +104,48 @@ TIDY = [
     (r'#c5755117', 'color-mix(in srgb,var(--accent) 9%,transparent)'),
     (r'#98482b0d', 'color-mix(in srgb,var(--accent) 5%,transparent)'),
 ]
+
+def norm_family(v):
+    return re.sub(r'\s*,\s*', ',', v.replace('"', '').replace("'", '')).strip().lower()
+
+def top_spaces(v):
+    """Indexes of whitespace outside parentheses (candidate starts of the family list)."""
+    depth, out = 0, []
+    for i, ch in enumerate(v):
+        depth += ch == '('
+        depth -= ch == ')'
+        if ch.isspace() and depth == 0:
+            out.append(i)
+    return out
+
+def font_decl(m):
+    lead, prop, val = m.group(1), m.group(2), m.group(3)
+    imp = re.search(r'\s*!important\s*$', val)
+    core = val[:imp.start()] if imp else val
+    bang = '!important' if imp else ''
+    if prop == 'font-family':
+        k = norm_family(core)
+        if k not in FAMILY:
+            return m.group(0)
+        role = FAMILY[k]
+        return lead + (f'font-family:var(--{role}){bang}' if role else '')
+    for i in top_spaces(core):
+        role = FAMILY.get(norm_family(core[i:]), '')
+        if role:
+            return lead + 'font:' + core[:i].rstrip() + f' var(--{role}){bang}'
+    return m.group(0)
+
+def fonts(css):
+    # Undefined --serif: plain var() resolves to inherit; the record title meant the display face.
+    css = re.sub(r'font-family:var\(--serif,serif\)', 'font-family:var(--font-display)', css)
+    css = re.sub(r'font-family:var\(--serif\)', 'font-family:inherit', css)
+    css = re.sub(r'var\(--(font-(?:body|ui|display|script|mono)),[^()]*\)', r'var(--\1)', css)
+    parts = re.split(r'(@font-face\s*\{[^}]*\})', css)
+    dec = r'([{;]\s*)(font-family|font)\s*:\s*([^;{}]+?)\s*(?=;|\})'
+    for i in range(0, len(parts), 2):
+        parts[i] = re.sub(dec, font_decl, parts[i])
+        parts[i] = re.sub(r';;+', ';', re.sub(r'\{;', '{', parts[i]))
+    return ''.join(parts)
 
 def tidy(css):
     for a, b in TIDY:
@@ -158,7 +226,8 @@ def motion_js(js):
     return re.sub(r"easing:'([^']*)'", f, js)
 
 def migrate(css):
-    return motion(tidy(drop_defs(rename_uses(css))))
+    # drop_defs again: prunes rules left empty by removed dead font declarations.
+    return drop_defs(fonts(motion(tidy(drop_defs(rename_uses(css))))))
 
 def main():
     s = HTML.read_text(encoding='utf-8')
