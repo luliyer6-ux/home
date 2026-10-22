@@ -10,3 +10,7 @@
   Cache-Control: public, max-age=604800
 /404.html
   Cache-Control: public, max-age=300
+/mirror/*
+  X-Robots-Tag: noindex
+  X-Content-Type-Options: nosniff
+  Cache-Control: public, max-age=300

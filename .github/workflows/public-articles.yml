@@ -19,7 +19,7 @@ jobs:
         run: python3 site-publish/generate.py
       - name: Commit only changed public snapshots
         run: |
-          git add articles feed.xml sitemap.xml robots.txt public-articles.json
+          git add articles mirror feed.xml sitemap.xml robots.txt public-articles.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'Luliy Publisher'
           git config user.email 'actions@users.noreply.github.com'

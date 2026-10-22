@@ -145,6 +145,8 @@ assets/site/prologue/        开场照片墙缩略图
 assets/drive/                Drive 阅读与解析组件
 intro/                       开场脚本、视频与海报
 articles/Pxx/                独立文章静态页（Actions 生成）
+mirror/                      博客文章列表与文章页的备份副本（Actions 生成，供 /gh/ 中转兜底，见 9.4）
+functions/gh/[[path]].js     GitHub 内容中转（Pages Functions，地址 /gh/*，见 9.4）
 site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、home-early.js、design-tokens.*、runtime-fixes.py、pwa.py、sw.js、pwa/
 sw.js / manifest.webmanifest  由 pwa.py 从 site-publish/ 复制，不要手改
 study/                       考研进度子应用（有自己的 _headers）
@@ -516,7 +518,7 @@ Pages 发布的是已经生成好的静态结果，不会自动运行你电脑�
 
 ### 7.3 更新独立文章、RSS 与站点地图
 
-`site-publish/generate.py` 读取公开的 `postList.json`，筛选出有效的公开文章并读取正文。它会移除脚本、嵌入对象和事件属性等内容，重建目录、规范网址和分享信息。
+`site-publish/generate.py` 读取公开的 `postList.json`，筛选出有效的公开文章并读取正文。它会移除脚本、嵌入对象和事件属性等内容，重建目录、规范网址和分享信息。文章里来自 GitHub 的图片改成本站的 `/gh/…` 中转地址（原地址留在 `data-direct`，中转失败时图片自己换回原地址）；分享图同样用 `https://luliy.me/gh/…`。它还把文章列表、全部文章页（包括关于、编年史数据等保留标签的页面）和关于页另存到 `mirror/`，作为中转的最后一道备份（见 9.4）。
 
 这一步和界面构建是分开的：重新运行 `build-preview.py`，不会重新抓取公开文章。需要主动更新时：
 
@@ -529,7 +531,7 @@ python site-publish/generate.py preview
 - **定时**：每天 UTC 22:17，即北京时间次日 06:17；排程时间不保证精确到秒，以实际运行记录为准。
 - **只提交变化**：只有文件内容有变化才会提交。Actions 直接提交到 `main`，提交后还要等 Pages 部署完成，静态阅读页才会更新。
 - **失败不覆盖**：来源读取失败或正文缺失时，生成直接失败，不会用空文章替换已有正文。脚本先在临时目录准备完整结果，再写入发布目录。
-- **不会动首页**：Actions 只改 `articles/`、`feed.xml`、`sitemap.xml`、`robots.txt`、`public-articles.json`，不碰 `index.html`，和首页优化互不影响。
+- **不会动首页**：Actions 只改 `articles/`、`mirror/`、`feed.xml`、`sitemap.xml`、`robots.txt`、`public-articles.json`，不碰 `index.html`，和首页优化互不影响。
 
 所以主站文章列表（浏览器实时读取公开数据）和独立文章页（依赖生成和部署）可能短时间不同步。更新文章后手动运行一次工作流程，并确认 Pages 部署完成，就能缩短这段差异。
 
@@ -569,6 +571,7 @@ python site-publish/generate.py preview
 | `/assets/site/*` | 缓存一年，内容不变（immutable） | 文件名就是内容哈希 |
 | `/feed.xml`、`/site-publish/article.css`、`/404.html` | 缓存 5 分钟 | 偶尔更新 |
 | `/favicon.ico` | 缓存 7 天 | 很少更新 |
+| `/mirror/*` | 缓存 5 分钟，`noindex`，`nosniff` | 备份副本不进搜索结果（`robots.txt` 也写了 `Disallow: /mirror/`） |
 | 其他（含 `index.html`） | Pages 默认：每次向服务器确认 | 保证改动立即可见 |
 
 **规则**：`assets/site/` 里只放“内容变了文件名也变”的文件。**不要用同名文件替换旧图**，老访客会继续看到缓存里的旧图，最长一年。
@@ -590,6 +593,28 @@ python site-publish/generate.py preview
 
 - **前端**：用 `git revert <提交号>` 回退并推送；或者在 Cloudflare Pages 部署历史里，选旧部署设为正式版本（Rollback），这样最快。
 - **数据库**不属于前端：回退 HTML 不会回退 D1；涉及迁移时，要另外安排数据库备份和恢复。
+
+### 9.4 国内访问：GitHub 内容中转（`functions/gh/`）
+
+**问题**：文章列表、文章正文、关于页、页尾和目录里的人像，原本都由浏览器直接从 `raw.githubusercontent.com` 读取；文章里的图片还来自 `github.com/user-attachments`、`camo.githubusercontent.com`。这些地址在中国大陆经常打不开，于是国内访客看到空的文章列表和破图。`luliy.me`（Cloudflare）在国内可以访问。
+
+**做法**：由本站自己转发。`functions/gh/[[path]].js` 是一个 Pages Function（不需要另建 Worker，也不需要构建步骤；Pages 看到根目录的 `functions/` 就会部署它，只有 `/gh/*` 会经过它，其余文件照旧直接发送）。
+
+| 本站地址 | 实际读取 |
+|---|---|
+| `/gh/raw/docs/…`、`/gh/raw/static/…` | `raw.githubusercontent.com/luliy6/luliy6.github.io/main/…`；`docs/` 读不到时改读 `blog.luliy.me`，再不行用 `mirror/` 里的副本 |
+| `/gh/ua/<编号>` | `github.com/user-attachments/assets/<编号>`（文章图片） |
+| `/gh/camo/…` | `camo.githubusercontent.com/…` |
+| `/gh/api/issues…` | `api.github.com/repos/luliy6/luliy6.github.io/issues…`（置顶文章、编年史） |
+
+- **浏览器一侧**：`home-early.js`（内联在首页最前面）把这些 GitHub 地址的 `fetch` 改走 `/gh/`，页面脚本本身不用改；页尾与目录人像由 `runtime-fixes.py` 改成 `/gh/raw/static/img/…`。中转没有响应（例如本机用 `python -m http.server` 预览，没有 Functions）或返回 5xx、403、429 时，自动改用原地址。图片加载失败也会换另一条路再试一次：中转图片改回 GitHub，GitHub 图片（旧的已保存封面、离线缓存的旧文章）改走中转。
+- **正文里的图片**：中转返回文章 HTML、JSON 时，会把其中的 GitHub 图片地址改写成本站 `/gh/` 地址，所以文章图片、封面也一起经由本站。
+- **缓存**：每个结果都存进 Cloudflare 边缘缓存（文字 2 分钟、API 5 分钟、图片 7–30 天），并另存一份 30 天的旧副本；GitHub 暂时连不上时先用旧副本，再用 `mirror/`。`*.pages.dev` 预览地址上边缘缓存不生效，属正常现象。
+- **安全**：只转发 `luliy6/luliy6.github.io` 这一个仓库的 `docs/`、`static/` 和 issues 接口，路径里不能有 `..`；其他地址一律 404。返回内容一律按纯文本、JSON 或图片发送，并带 `CSP: sandbox`、`nosniff`、`noindex`，即使有人直接打开 `/gh/…` 的 HTML，也不会作为本站页面运行。`mirror/` 里的文章页存成 `.txt`（文件名里的 `%` 写成 `~`），同样不会被当作网页。
+- **GitHub API 次数**：匿名调用每小时 60 次，按 Cloudflare 出口地址计算。中转已缓存 5 分钟，通常够用；如果编年史、置顶经常读不到，可在 Cloudflare Pages → `home` → **Settings → Variables and Secrets** 添加密钥 `GITHUB_TOKEN`（只读公开仓库的细粒度 Token 即可），上限会提高到每小时 5000 次。
+- **自检**：`https://luliy.me/gh/raw/docs/postList.json` 应返回文章列表，响应头里有 `X-Luliy-Relay: 1`；`X-Luliy-Relay-Source: stale` 或 `mirror` 表示 GitHub 当时连不上、用了备份。
+- **额度**：只有 `/gh/*` 的请求会运行这个函数（其他静态文件不受影响），计入 Cloudflare Workers 免费额度（每天 10 万次）。一次打开文章列表大约 20–30 次（列表、各篇正文用于封面和摘要、图片），个人站远用不完；在 Cloudflare → Workers & Pages → `home` → Functions 可以看用量。
+- **停用**：删除 `functions/` 目录即可，浏览器会自动回到直接读取 GitHub。
 
 ---
 
@@ -666,7 +691,7 @@ python site-publish/generate.py preview
 1. **源工程只在本机**：把源工程和原始快照放进私有 GitHub 仓库；之后可以让 Actions 在云端自动跑“生成 → 优化 → 发布”。
 2. **把优化步骤并入构建**：把 `optimize-home.py` 并入 `package-drive.py`，或者把它的拆分逻辑写进 `site-release.py`，避免漏跑。
 3. **Three.js 等大脚本仍在首页启动时加载**：在源工程里改成需要时再加载（唱片区进入视野、打开书房时），首次访问还能再省约 0.6 MB。
-4. **文章封面图偏大**（2000px 以上的 PNG，存放在博客仓库和网盘）：在源头转成 WebP 并控制尺寸。
+4. **文章封面图偏大**（2000px 以上的 PNG，存放在博客仓库和网盘）：在源头转成 WebP 并控制尺寸。国内访客现在经由 `/gh/` 中转读取这些图（9.4），图越大，首次加载越慢。
 5. **`works/jingzhong/_worker.js`**：Pages 只执行站点根目录的 `_worker.js`，子目录里的这个文件只是公开的静态文件，不会运行（已检查，文件里没有密钥）。如果静钟的 Telegram 备份依赖它，要实测一次备份；不能用的话，就单独部署成 Pages 项目或 Worker。
 6. **CET4、Letter、408 托管在 42web.io 免费主机上**：这类主机可能插广告或停用，建议迁到 GitHub Pages 或 Cloudflare Pages。
 7. **文案待你决定**：“Latter”（是否应为 Letter）、文章中的“走途無路”、“Blog A/B”的命名、开场角落的“2400K”。
