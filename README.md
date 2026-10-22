@@ -145,7 +145,8 @@ assets/site/prologue/        开场照片墙缩略图
 assets/drive/                Drive 阅读与解析组件
 intro/                       开场脚本、视频与海报
 articles/Pxx/                独立文章静态页（Actions 生成）
-site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、home-early.js、design-tokens.*、runtime-fixes.py
+site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、home-early.js、design-tokens.*、runtime-fixes.py、pwa.py、sw.js、pwa/
+sw.js / manifest.webmanifest  由 pwa.py 从 site-publish/ 复制，不要手改
 study/                       考研进度子应用（有自己的 _headers）
 works/                       作品子应用：408、英语二、数学、静钟（jingzhong）、考研看板等
 feed.xml / sitemap.xml / robots.txt / public-articles.json
@@ -231,6 +232,7 @@ python package-drive.py
 5. **开场脚本版本号**：按 `intro/intro.js` 的内容自动更新 `?v=`。
 6. **设计变量（颜色、动效、字体）**：最后运行 `site-publish/design-tokens.py`（也可单独运行）。见下方 5.1。
 7. **运行时修正（性能、无障碍）**：再运行 `site-publish/runtime-fixes.py`（也可单独运行）。见下方 5.3。
+8. **离线阅读与添加到主屏幕**：最后运行 `site-publish/pwa.py`。见下方 5.4。
 
 用法：
 
@@ -338,6 +340,22 @@ python3 site-publish/optimize-home.py
 | 列表封面 | 每篇封面要先下载文章页才能找到第一张图：现在把结果记在 `localStorage`（`luliy-cover-v1:*`，30 天），再次打开立刻显示、后台照常核对；文章页改为 `no-cache`（服务器没改时只回 304）。封面出现时淡入 |
 | Three.js 延后 | 见 5.3：手机不在首屏下载 190 KB 的 Three.js |
 
+**触屏设备：兼容性**
+
+| 问题 | 做法 |
+|---|---|
+| 刘海、圆角（横屏最明显） | 页面已用 `viewport-fit=cover`；`.page-above`、顶栏、页脚内容、浮动按钮和迷你唱机按 `env(safe-area-inset-*)` 让开；竖屏没有左右安全区，布局不变 |
+| 横屏手机页脚放不下 | 矮屏（触屏且高度 ≤500px）签名缩到 62%，邮箱 20px，间距收紧，整块页脚能在一屏里看全 |
+| 滚动时毛玻璃掉帧 | 触屏上顶栏底板、目录 / 回顶按钮、迷你唱机、书房遮罩去掉 `backdrop-filter`，改成接近不透明的底色 |
+| 点按灰块 | 去掉 iOS 点按高亮，改为按下时 60% 透明；落款长按和唱机控件保留各自反馈 |
+| 输入框被放大 | iOS 会把小于 16px 的输入框整页放大（文章目录搜索框原为 14px）；触屏上输入框至少 16px |
+| 省流量模式 | `home-early.js` 检测 Save-Data 后给 `<html>` 加 `luliy-save-data`：不显示页脚大图、列表不加载封面原图、不在空闲时预载目录图和 Three.js |
+| 目录大图 | 目录里的书架照片、三张阅读人像、项目人像（合计约 5 MB PNG）原来每次打开任何页面都下载。现在改为目录将要打开时（按下目录按钮 / 打开时）才加载；电脑端在页面空闲后预载 |
+| 安卓返回手势 | 对话框和弹出层浏览器本身会先关闭；文章目录面板也接入 `CloseWatcher`，返回先收起目录，不离开页面 |
+| 离线阅读、添加到主屏幕 | 见下方 5.4 |
+
+字体无需再改：沧耳楷体已按常用度切成 36 个分片（`unicode-range` + `font-display: swap`），一篇文章只下载用到的分片，之后都走缓存。
+
 ### 5.3 运行时修正：`site-publish/runtime-fixes.py`
 
 线上首页有一个每帧都在重写属性的循环（语言同步脚本反复写 `lang`、`meta`、按钮的 `aria-pressed`，月亮和尘埃脚本反复写 `data-*`），互相触发 MutationObserver，桌面每秒上百次写入。`runtime-fixes.py` 按 `FIXES` 表做精确替换：只有值真的变了才写。改动过的缓存文件换新哈希名。
@@ -347,11 +365,35 @@ python3 site-publish/optimize-home.py
 | 条目 | 作用 |
 |---|---|
 | 封面（2 条） | 见 5.2“列表封面” |
+| 目录图片（3 条） | 目录里的图片改用 `data-src`，由 `home-fixes.js` 第 6 段在目录将要打开时加载 |
+| 封面·省流量 | 省流量模式下列表不加载封面原图，摘要照常 |
+| 页脚图片（2 条） | 页脚固定在页面后面（幕布效果），浏览器把它算作“可见”，`loading="lazy"` 不起作用，每页都会下载 0.8–2 MB 的页脚画像和 0.5 MB 的左侧插画。触屏设备上改为滚到离页底 1.5 屏以内（或页面很短、4 秒后）再加载：画像经 `home-early.js` 的 `LuliyFooterSrc`，左侧插画改用 `data-src`。电脑端不变 |
 | Three.js 拆分 `split_three` | Three.js 原本和唱机模块打在同一个阻塞脚本里，但只在书房 3D 或唱机打开时才执行。拆成单独文件：电脑端仍在原位置同步加载（行为不变）；手机端在打开书房 / 唱片页、或页面加载完空闲后再下载（省流量模式和 2G 不预载）。书房和唱机在需要时等它加载完；加载失败时退回原来的平面唱机 |
 
 - 可重复运行；源码变了找不到原文时会提示 `fix skipped (not found)`，页面照常工作，只是那条修正没生效。
 - 拆分靠文件开头的 `/* Three.js r185` 注释和结尾 `PCFSoftShadowMap:2};};` 识别；Three.js 升级后对不上时会提示 `three.js split skipped`，页面照旧整包加载。
 - 长期仍建议在本机源模块里直接改。
+
+
+### 5.4 离线阅读与添加到主屏幕：`site-publish/pwa.py`
+
+`optimize-home.py` 最后运行 `pwa.py`（可重复运行）：
+
+- 把 `site-publish/sw.js` 复制成根目录 `/sw.js`，把 `site-publish/pwa/manifest.webmanifest` 复制成 `/manifest.webmanifest`；
+- 在 `<head>` 的 viewport 标签后加入 manifest、iOS 主屏图标（`site-publish/pwa/apple-touch-icon.png`）和标题；
+- `home-fixes.js` 在页面加载完后注册 `/sw.js`。
+
+`sw.js` 只做离线阅读，规则很少：
+
+| 请求 | 策略 |
+|---|---|
+| 首页 `/` | 先走网络，断网时用上一次成功的副本 |
+| `/assets/site/*`（内容哈希、不可变） | 先查缓存，最多 400 个 |
+| `/site-publish/*`、`/intro/intro.js` | 先走网络，断网用缓存 |
+| 博客仓库的 `postList.json` 和文章 `.html` | 先走网络，断网用缓存，最多 80 篇 |
+| 其他（Drive、登录、GitHub API、外站图片、视频、非 GET） | 不经过 Service Worker |
+
+读过的文章断网也能打开；第一次访问时 Service Worker 还没接管，从第二次访问开始生效。缓存名带版本号（`VERSION`），改规则时把它加一，旧缓存会在激活时清掉。要整体停用：把 `site-publish/sw.js` 换成只调用 `self.registration.unregister()` 的版本再发布，不要直接删掉 `/sw.js`。
 
 ---
 

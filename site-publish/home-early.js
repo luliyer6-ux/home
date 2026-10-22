@@ -18,3 +18,38 @@
     history.replaceState(history.state, '', location.pathname + location.search + '#/posts');
   } catch (e) {}
 })();
+
+/* Footer pictures wait on touch screens. The footer sits fixed behind the page (curtain reveal), so the browser
+   counts it as visible and loading="lazy" does nothing: every page used to fetch 0.8–2 MB of footer portraits
+   (plus the 0.5 MB left art) that most readers never scroll down to. runtime-fixes.py routes the router's
+   footerImage.src through LuliyFooterSrc; the left art ships as data-src. Desktop is unchanged. */
+(function () {
+  var wait = [], since = 0;
+  function coarse() { try { return matchMedia('(pointer: coarse)').matches; } catch (e) { return false; } }
+  function near() {
+    var d = document.documentElement;
+    return d.scrollHeight - (window.scrollY + window.innerHeight) < window.innerHeight * 1.5;
+  }
+  function set(img, src) { if (img.getAttribute('src') !== src) img.src = src; }
+  function flush(force) {
+    if (!wait.length) return;
+    // The router writes the footer before the page content exists, so "near the bottom" only counts
+    // after the reader scrolled, or once the page has had a few seconds to fill in.
+    if (!force && !(near() && (window.scrollY > 0 || Date.now() - since > 4000))) return;
+    var list = wait; wait = [];
+    for (var i = 0; i < list.length; i++) set(list[i][0], list[i][1]);
+  }
+  window.LuliyFooterSrc = function (img, src) {
+    for (var i = wait.length - 1; i >= 0; i--) if (wait[i][0] === img) wait.splice(i, 1);
+    if (!coarse()) { set(img, src); return; }
+    wait.push([img, src]); since = Date.now();
+    setTimeout(function () { flush(false); }, 4100);
+  };
+  addEventListener('scroll', function () { flush(false); }, { passive: true });
+  addEventListener('resize', function () { flush(false); });
+  addEventListener('focusin', function (e) { if (e.target && e.target.closest && e.target.closest('#contact')) flush(true); });
+  document.addEventListener('DOMContentLoaded', function () {
+    var art = document.querySelector('.footer-left-art[data-src]');
+    if (art && !document.documentElement.classList.contains('luliy-save-data')) window.LuliyFooterSrc(art, art.dataset.src);
+  });
+})();

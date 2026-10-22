@@ -73,6 +73,11 @@ FIXES += [
 STUDY_THREE_OLD = "try{await pause();if(!current())return;T=window.LuliyThree||window.LuliyLoadThree();"
 STUDY_THREE_NEW = ("try{await pause();if(!current())return;if(!window.LuliyLoadThree&&window.LuliyThreeReady){await window.LuliyThreeReady();"
                    "if(!current())return;}T=window.LuliyThree||window.LuliyLoadThree();")
+FIXES += [
+    ('footer: portrait waits until the reader nears the footer on touch screens', 'footerImage.src=next;}',
+     "(window.LuliyFooterSrc||function(i,s){i.src=s})(footerImage,next);}"),
+    ('footer: left art waits too', '<img class="footer-left-art" src="', '<img class="footer-left-art" data-src="'),
+]
 FIXES.append(('study room: wait for deferred Three.js', STUDY_THREE_OLD, STUDY_THREE_NEW))
 
 # Record player: on phones, wait for the deferred Three.js file before mounting (falls back to the flat
