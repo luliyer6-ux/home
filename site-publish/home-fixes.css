@@ -338,11 +338,12 @@ html.luliy-save-data .footer-left-art { display: none; }
 }
 @keyframes luliy-pop { from { opacity: 0; transform: scale(.94); } }
 
-/* ---- Directory button: two thick bars (=) everywhere; closing is a round × ---- */
-html body #header #studyGlobalOpen svg { stroke-width: 3; }
-html body #header #studyGlobalOpen .menu-line.line-top { transform: translateY(4px) scaleX(.84); }
+/* ---- Directory button: two thick bars (=) everywhere; closing is a round × ----
+   Proportions of the GTA VI site: square-ended bars about 1/5 as thick as they are wide, the gap as thick as a bar. */
+html body #header #studyGlobalOpen svg, html body #header #studyGlobalOpen .menu-line { stroke-width: 4.5; stroke-linecap: butt; }
+html body #header #studyGlobalOpen .menu-line.line-top { transform: translateY(3.75px) scaleX(.84); }
 html body #header #studyGlobalOpen .menu-line.line-middle { opacity: 0; }
-html body #header #studyGlobalOpen .menu-line.line-bottom { transform: translateY(-4px) scaleX(.84); }
+html body #header #studyGlobalOpen .menu-line.line-bottom { transform: translateY(-3.75px) scaleX(.84); }
 html body #directory .plain-close {
   display: grid; place-items: center; aspect-ratio: 1; padding: 0 !important; border-radius: 50% !important;
   background: color-mix(in srgb, currentColor 13%, transparent) !important;
