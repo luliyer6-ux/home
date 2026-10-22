@@ -31,7 +31,7 @@
   });
  }
  function restoreWords(){letterIO.disconnect();for(const [w,text]of wraps){if(w.isConnected)w.replaceWith(document.createTextNode(text))}wraps.clear();prepared=new WeakSet();}
- function words(){if(!cc()||reduce.matches)return;document.querySelectorAll('#main h1,#main h2,#main h3,#main p,#main li,#main .study-entry-copy strong,#main .project-title h3').forEach(e=>{
+ function words(){if(!cc()||reduce.matches||/^#\/(posts?|article)(\/|\?|$)/.test(location.hash))return;document.querySelectorAll('#main h1,#main h2,#main h3,#main p,#main li,#main .study-entry-copy strong,#main .project-title h3').forEach(e=>{
   if(prepared.has(e)||e.closest('.signature,.contact-signature,.scene-static-status,.ld,[contenteditable],pre,code'))return;
   prepared.add(e);letterIO.observe(e);
  });}
