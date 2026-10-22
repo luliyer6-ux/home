@@ -57,6 +57,18 @@ FIXES += [
     ('covers: show the remembered cover at once', COVER_RET_OLD, COVER_RET_NEW),
 ]
 
+# Directory pictures: build them with data-src; home-fixes.js (block 6) sets src when the directory is
+# about to open, so about 5 MB of PNG is no longer downloaded with every page.
+FIXES += [
+    ('directory: defer the shelf photo', 'shelf.src=data.collections.shelfPhotos[2];', 'shelf.dataset.src=data.collections.shelfPhotos[2];'),
+    ('directory: defer the reading portraits', "reader.src='https://cloud.luliy.me/api/image?path=shared%2F'+", "reader.dataset.src='https://cloud.luliy.me/api/image?path=shared%2F'+"),
+    ('directory: defer the project portrait', 'img.src=window.LULIY_DATA.scenes.sidePortrait||window.LULIY_DATA.scenes.portrait;',
+     'img.dataset.src=window.LULIY_DATA.scenes.sidePortrait||window.LULIY_DATA.scenes.portrait;'),
+    # Data saver: keep summaries, skip the full-size cover photos in the article list.
+    ('covers: no cover photos with data saver', 'const src=await articleCover(entry);if(!live||!row.isConnected)return;',
+     "const cover=await articleCover(entry),src=document.documentElement.classList.contains('luliy-save-data')?'':cover;if(!live||!row.isConnected)return;"),
+]
+
 # Study room: wait for the deferred Three.js file (phones, see split_three) before building the scene.
 STUDY_THREE_OLD = "try{await pause();if(!current())return;T=window.LuliyThree||window.LuliyLoadThree();"
 STUDY_THREE_NEW = ("try{await pause();if(!current())return;if(!window.LuliyLoadThree&&window.LuliyThreeReady){await window.LuliyThreeReady();"

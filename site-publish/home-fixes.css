@@ -144,3 +144,39 @@
   .article-list .study-entry.has-cover > .study-entry-cover { animation: luliy-cover-in var(--dur-slow) var(--ease-soft); }
 }
 @keyframes luliy-cover-in { from { opacity: 0; } }
+
+/* ---- Touch devices: compatibility ---- */
+/* Notches and rounded corners (viewport-fit=cover): keep text and controls inside the safe area, mostly in landscape. */
+@supports (padding: env(safe-area-inset-left)) {
+  html body .page-above { padding-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  html body #header { margin-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  html body #main :is(.reader-toc-toggle, .reader-back-top),
+  html body .lr-mini.lm-mini { margin-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  html body .contact-curtain .contact-inner { padding-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  @media (max-width: 700px) { html body .lr-mini.lm-mini { bottom: max(12px, env(safe-area-inset-bottom)); } }
+}
+/* Landscape phones: the contact curtain is taller than its room, so the signature steps down in size. */
+@media (pointer: coarse) and (max-height: 500px) {
+  html body .contact-curtain .contact-signature { zoom: .62; }
+  html body .contact-curtain .contact-inner { padding-top: 14px; padding-bottom: 14px; }
+  html body .contact-curtain .contact-email { font-size: 20px; }
+  html body .contact-curtain .contact-social { margin-top: 6px; }
+  html body .contact-curtain .footer-bottom { padding-top: 8px; }
+  html body.luliy-reading .contact-curtain .footer-bottom { padding-right: 64px; }
+}
+@media (pointer: coarse) {
+  /* Blur behind moving glass costs every scroll frame on phones; a nearly solid fill reads the same. */
+  html body .site-header::before { backdrop-filter: none; -webkit-backdrop-filter: none; background: color-mix(in srgb, var(--bg) 95%, transparent); }
+  html body #main :is(.reader-toc-toggle, .reader-back-top) { backdrop-filter: none; -webkit-backdrop-filter: none; background: color-mix(in srgb, var(--bg) 96%, transparent); }
+  html body .lr-mini.lm-mini { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  html body .study-panels-scrim { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 4, 4, .62); }
+  /* No grey flash on tap; a short press-down instead. The signature (long press) and the record player keep their own feedback. */
+  html { -webkit-tap-highlight-color: transparent; }
+  html body :is(#header, #main, #directory, .contact-social, .footer-bottom) :is(a, button, summary):not(.contact-signature):not([class*="lr-"]):active,
+  html body .contact-email:active { opacity: .6; transition-duration: 0s !important; }
+  /* iOS zooms the page into any text field under 16px. */
+  html body :is(input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=color]):not([type=file]), textarea, select) { font-size: max(16px, 1em); }
+}
+/* Data saver: skip the large decorative photo behind the footer. */
+html.luliy-save-data .footer-left-art { display: none; }
+@media (prefers-reduced-data: reduce) { .footer-left-art { display: none; } }

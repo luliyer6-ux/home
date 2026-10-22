@@ -171,4 +171,46 @@
     narrow.addEventListener('change', scan);
     scan();
   })();
+
+  /* 6. Directory pictures (shelf, reading portraits, project portrait: about 5 MB of PNG) wait until the
+     directory is about to open (runtime-fixes.py moves their URL to data-src). Computers fetch them once
+     the page is idle; phones on intent only. */
+  (() => {
+    const d = document.getElementById('directory');
+    if (!d) return;
+    const fill = () => d.querySelectorAll('img[data-src]').forEach(img => { img.src = img.dataset.src; img.removeAttribute('data-src'); });
+    if (d.open) { fill(); return; }
+    new MutationObserver(() => { if (d.open) fill(); }).observe(d, { attributes: true, attributeFilter: ['open'] });
+    const openers = '#directoryOpen, #studyGlobalOpen, [aria-controls="directory"]';
+    for (const type of ['pointerdown', 'focusin']) document.addEventListener(type, e => { if (e.target.closest?.(openers)) fill(); }, { capture: true, passive: true });
+    const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
+    if (phone || document.documentElement.classList.contains('luliy-save-data')) return;
+    const idle = () => setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(fill, { timeout: 4000 }) : fill()), 2000);
+    if (document.readyState === 'complete') idle(); else addEventListener('load', idle, { once: true });
+  })();
+
+  /* 7. Android back gesture closes the article contents panel instead of leaving the page
+     (dialogs and popovers already do this natively). */
+  (() => {
+    const main = document.getElementById('main');
+    if (!main || !('CloseWatcher' in window)) return;
+    let watcher = null;
+    const toggle = () => main.querySelector('.reader-toc-toggle, .study-reader-toc-toggle');
+    const sync = () => {
+      const t = toggle(), open = !!t && t.getAttribute('aria-expanded') === 'true';
+      if (open && !watcher) {
+        try { watcher = new CloseWatcher(); } catch (e) { return; }
+        watcher.onclose = () => { watcher = null; const b = toggle(); if (b && b.getAttribute('aria-expanded') === 'true') b.click(); };
+      } else if (!open && watcher) { const w = watcher; watcher = null; w.destroy(); }
+    };
+    new MutationObserver(sync).observe(main, { subtree: true, childList: true, attributes: true, attributeFilter: ['aria-expanded'] });
+  })();
+
+  /* 8. Offline reading: /sw.js keeps the page shell, cached assets and articles already read
+     (see site-publish/sw.js; it never touches Drive, sign-in or anything but GET). */
+  (() => {
+    if (!('serviceWorker' in navigator) || location.protocol !== 'https:') return;
+    const register = () => navigator.serviceWorker.register('/sw.js').catch(() => {});
+    if (document.readyState === 'complete') register(); else addEventListener('load', register, { once: true });
+  })();
 })();
