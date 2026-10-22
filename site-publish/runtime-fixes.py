@@ -101,7 +101,7 @@ THREE_ROUTES_NEW = "/^#\\/(books|music|study|records?)\\b/"
 FIXES.append(('three.js: start loading on the real study and record routes',
               "const soon=()=>{if(" + THREE_ROUTES_OLD + ".test(location.hash))", "const soon=()=>{if(" + THREE_ROUTES_NEW + ".test(location.hash))"))
 # CC on touch screens: a fixed sky layer clipped to the page (home-fixes.css), since iOS ignores background-attachment: fixed.
-# The CC drawer adds 周記/編年史 links inside #directoryLinks; the preview and arrow-key code should count only the five scenes.
+# The directory's preview and arrow-key code count only the five scene links (earlier extra links in #directoryLinks were skipped this way).
 FIXES.append(('directory: preview only the scene links', "links=$$('#directoryLinks a');", "links=$$('#directoryLinks a[data-scene]');"))
 FIXES.append(('cc: sky layer for touch screens', '<div class="page-above"><main id="main"',
               '<div class="page-above"><div class="luliy-sky" aria-hidden="true"><i></i></div><main id="main"'))
@@ -139,6 +139,12 @@ FIXES += [
 # if the relay cannot deliver one.
 FIXES.append(('china: portraits through the GitHub relay', 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/static/img/',
               '/gh/raw/static/img/'))
+
+# CC writes text in letter by letter (dim -> bright) as it scrolls into view. In the writing section (article list,
+# chronicle, article pages) the text stays fully lit instead, so reading and scrolling are not interrupted.
+CC_WORDS_OLD = "function words(){if(!cc()||reduce.matches)return;"
+CC_WORDS_NEW = "function words(){if(!cc()||reduce.matches||/^#\\/(posts?|article)(\\/|\\?|$)/.test(location.hash))return;"
+FIXES.append(('cc: articles stay lit (no letter-by-letter reveal)', CC_WORDS_OLD, CC_WORDS_NEW))
 
 THREE_HEAD = '/* Three.js r185'
 THREE_TAIL = 'PCFSoftShadowMap:2};};\n'

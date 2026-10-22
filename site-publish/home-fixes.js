@@ -191,8 +191,7 @@
   (() => {
     const d = document.getElementById('directory');
     if (!d) return;
-    // CC shows the directory as a plain list (block 11), without the pictures.
-    const fill = () => { if (root.dataset.appearance !== 'cc') d.querySelectorAll('img[data-src]').forEach(img => { img.src = img.dataset.src; img.removeAttribute('data-src'); }); };
+    const fill = () => d.querySelectorAll('img[data-src]').forEach(img => { img.src = img.dataset.src; img.removeAttribute('data-src'); });
     if (d.open) { fill(); return; }
     // Touch: showModal() focuses the first link (the thinker mark), and iOS draws a focus ring round it.
     // Focus the dialog itself instead; Tab still starts at the first link.
@@ -202,8 +201,6 @@
       fill();
       if (coarse.matches) { if (!d.hasAttribute('tabindex')) d.tabIndex = -1; d.focus({ preventScroll: true }); }
     }).observe(d, { attributes: true, attributeFilter: ['open'] });
-    // The theme picker (block 14) can leave CC while the directory is open.
-    new MutationObserver(() => { if (d.open) fill(); }).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
     const openers = '#directoryOpen, #studyGlobalOpen, [aria-controls="directory"]';
     for (const type of ['pointerdown', 'focusin']) document.addEventListener(type, e => { if (e.target.closest?.(openers)) fill(); }, { capture: true, passive: true });
     const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
@@ -370,20 +367,13 @@
     fold();
   })();
 
-  /* 11. CC appearance: the directory becomes a drawer from the right (after the GTA VI site): one plain list with
-     the current page in cream, language, theme and a 動態效果 switch on top, Drive, the colophon and the social
-     links at the bottom. Tap outside, swipe right, ×, Esc or back closes it. The other appearances keep the
-     full-screen directory with its pictures (they only get the 動態效果 switch while motion is off). */
+  /* 11. 動態效果 switch in the directory, shown while motion is off (CSS), so it can be turned back on.
+     (CC used to get its own drawer-style directory here; every appearance now shares the full-screen one.) */
   (() => {
     const d = document.getElementById('directory');
     if (!d) return;
-    const cc = () => root.dataset.appearance === 'cc';
     const lang = () => d.querySelector('#directoryLanguageOptions [aria-pressed="true"]')?.dataset.lang || 'zh-Hant';
     const T = (hant, hans, ja, en) => ({ zh: hans, ja, en })[lang()] || hant;
-    const closeButton = () => d.querySelector('[data-close="directory"]');
-    const animate = () => !reduced.matches && 'animate' in d && root.dataset.input !== 'keyboard';
-    let slide = null, fade = null;
-    const stop = () => { slide?.cancel(); fade?.cancel(); slide = fade = null; };
     const build = () => {
       const right = d.querySelector('.directory-display-right');
       let sw = d.querySelector('.luliy-motion-switch');
@@ -400,103 +390,9 @@
         sw.setAttribute('aria-checked', String(!window.LuliyMotion?.calm));
         sw.querySelector('.luliy-switch-label').textContent = T('動態效果', '动态效果', 'モーション', 'Motion');
       }
-      // 文章 › opens 周記 and 編年史 right below it.
-      const links = d.querySelector('#directoryLinks'), posts = links?.querySelector('a[href$="/posts"]');
-      if (posts && !links.querySelector('.luliy-sub-toggle')) {
-        posts.classList.add('luliy-has-sub');
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'luliy-sub-toggle';
-        b.setAttribute('aria-expanded', 'false');
-        b.setAttribute('aria-controls', 'luliyPostsSub');
-        b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>';
-        const sub = document.createElement('div');
-        sub.className = 'luliy-sub';
-        sub.id = 'luliyPostsSub';
-        sub.hidden = true;
-        b.addEventListener('click', () => { const open = sub.hidden; sub.hidden = !open; b.setAttribute('aria-expanded', String(open)); });
-        // (runtime-fixes.py keeps the directory's own preview/keyboard code on a[data-scene], so these extra links are ignored there.)
-        sub.addEventListener('click', e => { if (e.target.closest('a')) setTimeout(() => d.open && closeButton()?.click(), 0); });
-        posts.after(b, sub);
-      }
-      // The current page in cream (the directory's own aria-current follows the previewed picture instead).
-      const here = location.hash.split('?')[0];
-      links?.querySelectorAll('a[data-scene]').forEach(a => a.toggleAttribute('data-luliy-here', a.getAttribute('href') === here));
-      const b = links?.querySelector('.luliy-sub-toggle'), sub = links?.querySelector('.luliy-sub');
-      if (b && sub) {
-        b.setAttribute('aria-label', T('文章分類', '文章分类', '記事の分類', 'Writing sections'));
-        const hash = location.hash;
-        const items = [['#/posts?view=archive&group=weekly', T('周記', '周记', '週記', 'Weekly')], ['#/posts?view=chronicle', T('編年史', '编年史', '年代記', 'Chronicle')]];
-        const html = items.map(([h, t]) => `<a href="${h}"${hash === h || (h.endsWith('chronicle') && /view=chronicle/.test(hash)) ? ' aria-current="page"' : ''}>${t}</a>`).join('');
-        if (sub.innerHTML !== html) sub.innerHTML = html;
-      }
-      // Bottom: 網站說明 next to LULIY Drive, then the footer's social links.
-      const left = d.querySelector('.directory-other-left');
-      let about = d.querySelector('.luliy-colophon-link');
-      if (left && !about) { about = document.createElement('a'); about.className = 'luliy-colophon-link'; about.href = '#/colophon'; left.append(about); }
-      if (about) about.textContent = T('網站說明', '网站说明', 'このサイトについて', 'Colophon');
-      const bottom = d.querySelector('.directory-bottom'), social = document.querySelector('#contact .contact-social');
-      if (bottom && social && !d.querySelector('.luliy-drawer-social')) {
-        const copy = social.cloneNode(true);
-        copy.className = 'luliy-drawer-social';
-        copy.removeAttribute('id');
-        copy.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-        // The copied buttons (more contacts, QR code) close the drawer, then press the footer's own button.
-        const originals = [...social.querySelectorAll('button')];
-        copy.querySelectorAll('button').forEach((btn, i) => btn.addEventListener('click', e => {
-          e.preventDefault();
-          e.stopPropagation();
-          closeButton()?.click();
-          setTimeout(() => originals[i]?.click(), 260);
-        }));
-        bottom.append(copy);
-      }
     };
-    const opened = () => {
-      if (!d.open) return;
-      build();
-      if (!cc() || !animate()) return;
-      stop();
-      slide = d.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 460, easing: 'cubic-bezier(.19,1,.22,1)' });
-      try { fade = d.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, pseudoElement: '::backdrop' }); } catch (e) {}
-    };
-    new MutationObserver(opened).observe(d, { attributes: true, attributeFilter: ['open'] });
-    new MutationObserver(() => { if (d.open) build(); }).observe(d.querySelector('#directoryLinks') || d, { childList: true });
+    new MutationObserver(() => { if (d.open) build(); }).observe(d, { attributes: true, attributeFilter: ['open'] });
     document.addEventListener('luliy:motion', build);
-    // The theme picker (block 14) can switch to CC while the directory is open.
-    new MutationObserver(() => { if (d.open) build(); }).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
-    // Closing: the drawer slides back out while the directory's own close animation runs (180 ms).
-    document.addEventListener('click', e => {
-      if (!cc() || !d.open || !animate() || !e.target.closest?.('#directory [data-close="directory"]')) return;
-      const from = getComputedStyle(d).transform;
-      stop();
-      slide = d.animate([{ transform: from === 'none' ? 'none' : from }, { transform: 'translateX(100%)' }], { duration: 190, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
-      try { fade = d.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 190, pseudoElement: '::backdrop', fill: 'forwards' }); } catch (e) {}
-    }, true);
-    d.addEventListener('close', () => { stop(); d.style.transform = ''; });
-    // Tap on the dimmed page beside the drawer.
-    d.addEventListener('click', e => { if (cc() && e.target === d && e.clientX < d.getBoundingClientRect().left) closeButton()?.click(); });
-    // Swipe right to close.
-    let x0 = 0, y0 = 0, dx = 0, drag = null;
-    d.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; drag = cc() ? null : false; }, { passive: true });
-    d.addEventListener('touchmove', e => {
-      if (drag === false) return;
-      const mx = e.touches[0].clientX - x0, my = e.touches[0].clientY - y0;
-      if (drag === null) {
-        if (Math.abs(mx) < 10 && Math.abs(my) < 10) return;
-        drag = mx > 0 && Math.abs(mx) > Math.abs(my) * 1.3;
-        if (!drag) return;
-      }
-      dx = Math.max(0, mx);
-      d.style.transform = `translateX(${dx}px)`;
-    }, { passive: true });
-    d.addEventListener('touchend', () => {
-      if (!drag) return;
-      drag = null;
-      if (dx > 80) { closeButton()?.click(); return; }
-      if (animate()) d.animate([{ transform: `translateX(${dx}px)` }, { transform: 'none' }], { duration: 220, easing: 'cubic-bezier(.19,1,.22,1)' });
-      d.style.transform = '';
-    });
   })();
 
   /* 12. CC and the dark palettes (block 14): the browser bar (theme-color) takes the top colour of their sky instead
@@ -522,25 +418,10 @@
 
   /* 13. Directory: the × grows out of the header's =. The directory sets .icon-open in the same frame it opens, so
      its bars would simply appear crossed; .luliy-x is added two frames later, once the = has been drawn, and the
-     bars turn (CSS). Closing removes .icon-open first, so the × folds back into = while the directory leaves.
-     In CC the drawer's × is lined up with the header button, so the drawer lands with its × where the = was. */
+     bars turn (CSS). Closing removes .icon-open first, so the × folds back into = while the directory leaves. */
   (() => {
-    const d = document.getElementById('directory'), btn = document.getElementById('studyGlobalOpen');
+    const d = document.getElementById('directory');
     if (!d) return;
-    const align = () => {
-      const c = d.querySelector('.plain-close');
-      d.style.removeProperty('--luliy-x-dx');
-      d.style.removeProperty('--luliy-x-dy');
-      if (!c || !btn || root.dataset.appearance !== 'cc') return;
-      const h = btn.getBoundingClientRect();
-      if (!h.width || h.bottom <= 0) return;
-      // The drawer may already be sliding in: measure the button inside it and place the drawer at its final spot.
-      const dr = d.getBoundingClientRect(), cr = c.getBoundingClientRect();
-      const cx = document.documentElement.clientWidth - dr.width + (cr.left - dr.left) + cr.width / 2;
-      const cy = cr.top - dr.top + cr.height / 2;
-      d.style.setProperty('--luliy-x-dx', Math.round(h.left + h.width / 2 - cx) + 'px');
-      d.style.setProperty('--luliy-x-dy', Math.round(h.top + h.height / 2 - cy) + 'px');
-    };
     let raf = 0;
     const sync = () => {
       const on = d.open && d.classList.contains('icon-open');
@@ -552,7 +433,6 @@
         return;
       }
       if (raf || d.classList.contains('luliy-x')) return;
-      align();
       raf = requestAnimationFrame(() => {
         raf = requestAnimationFrame(() => {
           raf = 0;
@@ -561,8 +441,6 @@
       });
     };
     new MutationObserver(sync).observe(d, { attributes: true, attributeFilter: ['open', 'class'] });
-    addEventListener('resize', () => { if (d.open) align(); });
-    new MutationObserver(() => { if (d.open) requestAnimationFrame(align); }).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
   })();
 
   /* 14. Theme picker. The directory's theme button (runtime-fixes.py sends its click here instead of cycling

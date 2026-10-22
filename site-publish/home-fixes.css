@@ -369,9 +369,6 @@ html body #directory.luliy-x .plain-close .menu-line {
 }
 html body #directory.luliy-x .plain-close .menu-line.line-top { transform: translateY(8px); rotate: 45deg; }
 html body #directory.luliy-x .plain-close .menu-line.line-bottom { transform: translateY(-8px); rotate: -45deg; }
-/* CC: the drawer's × lands exactly where the header's = was (offsets measured by block 13). */
-html:root[data-appearance=cc] #directory .plain-close { translate: var(--luliy-x-dx, 0px) var(--luliy-x-dy, 0px); }
-html:root[data-appearance=cc] #directory .directory-display-right { translate: 0px var(--luliy-x-dy, 0px); }
 html body #directory:focus, html body #directory:focus-visible { outline: none; }
 
 /* ---- 動態效果 off (home-early.js, switch in the directory): like system reduced motion ---- */
@@ -381,9 +378,9 @@ html.luliy-calm *, html.luliy-calm *::before, html.luliy-calm *::after {
   transition-duration: var(--dur-fast) !important; transition-delay: 0s !important; scroll-behavior: auto !important;
 }
 html.luliy-calm::view-transition-group(*), html.luliy-calm::view-transition-old(*), html.luliy-calm::view-transition-new(*) { animation: none !important; }
-/* Extra drawer pieces stay out of the full-screen directory (its own button and link rules are more specific, hence !important). */
-html body #directory :is(.luliy-motion-switch, .luliy-sub-toggle, .luliy-sub, .luliy-colophon-link, .luliy-drawer-social) { display: none !important; }
-html.luliy-calm body #directory .luliy-motion-switch, html:root[data-appearance=cc] body #directory .luliy-motion-switch {
+/* The 動態效果 switch only shows in the directory while motion is off, so it can be turned back on. */
+html body #directory .luliy-motion-switch { display: none !important; }
+html.luliy-calm body #directory .luliy-motion-switch {
   display: inline-flex !important; align-items: center; gap: 8px; width: auto !important; min-height: 44px; padding: 0 2px; border: 0; background: none;
   color: inherit; font-family: var(--font-ui); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer;
 }
@@ -422,8 +419,8 @@ html:root[data-appearance=dark][data-palette] #directory { background: var(--day
   html:root[data-appearance=dark][data-palette] .luliy-sky > i { position: fixed; top: 0; left: 0; width: 100%; height: 100lvh; background: var(--day-gradient); }
   html:root[data-appearance=dark][data-palette] #directory { background: var(--day-gradient) center top / 100% 100lvh no-repeat, var(--luliy-sky-end) !important; }
 }
-/* The CC passe-partout frame is painted with the same sky, so it reads as part of the background. */
-html:root[data-appearance=cc] .cc-frame { border-image: var(--day-gradient) 1; }
+/* CC without its passe-partout frame (the thin border round the window): the page runs to the edges, as in the other appearances. */
+html:root[data-appearance=cc] .cc-frame { display: none !important; }
 /* The contact curtain shows the bottom of the same sky. */
 html:root[data-appearance=cc] .contact-curtain,
 html:root[data-appearance=dark][data-palette] .contact-curtain { background: var(--day-gradient) center bottom / 100% 100lvh no-repeat, var(--luliy-sky-end); }
@@ -436,97 +433,6 @@ html:root[data-appearance=cc] .cc-opening #heroMoon { animation-fill-mode: backw
   html:root[data-appearance=cc] body .library-home.cc-opening { height: max(420svh, 3600px) !important; }
   @media (max-width: 700px) { html:root[data-appearance=cc] body .library-home.cc-opening { height: max(380svh, 3000px) !important; } }
 }
-
-/* ---- CC: the directory as a drawer from the right (home-fixes.js block 11) ---- */
-:root[data-appearance=cc] { --luliy-lav: #c9c1ea; --luliy-cream: #fff6cf; }
-html:root[data-appearance=cc] #directory {
-  inset: 0 0 0 auto !important; width: min(86vw, 420px) !important; max-width: none !important; height: 100% !important; max-height: none !important;
-  margin: 0 !important; padding: calc(16px + env(safe-area-inset-top)) 24px calc(16px + env(safe-area-inset-bottom)) !important;
-  overflow: hidden auto !important; overscroll-behavior: contain;
-  background-attachment: scroll !important; color: var(--luliy-lav); box-shadow: -30px 0 60px rgba(0, 0, 0, .3); touch-action: pan-y;
-}
-html:root[data-appearance=cc] #directory[open] { display: flex !important; flex-direction: column !important; }
-html:root[data-appearance=cc] #directory::backdrop { background: rgba(17, 17, 23, .6) !important; }
-@media (hover: hover) and (pointer: fine) {
-  html:root[data-appearance=cc] #directory::backdrop { -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.1); backdrop-filter: blur(40px) saturate(1.8) brightness(1.1); }
-}
-/* Top row: language · theme · 動態效果 on the left, a round × on the right; the brand below. */
-html:root[data-appearance=cc] #directory .directory-top {
-  flex: none !important; position: static !important; display: flex !important; flex-wrap: wrap; align-items: center; justify-content: flex-end;
-  min-height: 48px; height: auto !important; margin: 0 !important; padding: 0 !important;
-}
-html:root[data-appearance=cc] #directory #directoryTitle { display: none !important; }
-html:root[data-appearance=cc] #directory .plain-close {
-  position: relative !important; inset: auto !important; order: 1; flex: none; width: 48px !important; height: 48px !important; min-width: 0 !important; margin: 0 -4px 0 auto !important; transform: none !important;
-  color: var(--luliy-lav) !important;
-}
-html:root[data-appearance=cc] #directory .directory-brand-group {
-  order: 2; flex: 0 0 100%; display: flex; align-items: center; gap: 4px; margin: 22px 0 0 !important; position: static !important; transform: none !important;
-}
-html:root[data-appearance=cc] #directory .directory-display-right {
-  position: absolute !important; top: calc(16px + env(safe-area-inset-top)); left: 20px; right: 84px; z-index: 2;
-  display: flex !important; align-items: center; gap: 6px; height: 48px; margin: 0 !important;
-}
-html:root[data-appearance=cc] #directory :is(.directory-bottom, .directory-other-bar) { position: static !important; }
-html:root[data-appearance=cc] #directory .directory-quiet-language { position: relative; order: -1; }
-html:root[data-appearance=cc] #directory .directory-language-toggle { color: var(--luliy-lav); font-family: var(--font-ui); font-size: 13px; font-weight: 500; }
-html:root[data-appearance=cc] #directory .directory-language-toggle::after {
-  content: ""; position: static; inset: auto; flex: none; align-self: center; display: inline-block; width: 5px; height: 5px; margin: 0 2px 3px -5px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
-}
-html:root[data-appearance=cc] #directory .directory-language-options {
-  top: calc(100% + 6px) !important; bottom: auto !important; left: 0 !important; right: auto !important; z-index: 3;
-}
-html:root[data-appearance=cc] #directory .directory-theme-cycle { color: var(--luliy-lav); }
-/* One plain list: no pictures, no English captions. */
-html:root[data-appearance=cc] #directory .directory-main {
-  display: block !important; flex: 1 0 auto; height: auto !important; min-height: 0; margin: 0 !important; padding: 26px 0 24px !important;
-  transform: none; grid-template-columns: none !important;
-}
-html:root[data-appearance=cc] #directory :is(.directory-art, #directoryCaption) { display: none !important; }
-html:root[data-appearance=cc] #directory #directoryLinks {
-  display: grid !important; grid-template-columns: minmax(0, 1fr) auto; align-content: start; gap: 2px 0 !important;
-  width: auto !important; height: auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important;
-}
-html:root[data-appearance=cc] #directory #directoryLinks > a {
-  grid-column: 1 / -1; display: flex !important; align-items: center; min-height: 0 !important; height: auto !important;
-  margin: 0 !important; padding: 8px 0 !important; border: 0 !important; background: none !important;
-  color: var(--luliy-lav) !important; font-family: var(--font-ui) !important; font-size: 23px !important; font-weight: 700 !important;
-  line-height: 1.3 !important; letter-spacing: .02em !important; opacity: 1 !important; transform: none !important;
-}
-html:root[data-appearance=cc] #directory #directoryLinks > a::before,
-html:root[data-appearance=cc] #directory #directoryLinks > a::after { display: none !important; }
-html:root[data-appearance=cc] #directory #directoryLinks > a > span { color: inherit !important; font: inherit !important; transform: none !important; opacity: 1 !important; }
-html:root[data-appearance=cc] #directory #directoryLinks > a > em { display: none !important; }
-html:root[data-appearance=cc] #directory #directoryLinks > a[data-luliy-here] { color: var(--luliy-cream) !important; }
-@media (hover: hover) { html:root[data-appearance=cc] #directory #directoryLinks > a:hover { color: #fff !important; } }
-html:root[data-appearance=cc] #directory #directoryLinks > a.luliy-has-sub { grid-column: 1; }
-html:root[data-appearance=cc] #directory .luliy-sub-toggle {
-  display: grid !important; place-items: center; grid-column: 2; width: 44px; height: 44px; margin-right: -10px; padding: 0;
-  border: 0; background: none; color: var(--luliy-lav); cursor: pointer;
-}
-html:root[data-appearance=cc] #directory .luliy-sub-toggle svg {
-  width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
-  transition: transform var(--dur-fast) var(--ease);
-}
-html:root[data-appearance=cc] #directory .luliy-sub-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
-html:root[data-appearance=cc] #directory .luliy-sub:not([hidden]) { display: grid !important; grid-column: 1 / -1; gap: 0; margin: -2px 0 6px; padding-left: 16px; border-left: 1px solid color-mix(in srgb, var(--luliy-lav) 22%, transparent); }
-html:root[data-appearance=cc] #directory .luliy-sub a {
-  display: block !important; min-height: 0 !important; height: auto !important; margin: 0 !important; border: 0 !important; background: none !important;
-  padding: 7px 0; color: color-mix(in srgb, var(--luliy-lav) 82%, transparent); font-family: var(--font-ui); font-size: 17px; font-weight: 600; text-decoration: none;
-}
-html:root[data-appearance=cc] #directory .luliy-sub a[aria-current] { color: var(--luliy-cream); }
-/* Bottom: Other · Drive · 網站說明, then the social links. */
-html:root[data-appearance=cc] #directory .directory-bottom {
-  display: flex !important; flex-wrap: wrap; align-items: center; gap: 12px 0; margin: auto 0 0 !important; padding: 16px 0 0 !important;
-  border-top: 1px solid color-mix(in srgb, var(--luliy-lav) 18%, transparent) !important; transform: none;
-}
-html:root[data-appearance=cc] #directory .directory-other-left { display: flex !important; flex-wrap: wrap; align-items: center; gap: 0 16px; white-space: nowrap; }
-html:root[data-appearance=cc] #directory .directory-other-left > a,
-html:root[data-appearance=cc] #directory .directory-other > summary { color: var(--luliy-lav) !important; font-family: var(--font-ui); font-size: 14px; }
-html:root[data-appearance=cc] #directory .luliy-colophon-link { display: inline-flex !important; align-items: center; min-height: 44px; text-decoration: none; }
-html:root[data-appearance=cc] #directory .luliy-drawer-social { display: flex !important; flex: 0 0 100%; flex-wrap: wrap; gap: 4px 8px; margin: 0 -10px; }
-html:root[data-appearance=cc] #directory .luliy-drawer-social :is(a, button) { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--luliy-lav); cursor: pointer; }
-html:root[data-appearance=cc] #directory .luliy-drawer-social svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---- Theme picker (home-fixes.js block 14): seven colour circles in a small window by the theme button ---- */
 dialog.luliy-theme-picker {
