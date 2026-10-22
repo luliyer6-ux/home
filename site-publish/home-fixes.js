@@ -202,6 +202,8 @@
       fill();
       if (coarse.matches) { if (!d.hasAttribute('tabindex')) d.tabIndex = -1; d.focus({ preventScroll: true }); }
     }).observe(d, { attributes: true, attributeFilter: ['open'] });
+    // The theme picker (block 14) can leave CC while the directory is open.
+    new MutationObserver(() => { if (d.open) fill(); }).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
     const openers = '#directoryOpen, #studyGlobalOpen, [aria-controls="directory"]';
     for (const type of ['pointerdown', 'focusin']) document.addEventListener(type, e => { if (e.target.closest?.(openers)) fill(); }, { capture: true, passive: true });
     const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
@@ -461,6 +463,8 @@
     new MutationObserver(opened).observe(d, { attributes: true, attributeFilter: ['open'] });
     new MutationObserver(() => { if (d.open) build(); }).observe(d.querySelector('#directoryLinks') || d, { childList: true });
     document.addEventListener('luliy:motion', build);
+    // The theme picker (block 14) can switch to CC while the directory is open.
+    new MutationObserver(() => { if (d.open) build(); }).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
     // Closing: the drawer slides back out while the directory's own close animation runs (180 ms).
     document.addEventListener('click', e => {
       if (!cc() || !d.open || !animate() || !e.target.closest?.('#directory [data-close="directory"]')) return;
@@ -495,19 +499,24 @@
     });
   })();
 
-  /* 12. CC: the browser bar (theme-color) takes the top colour of the night sky instead of the light paper
-     colour the CC appearance inherits from the light theme. */
+  /* 12. CC and the dark palettes (block 14): the browser bar (theme-color) takes the top colour of their sky instead
+     of the flat colour the page sets (for CC, the light paper colour it inherits from the light theme). */
   (() => {
     const meta = document.querySelector('meta[name="theme-color"]');
     if (!meta) return;
-    const SKY = '#1f1f38';
-    let plain = meta.content;
+    const SKY = { cc: '#1f1f38', forest: '#1d2a25', espresso: '#2a231d', midnight: '#1d212b', oxblood: '#2b181b' };
+    const skies = Object.values(SKY);
+    const key = () => root.dataset.appearance === 'cc' ? 'cc' : root.dataset.appearance === 'dark' ? root.dataset.palette : '';
+    let plain = meta.content, sky = false;
     const sync = () => {
-      const want = root.dataset.appearance === 'cc' ? SKY : plain;
-      if (meta.content !== want) meta.content = want;
+      const want = SKY[key()];
+      if (want) { sky = true; if (meta.content !== want) meta.content = want; return; }
+      // Leaving a sky: the page only rewrites the colour when the appearance changes, so take the plain one now.
+      if (sky) { sky = false; plain = getComputedStyle(root).getPropertyValue('--bg').trim() || plain; }
+      if (meta.content !== plain) meta.content = plain;
     };
-    new MutationObserver(() => { if (meta.content !== SKY) plain = meta.content; sync(); }).observe(meta, { attributes: true, attributeFilter: ['content'] });
-    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
+    new MutationObserver(() => { if (!sky && !skies.includes(meta.content)) plain = meta.content; sync(); }).observe(meta, { attributes: true, attributeFilter: ['content'] });
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-appearance', 'data-palette'] });
     sync();
   })();
 
@@ -553,5 +562,144 @@
     };
     new MutationObserver(sync).observe(d, { attributes: true, attributeFilter: ['open', 'class'] });
     addEventListener('resize', () => { if (d.open) align(); });
+    new MutationObserver(() => { if (d.open) requestAnimationFrame(align); }).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
+  })();
+
+  /* 14. Theme picker. The directory's theme button (runtime-fixes.py sends its click here instead of cycling
+     dark -> light -> cc) opens a small window with seven colour circles: 暗黑, 白天, CC and four dark palettes,
+     墨綠 / 暖墨 / 夜藍 / 酒紅 (design-tokens.css, skies in home-fixes.css). A palette is the dark appearance plus
+     <html data-palette>, saved as localStorage luliy-palette; home-early.js restores it before the first paint.
+     A circle applies its theme at once (a short cross-fade where view transitions exist) and the window stays
+     open, so themes can be compared; tap outside, Esc or the theme button closes it. */
+  (() => {
+    // id, 繁, 简, 日, EN, then the circle: highlight, middle, edge.
+    const THEMES = [
+      ['dark', '暗黑', '暗黑', '暗色', 'Dark', '#2a2a27', '#141413', '#0a0a09'],
+      ['light', '白天', '白天', '白昼', 'Day', '#ffffff', '#f6f4ee', '#e2ded3'],
+      ['cc', 'CC', 'CC', 'CC', 'CC', '#3a3a63', '#1c1c34', '#0c0d1b'],
+      ['forest', '墨綠', '墨绿', '深緑', 'Forest', '#3a5047', '#1b2722', '#0b110f'],
+      ['espresso', '暖墨', '暖墨', '焦茶', 'Espresso', '#4d4034', '#251f19', '#0f0d0b'],
+      ['midnight', '夜藍', '夜蓝', '濃紺', 'Midnight', '#3a4152', '#1a1d26', '#0a0b0f'],
+      ['oxblood', '酒紅', '酒红', '臙脂', 'Oxblood', '#552d34', '#271619', '#10090a'],
+    ];
+    const PALETTES = ['forest', 'espresso', 'midnight', 'oxblood'];
+    const lang = () => document.querySelector('#directoryLanguageOptions [aria-pressed="true"]')?.dataset.lang || 'zh-Hant';
+    const pick = (hant, hans, ja, en) => ({ zh: hans, ja, en })[lang()] || hant;
+    const current = () => {
+      const a = root.dataset.appearance;
+      if (a === 'dark' && PALETTES.includes(root.dataset.palette)) return root.dataset.palette;
+      return ['dark', 'light', 'cc'].includes(a) ? a : 'dark';
+    };
+    const calm = () => reduced.matches || !!window.LuliyMotion?.calm;
+    let dlg = null, card = null, nameEl = null, anchor = null, leaving = null;
+    const swatches = () => [...dlg.querySelectorAll('.luliy-tp-swatch')];
+    const nameOf = id => {
+      const t = THEMES.find(x => x[0] === id);
+      const local = pick(t[1], t[2], t[3], t[4]);
+      return local === t[4] ? local : local + '<span>' + t[4] + '</span>';
+    };
+    const showName = id => { const html = nameOf(id); if (nameEl.innerHTML !== html) nameEl.innerHTML = html; };
+    const mark = () => {
+      const now = current();
+      swatches().forEach(b => { const on = b.dataset.pick === now; b.setAttribute('aria-pressed', String(on)); b.tabIndex = on ? 0 : -1; });
+      showName(now);
+    };
+    const label = () => {
+      dlg.querySelector('.luliy-tp-title').textContent = pick('主題', '主题', 'テーマ', 'Theme');
+      swatches().forEach(b => { const t = THEMES.find(x => x[0] === b.dataset.pick); b.setAttribute('aria-label', pick(t[1], t[2], t[3], t[4])); });
+    };
+    const place = () => {
+      if (!dlg?.open) return;
+      const vw = document.documentElement.clientWidth, vh = innerHeight, W = card.offsetWidth, H = card.offsetHeight, m = 12;
+      const r = anchor?.isConnected ? anchor.getBoundingClientRect() : null;
+      let left = (vw - W) / 2, top = (vh - H) / 2, ox = W / 2, oy = H / 2;
+      if (r && r.width) {
+        left = Math.max(m, Math.min(vw - W - m, r.left + r.width / 2 - W / 2));
+        top = r.top - 12 - H;
+        if (top < m + 32) top = Math.min(r.bottom + 12, vh - H - m); // no room above: open below the button
+        ox = Math.max(0, Math.min(W, r.left + r.width / 2 - left));
+        oy = top < r.top ? H : 0;
+      }
+      card.style.left = Math.round(left) + 'px';
+      card.style.top = Math.round(top) + 'px';
+      card.style.transformOrigin = Math.round(ox) + 'px ' + oy + 'px';
+    };
+    // Theme change with a cross-fade (the page's route transitions use the same mechanism; data-vt-dir picks the style).
+    const fade = fn => {
+      if (calm() || typeof document.startViewTransition !== 'function' || document.hidden) { fn(); return; }
+      root.dataset.vtDir = 'theme';
+      const done = () => { if (root.dataset.vtDir === 'theme') delete root.dataset.vtDir; };
+      try { document.startViewTransition(fn).finished.then(done, done); } catch (e) { done(); fn(); }
+    };
+    const choose = id => {
+      if (id === current()) return;
+      const pal = PALETTES.includes(id) ? id : '', ap = pal ? 'dark' : id;
+      fade(() => {
+        if (pal) root.dataset.palette = pal; else delete root.dataset.palette;
+        try { if (pal) localStorage.setItem('luliy-palette', pal); else localStorage.removeItem('luliy-palette'); } catch (e) {}
+        if (root.dataset.appearance !== ap) {
+          if (window.LuliySetAppearance) window.LuliySetAppearance(ap);
+          else {
+            root.dataset.appearance = ap; root.dataset.theme = ap === 'dark' ? 'dark' : 'light';
+            try { localStorage.setItem('luliy-appearance', ap); localStorage.setItem('luliy-paper-ink', root.dataset.theme); } catch (e) {}
+          }
+        }
+        mark();
+      });
+    };
+    const hide = () => {
+      if (!dlg?.open || leaving) return;
+      if (calm() || !card.animate) { dlg.close(); return; }
+      leaving = card.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.96)' }], { duration: 140, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
+      leaving.finished.then(() => dlg.close(), () => dlg.close());
+    };
+    const build = () => {
+      dlg = document.createElement('dialog');
+      dlg.className = 'luliy-theme-picker';
+      dlg.setAttribute('aria-labelledby', 'luliyThemeTitle');
+      dlg.innerHTML = '<div class="luliy-tp-card"><p class="luliy-tp-title" id="luliyThemeTitle"></p>' +
+        '<div class="luliy-tp-row" role="group" aria-labelledby="luliyThemeTitle">' +
+        THEMES.map(t => '<button type="button" class="luliy-tp-swatch" data-pick="' + t[0] + '" style="--tp-a:' + t[5] + ';--tp-b:' + t[6] + ';--tp-c:' + t[7] + '"></button>').join('') +
+        '</div><p class="luliy-tp-name" aria-hidden="true"></p></div>';
+      document.body.append(dlg);
+      card = dlg.firstElementChild;
+      nameEl = dlg.querySelector('.luliy-tp-name');
+      const row = dlg.querySelector('.luliy-tp-row');
+      row.addEventListener('click', e => { const b = e.target.closest('.luliy-tp-swatch'); if (b) choose(b.dataset.pick); });
+      row.addEventListener('pointerover', e => { const b = e.target.closest('.luliy-tp-swatch'); if (b && e.pointerType === 'mouse') showName(b.dataset.pick); });
+      row.addEventListener('pointerleave', () => showName(current()));
+      row.addEventListener('focusin', e => { const b = e.target.closest('.luliy-tp-swatch'); if (b && b.matches(':focus-visible')) showName(b.dataset.pick); });
+      row.addEventListener('focusout', () => showName(current()));
+      row.addEventListener('keydown', e => {
+        const list = swatches(), i = list.indexOf(document.activeElement);
+        const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+        let j = -1;
+        if (step) j = (i + step + list.length) % list.length;
+        else if (e.key === 'Home') j = 0;
+        else if (e.key === 'End') j = list.length - 1;
+        if (j < 0) return;
+        e.preventDefault();
+        list.forEach((b, k) => { b.tabIndex = k === j ? 0 : -1; });
+        list[j].focus();
+      });
+      dlg.addEventListener('cancel', e => { e.preventDefault(); hide(); });
+      dlg.addEventListener('click', e => { if (e.target === dlg) hide(); });
+      dlg.addEventListener('close', () => { leaving?.cancel(); leaving = null; anchor = null; });
+      addEventListener('resize', place);
+    };
+    window.LuliyThemePicker = button => {
+      if (!dlg) build();
+      if (dlg.open) { hide(); return; }
+      anchor = button || null;
+      label();
+      mark();
+      dlg.showModal();
+      place();
+      const on = dlg.querySelector('.luliy-tp-swatch[aria-pressed="true"]') || swatches()[0];
+      on.focus({ preventScroll: true });
+      if (calm() || !card.animate) return;
+      card.animate([{ opacity: 0, transform: 'translateY(4px) scale(.96)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.19,1,.22,1)' });
+      swatches().forEach((b, i) => b.animate([{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], { duration: 360, delay: 40 + i * 24, easing: 'cubic-bezier(.19,1,.22,1)', fill: 'backwards' }));
+    };
   })();
 })();

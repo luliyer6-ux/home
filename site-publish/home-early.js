@@ -19,6 +19,15 @@
   } catch (e) {}
 })();
 
+/* Dark palettes (墨綠 / 暖墨 / 夜藍 / 酒紅, chosen in the theme picker, home-fixes.js block 14): put the saved one on
+   <html data-palette> before the first paint. The colours only apply on top of the dark appearance (design-tokens.css). */
+(function () {
+  try {
+    var p = localStorage.getItem('luliy-palette');
+    if (/^(forest|espresso|midnight|oxblood)$/.test(p || '')) document.documentElement.dataset.palette = p;
+  } catch (e) {}
+})();
+
 /* Footer pictures wait on touch screens. The footer sits fixed behind the page (curtain reveal), so the browser
    counts it as visible and loading="lazy" does nothing: every page used to fetch 0.8–2 MB of footer portraits
    (plus the 0.5 MB left art) that most readers never scroll down to. runtime-fixes.py routes the router's
@@ -116,10 +125,15 @@
   } catch (e) { return; }
   var a = 'dark';
   try { a = localStorage.getItem('luliy-appearance') || (localStorage.getItem('luliy-paper-ink') === 'light' ? 'cc' : 'dark'); } catch (e) {}
+  var sky = function (c) { return 'linear-gradient(189deg,' + c[0] + ' .55%,' + c[1] + ' 30.38%,' + c[2] + ' 65.19%,' + c[3] + ' 100%)'; };
+  var P = {
+    forest: ['#1d2a25', '#17221e', '#111a17', '#0b110f'], espresso: ['#2a231d', '#211c17', '#181411', '#0f0d0b'],
+    midnight: ['#1d212b', '#171a22', '#111319', '#0a0b0f'], oxblood: ['#2b181b', '#221316', '#190e10', '#10090a']
+  }[document.documentElement.dataset.palette];
   var C = {
-    cc: ['linear-gradient(189deg,#1f1f38 .55%,#18182d 30.38%,#111222 65.19%,#0c0d1b 100%)', 'rgba(234,223,190,.42)', '#f0d68f'],
+    cc: [sky(['#1f1f38', '#18182d', '#111222', '#0c0d1b']), 'rgba(234,223,190,.42)', '#f0d68f'],
     light: ['#faf9f5', 'rgba(20,20,19,.34)', '#9b7444'],
-    dark: ['#111110', 'rgba(242,237,228,.36)', '#d8b878']
+    dark: [P ? sky(P) : '#111110', 'rgba(242,237,228,.36)', '#d8b878']
   }[a] || null;
   if (!C) C = ['#111110', 'rgba(242,237,228,.36)', '#d8b878'];
   var shapes = ['M13 52H47Q48 52 48 53V57Q48 58 47 58H13Q12 58 12 57V53Q12 52 13 52Z',

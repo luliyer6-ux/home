@@ -21,6 +21,15 @@
   } catch (e) {}
 })();
 
+/* Dark palettes (墨綠 / 暖墨 / 夜藍 / 酒紅, chosen in the theme picker, home-fixes.js block 14): put the saved one on
+   <html data-palette> before the first paint. The colours only apply on top of the dark appearance (design-tokens.css). */
+(function () {
+  try {
+    var p = localStorage.getItem('luliy-palette');
+    if (/^(forest|espresso|midnight|oxblood)$/.test(p || '')) document.documentElement.dataset.palette = p;
+  } catch (e) {}
+})();
+
 /* Footer pictures wait on touch screens. The footer sits fixed behind the page (curtain reveal), so the browser
    counts it as visible and loading="lazy" does nothing: every page used to fetch 0.8–2 MB of footer portraits
    (plus the 0.5 MB left art) that most readers never scroll down to. runtime-fixes.py routes the router's
@@ -118,10 +127,15 @@
   } catch (e) { return; }
   var a = 'dark';
   try { a = localStorage.getItem('luliy-appearance') || (localStorage.getItem('luliy-paper-ink') === 'light' ? 'cc' : 'dark'); } catch (e) {}
+  var sky = function (c) { return 'linear-gradient(189deg,' + c[0] + ' .55%,' + c[1] + ' 30.38%,' + c[2] + ' 65.19%,' + c[3] + ' 100%)'; };
+  var P = {
+    forest: ['#1d2a25', '#17221e', '#111a17', '#0b110f'], espresso: ['#2a231d', '#211c17', '#181411', '#0f0d0b'],
+    midnight: ['#1d212b', '#171a22', '#111319', '#0a0b0f'], oxblood: ['#2b181b', '#221316', '#190e10', '#10090a']
+  }[document.documentElement.dataset.palette];
   var C = {
-    cc: ['linear-gradient(189deg,#1f1f38 .55%,#18182d 30.38%,#111222 65.19%,#0c0d1b 100%)', 'rgba(234,223,190,.42)', '#f0d68f'],
+    cc: [sky(['#1f1f38', '#18182d', '#111222', '#0c0d1b']), 'rgba(234,223,190,.42)', '#f0d68f'],
     light: ['#faf9f5', 'rgba(20,20,19,.34)', '#9b7444'],
-    dark: ['#111110', 'rgba(242,237,228,.36)', '#d8b878']
+    dark: [P ? sky(P) : '#111110', 'rgba(242,237,228,.36)', '#d8b878']
   }[a] || null;
   if (!C) C = ['#111110', 'rgba(242,237,228,.36)', '#d8b878'];
   var shapes = ['M13 52H47Q48 52 48 53V57Q48 58 47 58H13Q12 58 12 57V53Q12 52 13 52Z',
@@ -224,8 +238,27 @@
  --line:#3a3955;--line-strong:#6a6688;
  --accent:#d2b878;--focus-ring:#e9ad88;
 }
-@media(prefers-contrast:more){:root[data-appearance]{--muted:var(--text)}}
-@media print{:root,:root[data-appearance]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
+/* Four more dark palettes, chosen in the theme picker (home-fixes.js block 14). <html data-palette> sits on top of
+   data-appearance=dark, so the dark scenes, text and gold stay and only the surfaces change; each palette's
+   four-stop sky gradient is in home-fixes.css.  forest 墨綠 | espresso 暖墨 | midnight 夜藍 | oxblood 酒紅 */
+:root[data-appearance=dark][data-palette=forest]{
+ --bg:#111a17;--paper:#16211d;--raised:#1e2b26;--muted:#a3a99f;
+ --line:#2c3b35;--line-strong:#5a6b63;
+}
+:root[data-appearance=dark][data-palette=espresso]{
+ --bg:#181411;--paper:#1f1a16;--raised:#29231e;--muted:#aaa194;
+ --line:#3d352d;--line-strong:#706455;
+}
+:root[data-appearance=dark][data-palette=midnight]{
+ --bg:#111319;--paper:#171a21;--raised:#20242d;--muted:#a3a3a6;
+ --line:#2e323d;--line-strong:#5c6170;
+}
+:root[data-appearance=dark][data-palette=oxblood]{
+ --bg:#190e10;--paper:#211315;--raised:#2b1a1d;--muted:#ad9f9c;
+ --line:#42292d;--line-strong:#76565b;
+}
+@media(prefers-contrast:more){:root[data-appearance],:root[data-appearance][data-palette]{--muted:var(--text)}}
+@media print{:root,:root[data-appearance],:root[data-appearance][data-palette]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
 
 /* Motion: three curves, three durations. `linear` stays literal (spins, progress, loops).
    ease        main curve: things appearing, opening, moving
@@ -1005,7 +1038,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 }
 </style>
 
-<link rel="stylesheet" href="/site-publish/home-fixes.css?v=8eeaaba8" data-home-fixes></head>
+<link rel="stylesheet" href="/site-publish/home-fixes.css?v=1fc5e666" data-home-fixes></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
 <div class="reading-progress" aria-hidden="true"></div>
@@ -1067,7 +1100,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 <script src="/assets/site/home/71ef4ea092f2.js"></script>
 <script src="/assets/site/home/79bacafa9deb.js"></script>
 <script data-three-loader>(()=>{const src='/assets/site/home/0964a24fd186.js';const phone=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600;if(!phone){document.write('<script src="'+src+'"><\/script>');return;}let pending=null;const load=window.LuliyThreeReady=()=>window.LuliyLoadThree?Promise.resolve():pending||(pending=new Promise((ok,fail)=>{const s=document.createElement('script');s.src=src;s.onload=()=>ok();s.onerror=()=>{pending=null;s.remove();fail(Error('Three.js unavailable'));};document.head.append(s);}));const quiet=()=>load().catch(()=>{});const soon=()=>{if(/^#\/(books|music|study|records?)\b/.test(location.hash))quiet();};addEventListener('hashchange',soon);soon();const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;addEventListener('load',()=>setTimeout(()=>window.requestIdleCallback?requestIdleCallback(quiet,{timeout:4000}):quiet(),2500),{once:true});})();</script><script src="/assets/site/home/02775bca1b2c.js"></script>
-<script src="/assets/site/home-cc-e3e8381e4255.js"></script>
+<script src="/assets/site/home-cc-6a262824c80d.js"></script>
 <script src="/assets/site/home/1decb7dd1fbc.js"></script>
 
 <script id="guide-optimization-js">(()=>{'use strict';const fine=matchMedia('(hover:hover) and (pointer:fine)'),calm=matchMedia('(prefers-reduced-motion:reduce)');let frame=0,point=null;
@@ -1186,5 +1219,5 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script>
 
-<script src="/site-publish/home-fixes.js?v=98d89cc5" async data-home-fixes></script></body>
+<script src="/site-publish/home-fixes.js?v=e31108c1" async data-home-fixes></script></body>
 </html>

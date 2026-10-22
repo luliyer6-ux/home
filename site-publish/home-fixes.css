@@ -180,6 +180,7 @@ html.luliy-save-data .footer-left-art { display: none; }
 /* ---- Phones: one header on every page (home-fixes.js block 4) ---- */
 :root { --luliy-wash: var(--bg); }
 :root[data-appearance=cc] { --luliy-wash: #1f1f38; }
+:root[data-appearance=dark][data-palette] { --luliy-wash: var(--luliy-sky-top); }
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
   /* Flush with the top edge; the notch inset becomes padding, so the wash reaches the very top of the screen. */
   html body #header { top: 0 !important; padding-top: calc(6px + env(safe-area-inset-top)) !important; }
@@ -398,19 +399,43 @@ html.luliy-calm body #directory .luliy-motion-switch, html:root[data-appearance=
 #directory .luliy-motion-switch[aria-checked="true"] .luliy-switch-track::after { transform: translateX(12px); background: var(--bg); }
 
 /* ---- CC: night-sky gradient (the GTA VI site's palette), every device ---- */
-html:root[data-appearance=cc] { --day-gradient: linear-gradient(189deg, #1f1f38 .55%, #18182d 30.38%, #111222 65.19%, #0c0d1b 100%); }
+html:root[data-appearance=cc] { --luliy-sky-top: #1f1f38; --luliy-sky-end: #0c0d1b; --day-gradient: linear-gradient(189deg, #1f1f38 .55%, #18182d 30.38%, #111222 65.19%, #0c0d1b 100%); }
+/* ---- Dark palettes (theme picker, home-fixes.js block 14): the same four-stop sky in their own colours.
+   Surfaces are in design-tokens.css. The dark appearance paints body / page / directory flat, so they get the sky here. ---- */
+html:root[data-palette=forest] { --luliy-sky-top: #1d2a25; --luliy-sky-end: #0b110f; --luliy-sky: linear-gradient(189deg, #1d2a25 .55%, #17221e 30.38%, #111a17 65.19%, #0b110f 100%); }
+html:root[data-palette=espresso] { --luliy-sky-top: #2a231d; --luliy-sky-end: #0f0d0b; --luliy-sky: linear-gradient(189deg, #2a231d .55%, #211c17 30.38%, #181411 65.19%, #0f0d0b 100%); }
+html:root[data-palette=midnight] { --luliy-sky-top: #1d212b; --luliy-sky-end: #0a0b0f; --luliy-sky: linear-gradient(189deg, #1d212b .55%, #171a22 30.38%, #111319 65.19%, #0a0b0f 100%); }
+html:root[data-palette=oxblood] { --luliy-sky-top: #2b181b; --luliy-sky-end: #10090a; --luliy-sky: linear-gradient(189deg, #2b181b .55%, #221316 30.38%, #190e10 65.19%, #10090a 100%); }
+html:root[data-appearance=dark][data-palette] { --day-gradient: var(--luliy-sky); }
+html:root[data-appearance=dark][data-palette] body,
+html:root[data-appearance=dark][data-palette] .page-above,
+html:root[data-appearance=dark][data-palette] #directory { background: var(--day-gradient) fixed, var(--luliy-sky-end) !important; }
 /* Touch screens ignore background-attachment: fixed, which would stretch the gradient over the whole page.
    A fixed layer clipped to the page (runtime-fixes.py adds .luliy-sky to .page-above) keeps it screen-sized. */
 .luliy-sky { display: none; }
 @media (pointer: coarse) {
   html:root[data-appearance=cc] .page-above { background: none; }
-  html:root[data-appearance=cc] .luliy-sky { display: block; position: absolute; inset: 0; z-index: -1; clip-path: inset(0); pointer-events: none; }
-  html:root[data-appearance=cc] .luliy-sky > i { position: fixed; top: 0; left: 0; width: 100%; height: 100lvh; background: var(--day-gradient); }
+  html:root[data-appearance=dark][data-palette] .page-above { background: none !important; }
+  html:root[data-appearance=cc] .luliy-sky,
+  html:root[data-appearance=dark][data-palette] .luliy-sky { display: block; position: absolute; inset: 0; z-index: -1; clip-path: inset(0); pointer-events: none; }
+  html:root[data-appearance=cc] .luliy-sky > i,
+  html:root[data-appearance=dark][data-palette] .luliy-sky > i { position: fixed; top: 0; left: 0; width: 100%; height: 100lvh; background: var(--day-gradient); }
+  html:root[data-appearance=dark][data-palette] #directory { background: var(--day-gradient) center top / 100% 100lvh no-repeat, var(--luliy-sky-end) !important; }
 }
 /* The CC passe-partout frame is painted with the same sky, so it reads as part of the background. */
 html:root[data-appearance=cc] .cc-frame { border-image: var(--day-gradient) 1; }
 /* The contact curtain shows the bottom of the same sky. */
-html:root[data-appearance=cc] .contact-curtain { background: var(--day-gradient) center bottom / 100% 100lvh no-repeat, #0c0d1b; }
+html:root[data-appearance=cc] .contact-curtain,
+html:root[data-appearance=dark][data-palette] .contact-curtain { background: var(--day-gradient) center bottom / 100% 100lvh no-repeat, var(--luliy-sky-end); }
+
+/* ---- CC opening (moon -> 書房): about half as long. The section was 7.2 screens tall and the moon never faded:
+   its 1.8 s arrival animation kept opacity 1 (fill-mode both), which beat the scroll-driven --cc-moon-opacity, so
+   the middle of the scroll showed nothing new. runtime-fixes.py moves the steps closer to match. ---- */
+html:root[data-appearance=cc] .cc-opening #heroMoon { animation-fill-mode: backwards; }
+@media (prefers-reduced-motion: no-preference) {
+  html:root[data-appearance=cc] body .library-home.cc-opening { height: max(420svh, 3600px) !important; }
+  @media (max-width: 700px) { html:root[data-appearance=cc] body .library-home.cc-opening { height: max(380svh, 3000px) !important; } }
+}
 
 /* ---- CC: the directory as a drawer from the right (home-fixes.js block 11) ---- */
 :root[data-appearance=cc] { --luliy-lav: #c9c1ea; --luliy-cream: #fff6cf; }
@@ -502,3 +527,44 @@ html:root[data-appearance=cc] #directory .luliy-colophon-link { display: inline-
 html:root[data-appearance=cc] #directory .luliy-drawer-social { display: flex !important; flex: 0 0 100%; flex-wrap: wrap; gap: 4px 8px; margin: 0 -10px; }
 html:root[data-appearance=cc] #directory .luliy-drawer-social :is(a, button) { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--luliy-lav); cursor: pointer; }
 html:root[data-appearance=cc] #directory .luliy-drawer-social svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- Theme picker (home-fixes.js block 14): seven colour circles in a small window by the theme button ---- */
+dialog.luliy-theme-picker {
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0;
+  border: 0; background: transparent; color: var(--ink); overflow: hidden; animation: none;
+}
+dialog.luliy-theme-picker::backdrop { background: transparent; animation: none; }
+.luliy-tp-card {
+  position: absolute; left: 50%; top: 50%; box-sizing: border-box; width: max-content; max-width: calc(100vw - 24px);
+  padding: 16px 18px 14px; border-radius: 22px; border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--raised) 95%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.15); backdrop-filter: blur(24px) saturate(1.15);
+  box-shadow: 0 24px 60px -16px rgba(0, 0, 0, .55), 0 2px 10px rgba(0, 0, 0, .16);
+}
+.luliy-tp-title { margin: 0 0 14px; font: 500 11px/1.4 var(--font-ui); letter-spacing: .18em; color: var(--muted); }
+.luliy-tp-row { display: flex; gap: 10px; }
+.luliy-tp-swatch {
+  position: relative; flex: none; width: 34px; height: 34px; min-width: 0; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, var(--tp-a), var(--tp-b) 58%, var(--tp-c));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease-soft);
+}
+.luliy-tp-swatch[data-pick=light] { box-shadow: inset 0 0 0 1px rgba(20, 20, 19, .18); }
+/* A 44 px touch target around each 34 px circle. */
+.luliy-tp-swatch::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; }
+.luliy-tp-swatch[aria-pressed=true] { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14), 0 0 0 2.5px var(--raised), 0 0 0 4px var(--accent); }
+.luliy-tp-swatch[data-pick=light][aria-pressed=true] { box-shadow: inset 0 0 0 1px rgba(20, 20, 19, .18), 0 0 0 2.5px var(--raised), 0 0 0 4px var(--accent); }
+@media (hover: hover) { .luliy-tp-swatch:hover { transform: scale(1.08); } }
+.luliy-tp-swatch:active { transform: scale(.94); }
+.luliy-tp-swatch:focus { outline: none; }
+.luliy-tp-swatch:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 5px; }
+.luliy-tp-name { margin: 12px 0 0; min-height: 1.5em; font: 13px/1.5 var(--font-ui); color: var(--text); }
+.luliy-tp-name span { margin-left: 8px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+/* Changing theme cross-fades the whole page once (no slide, unlike route changes). The header keeps its own
+   transition name for route changes; here it stays part of the page, or it would be drawn above the open directory. */
+html[data-vt-dir="theme"] .site-header { view-transition-name: none !important; }
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-vt-dir=theme]::view-transition-old(root) { animation: none; }
+  :root[data-vt-dir=theme]::view-transition-new(root) { animation: luliy-theme-in var(--dur-base) var(--ease-soft) both; }
+}
+@keyframes luliy-theme-in { from { opacity: 0; } }

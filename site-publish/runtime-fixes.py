@@ -106,6 +106,34 @@ FIXES.append(('directory: preview only the scene links', "links=$$('#directoryLi
 FIXES.append(('cc: sky layer for touch screens', '<div class="page-above"><main id="main"',
               '<div class="page-above"><div class="luliy-sky" aria-hidden="true"><i></i></div><main id="main"'))
 
+# CC opening (moon -> study): the timeline ran over 7.2 screens, and the moon never faded (see home-fixes.css), so the
+# middle 1.5 screens showed nothing new. home-fixes.css shortens the section; these new stops keep every step but close
+# the gaps: the signature fades, the moon gives way while the study fades in, then 書房 and its story arrive.
+CC_STEPS = [
+    ('signature', "const intro=1-smooth(.20,.38,p);", "const intro=1-smooth(.06,.26,p);"),
+    ('moon', "String(1-smooth(.48,.68,p))", "String(1-smooth(.22,.48,p))"),
+    ('study', "const room=smooth(.60,.90,p),mobile=innerWidth<=700;", "const room=smooth(.30,.66,p),mobile=innerWidth<=700;"),
+    ('study prepare', "if(p>.35&&rect.top<innerHeight&&rect.bottom>0)homeStudy.prepare();",
+     "if(p>.12&&rect.top<innerHeight&&rect.bottom>0)homeStudy.prepare();"),
+    ('story', "const end=smooth(.88,1,p);", "const end=smooth(.62,.84,p);"),
+    ('header', "shelfBackdrop.style.opacity=end*.24;\n  const header=document.querySelector('#header');header.classList.toggle('is-scrolled',p>.8);",
+     "shelfBackdrop.style.opacity=end*.24;\n  const header=document.querySelector('#header');header.classList.toggle('is-scrolled',p>.6);"),
+]
+FIXES += [('cc opening: tighter timeline (' + k + ')', a, b) for k, a, b in CC_STEPS]
+
+# Theme picker (home-fixes.js block 14): the directory's theme button opens it instead of cycling dark -> light -> cc,
+# and the page's own switch (which also re-themes the moon, study and footer scenes) can be asked for one appearance.
+THEME_OLD = ("function changeTheme(){const r=document.documentElement,choices=['dark','light','cc'],"
+             "next=choices[(choices.indexOf(r.dataset.appearance||'dark')+1)%choices.length];")
+THEME_NEW = ("window.LuliySetAppearance=a=>changeTheme(a);function changeTheme(to){const r=document.documentElement,choices=['dark','light','cc'],"
+             "next=choices.includes(to)?to:choices[(choices.indexOf(r.dataset.appearance||'dark')+1)%choices.length];")
+FIXES += [
+    ('theme: the page switch can set one appearance', THEME_OLD, THEME_NEW),
+    ('theme: the theme button opens the picker',
+     "if(e.target.closest('button[data-theme]')){changeTheme();return;}",
+     "if(e.target.closest('button[data-theme]')){if(window.LuliyThemePicker)window.LuliyThemePicker(e.target.closest('button[data-theme]'));else changeTheme();return;}"),
+]
+
 THREE_HEAD = '/* Three.js r185'
 THREE_TAIL = 'PCFSoftShadowMap:2};};\n'
 THREE_LOADER = ("<script data-three-loader>(()=>{const src='%s';"
