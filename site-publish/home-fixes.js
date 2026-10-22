@@ -107,36 +107,49 @@
     if (phone && brand && brand.getAttribute('href') === '#/') brand.setAttribute('href', '#/posts');
   })();
 
-  /* 4. Phones, article pages: the header and the two floating buttons step aside while reading down,
-     and come back on any upward scroll, near the top and near the end. */
+  /* 4. Phones, every page: one header. It steps aside while scrolling down (on articles together with the two
+     floating buttons) and comes back on any upward scroll, near the top and near the end. Once the page has
+     moved, a soft wash in the page colour keeps content from showing through it (on the galaxy home only after
+     the opening scene, which turns on .is-scrolled itself). It stays put while a sheet or dialog is open. */
   (() => {
     const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
     const main = document.getElementById('main');
+    const header = document.getElementById('header');
     const body = document.body;
-    if (!main) return;
-    let reading = false, hidden = false, lastY = scrollY, queued = 0;
+    if (!main || !header) return;
+    let reading = false, hidden = false, washed = false, lastY = scrollY, queued = 0;
     const setHidden = h => { if (h !== hidden) { hidden = h; body.classList.toggle('luliy-chrome-hidden', h); } };
+    const home = () => /^#?\/?(\?.*)?$/.test(location.hash);
+    const wash = () => {
+      const w = mobile.matches && scrollY > 20 && (!home() || header.classList.contains('is-scrolled'));
+      if (w !== washed) { washed = w; header.classList.toggle('luliy-washed', w); }
+    };
     const route = () => {
       const next = mobile.matches && !!main.querySelector('.source-body, .article-body');
       if (next !== reading) { reading = next; body.classList.toggle('luliy-reading', next); }
-      if (!reading) setHidden(false);
+      setHidden(false);
       lastY = scrollY;
+      wash();
     };
+    const busy = () => !!(main.querySelector('.reader-toc-toggle[aria-expanded="true"], .article-filter-drawer[open]') || document.querySelector('dialog[open]'));
     const measure = () => {
       queued = 0;
-      if (!reading) { route(); return; } // the reader body can arrive after the route change
+      wash();
+      if (!mobile.matches) { setHidden(false); return; }
+      // The reader body can arrive after the route change.
+      if (!reading && main.querySelector('.source-body, .article-body')) { reading = true; body.classList.add('luliy-reading'); }
       const y = scrollY, dy = y - lastY;
       if (Math.abs(dy) < 8) return;
       lastY = y;
       const above = document.querySelector('.page-above');
       const nearEnd = above && above.getBoundingClientRect().bottom - innerHeight < innerHeight * 0.5;
-      const tocOpen = !!main.querySelector('.reader-toc-toggle[aria-expanded="true"]');
-      setHidden(dy > 0 && y > 160 && !nearEnd && !tocOpen);
+      setHidden(dy > 0 && y > 160 && !nearEnd && !busy());
     };
     addEventListener('scroll', () => { if (!queued) queued = requestAnimationFrame(measure); }, { passive: true });
     addEventListener('hashchange', route);
     mobile.addEventListener('change', route);
     new MutationObserver(route).observe(main, { childList: true });
+    new MutationObserver(wash).observe(header, { attributes: true, attributeFilter: ['class'] });
     route();
   })();
 
@@ -178,9 +191,17 @@
   (() => {
     const d = document.getElementById('directory');
     if (!d) return;
-    const fill = () => d.querySelectorAll('img[data-src]').forEach(img => { img.src = img.dataset.src; img.removeAttribute('data-src'); });
+    // CC shows the directory as a plain list (block 11), without the pictures.
+    const fill = () => { if (root.dataset.appearance !== 'cc') d.querySelectorAll('img[data-src]').forEach(img => { img.src = img.dataset.src; img.removeAttribute('data-src'); }); };
     if (d.open) { fill(); return; }
-    new MutationObserver(() => { if (d.open) fill(); }).observe(d, { attributes: true, attributeFilter: ['open'] });
+    // Touch: showModal() focuses the first link (the thinker mark), and iOS draws a focus ring round it.
+    // Focus the dialog itself instead; Tab still starts at the first link.
+    const coarse = matchMedia('(pointer: coarse)');
+    new MutationObserver(() => {
+      if (!d.open) return;
+      fill();
+      if (coarse.matches) { if (!d.hasAttribute('tabindex')) d.tabIndex = -1; d.focus({ preventScroll: true }); }
+    }).observe(d, { attributes: true, attributeFilter: ['open'] });
     const openers = '#directoryOpen, #studyGlobalOpen, [aria-controls="directory"]';
     for (const type of ['pointerdown', 'focusin']) document.addEventListener(type, e => { if (e.target.closest?.(openers)) fill(); }, { capture: true, passive: true });
     const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
@@ -212,5 +233,281 @@
     if (!('serviceWorker' in navigator) || location.protocol !== 'https:') return;
     const register = () => navigator.serviceWorker.register('/sw.js').catch(() => {});
     if (document.readyState === 'complete') register(); else addEventListener('load', register, { once: true });
+  })();
+
+  /* 9. Phones, article list: 文章 / 編年史 become tabs in the header (like a phone app); the filter sits on the
+     first year's row and opens as a bottom sheet: the page dims, the header steps away, and a tap outside, ×,
+     dragging the sheet down, Esc or the Android back gesture closes it. A gold dot marks an active filter;
+     the result line (全部文章 · 23 篇) moves into the sheet. */
+  (() => {
+    const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    const main = document.getElementById('main');
+    const header = document.getElementById('header');
+    const inner = header?.querySelector('.header-inner');
+    if (!main || !inner) return;
+    const say = (zh, en, ja) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : zh);
+    let tabs = null, watcher = null;
+    const syncTabs = () => {
+      const modes = mobile.matches ? main.querySelector('.article-modes') : null;
+      if (!modes) {
+        if (tabs) { tabs.remove(); tabs = null; header.classList.remove('luliy-has-tabs'); }
+        return;
+      }
+      modes.closest('.shell')?.classList.add('luliy-has-header-modes');
+      if (!tabs) { tabs = document.createElement('nav'); tabs.className = 'luliy-header-modes'; inner.append(tabs); header.classList.add('luliy-has-tabs'); }
+      tabs.setAttribute('aria-label', modes.getAttribute('aria-label') || '');
+      if (tabs.innerHTML !== modes.innerHTML) tabs.innerHTML = modes.innerHTML;
+    };
+    const lock = on => { root.classList.toggle('luliy-sheet-lock', on); document.body.classList.toggle('luliy-sheet-open', on); };
+    const close = d => {
+      if (!d.open || d.classList.contains('luliy-sheet-closing')) return;
+      if (reduced.matches) { d.open = false; return; }
+      d.classList.add('luliy-sheet-closing');
+      setTimeout(() => { d.classList.remove('luliy-sheet-closing'); d.querySelector('.article-filter-panel').style.transform = ''; d.open = false; }, 230);
+    };
+    const sheet = d => {
+      if (d.dataset.luliySheet) return;
+      d.dataset.luliySheet = '1';
+      const panel = d.querySelector('.article-filter-panel'), heading = panel?.querySelector('.article-filter-heading');
+      if (!panel || !heading) return;
+      const current = main.querySelector('.article-filter-current');
+      if (current) heading.after(current);
+      d.classList.toggle('luliy-filtered', !!current?.querySelector('.article-filter-condition'));
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'luliy-sheet-close';
+      x.setAttribute('aria-label', say('關閉', 'Close', '閉じる'));
+      x.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>';
+      x.addEventListener('click', () => close(d));
+      heading.append(x);
+      // Same row as the first year heading, on the right.
+      const toolbar = d.closest('.article-browse-toolbar'), h2 = main.querySelector('.post-year > h2');
+      if (h2) { h2.after(d); h2.parentElement.classList.add('luliy-filter-row'); }
+      if (toolbar && !toolbar.querySelector('.article-filter-drawer, .article-filter-current')) toolbar.classList.add('luliy-emptied');
+      d.querySelector('summary').addEventListener('click', e => { if (d.open && mobile.matches) { e.preventDefault(); close(d); } });
+      d.addEventListener('toggle', () => {
+        lock(d.open && mobile.matches);
+        if (d.open && 'CloseWatcher' in window && !watcher) {
+          try { watcher = new CloseWatcher(); watcher.onclose = () => { watcher = null; close(d); }; } catch (e) {}
+        } else if (!d.open && watcher) { const w = watcher; watcher = null; w.destroy(); }
+      });
+      // Drag the sheet down (from its top, or anywhere once it is scrolled to the top) to close it.
+      let y0 = 0, dy = 0, t0 = 0, pull = false;
+      panel.addEventListener('touchstart', e => { y0 = e.touches[0].clientY; dy = 0; t0 = Date.now(); pull = panel.scrollTop <= 0; }, { passive: true });
+      panel.addEventListener('touchmove', e => {
+        if (!pull) return;
+        dy = e.touches[0].clientY - y0;
+        if (dy <= 0) { panel.style.transform = ''; return; }
+        e.preventDefault();
+        panel.style.transition = 'none';
+        panel.style.transform = `translateY(${dy}px)`;
+      }, { passive: false });
+      panel.addEventListener('touchend', () => {
+        if (!pull || dy <= 0) return;
+        pull = false;
+        panel.style.transition = '';
+        if (dy > 90 || dy / Math.max(1, Date.now() - t0) > 0.6) close(d);
+        else panel.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 200, easing: 'cubic-bezier(.19,1,.22,1)' }).onfinish = () => { panel.style.transform = ''; };
+        if (!d.classList.contains('luliy-sheet-closing')) panel.style.transform = '';
+      });
+    };
+    const sync = () => {
+      syncTabs();
+      const d = mobile.matches ? main.querySelector('.article-filter-drawer') : null;
+      if (d) sheet(d);
+      if (!main.querySelector('.article-filter-drawer[open]')) lock(false);
+    };
+    new MutationObserver(sync).observe(main, { childList: true });
+    // Leaving the phone layout (a narrowed desktop window widening again): let the router draw the page afresh.
+    mobile.addEventListener('change', () => { sync(); if (!mobile.matches && main.querySelector('[data-luliy-sheet]')) dispatchEvent(new HashChangeEvent('hashchange')); });
+    sync();
+  })();
+
+  /* 10. Phones, record player: the view controls under the turntable fold into a ⋯ panel (eject, zoom, reset,
+     arm, knob, glass), leaving 進入展覽 and ⋯ in the corner, so the row no longer runs off the screen. */
+  (() => {
+    const narrow = matchMedia('(max-width: 700px)');
+    const main = document.getElementById('main');
+    if (!main) return;
+    let row = null;
+    const set = open => {
+      if (!row) return;
+      row.classList.toggle('luliy-more-open', open);
+      row.querySelector('.luliy-view-toggle')?.setAttribute('aria-expanded', String(open));
+    };
+    const fold = () => {
+      // The playlist button sits in .lr-transport, which keeps its own box (the player watches it); on phones it
+      // moves next to it so the grid in home-fixes.css can put it on the extras row, and back on wider screens.
+      const meta = main.querySelector('.lr-standalone .lr-meta'), transport = meta?.querySelector('.lr-transport');
+      const playlist = meta?.querySelector(narrow.matches ? '.lr-transport > .lr-album-trigger' : ':scope > .lr-album-trigger');
+      if (playlist && transport) narrow.matches ? transport.after(playlist) : transport.append(playlist);
+      const r = main.querySelector('.lr-standalone .lr-view-controls');
+      if (!r || !narrow.matches || r.querySelector('.luliy-view-more')) { if (r && r !== row && r.querySelector('.luliy-view-more')) row = r; return; }
+      row = r;
+      const more = document.createElement('div');
+      more.className = 'luliy-view-more';
+      more.id = 'luliyViewMore';
+      for (const el of [...r.children]) if (!el.matches('.lr-exhibition-entry')) more.append(el);
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'lr-icon-button luliy-view-toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-controls', 'luliyViewMore');
+      const label = /^en/.test(root.lang) ? 'More controls' : /^ja/.test(root.lang) ? 'その他の操作' : '更多操作';
+      toggle.setAttribute('aria-label', label);
+      toggle.title = label;
+      toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18.5" cy="12" r="1.7"/></svg>';
+      toggle.addEventListener('click', () => set(!r.classList.contains('luliy-more-open')));
+      r.append(more, toggle);
+      r.addEventListener('keydown', e => { if (e.key === 'Escape' && r.classList.contains('luliy-more-open')) { set(false); toggle.focus(); } });
+    };
+    document.addEventListener('pointerdown', e => { if (row?.classList.contains('luliy-more-open') && !row.contains(e.target)) set(false); }, { passive: true });
+    let queued = 0;
+    new MutationObserver(() => { if (!queued) queued = requestAnimationFrame(() => { queued = 0; fold(); }); }).observe(main, { childList: true, subtree: true });
+    narrow.addEventListener('change', fold);
+    fold();
+  })();
+
+  /* 11. CC appearance: the directory becomes a drawer from the right (after the GTA VI site): one plain list with
+     the current page in cream, language, theme and a 動態效果 switch on top, Drive, the colophon and the social
+     links at the bottom. Tap outside, swipe right, ×, Esc or back closes it. The other appearances keep the
+     full-screen directory with its pictures (they only get the 動態效果 switch while motion is off). */
+  (() => {
+    const d = document.getElementById('directory');
+    if (!d) return;
+    const cc = () => root.dataset.appearance === 'cc';
+    const lang = () => d.querySelector('#directoryLanguageOptions [aria-pressed="true"]')?.dataset.lang || 'zh-Hant';
+    const T = (hant, hans, ja, en) => ({ zh: hans, ja, en })[lang()] || hant;
+    const closeButton = () => d.querySelector('[data-close="directory"]');
+    const animate = () => !reduced.matches && 'animate' in d && root.dataset.input !== 'keyboard';
+    let slide = null, fade = null;
+    const stop = () => { slide?.cancel(); fade?.cancel(); slide = fade = null; };
+    const build = () => {
+      const right = d.querySelector('.directory-display-right');
+      let sw = d.querySelector('.luliy-motion-switch');
+      if (right && !sw) {
+        sw = document.createElement('button');
+        sw.type = 'button';
+        sw.className = 'luliy-motion-switch';
+        sw.setAttribute('role', 'switch');
+        sw.innerHTML = '<span class="luliy-switch-label"></span><span class="luliy-switch-track" aria-hidden="true"></span>';
+        sw.addEventListener('click', () => window.LuliyMotion?.set(!window.LuliyMotion.calm));
+        right.append(sw);
+      }
+      if (sw) {
+        sw.setAttribute('aria-checked', String(!window.LuliyMotion?.calm));
+        sw.querySelector('.luliy-switch-label').textContent = T('動態效果', '动态效果', 'モーション', 'Motion');
+      }
+      // 文章 › opens 周記 and 編年史 right below it.
+      const links = d.querySelector('#directoryLinks'), posts = links?.querySelector('a[href$="/posts"]');
+      if (posts && !links.querySelector('.luliy-sub-toggle')) {
+        posts.classList.add('luliy-has-sub');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'luliy-sub-toggle';
+        b.setAttribute('aria-expanded', 'false');
+        b.setAttribute('aria-controls', 'luliyPostsSub');
+        b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>';
+        const sub = document.createElement('div');
+        sub.className = 'luliy-sub';
+        sub.id = 'luliyPostsSub';
+        sub.hidden = true;
+        b.addEventListener('click', () => { const open = sub.hidden; sub.hidden = !open; b.setAttribute('aria-expanded', String(open)); });
+        // (runtime-fixes.py keeps the directory's own preview/keyboard code on a[data-scene], so these extra links are ignored there.)
+        sub.addEventListener('click', e => { if (e.target.closest('a')) setTimeout(() => d.open && closeButton()?.click(), 0); });
+        posts.after(b, sub);
+      }
+      // The current page in cream (the directory's own aria-current follows the previewed picture instead).
+      const here = location.hash.split('?')[0];
+      links?.querySelectorAll('a[data-scene]').forEach(a => a.toggleAttribute('data-luliy-here', a.getAttribute('href') === here));
+      const b = links?.querySelector('.luliy-sub-toggle'), sub = links?.querySelector('.luliy-sub');
+      if (b && sub) {
+        b.setAttribute('aria-label', T('文章分類', '文章分类', '記事の分類', 'Writing sections'));
+        const hash = location.hash;
+        const items = [['#/posts?view=archive&group=weekly', T('周記', '周记', '週記', 'Weekly')], ['#/posts?view=chronicle', T('編年史', '编年史', '年代記', 'Chronicle')]];
+        const html = items.map(([h, t]) => `<a href="${h}"${hash === h || (h.endsWith('chronicle') && /view=chronicle/.test(hash)) ? ' aria-current="page"' : ''}>${t}</a>`).join('');
+        if (sub.innerHTML !== html) sub.innerHTML = html;
+      }
+      // Bottom: 網站說明 next to LULIY Drive, then the footer's social links.
+      const left = d.querySelector('.directory-other-left');
+      let about = d.querySelector('.luliy-colophon-link');
+      if (left && !about) { about = document.createElement('a'); about.className = 'luliy-colophon-link'; about.href = '#/colophon'; left.append(about); }
+      if (about) about.textContent = T('網站說明', '网站说明', 'このサイトについて', 'Colophon');
+      const bottom = d.querySelector('.directory-bottom'), social = document.querySelector('#contact .contact-social');
+      if (bottom && social && !d.querySelector('.luliy-drawer-social')) {
+        const copy = social.cloneNode(true);
+        copy.className = 'luliy-drawer-social';
+        copy.removeAttribute('id');
+        copy.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+        // The copied buttons (more contacts, QR code) close the drawer, then press the footer's own button.
+        const originals = [...social.querySelectorAll('button')];
+        copy.querySelectorAll('button').forEach((btn, i) => btn.addEventListener('click', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeButton()?.click();
+          setTimeout(() => originals[i]?.click(), 260);
+        }));
+        bottom.append(copy);
+      }
+    };
+    const opened = () => {
+      if (!d.open) return;
+      build();
+      if (!cc() || !animate()) return;
+      stop();
+      slide = d.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 460, easing: 'cubic-bezier(.19,1,.22,1)' });
+      try { fade = d.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, pseudoElement: '::backdrop' }); } catch (e) {}
+    };
+    new MutationObserver(opened).observe(d, { attributes: true, attributeFilter: ['open'] });
+    new MutationObserver(() => { if (d.open) build(); }).observe(d.querySelector('#directoryLinks') || d, { childList: true });
+    document.addEventListener('luliy:motion', build);
+    // Closing: the drawer slides back out while the directory's own close animation runs (180 ms).
+    document.addEventListener('click', e => {
+      if (!cc() || !d.open || !animate() || !e.target.closest?.('#directory [data-close="directory"]')) return;
+      const from = getComputedStyle(d).transform;
+      stop();
+      slide = d.animate([{ transform: from === 'none' ? 'none' : from }, { transform: 'translateX(100%)' }], { duration: 190, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
+      try { fade = d.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 190, pseudoElement: '::backdrop', fill: 'forwards' }); } catch (e) {}
+    }, true);
+    d.addEventListener('close', () => { stop(); d.style.transform = ''; });
+    // Tap on the dimmed page beside the drawer.
+    d.addEventListener('click', e => { if (cc() && e.target === d && e.clientX < d.getBoundingClientRect().left) closeButton()?.click(); });
+    // Swipe right to close.
+    let x0 = 0, y0 = 0, dx = 0, drag = null;
+    d.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; drag = cc() ? null : false; }, { passive: true });
+    d.addEventListener('touchmove', e => {
+      if (drag === false) return;
+      const mx = e.touches[0].clientX - x0, my = e.touches[0].clientY - y0;
+      if (drag === null) {
+        if (Math.abs(mx) < 10 && Math.abs(my) < 10) return;
+        drag = mx > 0 && Math.abs(mx) > Math.abs(my) * 1.3;
+        if (!drag) return;
+      }
+      dx = Math.max(0, mx);
+      d.style.transform = `translateX(${dx}px)`;
+    }, { passive: true });
+    d.addEventListener('touchend', () => {
+      if (!drag) return;
+      drag = null;
+      if (dx > 80) { closeButton()?.click(); return; }
+      if (animate()) d.animate([{ transform: `translateX(${dx}px)` }, { transform: 'none' }], { duration: 220, easing: 'cubic-bezier(.19,1,.22,1)' });
+      d.style.transform = '';
+    });
+  })();
+
+  /* 12. CC: the browser bar (theme-color) takes the top colour of the night sky instead of the light paper
+     colour the CC appearance inherits from the light theme. */
+  (() => {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) return;
+    const SKY = '#1f1f38';
+    let plain = meta.content;
+    const sync = () => {
+      const want = root.dataset.appearance === 'cc' ? SKY : plain;
+      if (meta.content !== want) meta.content = want;
+    };
+    new MutationObserver(() => { if (meta.content !== SKY) plain = meta.content; sync(); }).observe(meta, { attributes: true, attributeFilter: ['content'] });
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
+    sync();
   })();
 })();

@@ -95,6 +95,17 @@ FIXES += [('records: wait for deferred Three.js (1/2)', REC_A_OLD, REC_A_NEW),
 # Three.js (190 KB compressed) shares a blocking script with the record player, but only runs when the
 # study room or a record is opened. split_three moves it to its own file. Computers still load it in
 # the same blocking position; phones fetch it when such a page is opened, or once the page is idle.
+# The study room lives at #/books and the record player at #/music (the old #/study and #/records names are kept).
+THREE_ROUTES_OLD = "/^#\\/(study|records?)\\b/"
+THREE_ROUTES_NEW = "/^#\\/(books|music|study|records?)\\b/"
+FIXES.append(('three.js: start loading on the real study and record routes',
+              "const soon=()=>{if(" + THREE_ROUTES_OLD + ".test(location.hash))", "const soon=()=>{if(" + THREE_ROUTES_NEW + ".test(location.hash))"))
+# CC on touch screens: a fixed sky layer clipped to the page (home-fixes.css), since iOS ignores background-attachment: fixed.
+# The CC drawer adds 周記/編年史 links inside #directoryLinks; the preview and arrow-key code should count only the five scenes.
+FIXES.append(('directory: preview only the scene links', "links=$$('#directoryLinks a');", "links=$$('#directoryLinks a[data-scene]');"))
+FIXES.append(('cc: sky layer for touch screens', '<div class="page-above"><main id="main"',
+              '<div class="page-above"><div class="luliy-sky" aria-hidden="true"><i></i></div><main id="main"'))
+
 THREE_HEAD = '/* Three.js r185'
 THREE_TAIL = 'PCFSoftShadowMap:2};};\n'
 THREE_LOADER = ("<script data-three-loader>(()=>{const src='%s';"
@@ -105,7 +116,7 @@ THREE_LOADER = ("<script data-three-loader>(()=>{const src='%s';"
     "const s=document.createElement('script');s.src=src;s.onload=()=>ok();"
     "s.onerror=()=>{pending=null;s.remove();fail(Error('Three.js unavailable'));};document.head.append(s);}));"
     "const quiet=()=>load().catch(()=>{});"
-    "const soon=()=>{if(/^#\\/(study|records?)\\b/.test(location.hash))quiet();};addEventListener('hashchange',soon);soon();"
+    "const soon=()=>{if(" + THREE_ROUTES_NEW + ".test(location.hash))quiet();};addEventListener('hashchange',soon);soon();"
     "const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;"
     "addEventListener('load',()=>setTimeout(()=>window.requestIdleCallback?requestIdleCallback(quiet,{timeout:4000}):quiet(),2500),{once:true});"
     "})();</script>")
@@ -166,7 +177,7 @@ def main():
             f.unlink()
             s = s.replace('/assets/site/' + ref, '/assets/site/' + str(dest.relative_to(ROOT / 'assets' / 'site')))
             print(f'{name} -> {nn}')
-    s = split_three(s)
+    s = apply(split_three(s), done)
     for i, (why, _, _) in enumerate(FIXES):
         if i not in done:
             print('fix skipped (not found):', why, file=sys.stderr)

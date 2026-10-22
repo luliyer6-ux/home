@@ -103,10 +103,6 @@
   html body #main :is(.reader-toc-toggle, .reader-back-top) {
     transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease) !important;
   }
-  /* When the header comes back mid-article, a soft wash keeps it off the text. */
-  html body.luliy-reading #header.is-scrolled {
-    background: linear-gradient(var(--bg) 55%, color-mix(in srgb, var(--bg) 75%, transparent) 78%, transparent) !important;
-  }
 }
 /* Touch: the section-link button keeps its small glyph but gets a finger-sized target. */
 @media (pointer: coarse) {
@@ -180,3 +176,306 @@
 /* Data saver: skip the large decorative photo behind the footer. */
 html.luliy-save-data .footer-left-art { display: none; }
 @media (prefers-reduced-data: reduce) { .footer-left-art { display: none; } }
+
+/* ---- Phones: one header on every page (home-fixes.js block 4) ---- */
+:root { --luliy-wash: var(--bg); }
+:root[data-appearance=cc] { --luliy-wash: #1f1f38; }
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  /* Flush with the top edge; the notch inset becomes padding, so the wash reaches the very top of the screen. */
+  html body #header { top: 0 !important; padding-top: calc(6px + env(safe-area-inset-top)) !important; }
+  /* Once the page has moved, a soft wash keeps content from showing through the header. */
+  html body #header.luliy-washed { background: none !important; }
+  html body #header.luliy-washed::before {
+    content: "" !important; display: block !important; position: absolute; inset: 0 0 -24px !important; z-index: -1; opacity: 1 !important;
+    background: var(--luliy-wash) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    -webkit-mask-image: linear-gradient(#000 70%, transparent) !important; mask-image: linear-gradient(#000 70%, transparent) !important;
+    pointer-events: none;
+  }
+  html body.luliy-sheet-open #header { opacity: 0 !important; pointer-events: none !important; }
+}
+
+/* ---- Phones: article list (home-fixes.js block 9) ---- */
+#header .luliy-header-modes { display: none; }
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  /* 文章 / 編年史 as header tabs: the current one bold with a short gold bar. */
+  html body #header .luliy-header-modes {
+    display: flex; gap: 20px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  }
+  html body #header .luliy-header-modes a {
+    position: relative; padding: 12px 2px; color: var(--muted); font-family: var(--font-ui); font-size: 16px; font-weight: 500;
+    line-height: 1; letter-spacing: .06em; text-decoration: none; white-space: nowrap;
+  }
+  html body #header .luliy-header-modes a[aria-current] { color: var(--ink); font-weight: 700; }
+  html body #header .luliy-header-modes a[aria-current]::after {
+    content: ""; position: absolute; left: 50%; bottom: 3px; width: 16px; height: 2px; margin-left: -8px; border-radius: 2px; background: var(--accent);
+  }
+  html body #main .luliy-has-header-modes .article-modes,
+  html body #main .article-browse-toolbar.luliy-emptied { display: none !important; }
+  html body #main .luliy-has-header-modes > #chronicleBrowse { margin-top: 4px; }
+
+  /* The filter sits on the first year's row, on the right. */
+  html body #main .post-year.luliy-filter-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  html body #main .post-year.luliy-filter-row > h2 { grid-column: 1; grid-row: 1; }
+  html body #main .post-year.luliy-filter-row > .article-filter-drawer { grid-column: 2; grid-row: 1; align-self: center; margin-bottom: 15px; }
+  html body #main .post-year.luliy-filter-row > :not(h2):not(.article-filter-drawer) { grid-column: 1 / -1; }
+  html body #main .article-filter-drawer > summary { position: relative; min-height: 44px; }
+  html body #main .article-filter-drawer > summary .article-filter-chevron { display: none; }
+  html body #main .article-filter-drawer.luliy-filtered > summary::after {
+    content: ""; position: absolute; top: 9px; right: -7px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+
+  /* Bottom sheet. */
+  html.luliy-sheet-lock, html.luliy-sheet-lock body { overflow: hidden !important; }
+  html body #main .article-filter-drawer[open] > summary::before {
+    content: ""; position: fixed; inset: 0; z-index: 70; background: rgba(0, 0, 0, .5); cursor: default;
+    animation: luliy-dim-in var(--dur-base) var(--ease-soft) both;
+  }
+  html body #main .article-filter-drawer > .article-filter-panel {
+    position: fixed !important; inset: auto 0 0 0 !important; z-index: 71; width: auto !important; max-width: none !important;
+    max-height: 78vh; max-height: 78svh; margin: 0 auto !important; overflow-y: auto; overscroll-behavior: contain;
+    padding: 26px 20px calc(22px + env(safe-area-inset-bottom)) !important;
+    border: 0 !important; border-radius: 16px 16px 0 0 !important; background: var(--raised) !important;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, .28) !important; transform: none;
+    animation: luliy-sheet-up 380ms var(--ease) backwards !important; transition: transform var(--dur-fast) var(--ease);
+  }
+  @media (min-width: 600px) { html body #main .article-filter-drawer > .article-filter-panel { max-width: 560px !important; } }
+  html body #main .article-filter-drawer > .article-filter-panel::before {
+    content: ""; position: absolute; top: 8px; left: 50%; width: 36px; height: 4px; margin-left: -18px; border-radius: 2px;
+    background: var(--line-strong); opacity: .55;
+  }
+  html body #main .article-filter-drawer.luliy-sheet-closing > .article-filter-panel { animation: luliy-sheet-down 230ms var(--ease-in-out) forwards !important; }
+  html body #main .article-filter-drawer.luliy-sheet-closing > summary::before { animation: luliy-dim-out 230ms var(--ease-in-out) forwards; }
+  html body #main .article-filter-panel .article-filter-heading { display: flex; align-items: center; gap: 14px; }
+  html body #main .article-filter-panel .article-filter-heading > span { margin-right: auto; color: var(--ink); font-size: 17px; font-weight: 700; }
+  html body #main .luliy-sheet-close {
+    display: grid; place-items: center; flex: none; width: 34px; height: 34px; margin: -6px -4px -6px 0; padding: 0;
+    border: 0; border-radius: 50%; background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--ink);
+  }
+  html body #main .luliy-sheet-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  /* 全部文章 · 23 篇, under the sheet title. */
+  html body #main .article-filter-panel > .article-filter-current {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 2px; color: var(--muted); font-size: 13px;
+  }
+  html body #main .article-filter-panel > .article-filter-current > small::before { content: "·"; margin-right: 6px; }
+}
+@media (max-width: 340px) { html body #header.luliy-has-tabs a.brand { display: none !important; } }
+@keyframes luliy-sheet-up { from { transform: translateY(100%); } }
+@keyframes luliy-sheet-down { to { transform: translateY(100%); } }
+@keyframes luliy-dim-in { from { opacity: 0; } }
+@keyframes luliy-dim-out { to { opacity: 0; } }
+
+/* ---- Phones: works in two columns ---- */
+@media (max-width: 700px) {
+  html body #main .project-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 24px 12px !important; }
+  html body #main .project-gallery-grid .project-caption { margin-top: 10px; padding: 0; }
+  html body #main .project-gallery-grid .project-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; margin: 0; }
+  html body #main .project-gallery-grid .project-title .numeral { font-size: 12px; }
+  html body #main .project-gallery-grid .project-title h3 { min-width: 0; margin: 0; font-size: 16px; line-height: 1.25; overflow-wrap: anywhere; }
+  html body #main .project-gallery-grid .project-title .status { margin-left: auto; font-size: 11px; }
+  html body #main .project-gallery-grid .project-caption p {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+    margin: 5px 0 0; font-size: 12.5px; line-height: 1.5;
+  }
+}
+
+/* ---- Phones: record player (home-fixes.js block 10) ---- */
+#main .lr-view-controls > .luliy-view-more { display: contents; }
+#main .lr-view-controls > .luliy-view-toggle { display: none; }
+@media (max-width: 700px) {
+  /* Under the turntable: 進入展覽 and ⋯ on the right; the other view controls in a small panel above them. */
+  html body #main .lr-standalone .lr-view-controls { left: auto !important; right: 0 !important; width: auto !important; justify-content: flex-end; gap: 4px; }
+  html body #main .lr-standalone .lr-view-controls > .luliy-view-toggle { display: inline-flex; }
+  html body #main .lr-standalone .luliy-view-toggle svg circle { fill: currentColor; stroke: none; }
+  html body #main .lr-standalone .lr-view-controls > .luliy-view-more { display: none; }
+  html body #main .lr-standalone .lr-view-controls.luliy-more-open > .luliy-view-more {
+    display: grid; grid-template-columns: repeat(4, 44px); gap: 2px; position: absolute; right: 0; bottom: calc(100% + 8px); z-index: 6;
+    padding: 6px; border: 1px solid var(--line); border-radius: 16px; background: var(--raised);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .3); animation: luliy-pop var(--dur-fast) var(--ease) both; transform-origin: bottom right;
+  }
+  html body #main .lr-standalone .luliy-view-more .lr-view-divider { display: none; }
+  html body #main .lr-standalone .luliy-view-more .lr-detail-actions { display: contents; }
+  html body #main .lr-standalone .lr-view-controls.luliy-more-open > .luliy-view-toggle { color: var(--accent); }
+
+  /* Now playing, laid out like a phone music app: title, progress, then
+     順序 · previous · play · next · 隨機, volume, and the small extras last. */
+  html body #main .lr-standalone .lr-meta {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; column-gap: 0; row-gap: 0;
+  }
+  html body #main .lr-standalone .lr-meta :is(.lr-meta-top, .lr-listening-actions, .lr-track-progress, .lr-sound-row, .lr-play-modes, .lr-volume) { display: contents; }
+  /* .lr-transport keeps a box: the player watches it (IntersectionObserver) to update the progress and hide the mini player. */
+  html body #main .lr-standalone .lr-meta .lr-transport {
+    display: grid; grid-area: 4 / 2 / 5 / 5; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 0; width: auto; margin: 0; padding: 0;
+  }
+  html body #main .lr-standalone .lr-meta .lr-title {
+    grid-area: 1 / 1 / 2 / 5; margin: 0; overflow: hidden; font-size: 26px; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap;
+  }
+  html body #main .lr-standalone .lr-meta [data-extra="favorite-current"] { grid-area: 1 / 5; justify-self: end; margin-right: -10px; }
+  html body #main .lr-standalone .lr-meta .lr-seek { grid-area: 2 / 1 / 3 / 6; width: 100%; margin: 12px 0 0; }
+  html body #main .lr-standalone .lr-meta .lr-elapsed { grid-area: 3 / 1 / 4 / 3; justify-self: start; font-size: 11px; }
+  html body #main .lr-standalone .lr-meta .lr-duration { grid-area: 3 / 4 / 4 / 6; justify-self: end; font-size: 11px; }
+  html body #main .lr-standalone .lr-meta [data-lr-action="sequence"] { grid-area: 4 / 1; justify-self: start; margin-left: -10px; }
+  html body #main .lr-standalone .lr-meta [data-lr-action="previous"] { grid-area: 1 / 1; justify-self: center; }
+  html body #main .lr-standalone .lr-meta .lr-primary {
+    grid-area: 1 / 2; justify-self: center; display: grid; place-items: center; width: 64px; height: 64px; margin: 14px 0; padding: 0;
+    border: 0; border-radius: 50%; background: var(--accent); color: var(--bg);
+  }
+  html body #main .lr-standalone .lr-meta .lr-primary svg { width: 24px; height: 24px; }
+  html body #main .lr-standalone .lr-meta .lr-primary > span {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  html body #main .lr-standalone .lr-meta [data-lr-action="next"] { grid-area: 1 / 3; justify-self: center; }
+  html body #main .lr-standalone .lr-meta [data-lr-action="shuffle"] { grid-area: 4 / 5; justify-self: end; margin-right: -10px; }
+  html body #main .lr-standalone .lr-meta .lr-mute { grid-area: 5 / 1; justify-self: start; margin-left: -10px; }
+  html body #main .lr-standalone .lr-meta .lr-volume-range { grid-area: 5 / 2 / 6 / 5; width: 100%; min-width: 0; margin: 0; }
+  html body #main .lr-standalone .lr-meta .lr-volume-output { grid-area: 5 / 5; justify-self: end; }
+  html body #main .lr-standalone .lr-meta .lr-counter { grid-area: 6 / 1; justify-self: start; margin: 0; white-space: nowrap; }
+  html body #main .lr-standalone .lr-meta .lr-counter::before { display: none; }
+  html body #main .lr-standalone .lr-meta .lr-sleep-label { grid-area: 6 / 2 / 7 / 4; justify-self: center; }
+  html body #main .lr-standalone .lr-meta [data-extra="noise"] { grid-area: 6 / 4; justify-self: center; }
+  html body #main .lr-standalone .lr-meta .lr-playlist-icon { grid-area: 6 / 5; justify-self: end; margin-right: -10px; }
+  html body #main .lr-standalone .lr-meta :is(.lr-audio-status, .lr-listening-status) { grid-column: 1 / -1; }
+  html body #main .lr-standalone .lr-meta .lr-audio-status { margin-top: 6px; }
+}
+@keyframes luliy-pop { from { opacity: 0; transform: scale(.94); } }
+
+/* ---- Directory button: two thick bars (=) everywhere; closing is a round × ---- */
+html body #header #studyGlobalOpen svg { stroke-width: 3; }
+html body #header #studyGlobalOpen .menu-line.line-top { transform: translateY(4px) scaleX(.84); }
+html body #header #studyGlobalOpen .menu-line.line-middle { opacity: 0; }
+html body #header #studyGlobalOpen .menu-line.line-bottom { transform: translateY(-4px) scaleX(.84); }
+html body #directory .plain-close {
+  display: grid; place-items: center; width: 48px; height: 48px; padding: 0 !important; border-radius: 50% !important;
+  background: color-mix(in srgb, currentColor 13%, transparent) !important;
+}
+html body #directory .plain-close svg { width: 22px !important; height: 22px !important; }
+html body #directory:focus, html body #directory:focus-visible { outline: none; }
+
+/* ---- 動態效果 off (home-early.js, switch in the directory): like system reduced motion ---- */
+html.luliy-calm {    scroll-behavior: auto; }
+html.luliy-calm *, html.luliy-calm *::before, html.luliy-calm *::after {
+  animation-duration: 1ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important;
+  transition-duration: var(--dur-fast) !important; transition-delay: 0s !important; scroll-behavior: auto !important;
+}
+html.luliy-calm::view-transition-group(*), html.luliy-calm::view-transition-old(*), html.luliy-calm::view-transition-new(*) { animation: none !important; }
+/* Extra drawer pieces stay out of the full-screen directory (its own button and link rules are more specific, hence !important). */
+html body #directory :is(.luliy-motion-switch, .luliy-sub-toggle, .luliy-sub, .luliy-colophon-link, .luliy-drawer-social) { display: none !important; }
+html.luliy-calm body #directory .luliy-motion-switch, html:root[data-appearance=cc] body #directory .luliy-motion-switch {
+  display: inline-flex !important; align-items: center; gap: 8px; width: auto !important; min-height: 44px; padding: 0 2px; border: 0; background: none;
+  color: inherit; font-family: var(--font-ui); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer;
+}
+#directory .luliy-switch-track {
+  position: relative; flex: none; width: 30px; height: 18px; border-radius: 9px;
+  background: color-mix(in srgb, currentColor 26%, transparent); transition: background var(--dur-fast) var(--ease-soft);
+}
+#directory .luliy-switch-track::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: currentColor;
+  transition: transform var(--dur-fast) var(--ease);
+}
+#directory .luliy-motion-switch[aria-checked="true"] .luliy-switch-track { background: var(--accent); }
+#directory .luliy-motion-switch[aria-checked="true"] .luliy-switch-track::after { transform: translateX(12px); background: var(--bg); }
+
+/* ---- CC: night-sky gradient (the GTA VI site's palette), every device ---- */
+html:root[data-appearance=cc] { --day-gradient: linear-gradient(189deg, #1f1f38 .55%, #18182d 30.38%, #111222 65.19%, #0c0d1b 100%); }
+/* Touch screens ignore background-attachment: fixed, which would stretch the gradient over the whole page.
+   A fixed layer clipped to the page (runtime-fixes.py adds .luliy-sky to .page-above) keeps it screen-sized. */
+.luliy-sky { display: none; }
+@media (pointer: coarse) {
+  html:root[data-appearance=cc] .page-above { background: none; }
+  html:root[data-appearance=cc] .luliy-sky { display: block; position: absolute; inset: 0; z-index: -1; clip-path: inset(0); pointer-events: none; }
+  html:root[data-appearance=cc] .luliy-sky > i { position: fixed; top: 0; left: 0; width: 100%; height: 100lvh; background: var(--day-gradient); }
+}
+/* The CC passe-partout frame is painted with the same sky, so it reads as part of the background. */
+html:root[data-appearance=cc] .cc-frame { border-image: var(--day-gradient) 1; }
+/* The contact curtain shows the bottom of the same sky. */
+html:root[data-appearance=cc] .contact-curtain { background: var(--day-gradient) center bottom / 100% 100lvh no-repeat, #0c0d1b; }
+
+/* ---- CC: the directory as a drawer from the right (home-fixes.js block 11) ---- */
+:root[data-appearance=cc] { --luliy-lav: #c9c1ea; --luliy-cream: #fff6cf; }
+html:root[data-appearance=cc] #directory {
+  inset: 0 0 0 auto !important; width: min(86vw, 420px) !important; max-width: none !important; height: 100% !important; max-height: none !important;
+  margin: 0 !important; padding: calc(16px + env(safe-area-inset-top)) 24px calc(16px + env(safe-area-inset-bottom)) !important;
+  overflow: hidden auto !important; overscroll-behavior: contain;
+  background-attachment: scroll !important; color: var(--luliy-lav); box-shadow: -30px 0 60px rgba(0, 0, 0, .3); touch-action: pan-y;
+}
+html:root[data-appearance=cc] #directory[open] { display: flex !important; flex-direction: column !important; }
+html:root[data-appearance=cc] #directory::backdrop { background: rgba(17, 17, 23, .6) !important; }
+@media (hover: hover) and (pointer: fine) {
+  html:root[data-appearance=cc] #directory::backdrop { -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.1); backdrop-filter: blur(40px) saturate(1.8) brightness(1.1); }
+}
+/* Top row: language · theme · 動態效果 on the left, a round × on the right; the brand below. */
+html:root[data-appearance=cc] #directory .directory-top {
+  flex: none !important; position: static !important; display: flex !important; flex-wrap: wrap; align-items: center; justify-content: flex-end;
+  min-height: 48px; height: auto !important; margin: 0 !important; padding: 0 !important;
+}
+html:root[data-appearance=cc] #directory #directoryTitle { display: none !important; }
+html:root[data-appearance=cc] #directory .plain-close {
+  position: relative !important; inset: auto !important; order: 1; flex: none; margin: 0 -4px 0 auto !important; transform: none !important;
+  color: var(--luliy-lav) !important;
+}
+html:root[data-appearance=cc] #directory .directory-brand-group {
+  order: 2; flex: 0 0 100%; display: flex; align-items: center; gap: 4px; margin: 22px 0 0 !important; position: static !important; transform: none !important;
+}
+html:root[data-appearance=cc] #directory .directory-display-right {
+  position: absolute !important; top: calc(16px + env(safe-area-inset-top)); left: 20px; right: 84px; z-index: 2;
+  display: flex !important; align-items: center; gap: 6px; height: 48px; margin: 0 !important;
+}
+html:root[data-appearance=cc] #directory :is(.directory-bottom, .directory-other-bar) { position: static !important; }
+html:root[data-appearance=cc] #directory .directory-quiet-language { position: relative; order: -1; }
+html:root[data-appearance=cc] #directory .directory-language-toggle { color: var(--luliy-lav); font-family: var(--font-ui); font-size: 13px; font-weight: 500; }
+html:root[data-appearance=cc] #directory .directory-language-toggle::after {
+  content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 2px 3px 7px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
+}
+html:root[data-appearance=cc] #directory .directory-language-options {
+  top: calc(100% + 6px) !important; bottom: auto !important; left: 0 !important; right: auto !important; z-index: 3;
+}
+html:root[data-appearance=cc] #directory .directory-theme-cycle { color: var(--luliy-lav); }
+/* One plain list: no pictures, no English captions. */
+html:root[data-appearance=cc] #directory .directory-main {
+  display: block !important; flex: 1 0 auto; height: auto !important; min-height: 0; margin: 0 !important; padding: 26px 0 24px !important;
+  transform: none; grid-template-columns: none !important;
+}
+html:root[data-appearance=cc] #directory :is(.directory-art, #directoryCaption) { display: none !important; }
+html:root[data-appearance=cc] #directory #directoryLinks {
+  display: grid !important; grid-template-columns: minmax(0, 1fr) auto; align-content: start; gap: 2px 0 !important;
+  width: auto !important; height: auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important;
+}
+html:root[data-appearance=cc] #directory #directoryLinks > a {
+  grid-column: 1 / -1; display: flex !important; align-items: center; min-height: 0 !important; height: auto !important;
+  margin: 0 !important; padding: 8px 0 !important; border: 0 !important; background: none !important;
+  color: var(--luliy-lav) !important; font-family: var(--font-ui) !important; font-size: 23px !important; font-weight: 700 !important;
+  line-height: 1.3 !important; letter-spacing: .02em !important; opacity: 1 !important; transform: none !important;
+}
+html:root[data-appearance=cc] #directory #directoryLinks > a::before,
+html:root[data-appearance=cc] #directory #directoryLinks > a::after { display: none !important; }
+html:root[data-appearance=cc] #directory #directoryLinks > a > span { color: inherit !important; font: inherit !important; transform: none !important; opacity: 1 !important; }
+html:root[data-appearance=cc] #directory #directoryLinks > a > em { display: none !important; }
+html:root[data-appearance=cc] #directory #directoryLinks > a[data-luliy-here] { color: var(--luliy-cream) !important; }
+@media (hover: hover) { html:root[data-appearance=cc] #directory #directoryLinks > a:hover { color: #fff !important; } }
+html:root[data-appearance=cc] #directory #directoryLinks > a.luliy-has-sub { grid-column: 1; }
+html:root[data-appearance=cc] #directory .luliy-sub-toggle {
+  display: grid !important; place-items: center; grid-column: 2; width: 44px; height: 44px; margin-right: -10px; padding: 0;
+  border: 0; background: none; color: var(--luliy-lav); cursor: pointer;
+}
+html:root[data-appearance=cc] #directory .luliy-sub-toggle svg {
+  width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform var(--dur-fast) var(--ease);
+}
+html:root[data-appearance=cc] #directory .luliy-sub-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+html:root[data-appearance=cc] #directory .luliy-sub:not([hidden]) { display: grid !important; grid-column: 1 / -1; gap: 0; margin: -2px 0 6px; padding-left: 16px; border-left: 1px solid color-mix(in srgb, var(--luliy-lav) 22%, transparent); }
+html:root[data-appearance=cc] #directory .luliy-sub a {
+  display: block !important; min-height: 0 !important; height: auto !important; margin: 0 !important; border: 0 !important; background: none !important;
+  padding: 7px 0; color: color-mix(in srgb, var(--luliy-lav) 82%, transparent); font-family: var(--font-ui); font-size: 17px; font-weight: 600; text-decoration: none;
+}
+html:root[data-appearance=cc] #directory .luliy-sub a[aria-current] { color: var(--luliy-cream); }
+/* Bottom: Other · Drive · 網站說明, then the social links. */
+html:root[data-appearance=cc] #directory .directory-bottom {
+  display: flex !important; flex-wrap: wrap; align-items: center; gap: 12px 0; margin: auto 0 0 !important; padding: 16px 0 0 !important;
+  border-top: 1px solid color-mix(in srgb, var(--luliy-lav) 18%, transparent) !important; transform: none;
+}
+html:root[data-appearance=cc] #directory .directory-other-left { display: flex !important; flex-wrap: wrap; align-items: center; gap: 0 16px; white-space: nowrap; }
+html:root[data-appearance=cc] #directory .directory-other-left > a,
+html:root[data-appearance=cc] #directory .directory-other > summary { color: var(--luliy-lav) !important; font-family: var(--font-ui); font-size: 14px; }
+html:root[data-appearance=cc] #directory .luliy-colophon-link { display: inline-flex !important; align-items: center; min-height: 44px; text-decoration: none; }
+html:root[data-appearance=cc] #directory .luliy-drawer-social { display: flex !important; flex: 0 0 100%; flex-wrap: wrap; gap: 4px 8px; margin: 0 -10px; }
+html:root[data-appearance=cc] #directory .luliy-drawer-social :is(a, button) { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--luliy-lav); cursor: pointer; }
+html:root[data-appearance=cc] #directory .luliy-drawer-social svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }

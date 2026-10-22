@@ -54,6 +54,114 @@
     var art = document.querySelector('.footer-left-art[data-src]');
     if (art && !document.documentElement.classList.contains('luliy-save-data')) window.LuliyFooterSrc(art, art.dataset.src);
   });
+})();
+
+/* 動態效果 (motion) switch, offered in the directory. When it is off, every script asking
+   matchMedia('(prefers-reduced-motion: reduce)') hears "reduce" (and is told when it changes), so the moon, dust,
+   galaxy and record player settle exactly as they do for system reduced motion; html.luliy-calm does the same for CSS. */
+(function () {
+  var root = document.documentElement, KEY = 'luliy-motion', calm = false;
+  try { calm = localStorage.getItem(KEY) === 'off'; } catch (e) {}
+  if (calm) root.classList.add('luliy-calm');
+  var real = window.matchMedia && window.matchMedia.bind(window);
+  if (!real) return;
+  var wrapped = [];
+  function Wrapped(mql, reduce) {
+    var self = this;
+    this._m = mql; this._reduce = reduce; this._fns = []; this.media = mql.media; this.onchange = null; this._last = this.matches;
+    var relay = function () { self._fire(); };
+    if (mql.addEventListener) mql.addEventListener('change', relay); else if (mql.addListener) mql.addListener(relay);
+  }
+  Object.defineProperty(Wrapped.prototype, 'matches', { get: function () { return this._reduce ? (this._m.matches || calm) : (this._m.matches && !calm); } });
+  Wrapped.prototype._fire = function () {
+    var now = this.matches;
+    if (now === this._last) return;
+    this._last = now;
+    var ev = { type: 'change', matches: now, media: this.media };
+    if (typeof this.onchange === 'function') try { this.onchange(ev); } catch (e) {}
+    this._fns.slice().forEach(function (fn) { try { typeof fn === 'function' ? fn(ev) : fn.handleEvent(ev); } catch (e) {} });
+  };
+  Wrapped.prototype.addEventListener = function (type, fn) { if (type === 'change' && fn && this._fns.indexOf(fn) < 0) this._fns.push(fn); };
+  Wrapped.prototype.removeEventListener = function (type, fn) { var i = this._fns.indexOf(fn); if (type === 'change' && i >= 0) this._fns.splice(i, 1); };
+  Wrapped.prototype.addListener = function (fn) { this.addEventListener('change', fn); };
+  Wrapped.prototype.removeListener = function (fn) { this.removeEventListener('change', fn); };
+  Wrapped.prototype.dispatchEvent = function () { return true; };
+  window.matchMedia = function (q) {
+    var mql = real(q), m = /^\(\s*prefers-reduced-motion\s*:\s*(reduce|no-preference)\s*\)$/.exec(String(q).trim());
+    if (!m) return mql;
+    var w = new Wrapped(mql, m[1] === 'reduce');
+    wrapped.push(w);
+    return w;
+  };
+  window.LuliyMotion = {
+    get calm() { return calm; },
+    set: function (off) {
+      calm = !!off;
+      try { if (calm) localStorage.setItem(KEY, 'off'); else localStorage.removeItem(KEY); } catch (e) {}
+      root.classList.toggle('luliy-calm', calm);
+      wrapped.forEach(function (w) { w._fire(); });
+      try { document.dispatchEvent(new CustomEvent('luliy:motion', { detail: { calm: calm } })); } catch (e) {}
+    }
+  };
+})();
+
+/* Phones: a short opening screen on the first visit of a session, in the colours of the chosen appearance.
+   The thinker is drawn as a thin outline with a light travelling round it, breathing slowly (still with reduced
+   motion). It lifts once the page has rendered: at least 0.7 s, at most 1.5 s after the document is parsed. */
+(function () {
+  try {
+    if (!matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) >= 600) return;
+    var q = new URLSearchParams(location.search);
+    if (q.get('intro') === '1' || q.get('intro') === 'eye') return;
+    if (sessionStorage.getItem('luliy-loader-seen')) return;
+    sessionStorage.setItem('luliy-loader-seen', '1');
+  } catch (e) { return; }
+  var a = 'dark';
+  try { a = localStorage.getItem('luliy-appearance') || (localStorage.getItem('luliy-paper-ink') === 'light' ? 'cc' : 'dark'); } catch (e) {}
+  var C = {
+    cc: ['linear-gradient(189deg,#1f1f38 .55%,#18182d 30.38%,#111222 65.19%,#0c0d1b 100%)', 'rgba(234,223,190,.42)', '#f0d68f'],
+    light: ['#faf9f5', 'rgba(20,20,19,.34)', '#9b7444'],
+    dark: ['#111110', 'rgba(242,237,228,.36)', '#d8b878']
+  }[a] || null;
+  if (!C) C = ['#111110', 'rgba(242,237,228,.36)', '#d8b878'];
+  var shapes = ['M13 52H47Q48 52 48 53V57Q48 58 47 58H13Q12 58 12 57V53Q12 52 13 52Z',
+    'M30 52L30 44Q30 38 34 35L38 35Q38 41 36 44L36 52Z', 'M16 52L16 42Q16 38 20 37L25 39Q24 43 22 44L22 52Z',
+    'M19 38Q18 33 22 31L33 31Q35 33 34 36L23 38Q21 39 19 38Z', 'M24 32Q21 26 22 19Q23 13 29 11L34 12Q36 16 35 21L33 31Q28 33 24 32Z',
+    'M24 16Q19 18 18 24Q17 28 20 30L23 30Q21 27 22 23Q23 19 27 17Z', 'M18 25Q15 21 16 16Q17 12 22 11L25 14Q21 15 20 19Q19 22 21 25Z',
+    'M21.5 9A6.5 7 0 1 0 34.5 9A6.5 7 0 1 0 21.5 9Z', 'M33 8Q35.5 9 34.5 11.5Q33 12 32 10.5Z'];
+  var paths = function (cls) { return shapes.map(function (d, i) { return '<path class="' + cls + '" pathLength="1" d="' + d + '" style="--i:' + i + '"/>'; }).join(''); };
+  var css = '#luliy-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1)}' +
+    '#luliy-loader.is-done{opacity:0;pointer-events:none}' +
+    '#luliy-loader svg{width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round}' +
+    '#luliy-loader .o{stroke:' + C[1] + ';stroke-width:.55;animation:luliy-loader-breathe 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
+    '#luliy-loader .l{stroke:' + C[2] + ';stroke-width:.9;stroke-dasharray:.16 .84;stroke-dashoffset:1;animation:luliy-loader-run 1.9s linear infinite;animation-delay:calc(var(--i) * -.21s)}' +
+    '#luliy-loader .g{filter:drop-shadow(0 0 2.2px ' + C[2] + ')}' +
+    '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-run{to{stroke-dashoffset:0}}' +
+    '@media(prefers-reduced-motion:reduce){#luliy-loader .o{animation:none;opacity:1}#luliy-loader .l{display:none}}' +
+    'html.luliy-calm #luliy-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-loader .l{display:none}';
+  var style = document.createElement('style');
+  style.textContent = css;
+  (document.head || document.documentElement).appendChild(style);
+  var el = document.createElement('div');
+  el.id = 'luliy-loader';
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + '<g class="g">' + paths('l') + '</g></svg>';
+  document.documentElement.appendChild(el);
+  var shown = Date.now(), parsed = 0, gone = false;
+  function done() {
+    if (gone) return;
+    gone = true;
+    el.classList.add('is-done');
+    setTimeout(function () { el.remove(); style.remove(); }, 500);
+  }
+  function check() {
+    if (gone) return;
+    var main = document.getElementById('main'), now = Date.now();
+    if ((main && main.firstElementChild && now - shown >= 700) || (parsed && now - parsed >= 1500)) { done(); return; }
+    setTimeout(check, 80);
+  }
+  document.addEventListener('DOMContentLoaded', function () { parsed = Date.now(); check(); });
+  setTimeout(done, 6000); // never stay up, whatever happens
 })();</script><script src="intro/intro.js?v=7172b464ca"></script><script id="mobile-performance-policy">(()=>{const phone=matchMedia('(max-width: 767px)'),tablet=matchMedia('(min-width: 768px) and (max-width: 1024px)'),coarse=matchMedia('(pointer: coarse)');const sync=()=>{window.LuliyMobilePhone=phone.matches;window.LuliyMobileTablet=tablet.matches;window.LuliyMobileLite=phone.matches||tablet.matches||coarse.matches;document.documentElement.dataset.performance=window.LuliyMobileLite?'lite':'full';};sync();for(const query of [phone,tablet,coarse])query.addEventListener('change',sync);})();</script><!-- intro-layout-coordinates-v1 --><script>(function(){if(/^\/(?:article|post)\/P\d+\/?$/.test(location.pathname)){var b=document.createElement("base");b.href="/";document.head.appendChild(b)}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="/manifest.webmanifest" data-pwa><link rel="apple-touch-icon" href="/site-publish/pwa/apple-touch-icon.png" data-pwa><meta name="apple-mobile-web-app-title" content="Luliy" data-pwa>
@@ -111,9 +219,9 @@
  --accent:#8b6840;--focus-ring:#9b4a32;
 }
 :root[data-appearance=cc]{
- --bg:#101116;--paper:#1b1a1a;--raised:#242320;
+ --bg:#111222;--paper:#1a1a31;--raised:#24243f;
  --ink:#eadfbe;--text:#d5c8a5;--muted:#b3a487;
- --line:#494334;--line-strong:#82745c;
+ --line:#3a3955;--line-strong:#6a6688;
  --accent:#d2b878;--focus-ring:#e9ad88;
 }
 @media(prefers-contrast:more){:root[data-appearance]{--muted:var(--text)}}
@@ -897,7 +1005,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 }
 </style>
 
-<link rel="stylesheet" href="/site-publish/home-fixes.css?v=1bd9f8ae" data-home-fixes></head>
+<link rel="stylesheet" href="/site-publish/home-fixes.css?v=e512e53d" data-home-fixes></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
 <div class="reading-progress" aria-hidden="true"></div>
@@ -913,7 +1021,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
   </div>
  </div>
 </header>
-<div class="page-above"><main id="main" tabindex="-1"></main></div>
+<div class="page-above"><div class="luliy-sky" aria-hidden="true"><i></i></div><main id="main" tabindex="-1"></main></div>
 <footer class="contact-curtain" id="contact" tabindex="-1">
  <img class="footer-left-art" data-src="https://cloud.luliy.me/api/image?path=shared%2FKK.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
  <canvas class="footer-canvas" id="footerMoon" aria-hidden="true"></canvas>
@@ -958,8 +1066,8 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 <script src="/assets/site/home/d295dfad1d46.js"></script>
 <script src="/assets/site/home/71ef4ea092f2.js"></script>
 <script src="/assets/site/home/79bacafa9deb.js"></script>
-<script data-three-loader>(()=>{const src='/assets/site/home/0964a24fd186.js';const phone=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600;if(!phone){document.write('<script src="'+src+'"><\/script>');return;}let pending=null;const load=window.LuliyThreeReady=()=>window.LuliyLoadThree?Promise.resolve():pending||(pending=new Promise((ok,fail)=>{const s=document.createElement('script');s.src=src;s.onload=()=>ok();s.onerror=()=>{pending=null;s.remove();fail(Error('Three.js unavailable'));};document.head.append(s);}));const quiet=()=>load().catch(()=>{});const soon=()=>{if(/^#\/(study|records?)\b/.test(location.hash))quiet();};addEventListener('hashchange',soon);soon();const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;addEventListener('load',()=>setTimeout(()=>window.requestIdleCallback?requestIdleCallback(quiet,{timeout:4000}):quiet(),2500),{once:true});})();</script><script src="/assets/site/home/02775bca1b2c.js"></script>
-<script src="/assets/site/home-cc-8f10888f148e.js"></script>
+<script data-three-loader>(()=>{const src='/assets/site/home/0964a24fd186.js';const phone=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600;if(!phone){document.write('<script src="'+src+'"><\/script>');return;}let pending=null;const load=window.LuliyThreeReady=()=>window.LuliyLoadThree?Promise.resolve():pending||(pending=new Promise((ok,fail)=>{const s=document.createElement('script');s.src=src;s.onload=()=>ok();s.onerror=()=>{pending=null;s.remove();fail(Error('Three.js unavailable'));};document.head.append(s);}));const quiet=()=>load().catch(()=>{});const soon=()=>{if(/^#\/(books|music|study|records?)\b/.test(location.hash))quiet();};addEventListener('hashchange',soon);soon();const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;addEventListener('load',()=>setTimeout(()=>window.requestIdleCallback?requestIdleCallback(quiet,{timeout:4000}):quiet(),2500),{once:true});})();</script><script src="/assets/site/home/02775bca1b2c.js"></script>
+<script src="/assets/site/home-cc-e3e8381e4255.js"></script>
 <script src="/assets/site/home/1decb7dd1fbc.js"></script>
 
 <script id="guide-optimization-js">(()=>{'use strict';const fine=matchMedia('(hover:hover) and (pointer:fine)'),calm=matchMedia('(prefers-reduced-motion:reduce)');let frame=0,point=null;
@@ -1078,5 +1186,5 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script>
 
-<script src="/site-publish/home-fixes.js?v=67b0f424" async data-home-fixes></script></body>
+<script src="/site-publish/home-fixes.js?v=0137654f" async data-home-fixes></script></body>
 </html>

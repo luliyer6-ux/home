@@ -17,9 +17,9 @@
  --accent:#8b6840;--focus-ring:#9b4a32;
 }
 :root[data-appearance=cc]{
- --bg:#101116;--paper:#1b1a1a;--raised:#242320;
+ --bg:#111222;--paper:#1a1a31;--raised:#24243f;
  --ink:#eadfbe;--text:#d5c8a5;--muted:#b3a487;
- --line:#494334;--line-strong:#82745c;
+ --line:#3a3955;--line-strong:#6a6688;
  --accent:#d2b878;--focus-ring:#e9ad88;
 }
 @media(prefers-contrast:more){:root[data-appearance]{--muted:var(--text)}}
