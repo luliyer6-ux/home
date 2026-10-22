@@ -175,3 +175,61 @@
   document.addEventListener('DOMContentLoaded', function () { parsed = Date.now(); check(); });
   setTimeout(done, 6000); // never stay up, whatever happens
 })();
+
+/* Mainland China: raw.githubusercontent.com (article list, article bodies, about page, photos) is often blocked there,
+   while luliy.me itself is reachable. Fetches of the blog's GitHub content go to the relay on this site first
+   (functions/gh/, README 9.4); the relay also rewrites the photo addresses inside the text it returns.
+   If the relay is missing (local preview) or cannot reach GitHub, the original address is tried. */
+(function () {
+  var web = /^https?:$/.test(location.protocol);
+  var RAW = /^https:\/\/raw\.githubusercontent\.com\/luliy6\/luliy6\.github\.io\/(?:refs\/heads\/)?main\/((?:docs|static)\/[^?#]+)(\?[^#]*)?$/;
+  var API = /^https:\/\/api\.github\.com\/repos\/luliy6\/luliy6\.github\.io\/(issues(?:\/\d+(?:\/comments)?)?(?:\?[^#]*)?)$/;
+  var UA = /^https:\/\/github\.com\/user-attachments\/assets\/([0-9a-f]{8}-[0-9a-f-]{27})$/i;
+  var CAMO = /^https:\/\/camo\.githubusercontent\.com\/([0-9a-f]{20,64}(?:\/[0-9a-f]+)?)$/i;
+  function relay(href) {
+    var m = RAW.exec(href);
+    if (m) return '/gh/raw/' + m[1] + (m[2] || '');
+    m = API.exec(href);
+    return m ? '/gh/api/' + m[1] : null;
+  }
+  function picture(href) {
+    var m = RAW.exec(href) || UA.exec(href) || CAMO.exec(href);
+    if (!m || !web) return null;
+    return (m[0].indexOf('https://raw.') === 0 ? '/gh/raw/' : m[0].indexOf('https://github.com/') === 0 ? '/gh/ua/' : '/gh/camo/') + m[1] + (m[2] || '');
+  }
+  var BACK = [[/^\/gh\/raw\//, 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/'],
+    [/^\/gh\/ua\//, 'https://github.com/user-attachments/assets/'], [/^\/gh\/camo\//, 'https://camo.githubusercontent.com/']];
+  function direct(href) {
+    var path = href.indexOf(location.origin + '/') === 0 ? href.slice(location.origin.length) : href;
+    for (var i = 0; i < BACK.length; i++) if (BACK[i][0].test(path)) return path.replace(BACK[i][0], BACK[i][1]);
+    return null;
+  }
+  // A picture that does not load gets one more try by the other road: relayed ones from GitHub itself
+  // (relay down, or a local preview without it), GitHub ones (older saved covers and pages) through the relay.
+  addEventListener('error', function (e) {
+    var img = e.target;
+    if (!img || img.tagName !== 'IMG' || img.dataset.luliyRetry) return;
+    var src = img.getAttribute('src') ? img.src : '', next = src && (direct(src) || picture(src));
+    if (!next) return;
+    img.dataset.luliyRetry = '1';
+    img.src = next;
+  }, true);
+  if (!web || !window.fetch) return;
+  var real = window.fetch;
+  window.LuliyRelayUrl = relay;
+  window.fetch = function (input, init) {
+    var href = typeof input === 'string' ? input : (input instanceof URL ? input.href : '');
+    var via = href && relay(href);
+    if (!via) return real.apply(this, arguments);
+    var signal = init && init.signal;
+    function original() { return real.call(window, href, init); }
+    return real.call(window, via, init).then(function (r) {
+      if (r.headers.get('X-Luliy-Relay') && r.status < 500 && r.status !== 403 && r.status !== 429) return r;
+      if (signal && signal.aborted) return r;
+      return original().catch(function () { return r; });
+    }, function (e) {
+      if (signal && signal.aborted) throw e;
+      return original();
+    });
+  };
+})();

@@ -1,7 +1,8 @@
 /* LULIY service worker: offline reading, nothing else. Source: site-publish/sw.js (copied to /sw.js by pwa.py).
    - The home page: network first, the last good copy when offline.
    - /assets/site/* (content-hashed, immutable): cache first.
-   - Article list and article pages from the blog repository: network first, cached copy when offline.
+   - Article list and article pages from the blog repository (directly, or through this site's /gh/ relay):
+     network first, cached copy when offline.
    - Everything else (Drive, sign-in, GitHub API, images from other sites, video, any non-GET) is not touched.
    To retire it, replace this file with one that calls self.registration.unregister(). */
 const VERSION = 'v1';
@@ -48,6 +49,8 @@ const cacheFirst = async (request, name) => {
   return response;
 };
 
+const isArticle = url => url.pathname.endsWith('/postList.json') || url.pathname.endsWith('.html');
+
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET' || request.headers.has('range')) return;
@@ -59,10 +62,12 @@ self.addEventListener('fetch', event => {
       event.respondWith(cacheFirst(request, ASSETS));
     } else if (url.pathname.startsWith('/site-publish/') || url.pathname === '/intro/intro.js') {
       event.respondWith(networkFirst(request, SHELL));
+    } else if (url.pathname.startsWith('/gh/raw/docs/') && isArticle(url)) {
+      event.respondWith(networkFirst(request, ARTICLES));
     }
     return;
   }
-  if (url.href.startsWith(ARTICLE_SOURCE) && (url.pathname.endsWith('/postList.json') || url.pathname.endsWith('.html'))) {
+  if (url.href.startsWith(ARTICLE_SOURCE) && isArticle(url)) {
     event.respondWith(networkFirst(request, ARTICLES));
   }
 });

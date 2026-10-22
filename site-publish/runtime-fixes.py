@@ -134,6 +134,12 @@ FIXES += [
      "if(e.target.closest('button[data-theme]')){if(window.LuliyThemePicker)window.LuliyThemePicker(e.target.closest('button[data-theme]'));else changeTheme();return;}"),
 ]
 
+# Mainland China: the footer and directory portraits live on raw.githubusercontent.com, which is often blocked there.
+# They load through this site's GitHub relay instead (functions/gh/, README 9.4); home-early.js falls back to GitHub
+# if the relay cannot deliver one.
+FIXES.append(('china: portraits through the GitHub relay', 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/static/img/',
+              '/gh/raw/static/img/'))
+
 THREE_HEAD = '/* Three.js r185'
 THREE_TAIL = 'PCFSoftShadowMap:2};};\n'
 THREE_LOADER = ("<script data-three-loader>(()=>{const src='%s';"
