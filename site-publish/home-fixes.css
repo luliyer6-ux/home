@@ -657,10 +657,10 @@ html body .lr-mini.lm-mini.lm-bar .lr-mini-controls button {
   border: 0; border-radius: 50%; background: transparent; color: var(--bar-ink) !important; cursor: pointer;
   transition: background-color var(--dur-fast) var(--ease-in-out), color var(--dur-fast) var(--ease-in-out), scale var(--dur-fast) var(--ease);
 }
-html body .lr-mini.lm-mini.lm-bar .lr-mini-controls button:hover { background: var(--bar-hover); }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lr-mini-controls button:hover { background: var(--bar-hover); } }
 html body .lr-mini.lm-mini.lm-bar .lr-mini-controls svg { width: 14px; height: 14px; fill: currentColor; stroke-width: 2; }
 html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play { background: var(--bar-ink); color: var(--bar-bg) !important; }
-html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play:hover { background: var(--bar-ink); scale: 1.06; }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play:hover { background: var(--bar-ink); scale: 1.06; } }
 html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play svg { width: 13px; height: 13px; }
 html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play.is-playing svg { stroke-width: 3.4; }
 html body .lr-mini.lm-mini.lm-bar .lr-mini-progress {
@@ -697,7 +697,7 @@ html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-right, .lm-bar-vol) > button {
   border: 0; border-radius: 16px; background: transparent; color: var(--bar-ink) !important; cursor: pointer;
   transition: background-color var(--dur-fast) var(--ease-in-out), color var(--dur-fast) var(--ease-in-out);
 }
-html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-right, .lm-bar-vol) > button:hover { background: var(--bar-hover); }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-right, .lm-bar-vol) > button:hover { background: var(--bar-hover); } }
 html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-right, .lm-bar-vol) > button[aria-expanded="true"],
 html body .lr-mini.lm-mini.lm-bar .lm-bar-vol.is-open > button { background: var(--bar-ink); color: var(--bar-bg) !important; }
 html body .lr-mini.lm-mini.lm-bar .lm-bar-right > .lr-mini-close { width: 50px !important; height: 50px !important; border-radius: 50%; }
@@ -739,7 +739,7 @@ html body .lr-mini.lm-mini.lm-bar .lm-bar-x {
   display: grid; place-items: center; width: 50px; height: 50px; margin: 0; padding: 0; border: 0; border-radius: 50%;
   background: transparent; color: var(--bar-ink) !important; cursor: pointer; transition: background-color var(--dur-fast) var(--ease-in-out);
 }
-html body .lr-mini.lm-mini.lm-bar .lm-bar-x:hover { background: var(--bar-hover); }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-bar-x:hover { background: var(--bar-hover); } }
 html body .lr-mini.lm-mini.lm-bar .lm-mini-queue {
   display: grid !important; align-content: start; gap: 4px !important; flex: 1 1 auto; min-height: 0;
   padding: 0 21.6px 21.6px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin;
@@ -752,7 +752,7 @@ html body .lr-mini.lm-mini.lm-bar .lm-queue-track {
   color: var(--bar-ink) !important; text-align: left; font: inherit; cursor: pointer;
   transition: background-color var(--dur-base) var(--ease-in-out), color var(--dur-base) var(--ease-in-out);
 }
-html body .lr-mini.lm-mini.lm-bar .lm-queue-track:hover { background: var(--bar-row-hover) !important; }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-queue-track:hover { background: var(--bar-row-hover) !important; } }
 html body .lr-mini.lm-mini.lm-bar .lm-queue-track[aria-current="true"] { background: var(--bar-ink) !important; color: var(--bar-bg) !important; }
 html body .lr-mini.lm-mini.lm-bar .lm-queue-cover { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 4px; overflow: hidden; }
 html body .lr-mini.lm-mini.lm-bar .lm-queue-copy { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
@@ -792,7 +792,7 @@ html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > :is(button, select) {
   background-color: var(--bar-row) !important; color: var(--bar-ink) !important; font: 500 12.6px/1 var(--font-ui) !important;
   text-align: center; cursor: pointer; transition: background-color var(--dur-fast) var(--ease-in-out), color var(--dur-fast) var(--ease-in-out);
 }
-html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > :is(button, select):hover { background-color: var(--bar-row-hover) !important; }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > :is(button, select):hover { background-color: var(--bar-row-hover) !important; } }
 html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > button[aria-pressed="true"] { background-color: var(--bar-ink) !important; color: var(--bar-bg) !important; }
 html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > button:disabled { opacity: .45; cursor: default; }
 html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > select {
@@ -811,7 +811,7 @@ html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > * {
   display: grid; place-items: center; width: 47px; height: 47px; margin: 0; padding: 0; border: 0; border-radius: 50%;
   background: var(--bar-row); color: var(--bar-ink); text-decoration: none; cursor: pointer; transition: background-color var(--dur-fast) var(--ease-in-out);
 }
-html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > *:hover { background: var(--bar-row-hover); }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > *:hover { background: var(--bar-row-hover); } }
 html body .lr-mini.lm-mini.lm-bar .lm-bar-share-url {
   display: flex; align-items: center; gap: 4px; height: 47px; padding: 0 5px 0 14px; border-radius: 12px;
   background: color-mix(in oklab, var(--bg) 45%, var(--bar-bg));
@@ -824,7 +824,8 @@ html body .lr-mini.lm-mini.lm-bar .lm-bar-copy {
   display: grid; place-items: center; flex: none; width: 38px; height: 38px; margin: 0; padding: 0; border: 0; border-radius: 10px;
   background: transparent; color: var(--bar-ink); cursor: pointer; transition: background-color var(--dur-fast) var(--ease-in-out);
 }
-html body .lr-mini.lm-mini.lm-bar .lm-bar-copy:hover, html body .lr-mini.lm-mini.lm-bar .lm-bar-copy.is-done { background: var(--bar-hover); }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-bar-copy:hover { background: var(--bar-hover); } }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-copy.is-done { background: var(--bar-hover); }
 html body .lr-mini.lm-mini.lm-bar .lm-bar-sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* A track that cannot play: a small note above the bar's left end. */
 html body .lr-mini.lm-mini.lm-bar .lm-mini-error {
