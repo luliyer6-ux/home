@@ -510,4 +510,48 @@
     new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-appearance'] });
     sync();
   })();
+
+  /* 13. Directory: the × grows out of the header's =. The directory sets .icon-open in the same frame it opens, so
+     its bars would simply appear crossed; .luliy-x is added two frames later, once the = has been drawn, and the
+     bars turn (CSS). Closing removes .icon-open first, so the × folds back into = while the directory leaves.
+     In CC the drawer's × is lined up with the header button, so the drawer lands with its × where the = was. */
+  (() => {
+    const d = document.getElementById('directory'), btn = document.getElementById('studyGlobalOpen');
+    if (!d) return;
+    const align = () => {
+      const c = d.querySelector('.plain-close');
+      d.style.removeProperty('--luliy-x-dx');
+      d.style.removeProperty('--luliy-x-dy');
+      if (!c || !btn || root.dataset.appearance !== 'cc') return;
+      const h = btn.getBoundingClientRect();
+      if (!h.width || h.bottom <= 0) return;
+      // The drawer may already be sliding in: measure the button inside it and place the drawer at its final spot.
+      const dr = d.getBoundingClientRect(), cr = c.getBoundingClientRect();
+      const cx = document.documentElement.clientWidth - dr.width + (cr.left - dr.left) + cr.width / 2;
+      const cy = cr.top - dr.top + cr.height / 2;
+      d.style.setProperty('--luliy-x-dx', Math.round(h.left + h.width / 2 - cx) + 'px');
+      d.style.setProperty('--luliy-x-dy', Math.round(h.top + h.height / 2 - cy) + 'px');
+    };
+    let raf = 0;
+    const sync = () => {
+      const on = d.open && d.classList.contains('icon-open');
+      if (!on) {
+        cancelAnimationFrame(raf); raf = 0;
+        // Only touch the class when it is there: classList.remove always rewrites the attribute, which would
+        // wake this observer again, endlessly.
+        if (d.classList.contains('luliy-x')) d.classList.remove('luliy-x');
+        return;
+      }
+      if (raf || d.classList.contains('luliy-x')) return;
+      align();
+      raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          if (d.open && d.classList.contains('icon-open')) d.classList.add('luliy-x');
+        });
+      });
+    };
+    new MutationObserver(sync).observe(d, { attributes: true, attributeFilter: ['open', 'class'] });
+    addEventListener('resize', () => { if (d.open) align(); });
+  })();
 })();
