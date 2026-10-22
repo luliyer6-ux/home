@@ -702,4 +702,377 @@
       swatches().forEach((b, i) => b.animate([{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], { duration: 360, delay: 40 + i * 24, easing: 'cubic-bezier(.19,1,.22,1)', fill: 'backwards' }));
     };
   })();
+
+  /* 15. Music player bar (after the Rockstar GTA VI music page). The shared mini player (records engine plus the
+     Drive media script) becomes one bar along the bottom of every page: cover and title | previous, play, next
+     and progress | volume, queue, share, close. Volume: hover shows a vertical slider, click mutes (touch: tap
+     shows the slider). Queue: a panel above the bar with the playback settings as a footer. Share: a small
+     popover with the music page link. Phones get a compact bar (the cover is play/pause, × stops) whose text
+     opens a bottom sheet with the full controls. The existing elements, handlers and state are kept: this block
+     only moves them into three groups and adds what is new. The old drag-to-place is off in bar mode.
+     CSS: home-fixes.css "Music player bar". */
+  (() => {
+    const phone = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    const fine = matchMedia('(hover: hover) and (pointer: fine)');
+    const lang = () => {
+      const p = document.querySelector('#directoryLanguageOptions [aria-pressed="true"]')?.dataset.lang;
+      if (p) return p;
+      const l = root.lang || '';
+      return /^en/.test(l) ? 'en' : /^ja/.test(l) ? 'ja' : /Hans|CN/i.test(l) ? 'zh' : 'zh-Hant';
+    };
+    // 繁, 简, 日, EN
+    const WORDS = {
+      share: ['分享', '分享', '共有', 'Share'],
+      close: ['關閉', '关闭', '閉じる', 'Close'],
+      copy: ['複製連結', '复制链接', 'リンクをコピー', 'Copy link'],
+      copied: ['已複製連結', '已复制链接', 'リンクをコピーしました', 'Link copied'],
+      link: ['連結', '链接', 'リンク', 'Link'],
+      more: ['更多分享方式', '更多分享方式', 'その他の共有方法', 'More options'],
+      mail: ['電子郵件', '电子邮件', 'メール', 'Email'],
+      volume: ['音量', '音量', '音量', 'Volume'],
+      mute: ['靜音', '静音', 'ミュート', 'Mute'],
+      unmute: ['取消靜音', '取消静音', 'ミュート解除', 'Unmute'],
+      queue: ['播放列表', '播放列表', '再生キュー', 'Queue'],
+      expand: ['展開播放器', '展开播放器', 'プレーヤーを開く', 'Open player'],
+      collapse: ['收起播放器', '收起播放器', 'プレーヤーを閉じる', 'Close player'],
+      listening: [t => '正在聽《' + t + '》', t => '正在听《' + t + '》', t => '「' + t + '」を聴いています', t => 'Listening to “' + t + '”'],
+    };
+    const say = (k, arg) => {
+      const v = WORDS[k][{ zh: 1, ja: 2, en: 3 }[lang()] || 0];
+      return typeof v === 'function' ? v(arg) : v;
+    };
+    const PATHS = {
+      volume: 'M4 9h4l5-4v14l-5-4H4zM16.5 9q2.5 3 0 6M19 6.5q4.5 5.5 0 11',
+      mute: 'M4 9h4l5-4v14l-5-4H4zM17 9.5l5 5M22 9.5l-5 5',
+      queue: 'M3 6h13M3 11h13M3 16h7M15.5 19.5a2 2 0 1 1 0-.01V11.5l4.5-1.5',
+      share: 'M12 15V4M8 7.5L12 3.5l4 4M5 11.5v7A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-7',
+      close: 'M6 6l12 12M18 6L6 18',
+      copy: 'M9 9h10v10H9zM5 15V5h10',
+      done: 'M5 12.5l4.5 4.5L19 7.5',
+      mail: 'M3.5 6h17v12h-17zM3.5 7l8.5 6.5L20.5 7',
+      more: 'M5 12h.1M12 12h.1M19 12h.1',
+      x: 'M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93zM17.61 20.64h2.04L6.49 3.24H4.3z',
+      facebook: 'M9.1 23.69v-7.98H6.63v-3.67H9.1v-1.58c0-4.09 1.85-5.98 5.86-5.98.4 0 .96.04 1.47.1.38.04.76.1 1.14.2v3.32a8.6 8.6 0 0 0-.65-.04 27 27 0 0 0-.73 0c-.71 0-1.26.1-1.68.31-.28.14-.52.36-.68.63-.26.42-.37.99-.37 1.75v1.3h3.92l-.39 2.1-.29 1.57h-3.25v8.24C19.4 23.24 24 18.18 24 12.04c0-6.63-5.37-12-12-12S0 5.42 0 12.04c0 5.63 3.87 10.35 9.1 11.65z',
+    };
+    const FILLED = new Set(['x', 'facebook']);
+    const svg = k => '<svg viewBox="0 0 24 24" aria-hidden="true"' + (FILLED.has(k) ? ' class="lm-fill"' : '') + '><path d="' + PATHS[k] + '"/></svg>';
+    const make = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html) n.innerHTML = html; return n; };
+    const set = (n, a, v) => { if (n && n.getAttribute(a) !== v) n.setAttribute(a, v); };
+    const api = () => window.LuliyRecords;
+    const now = () => { try { return api()?.getState?.() || {}; } catch (e) { return {}; } };
+    const calm = () => reduced.matches || !!window.LuliyMotion?.calm;
+    const EASE = 'cubic-bezier(.19,1,.22,1)';
+    let mini = null, P = null, expanded = false, lastVolume = .45, watcher = null, subscribed = false, slide = null, volFrame = 0, volNext = 0;
+
+    const shareUrl = () => location.origin + location.pathname + '#/music';
+    const shareText = () => {
+      const title = (mini?.querySelector('.lr-mini-title')?.textContent || '').trim();
+      return (title ? say('listening', title) + ' · ' : '') + 'Luliy Records';
+    };
+    const setVolume = v => {
+      volNext = Math.max(0, Math.min(1, Math.round(v * 100) / 100));
+      if (!volFrame) volFrame = requestAnimationFrame(() => { volFrame = 0; api()?.setVolume?.(volNext); });
+    };
+    const toggleMute = () => {
+      const v = Number(now().volume) || 0;
+      if (v > 0) { lastVolume = v; setVolume(0); } else setVolume(lastVolume || .45);
+    };
+
+    // Popovers above the bar: the queue (the Drive script's panel) and share (ours). One at a time.
+    const panelOpen = () => !!P && !P.panel.hidden;
+    const closePanel = () => { if (panelOpen()) P.list.click(); };
+    const shareOpen = () => !!P && !P.sharePop.hidden;
+    const closeShare = refocus => {
+      if (!shareOpen()) return;
+      const inside = P.sharePop.contains(document.activeElement);
+      P.sharePop.hidden = true;
+      set(P.share, 'aria-expanded', 'false');
+      if (refocus || inside) P.share.focus({ preventScroll: true });
+    };
+    const buildShare = () => {
+      const url = shareUrl(), text = shareText(), enc = encodeURIComponent, pop = P.sharePop;
+      pop.setAttribute('aria-label', say('share'));
+      pop.innerHTML = '<div class="lm-bar-pop-head"><h2></h2><button type="button" class="lm-bar-x">' + svg('close') + '</button></div>' +
+        '<div class="lm-bar-share-icons"></div>' +
+        '<div class="lm-bar-share-url"><input type="text" readonly spellcheck="false"><button type="button" class="lm-bar-copy">' + svg('copy') + '</button></div>' +
+        '<p class="lm-bar-sr" aria-live="polite"></p>';
+      pop.querySelector('h2').textContent = say('share');
+      const x = pop.querySelector('.lm-bar-x');
+      x.setAttribute('aria-label', say('close'));
+      x.addEventListener('click', () => closeShare(true));
+      const icons = pop.querySelector('.lm-bar-share-icons');
+      if (navigator.share) {
+        const b = make('button', '', svg('more'));
+        b.type = 'button'; b.setAttribute('aria-label', say('more')); b.title = say('more');
+        b.addEventListener('click', () => { navigator.share({ title: 'Luliy Records', text, url }).catch(() => {}); });
+        icons.append(b);
+      }
+      for (const [k, name, href] of [
+        ['x', 'X', 'https://x.com/intent/post?text=' + enc(text) + '&url=' + enc(url)],
+        ['facebook', 'Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + enc(url)],
+        ['mail', say('mail'), 'mailto:?subject=' + enc(text) + '&body=' + enc(text + '\n' + url)],
+      ]) {
+        const a = make('a', '', svg(k));
+        a.href = href; a.setAttribute('aria-label', name); a.title = name;
+        if (k !== 'mail') { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+        icons.append(a);
+      }
+      const input = pop.querySelector('input'), copy = pop.querySelector('.lm-bar-copy'), live = pop.querySelector('.lm-bar-sr');
+      input.value = url; input.setAttribute('aria-label', say('link'));
+      input.addEventListener('focus', () => input.select());
+      copy.setAttribute('aria-label', say('copy')); copy.title = say('copy');
+      let undo = 0;
+      copy.addEventListener('click', async () => {
+        let ok = false;
+        try { await navigator.clipboard.writeText(url); ok = true; } catch (e) {
+          input.focus(); input.select();
+          try { ok = document.execCommand('copy'); } catch (e2) {}
+        }
+        if (!ok) return;
+        copy.innerHTML = svg('done'); copy.classList.add('is-done'); live.textContent = say('copied');
+        clearTimeout(undo);
+        undo = setTimeout(() => { copy.innerHTML = svg('copy'); copy.classList.remove('is-done'); live.textContent = ''; }, 1800);
+      });
+    };
+    const openShare = keyboard => {
+      closePanel();
+      buildShare();
+      P.sharePop.hidden = false;
+      set(P.share, 'aria-expanded', 'true');
+      if (keyboard) P.sharePop.querySelector('.lm-bar-share-icons > *')?.focus();
+    };
+
+    // Phones: the compact bar opens into a bottom sheet (same elements, laid out by .lm-expanded).
+    const expand = keyboard => {
+      if (expanded || !P || !phone.matches || mini.hidden) return;
+      if (slide) { slide.onfinish = null; slide.cancel(); slide = null; }
+      expanded = true;
+      P.vol.classList.remove('is-open');
+      mini.classList.add('lm-expanded');
+      root.classList.add('lm-sheet-open');
+      P.scrim.hidden = false;
+      mini.scrollTop = 0;
+      label();
+      if (!calm()) {
+        mini.animate([{ translate: '0 100%' }, { translate: '0 0' }], { duration: 480, easing: EASE });
+        P.scrim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320 });
+      }
+      if ('CloseWatcher' in window) {
+        try { watcher = new CloseWatcher(); watcher.onclose = () => { watcher = null; collapse(); }; } catch (e) { watcher = null; }
+      }
+      if (keyboard) P.grip.focus({ preventScroll: true });
+    };
+    const collapse = instant => {
+      if (!expanded || !P) return;
+      expanded = false;
+      if (watcher) { const w = watcher; watcher = null; w.destroy(); }
+      closeShare(); closePanel(); P.vol.classList.remove('is-open');
+      const refocus = mini.contains(document.activeElement);
+      const done = () => {
+        slide = null;
+        if (expanded) return;
+        mini.classList.remove('lm-expanded');
+        mini.style.translate = '';
+        root.classList.remove('lm-sheet-open');
+        P.scrim.hidden = true;
+        label();
+        if (refocus) P.open.focus({ preventScroll: true });
+      };
+      if (instant || calm() || mini.hidden) { done(); return; }
+      const from = mini.style.translate || '0 0';
+      slide = mini.animate([{ translate: from }, { translate: '0 100%' }], { duration: 260, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
+      P.scrim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, fill: 'forwards' }).onfinish = function () { this.cancel(); };
+      slide.onfinish = () => {
+        const a = slide; done(); a?.cancel();
+        mini.animate([{ opacity: 0, translate: '0 14px' }, { opacity: 1, translate: '0 0' }], { duration: 320, easing: EASE });
+      };
+    };
+
+    // Labels follow the site language; the records engine and the Drive script reset some on every update.
+    const label = () => {
+      if (!P) return;
+      const muted = P.volBtn.dataset.muted === 'true', mouse = fine.matches && !phone.matches;
+      const vName = mouse ? say(muted ? 'unmute' : 'mute') : say('volume');
+      set(P.volBtn, 'aria-label', vName); set(P.volBtn, 'title', vName);
+      if (mouse) { set(P.volBtn, 'aria-pressed', String(muted)); P.volBtn.removeAttribute('aria-expanded'); }
+      else { P.volBtn.removeAttribute('aria-pressed'); set(P.volBtn, 'aria-expanded', String(P.vol.classList.contains('is-open'))); }
+      set(P.volPop, 'aria-label', say('volume'));
+      set(P.share, 'aria-label', say('share')); set(P.share, 'title', say('share'));
+      const h = P.panelHead.querySelector('h2');
+      if (h.textContent !== say('queue')) h.textContent = say('queue');
+      set(P.panelHead.querySelector('.lm-bar-x'), 'aria-label', say('close'));
+      set(P.grip, 'aria-label', say('collapse'));
+      if (phone.matches && !expanded) {
+        set(P.open, 'aria-label', say('expand')); set(P.open, 'aria-expanded', 'false'); set(P.open, 'title', say('expand'));
+      } else {
+        P.open.removeAttribute('aria-expanded');
+        set(P.open, 'title', P.open.getAttribute('aria-label') || '');
+      }
+    };
+
+    const sync = () => {
+      if (!P) return;
+      const s = now(), v = Math.max(0, Math.min(1, Number(s.volume) || 0)), muted = v === 0;
+      if (v > 0) lastVolume = v;
+      P.volPop.style.setProperty('--lm-vol', String(v));
+      set(P.volPop, 'aria-valuenow', String(Math.round(v * 100)));
+      set(P.volPop, 'aria-valuetext', Math.round(v * 100) + '%');
+      if (P.volBtn.dataset.muted !== String(muted)) { P.volBtn.dataset.muted = String(muted); P.volBtn.innerHTML = svg(muted ? 'mute' : 'volume'); }
+      mini.classList.toggle('lm-playing', !!s.playing);
+      mini.classList.remove('lm-positioned');
+      if (mini.hidden) { collapse(true); closeShare(); P.vol.classList.remove('is-open'); }
+      label();
+    };
+
+    const upgrade = () => {
+      const m = document.querySelector('.lr-mini.lm-mini[data-compact-ready]');
+      if (!m || m.classList.contains('lm-bar')) return;
+      const $ = s => m.querySelector(s);
+      const open = $('.lr-mini-open'), controls = $('.lr-mini-controls'), progress = $('.lr-mini-progress'), close = $('.lr-mini-close'),
+        volBtn = $('[data-lm-volume-toggle]'), list = $('[data-lm-list]'), panel = $('.lm-mini-panel'), seek = $('.lr-mini-seek');
+      if (!open || !controls || !progress || !close || !volBtn || !list || !panel || !seek) return;
+      mini = m;
+      if (m.classList.contains('lm-collapsed')) $('[data-lm-fold]')?.click();
+      const center = make('div', 'lm-bar-center'), right = make('div', 'lm-bar-right'), vol = make('div', 'lm-bar-vol');
+      const volPop = make('div', 'lm-bar-vol-pop', '<span class="lm-bar-vol-track"><span class="lm-bar-vol-fill"></span></span>');
+      volPop.id = 'lm-bar-volume'; volPop.tabIndex = 0;
+      volPop.setAttribute('role', 'slider'); volPop.setAttribute('aria-orientation', 'vertical');
+      volPop.setAttribute('aria-valuemin', '0'); volPop.setAttribute('aria-valuemax', '100');
+      // The Drive script names buttons from data-lm-label on every update; the volume button is ours now (mute / slider).
+      volBtn.removeAttribute('data-lm-label'); volBtn.setAttribute('aria-controls', 'lm-bar-volume');
+      vol.append(volBtn, volPop);
+      list.innerHTML = svg('queue');
+      const share = make('button', 'lm-bar-share-btn', svg('share'));
+      share.type = 'button'; share.setAttribute('aria-expanded', 'false'); share.setAttribute('aria-controls', 'lm-bar-share');
+      const sharePop = make('div', 'lm-bar-share');
+      sharePop.id = 'lm-bar-share'; sharePop.hidden = true; sharePop.setAttribute('role', 'dialog');
+      const panelHead = make('div', 'lm-bar-panel-head', '<h2></h2><button type="button" class="lm-bar-x">' + svg('close') + '</button>');
+      panel.prepend(panelHead);
+      const grip = make('button', 'lm-bar-grip'); grip.type = 'button';
+      const scrim = make('div', 'lm-bar-scrim'); scrim.hidden = true;
+      document.body.append(scrim);
+      center.append(controls, progress);
+      right.append(vol, list, share, close);
+      const keep = [...m.children].filter(n => ![open, panel].includes(n) && !n.classList.contains('lm-mini-error'));
+      m.replaceChildren(grip, open, center, right, ...[$('.lm-mini-error')].filter(Boolean), panel, sharePop, ...keep);
+      P = { open, center, right, vol, volBtn, volPop, list, share, sharePop, close, panel, panelHead, grip, scrim, seek };
+      m.classList.add('lm-bar');
+      m.classList.remove('lm-positioned');
+      root.classList.add('lm-bar-mode');
+
+      // Clicks that land on the bar outside its buttons would open the records page (records engine): keep them here.
+      const contain = e => { if (!e.target.closest('[data-lr-mini]')) e.stopPropagation(); };
+      center.addEventListener('click', contain);
+      right.addEventListener('click', contain);
+      sharePop.addEventListener('click', e => e.stopPropagation());
+      grip.addEventListener('click', e => { e.stopPropagation(); collapse(); });
+      scrim.addEventListener('click', () => collapse());
+      panelHead.querySelector('.lm-bar-x').addEventListener('click', () => closePanel());
+      share.addEventListener('click', e => { e.stopPropagation(); if (shareOpen()) closeShare(); else openShare(e.detail === 0); });
+      list.addEventListener('click', () => closeShare(), true);
+      // Volume button: click mutes (mouse); on touch a tap shows the slider. Capture runs before the old panel toggle.
+      vol.addEventListener('click', e => {
+        e.stopPropagation();
+        if (!e.target.closest('[data-lm-volume-toggle]')) return;
+        e.preventDefault();
+        if (fine.matches && !phone.matches) toggleMute();
+        else { vol.classList.toggle('is-open'); label(); }
+      }, true);
+      let dragId = null;
+      const level = y => { const r = volPop.firstElementChild.getBoundingClientRect(); return r.height ? (r.bottom - y) / r.height : 0; };
+      volPop.addEventListener('pointerdown', e => {
+        if (e.button) return;
+        e.preventDefault();
+        dragId = e.pointerId;
+        try { volPop.setPointerCapture(dragId); } catch (err) {}
+        vol.classList.add('is-dragging');
+        setVolume(level(e.clientY));
+      });
+      volPop.addEventListener('pointermove', e => { if (e.pointerId === dragId) setVolume(level(e.clientY)); });
+      const end = e => { if (e.pointerId !== dragId) return; dragId = null; vol.classList.remove('is-dragging'); };
+      for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) volPop.addEventListener(t, end);
+      volPop.addEventListener('keydown', e => {
+        const v = Number(now().volume) || 0;
+        const step = { ArrowUp: .05, ArrowRight: .05, ArrowDown: -.05, ArrowLeft: -.05, PageUp: .1, PageDown: -.1 }[e.key];
+        if (step) setVolume(v + step); else if (e.key === 'Home') setVolume(0); else if (e.key === 'End') setVolume(1); else return;
+        e.preventDefault();
+      });
+      vol.addEventListener('wheel', e => {
+        if (!fine.matches || !e.deltaY) return;
+        e.preventDefault();
+        setVolume((Number(now().volume) || 0) - Math.sign(e.deltaY) * .05);
+      }, { passive: false });
+      // The progress fill follows the thumb while seeking (otherwise it follows --lr-ring from the engine).
+      seek.addEventListener('input', () => { const max = Number(seek.max) || 1; m.style.setProperty('--lm-seek', (Math.max(0, Math.min(1, Number(seek.value) / max)) * 100).toFixed(2) + '%'); });
+      seek.addEventListener('change', () => requestAnimationFrame(() => m.style.removeProperty('--lm-seek')));
+      // The old long press to drag the card does not apply to a bar.
+      m.addEventListener('pointerdown', e => { if (e.target.closest('.lr-mini-open')) e.stopPropagation(); }, true);
+      // Phones: the compact bar's text opens the sheet; in the sheet, cover and title open the records page.
+      m.addEventListener('click', e => {
+        if (!e.target.closest('.lr-mini-open')) return;
+        if (phone.matches && !expanded) { e.preventDefault(); e.stopPropagation(); expand(e.detail === 0); }
+        else if (expanded) collapse(true);
+      }, true);
+      // Swipe the sheet down to close it.
+      let drag = null;
+      m.addEventListener('touchstart', e => {
+        drag = null;
+        if (!expanded || e.touches.length !== 1 || m.scrollTop > 0) return;
+        if (e.target.closest('input, [role="slider"], .lm-mini-panel, .lm-bar-share')) return;
+        drag = { y: e.touches[0].clientY, dy: 0, t: performance.now(), moving: false };
+      }, { passive: true });
+      m.addEventListener('touchmove', e => {
+        if (!drag) return;
+        const dy = e.touches[0].clientY - drag.y;
+        if (!drag.moving && dy < 6) { if (dy < 0) drag = null; return; }
+        e.preventDefault();
+        drag.moving = true; drag.dy = Math.max(0, dy);
+        m.style.translate = '0 ' + drag.dy + 'px';
+      }, { passive: false });
+      const release = () => {
+        const d = drag; drag = null;
+        if (!d?.moving) return;
+        const fast = d.dy / Math.max(1, performance.now() - d.t) > .6;
+        if (d.dy > 120 || (fast && d.dy > 40)) collapse();
+        else {
+          m.style.translate = '';
+          if (!calm()) m.animate([{ translate: '0 ' + d.dy + 'px' }, { translate: '0 0' }], { duration: 300, easing: EASE });
+        }
+      };
+      m.addEventListener('touchend', release);
+      m.addEventListener('touchcancel', release);
+      sync();
+    };
+
+    // Outside taps close the popovers; Esc closes the newest layer.
+    document.addEventListener('pointerdown', e => {
+      if (!P || mini.hidden) return;
+      const t = e.target;
+      if (P.vol.classList.contains('is-open') && !P.vol.contains(t)) { P.vol.classList.remove('is-open'); label(); }
+      if (shareOpen() && !P.sharePop.contains(t) && !P.share.contains(t)) closeShare();
+      if (panelOpen() && !P.panel.contains(t) && !P.list.contains(t) && !P.share.contains(t)) closePanel();
+    }, true);
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape' || e.defaultPrevented || !P) return;
+      if (shareOpen()) { e.preventDefault(); closeShare(true); }
+      else if (P.vol.classList.contains('is-open')) { e.preventDefault(); P.vol.classList.remove('is-open'); P.volBtn.focus(); label(); }
+      else if (expanded) { e.preventDefault(); collapse(); }
+    });
+    phone.addEventListener?.('change', () => { if (!P) return; collapse(true); closeShare(); closePanel(); P.vol.classList.remove('is-open'); label(); });
+    fine.addEventListener?.('change', () => label());
+    new MutationObserver(() => label()).observe(root, { attributes: true, attributeFilter: ['lang'] });
+
+    const tick = () => {
+      if (P && !mini.isConnected) { P.scrim.remove(); P = null; mini = null; expanded = false; root.classList.remove('lm-bar-mode', 'lm-sheet-open'); }
+      if (!P) upgrade();
+      if (P) sync();
+    };
+    const hook = () => {
+      const R = api();
+      if (R && !subscribed && typeof R.subscribe === 'function') { subscribed = true; R.subscribe(() => queueMicrotask(tick)); }
+      tick();
+    };
+    hook();
+    new MutationObserver(() => { if (!subscribed || !P) hook(); }).observe(document.body, { childList: true });
+  })();
 })();

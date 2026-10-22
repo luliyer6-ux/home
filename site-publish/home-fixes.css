@@ -568,3 +568,369 @@ html[data-vt-dir="theme"] .site-header { view-transition-name: none !important; 
   :root[data-vt-dir=theme]::view-transition-new(root) { animation: luliy-theme-in var(--dur-base) var(--ease-soft) both; }
 }
 @keyframes luliy-theme-in { from { opacity: 0; } }
+
+/* ---- Music player bar (home-fixes.js block 15; after the Rockstar GTA VI music page) ----
+   The selectors start with html body .lr-mini.lm-mini.lm-bar (the mini player in bar mode) to outrank the old card rules. Colours come from the theme tokens, so every appearance and palette gets its
+   own bar: the raised surface with a little accent, ink for text and the active state, a lighter row for lists. */
+html.lm-bar-mode {
+  --lm-bar-h: 69px;
+  --lm-bar-gap: max(14px, env(safe-area-inset-bottom));
+  --lm-bar-space: calc(var(--lm-bar-h) + var(--lm-bar-gap));
+  /* The Drive script measures the old card into this; the reader's offsets read it. The bar has one height. */
+  --media-card-height: var(--lm-bar-h) !important;
+}
+html body .lr-mini.lm-mini.lm-bar {
+  --bar-bg: color-mix(in oklab, var(--raised) 84%, var(--accent));
+  --bar-ink: var(--ink);
+  --bar-muted: color-mix(in oklab, var(--ink) 64%, var(--bar-bg));
+  --bar-hover: color-mix(in oklab, var(--ink) 11%, transparent);
+  --bar-row: color-mix(in oklab, var(--ink) 7%, var(--bar-bg));
+  --bar-row-hover: color-mix(in oklab, var(--ink) 13%, var(--bar-bg));
+  --bar-track: color-mix(in oklab, var(--ink) 24%, transparent);
+  --bar-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 8%, transparent), 0 14px 44px rgb(0 0 0 / .3);
+  --lm-fill: var(--lm-seek, calc((1 - var(--lr-ring, 113.1) / 113.1) * 100%));
+  position: fixed !important;
+  inset: auto max(14px, env(safe-area-inset-right)) var(--lm-bar-gap) max(14px, env(safe-area-inset-left)) !important;
+  width: auto !important; max-width: none !important; min-height: 0 !important; height: auto;
+  margin: 0 !important;
+  transform: none !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 0 21.6px;
+  padding: 7.5px;
+  border: 0 !important;
+  border-radius: 16px;
+  background: var(--bar-bg);
+  color: var(--bar-ink);
+  box-shadow: var(--bar-shadow);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  font-family: var(--font-ui);
+  cursor: default;
+  z-index: 90;
+  overflow: visible;
+  animation: lm-bar-in .5s var(--ease) backwards; /* not `both`: a filled opacity animation would stop the panels' backdrop blur */
+}
+html body .lr-mini.lm-mini.lm-bar[hidden] { display: none !important; }
+html body .lr-mini.lm-mini.lm-bar > :is(.lm-mini-head, .lm-mini-tools, .lm-bar-grip, .reader-music-collapse),
+html body .lr-mini.lm-mini.lm-bar :is(.lm-volume-panel, .lr-mini-ring) { display: none !important; }
+html body .lr-mini.lm-mini.lm-bar :is(button, a, input, [role="slider"]):focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+html body .lr-mini.lm-mini.lm-bar svg { display: block; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+html body .lr-mini.lm-mini.lm-bar svg.lm-fill { fill: currentColor; stroke: none; }
+
+/* Left: cover, title, then a badge (playing / paused / loading) and the artist. Opens the records page. */
+html body .lr-mini.lm-mini.lm-bar .lr-mini-open {
+  display: flex !important; align-items: center; gap: 10.8px;
+  width: 100% !important; min-width: 0 !important; flex: none !important;
+  margin: 0; padding: 0; border: 0; border-radius: 12.6px; background: none; color: inherit;
+  text-align: left; cursor: pointer; touch-action: manipulation; overflow: visible;
+}
+html body .lr-mini.lm-mini.lm-bar .lr-mini-cover {
+  display: block; flex: 0 0 54px; width: 54px; height: 54px; overflow: hidden;
+  border-radius: 12.6px; container-type: inline-size; transition: border-radius var(--dur-base) var(--ease);
+}
+html body .lr-mini.lm-mini.lm-bar .lr-mini-cover > :is(.lr-cover, img, .lr-private-artwork) { width: 100%; height: 100%; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-copy {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "t t" "b s";
+  align-items: center; justify-items: start; gap: 6px 7px; min-width: 0; flex: 1 1 auto;
+}
+html body .lr-mini.lm-mini.lm-bar .lr-mini-title {
+  grid-area: t; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font: 700 12.6px/1.25 var(--font-ui); letter-spacing: .02em; text-transform: uppercase; color: var(--bar-ink);
+}
+html body .lr-mini.lm-mini.lm-bar .lr-mini-caption {
+  grid-area: b; position: static !important; width: auto !important; height: auto !important; clip-path: none !important;
+  overflow: visible; white-space: nowrap; padding: 3px 5px 2px; border: 1px solid color-mix(in oklab, var(--bar-ink) 55%, transparent);
+  border-radius: 4px; font: 700 9.5px/1.1 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--bar-ink);
+}
+html body .lr-mini.lm-mini.lm-bar .lm-mini-creator, html body .lr-mini.lm-mini.lm-bar .lr-mini-copy::after {
+  grid-area: s; max-width: 100%; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font: 500 12.6px/1.25 var(--font-ui); color: var(--bar-muted);
+}
+html body .lr-mini.lm-mini.lm-bar .lr-mini-copy:has(> .lm-mini-creator[hidden])::after { content: "Luliy Records"; }
+
+/* Centre: previous / play / next over the progress line. */
+html body .lr-mini.lm-mini.lm-bar .lm-bar-center { display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; width: 100%; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-controls { display: flex !important; align-items: center; justify-content: center; gap: 9px; margin: 0 !important; padding: 0 !important; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-controls button {
+  display: grid; place-items: center; flex: none !important; width: 36px !important; height: 36px !important; min-height: 0; margin: 0; padding: 0 !important;
+  border: 0; border-radius: 50%; background: transparent; color: var(--bar-ink) !important; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-in-out), color var(--dur-fast) var(--ease-in-out), scale var(--dur-fast) var(--ease);
+}
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lr-mini-controls button:hover { background: var(--bar-hover); } }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-controls svg { width: 14px; height: 14px; fill: currentColor; stroke-width: 2; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play { background: var(--bar-ink); color: var(--bar-bg) !important; }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play:hover { background: var(--bar-ink); scale: 1.06; } }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play svg { width: 13px; height: 13px; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-controls .lr-mini-play.is-playing svg { stroke-width: 3.4; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-progress {
+  display: grid !important; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14.4px;
+  width: 100% !important; margin: 0; padding: 0 !important; grid-column: auto !important;
+  font: 700 10.8px/1 var(--font-ui); font-family: var(--font-ui) !important; letter-spacing: .075em; font-variant-numeric: tabular-nums; color: var(--bar-ink) !important;
+}
+html body .lr-mini.lm-mini.lm-bar :is(.lr-mini-elapsed, .lr-mini-duration) { min-width: 3.4em; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-elapsed { text-align: right; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-duration { text-align: left; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek {
+  -webkit-appearance: none; appearance: none; display: block; width: 100%; min-width: 0; height: 16px !important; margin: 0;
+  background: transparent; cursor: pointer; accent-color: var(--bar-ink);
+}
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 99px;
+  background: linear-gradient(var(--bar-ink), var(--bar-ink)) 0 0 / var(--lm-fill) 100% no-repeat, var(--bar-track);
+}
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 12px !important; height: 12px !important; margin-top: -4px; border: 0; border-radius: 50%;
+  background: var(--bar-ink); opacity: 0; transition: opacity var(--dur-fast) var(--ease-in-out);
+}
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek:is(:hover, :focus-visible, :active)::-webkit-slider-thumb { opacity: 1; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek::-moz-range-track { height: 4px; border-radius: 99px; background: var(--bar-track); }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek::-moz-range-progress { height: 4px; border-radius: 99px; background: var(--bar-ink); }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: var(--bar-ink); opacity: 0; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek:is(:hover, :focus-visible, :active)::-moz-range-thumb { opacity: 1; }
+html body .lr-mini.lm-mini.lm-bar .lr-mini-seek:disabled { opacity: .45; cursor: default; }
+
+/* Right: volume, queue, share, close. Open popover = pale button. */
+html body .lr-mini.lm-mini.lm-bar .lm-bar-right { display: flex; align-items: center; justify-content: flex-end; gap: 9px; min-width: 0; }
+html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-right, .lm-bar-vol) > button {
+  display: grid; place-items: center; flex: none; width: 43px !important; height: 43px !important; min-height: 0; margin: 0 !important; padding: 0 !important;
+  border: 0; border-radius: 16px; background: transparent; color: var(--bar-ink) !important; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-in-out), color var(--dur-fast) var(--ease-in-out);
+}
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-right, .lm-bar-vol) > button:hover { background: var(--bar-hover); } }
+html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-right, .lm-bar-vol) > button[aria-expanded="true"],
+html body .lr-mini.lm-mini.lm-bar .lm-bar-vol.is-open > button { background: var(--bar-ink); color: var(--bar-bg) !important; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-right > .lr-mini-close { width: 50px !important; height: 50px !important; border-radius: 50%; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-right > .lr-mini-close svg { width: 20px; height: 20px; }
+
+/* Volume: a vertical pill above the button (hover, keyboard focus, or a tap on touch screens). */
+html body .lr-mini.lm-mini.lm-bar .lm-bar-vol { position: relative; display: grid; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-vol-pop {
+  position: absolute; left: 50%; bottom: calc(100% + 18px); width: 47px; height: 173px; margin-left: -23.5px; box-sizing: border-box;
+  padding: 21px 0; display: flex; justify-content: center; border-radius: 999px; background: var(--bar-bg); box-shadow: var(--bar-shadow);
+  cursor: pointer; touch-action: none; outline-offset: 3px;
+  opacity: 0; visibility: hidden; translate: 0 6px;
+  transition: opacity var(--dur-fast) var(--ease-in-out), translate var(--dur-fast) var(--ease), visibility 0s linear var(--dur-fast);
+}
+html body .lr-mini.lm-mini.lm-bar .lm-bar-vol-pop::after { content: ""; position: absolute; left: -6px; right: -6px; top: 100%; height: 22px; }
+@media (hover: hover) and (pointer: fine) { html body .lr-mini.lm-mini.lm-bar .lm-bar-vol:hover > .lm-bar-vol-pop { opacity: 1; visibility: visible; translate: none; transition-delay: 0s; } }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-vol:is(.is-open, .is-dragging, :has(:focus-visible)) > .lm-bar-vol-pop { opacity: 1; visibility: visible; translate: none; transition-delay: 0s; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-vol-track { position: relative; width: 4px; height: 100%; border-radius: 99px; background: var(--bar-track); }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-vol-fill { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--lm-vol, 1) * 100%); border-radius: inherit; background: var(--bar-ink); }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-vol-fill::after { content: ""; position: absolute; left: 50%; top: 0; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--bar-ink); }
+
+/* Popovers above the bar's right end: the queue (the Drive script's panel) and share. */
+html body .lr-mini.lm-mini.lm-bar :is(.lm-mini-panel, .lm-bar-share) {
+  position: absolute; z-index: 10; right: 0; bottom: calc(100% + 10px); box-sizing: border-box; margin: 0; border: 0 !important;
+  border-radius: 24px; background: color-mix(in oklab, var(--bar-bg) 93%, transparent);
+  -webkit-backdrop-filter: blur(45px) saturate(1.2); backdrop-filter: blur(45px) saturate(1.2);
+  box-shadow: var(--bar-shadow); color: var(--bar-ink); cursor: default;
+  animation: lm-pop-in var(--dur-fast) var(--ease-soft) backwards;
+}
+html body .lr-mini.lm-mini.lm-bar .lm-mini-panel {
+  width: min(374px, calc(100vw - 28px)); max-height: min(497px, calc(100dvh - var(--lm-bar-space) - 26px)) !important;
+  display: flex !important; flex-direction: column; gap: 0 !important; padding: 0 !important; overflow: hidden !important; grid-column: auto !important;
+}
+html body .lr-mini.lm-mini.lm-bar :is(.lm-mini-panel, .lm-bar-share)[hidden] { display: none !important; }
+html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-panel-head, .lm-bar-pop-head) { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: none; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-panel-head { padding: 14px 10px 10px 21.6px; }
+html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-panel-head, .lm-bar-pop-head) h2 { margin: 0; font: 500 21.6px/1.2 var(--font-ui); letter-spacing: 0; color: var(--bar-ink); }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-x {
+  display: grid; place-items: center; width: 50px; height: 50px; margin: 0; padding: 0; border: 0; border-radius: 50%;
+  background: transparent; color: var(--bar-ink) !important; cursor: pointer; transition: background-color var(--dur-fast) var(--ease-in-out);
+}
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-bar-x:hover { background: var(--bar-hover); } }
+html body .lr-mini.lm-mini.lm-bar .lm-mini-queue {
+  display: grid !important; align-content: start; gap: 4px !important; flex: 1 1 auto; min-height: 0;
+  padding: 0 21.6px 21.6px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin;
+}
+html body .lr-mini.lm-mini.lm-bar .lm-mini-queue[hidden] { display: none !important; }
+html body .lr-mini.lm-mini.lm-bar .lm-mini-queue > * { min-width: 0; }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-track {
+  display: flex !important; align-items: center; gap: 12px; width: 100%; min-height: 61px; box-sizing: border-box;
+  padding: 10.8px 21.6px 10.8px 10.8px !important; border: 0; border-radius: 12px; background: var(--bar-row) !important;
+  color: var(--bar-ink) !important; text-align: left; font: inherit; cursor: pointer;
+  transition: background-color var(--dur-base) var(--ease-in-out), color var(--dur-base) var(--ease-in-out);
+}
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-queue-track:hover { background: var(--bar-row-hover) !important; } }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-track[aria-current="true"] { background: var(--bar-ink) !important; color: var(--bar-bg) !important; }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-cover { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 4px; overflow: hidden; }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-copy { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-copy strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 500 14.4px/1.3 var(--font-ui); }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-artist { display: block !important; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 500 12.6px/1.3 var(--font-ui); color: var(--bar-muted); }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-artist:empty::before { content: "Luliy Records"; }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-track[aria-current="true"] .lm-queue-artist { color: color-mix(in oklab, var(--bar-bg) 72%, var(--bar-ink)); }
+/* The playing row gets a five-bar equalizer (moves while playing, rests when paused). */
+html body .lr-mini.lm-mini.lm-bar .lm-queue-state { flex: none; font-size: 0 !important; width: 0; }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-track[aria-current="true"] .lm-queue-state {
+  width: 19px; height: 16px; color: transparent;
+  background:
+    linear-gradient(currentColor, currentColor) 0 100% / 3px 35% no-repeat,
+    linear-gradient(currentColor, currentColor) 4px 100% / 3px 70% no-repeat,
+    linear-gradient(currentColor, currentColor) 8px 100% / 3px 100% no-repeat,
+    linear-gradient(currentColor, currentColor) 12px 100% / 3px 55% no-repeat,
+    linear-gradient(currentColor, currentColor) 16px 100% / 3px 25% no-repeat;
+  color: var(--bar-bg);
+  animation: lm-eq 1.1s var(--ease-in-out) infinite paused;
+}
+html body .lr-mini.lm-mini.lm-bar.lm-playing .lm-queue-track[aria-current="true"] .lm-queue-state { animation-play-state: running; }
+html body .lr-mini.lm-mini.lm-bar[data-error="true"] .lm-queue-track[aria-current="true"] .lm-queue-state { background: none; animation: none; width: auto; font-size: 14px !important; color: inherit; }
+@keyframes lm-eq {
+  0%, 100% { background-size: 3px 35%, 3px 70%, 3px 100%, 3px 55%, 3px 25%; }
+  20% { background-size: 3px 80%, 3px 40%, 3px 60%, 3px 95%, 3px 50%; }
+  40% { background-size: 3px 50%, 3px 95%, 3px 30%, 3px 60%, 3px 85%; }
+  60% { background-size: 3px 95%, 3px 55%, 3px 80%, 3px 30%, 3px 60%; }
+  80% { background-size: 3px 30%, 3px 85%, 3px 50%, 3px 75%, 3px 35%; }
+}
+/* Playback settings (favourite, order, sleep timer) as the queue's footer. */
+html body .lr-mini.lm-mini.lm-bar .lm-mini-panel > .lm-mini-settings {
+  display: flex !important; flex-wrap: wrap; align-items: center; gap: 8px; flex: none; width: auto !important;
+  padding: 12px 21.6px 18px; border-top: 1px solid color-mix(in oklab, var(--bar-ink) 10%, transparent);
+}
+html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > :is(button, select) {
+  width: auto !important; height: 32px; margin: 0; padding: 0 12px !important; border: 0 !important; border-radius: 999px !important;
+  background-color: var(--bar-row) !important; color: var(--bar-ink) !important; font: 500 12.6px/1 var(--font-ui) !important;
+  text-align: center; cursor: pointer; transition: background-color var(--dur-fast) var(--ease-in-out), color var(--dur-fast) var(--ease-in-out);
+}
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > :is(button, select):hover { background-color: var(--bar-row-hover) !important; } }
+html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > button[aria-pressed="true"] { background-color: var(--bar-ink) !important; color: var(--bar-bg) !important; }
+html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > button:disabled { opacity: .45; cursor: default; }
+html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > select {
+  -webkit-appearance: none; appearance: none; padding-right: 28px !important;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%) !important;
+  background-position: calc(100% - 16px) 54%, calc(100% - 11.5px) 54% !important; background-size: 4.5px 4.5px !important; background-repeat: no-repeat !important;
+}
+html body .lr-mini.lm-mini.lm-bar .lm-mini-settings option { background: var(--raised); color: var(--ink); }
+html body .lr-mini.lm-mini.lm-bar .lm-timer-status { font: 500 11.5px/1.3 var(--font-ui); color: var(--bar-muted); }
+html body .lr-mini.lm-mini.lm-bar .lm-timer-status:empty { display: none; }
+/* Share: round buttons, then the link with a copy button. */
+html body .lr-mini.lm-mini.lm-bar .lm-bar-share { box-sizing: border-box; width: min(320px, calc(100vw - 28px)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 0 21.6px 21.6px; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-pop-head { padding: 14px 0 0; margin-right: -12px; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons { display: flex; flex-wrap: wrap; gap: 10px; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > * {
+  display: grid; place-items: center; width: 47px; height: 47px; margin: 0; padding: 0; border: 0; border-radius: 50%;
+  background: var(--bar-row); color: var(--bar-ink); text-decoration: none; cursor: pointer; transition: background-color var(--dur-fast) var(--ease-in-out);
+}
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > *:hover { background: var(--bar-row-hover); } }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-share-url {
+  display: flex; align-items: center; gap: 4px; height: 47px; padding: 0 5px 0 14px; border-radius: 12px;
+  background: color-mix(in oklab, var(--bg) 45%, var(--bar-bg));
+}
+html body .lr-mini.lm-mini.lm-bar .lm-bar-share-url input {
+  flex: 1 1 0; width: 0; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; background: none; outline: none;
+  color: var(--bar-ink); font: 500 13px/1 var(--font-ui); text-overflow: ellipsis;
+}
+html body .lr-mini.lm-mini.lm-bar .lm-bar-copy {
+  display: grid; place-items: center; flex: none; width: 38px; height: 38px; margin: 0; padding: 0; border: 0; border-radius: 10px;
+  background: transparent; color: var(--bar-ink); cursor: pointer; transition: background-color var(--dur-fast) var(--ease-in-out);
+}
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-bar-copy:hover { background: var(--bar-hover); } }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-copy.is-done { background: var(--bar-hover); }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* A track that cannot play: a small note above the bar's left end. */
+html body .lr-mini.lm-mini.lm-bar .lm-mini-error {
+  position: absolute; left: 0; bottom: calc(100% + 10px); display: flex; align-items: center; gap: 6px;
+  padding: 7px 7px 7px 14px; border-radius: 14px; background: var(--bar-bg); box-shadow: var(--bar-shadow);
+  font: 500 12.6px/1.2 var(--font-ui); color: var(--bar-ink);
+}
+html body .lr-mini.lm-mini.lm-bar .lm-mini-error button { padding: 7px 11px; border: 0; border-radius: 999px; background: var(--bar-row); color: var(--bar-ink); font: inherit; cursor: pointer; }
+@keyframes lm-bar-in { from { opacity: 0; translate: 0 16px; } }
+@keyframes lm-pop-in { from { opacity: 0; translate: 0 6px; } }
+
+/* The reader's floating buttons and the footer stay above the bar. */
+html.lm-bar-mode body.lm-player-visible .contact-curtain .contact-inner { padding-bottom: calc(var(--lm-bar-space) + 8px); }
+/* Phones: the short contact curtain grows by the bar, so its small print is not pushed under it. */
+@media (max-width: 700px) { html.lm-bar-mode body.lm-player-visible { --footer-h: min(calc(388px + var(--lm-bar-space)), 92svh); } }
+html.lm-bar-mode body.lm-player-visible #main .reader-back-top { bottom: calc(var(--lm-bar-space) + 14px) !important; }
+
+/* Phones: a compact bar (cover with play/pause, title, ×) with the progress along its top edge. */
+/* Touch screens: like the rest of the site, no backdrop blur here (it stutters while scrolling); a solid surface instead. */
+@media (pointer: coarse) {
+  html body .lr-mini.lm-mini.lm-bar :is(.lm-mini-panel, .lm-bar-share) { background: var(--bar-bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  html.lm-bar-mode { --lm-bar-h: 71px; --lm-bar-gap: max(10px, env(safe-area-inset-bottom)); }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) {
+    inset: auto max(10px, env(safe-area-inset-right)) var(--lm-bar-gap) max(10px, env(safe-area-inset-left)) !important;
+    grid-template-columns: minmax(0, 1fr) auto; gap: 0 6px; padding: 8px;
+  }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded)::before {
+    content: ""; position: absolute; left: 16px; right: 16px; top: 0; height: 3px; border-radius: 0 0 3px 3px; pointer-events: none;
+    background: linear-gradient(var(--bar-ink), var(--bar-ink)) 0 0 / var(--lm-fill) 100% no-repeat, var(--bar-track);
+  }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) .lr-mini-cover { flex-basis: 55px; width: 55px; height: 55px; border-radius: 11.7px; }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) .lr-mini-open { padding-right: 4px; }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) .lr-mini-title { font-size: 13.5px; }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) .lm-mini-creator, html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) .lr-mini-copy::after { font-size: 13px; }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) :is(.lm-bar-center, .lr-mini-controls, .lm-bar-right) { display: contents !important; }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) :is(.lr-mini-skip, .lr-mini-progress, .lm-bar-vol, .lm-bar-right > [data-lm-list], .lm-bar-share-btn, .lm-mini-panel, .lm-bar-share) { display: none !important; }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) .lr-mini-controls .lr-mini-play {
+    position: absolute; left: 8px; top: 8px; z-index: 1; width: 55px !important; height: 55px !important; border-radius: 11.7px;
+    background: rgb(0 0 0 / .28); color: #fff !important; scale: none;
+  }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) .lr-mini-controls .lr-mini-play svg { width: 20px; height: 20px; filter: drop-shadow(0 1px 3px rgb(0 0 0 / .35)); }
+  html body .lr-mini.lm-mini.lm-bar:not(.lm-expanded) .lm-bar-right > .lr-mini-close { width: 55px !important; height: 55px !important; }
+  html body .lr-mini.lm-mini.lm-bar .lm-mini-error { left: 0; right: 0; bottom: calc(100% + 8px); }
+
+  /* The sheet. */
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded {
+    inset: max(44px, calc(env(safe-area-inset-top) + 28px)) 0 0 0 !important;
+    z-index: 1001; display: flex !important; flex-direction: column; justify-content: flex-end; gap: 0;
+    padding: 34px 24px calc(18px + env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0;
+    overflow: hidden auto; overscroll-behavior: contain; animation: none;
+    box-shadow: 0 -10px 50px rgb(0 0 0 / .35);
+  }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded > .lm-bar-grip {
+    display: block !important; position: absolute; top: 0; left: 50%; width: 96px; height: 30px; margin: 0 0 0 -48px; padding: 0;
+    border: 0; background: none; cursor: pointer;
+  }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded > .lm-bar-grip::before {
+    content: ""; position: absolute; left: 50%; top: 12px; width: 38px; height: 4px; margin-left: -19px; border-radius: 99px;
+    background: color-mix(in oklab, var(--bar-ink) 34%, transparent);
+  }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-open { flex: 1 1 auto; flex-direction: column; justify-content: center; gap: 24px; min-height: 0; text-align: center; border-radius: 16px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-cover { flex: none; width: min(100%, 42dvh, 380px); height: auto; aspect-ratio: 1; border-radius: 16px; box-shadow: 0 18px 40px rgb(0 0 0 / .28); }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-copy { flex: none; width: 100%; grid-template-columns: auto auto; justify-content: center; justify-items: center; gap: 10px 8px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-title { justify-self: center; font-size: 17px; letter-spacing: .03em; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-caption { font-size: 10px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-mini-creator, html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-copy::after { font-size: 15px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-center { gap: 18px; margin-top: 26px; flex: none; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-progress { order: -1; gap: 16px; font-size: 13px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-controls { gap: 22px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-controls .lr-mini-skip { width: 64px !important; height: 64px !important; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-controls .lr-mini-skip svg { width: 24px; height: 24px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-controls .lr-mini-play { width: 76px !important; height: 76px !important; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-controls .lr-mini-play svg { width: 26px; height: 26px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-right { justify-content: space-around; margin-top: 20px; flex: none; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded :is(.lm-bar-right, .lm-bar-vol) > button { width: 47px !important; height: 47px !important; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-right > .lr-mini-close { display: none !important; }
+  /* Over the sheet's own controls a see-through layer only muddles them: these are solid. */
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded :is(.lm-mini-panel, .lm-bar-share) { background: var(--bar-bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-mini-panel { inset: 0; width: auto; max-height: none !important; border-radius: 24px 24px 0 0; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-mini-panel > .lm-mini-settings { padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-share { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); width: auto; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-vol-pop { bottom: calc(100% + 12px); }
+  .lm-bar-scrim { position: fixed; inset: 0; z-index: 1000; background: rgb(0 0 0 / .5); }
+  html.lm-sheet-open, html.lm-sheet-open body { overflow: hidden !important; overscroll-behavior: none; }
+
+  /* Reader buttons step up to sit above the compact bar. */
+  html.lm-bar-mode body.lm-player-visible #main .reader-back-top { bottom: calc(var(--lm-bar-space) + 12px) !important; }
+  html.lm-bar-mode body.lm-player-visible :is(.reader-toc-toggle, #main .reader-toc-toggle) { bottom: calc(var(--lm-bar-space) + 12px + 56px) !important; }
+  html.lm-bar-mode body.lm-player-visible #main :is(.source-toc, .article-toc) {
+    bottom: calc(var(--lm-bar-space) + 12px + 108px) !important;
+    max-height: max(100px, calc(100dvh - var(--lm-bar-space) - 200px)) !important;
+  }
+}
+@media (pointer: coarse) and (max-height: 500px) {
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded { padding-top: 26px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-open { gap: 12px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-cover { width: min(100%, 30dvh); }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-center { margin-top: 12px; gap: 8px; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-controls .lr-mini-skip { width: 52px !important; height: 52px !important; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-controls .lr-mini-play { width: 60px !important; height: 60px !important; }
+  html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-right { margin-top: 8px; }
+}
+.lm-bar-scrim[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  html body .lr-mini.lm-mini.lm-bar, html body .lr-mini.lm-mini.lm-bar * { animation: none !important; transition: none !important; }
+}
