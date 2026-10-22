@@ -125,7 +125,7 @@
   html body #main .source-reading > .source-meta > :is(time, #sourceReadingTime)::before { display: none; }
   html body #main .source-reading > .source-meta > time:has(+ #sourceReadingTime:not(:empty))::after { content: "·"; margin-inline: .55em; }
   html body #main .source-reading > .source-meta > #sourceReadingTime { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  html body #main .source-reading > .source-meta > .reader-return { margin-inline: -8px 4px; }
+  html body #main .source-reading > .source-meta > .reader-return { margin-inline: 0 4px; }
   html body #main .source-reading > .source-meta > .source-share { margin-inline-start: auto; flex: none; }
 }
 @media (max-width: 700px) {
@@ -136,6 +136,8 @@
   /* The contact curtain keeps signature, address, icons and the small print, without the empty band. */
   :root { --footer-h: min(380px, 85svh); }
   html body .contact-curtain .contact-inner { padding-top: 24px; }
+  /* On article pages the floating TOC / back-to-top buttons sit at the bottom right; keep the small print clear of them. */
+  html body.luliy-reading .contact-curtain .footer-bottom { padding-right: 60px; }
 }
 /* Article-list covers fade in when they arrive instead of popping. */
 @media (prefers-reduced-motion: no-preference) {
