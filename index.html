@@ -4,6 +4,8 @@
    Phones open on the article list: a bare https://luliy.me/ becomes #/posts, and the prologue is skipped on phones.
    The full home stays one tap away (directory -> 首頁) and is kept for ?home, ?intro=1 and every deep link. */
 (function () {
+  // Data saver (Android "Lite mode" / Save-Data): CSS and home-fixes.js skip decorative downloads.
+  try { if (navigator.connection && navigator.connection.saveData) document.documentElement.classList.add('luliy-save-data'); } catch (e) {}
   try {
     // Use the screen, not the viewport: this runs before <meta name=viewport>, when phones still report 980px.
     if (!matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) >= 600) return;
@@ -17,9 +19,166 @@
     if (location.hash && !/^#\/?(?:\?|$)/.test(location.hash)) return;
     history.replaceState(history.state, '', location.pathname + location.search + '#/posts');
   } catch (e) {}
+})();
+
+/* Dark palettes (墨綠 / 暖墨 / 夜藍 / 酒紅, chosen in the theme picker, home-fixes.js block 14): put the saved one on
+   <html data-palette> before the first paint. The colours only apply on top of the dark appearance (design-tokens.css). */
+(function () {
+  try {
+    var p = localStorage.getItem('luliy-palette');
+    if (/^(forest|espresso|midnight|oxblood)$/.test(p || '')) document.documentElement.dataset.palette = p;
+  } catch (e) {}
+})();
+
+/* Footer pictures wait on touch screens. The footer sits fixed behind the page (curtain reveal), so the browser
+   counts it as visible and loading="lazy" does nothing: every page used to fetch 0.8–2 MB of footer portraits
+   (plus the 0.5 MB left art) that most readers never scroll down to. runtime-fixes.py routes the router's
+   footerImage.src through LuliyFooterSrc; the left art ships as data-src. Desktop is unchanged. */
+(function () {
+  var wait = [], since = 0;
+  function coarse() { try { return matchMedia('(pointer: coarse)').matches; } catch (e) { return false; } }
+  function near() {
+    var d = document.documentElement;
+    return d.scrollHeight - (window.scrollY + window.innerHeight) < window.innerHeight * 1.5;
+  }
+  function set(img, src) { if (img.getAttribute('src') !== src) img.src = src; }
+  function flush(force) {
+    if (!wait.length) return;
+    // The router writes the footer before the page content exists, so "near the bottom" only counts
+    // after the reader scrolled, or once the page has had a few seconds to fill in.
+    if (!force && !(near() && (window.scrollY > 0 || Date.now() - since > 4000))) return;
+    var list = wait; wait = [];
+    for (var i = 0; i < list.length; i++) set(list[i][0], list[i][1]);
+  }
+  window.LuliyFooterSrc = function (img, src) {
+    for (var i = wait.length - 1; i >= 0; i--) if (wait[i][0] === img) wait.splice(i, 1);
+    if (!coarse()) { set(img, src); return; }
+    wait.push([img, src]); since = Date.now();
+    setTimeout(function () { flush(false); }, 4100);
+  };
+  addEventListener('scroll', function () { flush(false); }, { passive: true });
+  addEventListener('resize', function () { flush(false); });
+  addEventListener('focusin', function (e) { if (e.target && e.target.closest && e.target.closest('#contact')) flush(true); });
+  document.addEventListener('DOMContentLoaded', function () {
+    var art = document.querySelector('.footer-left-art[data-src]');
+    if (art && !document.documentElement.classList.contains('luliy-save-data')) window.LuliyFooterSrc(art, art.dataset.src);
+  });
+})();
+
+/* 動態效果 (motion) switch, offered in the directory. When it is off, every script asking
+   matchMedia('(prefers-reduced-motion: reduce)') hears "reduce" (and is told when it changes), so the moon, dust,
+   galaxy and record player settle exactly as they do for system reduced motion; html.luliy-calm does the same for CSS. */
+(function () {
+  var root = document.documentElement, KEY = 'luliy-motion', calm = false;
+  try { calm = localStorage.getItem(KEY) === 'off'; } catch (e) {}
+  if (calm) root.classList.add('luliy-calm');
+  var real = window.matchMedia && window.matchMedia.bind(window);
+  if (!real) return;
+  var wrapped = [];
+  function Wrapped(mql, reduce) {
+    var self = this;
+    this._m = mql; this._reduce = reduce; this._fns = []; this.media = mql.media; this.onchange = null; this._last = this.matches;
+    var relay = function () { self._fire(); };
+    if (mql.addEventListener) mql.addEventListener('change', relay); else if (mql.addListener) mql.addListener(relay);
+  }
+  Object.defineProperty(Wrapped.prototype, 'matches', { get: function () { return this._reduce ? (this._m.matches || calm) : (this._m.matches && !calm); } });
+  Wrapped.prototype._fire = function () {
+    var now = this.matches;
+    if (now === this._last) return;
+    this._last = now;
+    var ev = { type: 'change', matches: now, media: this.media };
+    if (typeof this.onchange === 'function') try { this.onchange(ev); } catch (e) {}
+    this._fns.slice().forEach(function (fn) { try { typeof fn === 'function' ? fn(ev) : fn.handleEvent(ev); } catch (e) {} });
+  };
+  Wrapped.prototype.addEventListener = function (type, fn) { if (type === 'change' && fn && this._fns.indexOf(fn) < 0) this._fns.push(fn); };
+  Wrapped.prototype.removeEventListener = function (type, fn) { var i = this._fns.indexOf(fn); if (type === 'change' && i >= 0) this._fns.splice(i, 1); };
+  Wrapped.prototype.addListener = function (fn) { this.addEventListener('change', fn); };
+  Wrapped.prototype.removeListener = function (fn) { this.removeEventListener('change', fn); };
+  Wrapped.prototype.dispatchEvent = function () { return true; };
+  window.matchMedia = function (q) {
+    var mql = real(q), m = /^\(\s*prefers-reduced-motion\s*:\s*(reduce|no-preference)\s*\)$/.exec(String(q).trim());
+    if (!m) return mql;
+    var w = new Wrapped(mql, m[1] === 'reduce');
+    wrapped.push(w);
+    return w;
+  };
+  window.LuliyMotion = {
+    get calm() { return calm; },
+    set: function (off) {
+      calm = !!off;
+      try { if (calm) localStorage.setItem(KEY, 'off'); else localStorage.removeItem(KEY); } catch (e) {}
+      root.classList.toggle('luliy-calm', calm);
+      wrapped.forEach(function (w) { w._fire(); });
+      try { document.dispatchEvent(new CustomEvent('luliy:motion', { detail: { calm: calm } })); } catch (e) {}
+    }
+  };
+})();
+
+/* Phones: a short opening screen on the first visit of a session, in the colours of the chosen appearance.
+   The thinker is drawn as a thin outline with a light travelling round it, breathing slowly (still with reduced
+   motion). It lifts once the page has rendered: at least 0.7 s, at most 1.5 s after the document is parsed. */
+(function () {
+  try {
+    if (!matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) >= 600) return;
+    var q = new URLSearchParams(location.search);
+    if (q.get('intro') === '1' || q.get('intro') === 'eye') return;
+    if (sessionStorage.getItem('luliy-loader-seen')) return;
+    sessionStorage.setItem('luliy-loader-seen', '1');
+  } catch (e) { return; }
+  var a = 'dark';
+  try { a = localStorage.getItem('luliy-appearance') || (localStorage.getItem('luliy-paper-ink') === 'light' ? 'cc' : 'dark'); } catch (e) {}
+  var sky = function (c) { return 'linear-gradient(189deg,' + c[0] + ' .55%,' + c[1] + ' 30.38%,' + c[2] + ' 65.19%,' + c[3] + ' 100%)'; };
+  var P = {
+    forest: ['#1d2a25', '#17221e', '#111a17', '#0b110f'], espresso: ['#2a231d', '#211c17', '#181411', '#0f0d0b'],
+    midnight: ['#1d212b', '#171a22', '#111319', '#0a0b0f'], oxblood: ['#2b181b', '#221316', '#190e10', '#10090a']
+  }[document.documentElement.dataset.palette];
+  var C = {
+    cc: [sky(['#1f1f38', '#18182d', '#111222', '#0c0d1b']), 'rgba(234,223,190,.42)', '#f0d68f'],
+    light: ['#faf9f5', 'rgba(20,20,19,.34)', '#9b7444'],
+    dark: [P ? sky(P) : '#111110', 'rgba(242,237,228,.36)', '#d8b878']
+  }[a] || null;
+  if (!C) C = ['#111110', 'rgba(242,237,228,.36)', '#d8b878'];
+  var shapes = ['M13 52H47Q48 52 48 53V57Q48 58 47 58H13Q12 58 12 57V53Q12 52 13 52Z',
+    'M30 52L30 44Q30 38 34 35L38 35Q38 41 36 44L36 52Z', 'M16 52L16 42Q16 38 20 37L25 39Q24 43 22 44L22 52Z',
+    'M19 38Q18 33 22 31L33 31Q35 33 34 36L23 38Q21 39 19 38Z', 'M24 32Q21 26 22 19Q23 13 29 11L34 12Q36 16 35 21L33 31Q28 33 24 32Z',
+    'M24 16Q19 18 18 24Q17 28 20 30L23 30Q21 27 22 23Q23 19 27 17Z', 'M18 25Q15 21 16 16Q17 12 22 11L25 14Q21 15 20 19Q19 22 21 25Z',
+    'M21.5 9A6.5 7 0 1 0 34.5 9A6.5 7 0 1 0 21.5 9Z', 'M33 8Q35.5 9 34.5 11.5Q33 12 32 10.5Z'];
+  var paths = function (cls) { return shapes.map(function (d, i) { return '<path class="' + cls + '" pathLength="1" d="' + d + '" style="--i:' + i + '"/>'; }).join(''); };
+  var css = '#luliy-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1)}' +
+    '#luliy-loader.is-done{opacity:0;pointer-events:none}' +
+    '#luliy-loader svg{width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round}' +
+    '#luliy-loader .o{stroke:' + C[1] + ';stroke-width:.55;animation:luliy-loader-breathe 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
+    '#luliy-loader .l{stroke:' + C[2] + ';stroke-width:.9;stroke-dasharray:.16 .84;stroke-dashoffset:1;animation:luliy-loader-run 1.9s linear infinite;animation-delay:calc(var(--i) * -.21s)}' +
+    '#luliy-loader .g{filter:drop-shadow(0 0 2.2px ' + C[2] + ')}' +
+    '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-run{to{stroke-dashoffset:0}}' +
+    '@media(prefers-reduced-motion:reduce){#luliy-loader .o{animation:none;opacity:1}#luliy-loader .l{display:none}}' +
+    'html.luliy-calm #luliy-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-loader .l{display:none}';
+  var style = document.createElement('style');
+  style.textContent = css;
+  (document.head || document.documentElement).appendChild(style);
+  var el = document.createElement('div');
+  el.id = 'luliy-loader';
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + '<g class="g">' + paths('l') + '</g></svg>';
+  document.documentElement.appendChild(el);
+  var shown = Date.now(), parsed = 0, gone = false;
+  function done() {
+    if (gone) return;
+    gone = true;
+    el.classList.add('is-done');
+    setTimeout(function () { el.remove(); style.remove(); }, 500);
+  }
+  function check() {
+    if (gone) return;
+    var main = document.getElementById('main'), now = Date.now();
+    if ((main && main.firstElementChild && now - shown >= 700) || (parsed && now - parsed >= 1500)) { done(); return; }
+    setTimeout(check, 80);
+  }
+  document.addEventListener('DOMContentLoaded', function () { parsed = Date.now(); check(); });
+  setTimeout(done, 6000); // never stay up, whatever happens
 })();</script><script src="intro/intro.js?v=7172b464ca"></script><script id="mobile-performance-policy">(()=>{const phone=matchMedia('(max-width: 767px)'),tablet=matchMedia('(min-width: 768px) and (max-width: 1024px)'),coarse=matchMedia('(pointer: coarse)');const sync=()=>{window.LuliyMobilePhone=phone.matches;window.LuliyMobileTablet=tablet.matches;window.LuliyMobileLite=phone.matches||tablet.matches||coarse.matches;document.documentElement.dataset.performance=window.LuliyMobileLite?'lite':'full';};sync();for(const query of [phone,tablet,coarse])query.addEventListener('change',sync);})();</script><!-- intro-layout-coordinates-v1 --><script>(function(){if(/^\/(?:article|post)\/P\d+\/?$/.test(location.pathname)){var b=document.createElement("base");b.href="/";document.head.appendChild(b)}})();</script>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="/manifest.webmanifest" data-pwa><link rel="apple-touch-icon" href="/site-publish/pwa/apple-touch-icon.png" data-pwa><meta name="apple-mobile-web-app-title" content="Luliy" data-pwa>
 <meta name="description" content="Luliy 的網路小宇宙。寫作、閱讀、技術與生活，記錄成長、思考與熱愛。">
 <meta name="theme-color" content="#050505">
 <link rel="preconnect" href="https://cloud.luliy.me">
@@ -74,13 +233,32 @@
  --accent:#8b6840;--focus-ring:#9b4a32;
 }
 :root[data-appearance=cc]{
- --bg:#101116;--paper:#1b1a1a;--raised:#242320;
+ --bg:#111222;--paper:#1a1a31;--raised:#24243f;
  --ink:#eadfbe;--text:#d5c8a5;--muted:#b3a487;
- --line:#494334;--line-strong:#82745c;
+ --line:#3a3955;--line-strong:#6a6688;
  --accent:#d2b878;--focus-ring:#e9ad88;
 }
-@media(prefers-contrast:more){:root[data-appearance]{--muted:var(--text)}}
-@media print{:root,:root[data-appearance]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
+/* Four more dark palettes, chosen in the theme picker (home-fixes.js block 14). <html data-palette> sits on top of
+   data-appearance=dark, so the dark scenes, text and gold stay and only the surfaces change; each palette's
+   four-stop sky gradient is in home-fixes.css.  forest 墨綠 | espresso 暖墨 | midnight 夜藍 | oxblood 酒紅 */
+:root[data-appearance=dark][data-palette=forest]{
+ --bg:#111a17;--paper:#16211d;--raised:#1e2b26;--muted:#a3a99f;
+ --line:#2c3b35;--line-strong:#5a6b63;
+}
+:root[data-appearance=dark][data-palette=espresso]{
+ --bg:#181411;--paper:#1f1a16;--raised:#29231e;--muted:#aaa194;
+ --line:#3d352d;--line-strong:#706455;
+}
+:root[data-appearance=dark][data-palette=midnight]{
+ --bg:#111319;--paper:#171a21;--raised:#20242d;--muted:#a3a3a6;
+ --line:#2e323d;--line-strong:#5c6170;
+}
+:root[data-appearance=dark][data-palette=oxblood]{
+ --bg:#190e10;--paper:#211315;--raised:#2b1a1d;--muted:#ad9f9c;
+ --line:#42292d;--line-strong:#76565b;
+}
+@media(prefers-contrast:more){:root[data-appearance],:root[data-appearance][data-palette]{--muted:var(--text)}}
+@media print{:root,:root[data-appearance],:root[data-appearance][data-palette]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
 
 /* Motion: three curves, three durations. `linear` stays literal (spins, progress, loops).
    ease        main curve: things appearing, opening, moving
@@ -860,7 +1038,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 }
 </style>
 
-<link rel="stylesheet" href="/site-publish/home-fixes.css?v=da9b2424" data-home-fixes></head>
+<link rel="stylesheet" href="/site-publish/home-fixes.css?v=1fc5e666" data-home-fixes></head>
 <body>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
 <div class="reading-progress" aria-hidden="true"></div>
@@ -876,9 +1054,9 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
   </div>
  </div>
 </header>
-<div class="page-above"><main id="main" tabindex="-1"></main></div>
+<div class="page-above"><div class="luliy-sky" aria-hidden="true"><i></i></div><main id="main" tabindex="-1"></main></div>
 <footer class="contact-curtain" id="contact" tabindex="-1">
- <img class="footer-left-art" src="https://cloud.luliy.me/api/image?path=shared%2FKK.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+ <img class="footer-left-art" data-src="https://cloud.luliy.me/api/image?path=shared%2FKK.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
  <canvas class="footer-canvas" id="footerMoon" aria-hidden="true"></canvas>
  <div class="shell contact-inner">
   <button class="contact-signature" id="vaultGate" data-vault-gate aria-label="长按落款，进入全集"><span class="signature-word">Luliy</span><svg class="signature-ink" xmlns="http://www.w3.org/2000/svg" viewBox="0 -1822 3490 3153" aria-hidden="true" focusable="false"><defs><mask id="luliy-footer-hand-L" maskUnits="userSpaceOnUse" x="-200" y="-1000" width="2000" height="2700"><g fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round"><path data-signature-stroke data-start="0" data-duration="760" d="M615 1223 Q687 1303 728 1367 C687 1280 669 1200 661 1136 C600 800 315 -170 175 -536" pathLength="1" stroke-width="125"/><path data-signature-stroke data-start="760" data-duration="320" d="M175 -536 C380 -404 937 -243 1238 -255 Q1350 -253 1409 -282" pathLength="1" stroke-width="100"/></g></mask><mask id="luliy-footer-hand-u" maskUnits="userSpaceOnUse" x="-200" y="-1000" width="2000" height="2700"><g fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round"><path data-signature-stroke data-start="1080" data-duration="580" d="M90 389 C15 269 -30 84 27 24 C92 4 213 165 281 345 C257 230 251 101 327 76 C398 33 577 188 665 247" pathLength="1" stroke-width="110"/></g></mask><mask id="luliy-footer-hand-l" maskUnits="userSpaceOnUse" x="-200" y="-1000" width="2000" height="2700"><g fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round"><path data-signature-stroke data-start="1660" data-duration="880" d="M25 270 C113 522 260 912 396 980 C494 1005 337 605 67 306 C10 181 -96 27 -84 -236 C-83 -391 -39 -417 159 -226 C297 -90 430 112 534 250" pathLength="1" stroke-width="80"/></g></mask><mask id="luliy-footer-hand-i" maskUnits="userSpaceOnUse" x="-200" y="-1000" width="2000" height="2700"><g fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round"><path data-signature-stroke data-start="2540" data-duration="400" d="M51 332 C4 231 -33 104 29 74 C94 29 393 143 661 250" pathLength="1" stroke-width="100"/><path data-signature-stroke data-start="2940" data-duration="100" d="M110 498 L111 505" pathLength="1" stroke-width="112"/></g></mask><mask id="luliy-footer-hand-y" maskUnits="userSpaceOnUse" x="-200" y="-1000" width="2000" height="2700"><g fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round"><path data-signature-stroke data-start="3040" data-duration="200" d="M63 385 C38 235 -57 12 64 42" pathLength="1" stroke-width="140"/><path data-signature-stroke data-start="3240" data-duration="600" d="M64 42 C147 40 374 398 444 378 C494 366 399 144 359 35 C292 -200 141 -720 61 -782 C-24 -814 57 -516 138 -434 C208 -281 334 -87 418 28" pathLength="1" stroke-width="120"/><path data-signature-stroke data-start="3840" data-duration="160" d="M418 28 C535 168 738 271 864 258" pathLength="1" stroke-width="80"/></g></mask></defs><g transform="scale(1 -1)"><g transform="translate(0 0)"><path d="M596 1221C598 1201 618 1188 635 1188C640 1188 645 1189 649 1192L660 1205L642 1136C524 607 245 -510 166 -510H165C134 -525 117 -548 117 -563C117 -574 125 -582 142 -582C154 -582 171 -578 192 -569C212 -560 234 -532 254 -517C389 -387 873 -283 1234 -276H1240C1311 -276 1345 -294 1401 -313C1403 -314 1406 -314 1408 -314C1424 -314 1438 -298 1438 -281C1438 -270 1432 -259 1416 -252C1386 -239 1339 -234 1281 -234C974 -234 357 -390 230 -485C226 -488 222 -491 218 -493C335 -257 648 677 681 1126C691 1259 745 1333 750 1347C754 1353 756 1359 756 1366C756 1382 744 1397 728 1397C718 1397 707 1390 697 1373C678 1310 614 1233 596 1221Z" fill="currentColor" mask="url(#luliy-footer-hand-L)"/></g><g transform="translate(803 0)"><path d="M134 372C135 376 135 379 135 382C135 408 110 427 86 427C71 427 56 419 50 401C50 400 -43 221 -43 99C-43 54 -30 17 4 -1C13 -6 23 -8 33 -8C112 -8 212 124 265 216V208C265 149 276 88 319 65C328 60 339 58 351 58C462 58 683 234 683 235C684 239 685 242 685 245C685 258 676 269 664 269C660 269 655 267 650 264C649 263 428 84 348 84C342 84 336 85 332 87C309 99 302 136 302 178C302 245 320 321 320 322C320 348 299 371 281 371C271 371 261 363 258 343C255 287 98 65 38 49C36 49 33 48 31 48C16 48 9 61 9 82C9 139 57 256 134 372Z" fill="currentColor" mask="url(#luliy-footer-hand-u)"/></g><g transform="translate(1463 0)"><path d="M72 334C119 466 199 687 261 793C292 846 322 890 348 920C371 946 389 962 399 962H400C402 962 404 959 407 953C408 950 409 946 409 941C409 835 134 391 72 334ZM41 244C162 325 447 747 447 927C447 942 445 955 441 966C433 987 420 998 403 999H402C379 999 351 979 320 944C293 912 261 866 229 811C96 628 -98 24 -98 -238C-98 -278 -94 -311 -84 -332C-68 -364 -46 -378 -19 -378C162 -378 557 239 558 241V242C558 256 550 264 539 264C530 264 519 258 509 243C508 241 131 -364 -16 -364C-34 -364 -49 -354 -59 -333C-66 -318 -70 -294 -70 -263C-70 -166 -33 7 41 244Z" fill="currentColor" mask="url(#luliy-footer-hand-l)"/></g><g transform="translate(1991 0)"><path d="M91 312C92 315 92 318 92 321C92 342 71 357 50 357C35 357 21 350 13 333C-5 302 -39 217 -39 147C-39 109 -29 75 -1 57C8 46 27 42 52 42C219 42 680 243 681 243C683 245 683 247 683 249C683 259 670 273 652 273C645 273 638 271 630 265C630 265 187 74 70 74C60 74 52 75 47 79C33 88 27 105 27 126C27 196 91 312 91 312ZM127 546C124 547 122 547 119 547C103 547 86 533 78 512C75 505 74 498 74 491C74 474 82 460 95 455C98 454 101 454 104 454C120 454 137 468 144 489C147 496 148 503 148 510C148 527 140 541 127 546Z" fill="currentColor" mask="url(#luliy-footer-hand-i)"/></g><g transform="translate(2636 0)"><path d="M444 398C352 398 157 78 67 62H65C55 62 51 71 49 87C48 96 47 104 47 113C47 192 87 288 106 362C106 364 107 367 107 369C107 392 73 413 48 413C34 413 23 407 20 392C0 313 -48 190 -48 100C-48 85 -47 70 -43 57C-40 27 -17 11 16 11C28 11 40 13 54 17C143 40 389 360 424 360H426C427 359 428 356 428 350C428 307 385 129 380 110C370 71 350 5 338 -38C260 -145 162 -305 111 -422C74 -507 45 -587 28 -649C24 -663 15 -699 15 -733C15 -764 23 -793 51 -802C53 -803 55 -803 58 -803C117 -803 210 -551 223 -517C271 -391 366 -144 407 -2C488 107 642 229 863 237C872 246 879 255 879 263C879 269 874 274 863 277C859 278 854 278 849 278C765 278 522 182 435 65C445 105 495 236 495 321C495 365 482 397 444 398ZM201 -493C148 -633 86 -744 66 -762V-759C66 -743 72 -712 83 -671C100 -610 128 -532 165 -447C196 -374 258 -237 301 -164C271 -259 232 -410 201 -493Z" fill="currentColor" mask="url(#luliy-footer-hand-y)"/></g></g></svg><span class="signature-dot"><span class="signature-fallback" aria-hidden="true">.</span><span class="sr-only">.</span><img src="assets/site/541f3773aab3baa245ef.webp" alt="" aria-hidden="true" decoding="async" onload="this.parentNode.classList.add('is-loaded')"></span></button>
@@ -918,11 +1096,11 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 <script src="/assets/site/home/2fa33e6f3a90.js"></script>
 <script src="/assets/site/home/749fec1d3355.js"></script>
 <script src="/assets/site/home/c3963e5651e0.js"></script>
-<script src="/assets/site/home/10b3a8384aa3.js"></script>
+<script src="/assets/site/home/d295dfad1d46.js"></script>
 <script src="/assets/site/home/71ef4ea092f2.js"></script>
 <script src="/assets/site/home/79bacafa9deb.js"></script>
-<script src="/assets/site/home/f290a1faea96.js"></script>
-<script src="/assets/site/home-cc-0563166b0a25.js"></script>
+<script data-three-loader>(()=>{const src='/assets/site/home/0964a24fd186.js';const phone=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600;if(!phone){document.write('<script src="'+src+'"><\/script>');return;}let pending=null;const load=window.LuliyThreeReady=()=>window.LuliyLoadThree?Promise.resolve():pending||(pending=new Promise((ok,fail)=>{const s=document.createElement('script');s.src=src;s.onload=()=>ok();s.onerror=()=>{pending=null;s.remove();fail(Error('Three.js unavailable'));};document.head.append(s);}));const quiet=()=>load().catch(()=>{});const soon=()=>{if(/^#\/(books|music|study|records?)\b/.test(location.hash))quiet();};addEventListener('hashchange',soon);soon();const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;addEventListener('load',()=>setTimeout(()=>window.requestIdleCallback?requestIdleCallback(quiet,{timeout:4000}):quiet(),2500),{once:true});})();</script><script src="/assets/site/home/02775bca1b2c.js"></script>
+<script src="/assets/site/home-cc-6a262824c80d.js"></script>
 <script src="/assets/site/home/1decb7dd1fbc.js"></script>
 
 <script id="guide-optimization-js">(()=>{'use strict';const fine=matchMedia('(hover:hover) and (pointer:fine)'),calm=matchMedia('(prefers-reduced-motion:reduce)');let frame=0,point=null;
@@ -931,7 +1109,7 @@ function cancel(){animations.forEach(a=>a.cancel());animations=[]}
 window.LuliyDirectoryMotion={open(dialog){closing=false;cancel();dialog.classList.add('icon-open');if(reduce.matches||document.documentElement.dataset.input==='keyboard')return;animations=[...dialog.querySelectorAll('.directory-main,.directory-bottom')].map(el=>el.animate([{transform:'translateX(40px)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:260,easing:'cubic-bezier(.19,1,.22,1)'}))}};
 function close(e){e.preventDefault();e.stopImmediatePropagation();if(closing||!d.open)return;closing=true;const panels=[...d.querySelectorAll('.directory-main,.directory-bottom')],starts=panels.map(el=>({transform:getComputedStyle(el).transform,opacity:getComputedStyle(el).opacity}));cancel();d.classList.remove('icon-open');if(reduce.matches||e.type==='cancel'||document.documentElement.dataset.input==='keyboard'){closing=false;d.close();return}animations=panels.map((el,i)=>el.animate([starts[i],{transform:'translateX(32px)',opacity:0}],{duration:180,easing:'cubic-bezier(.65,0,.35,1)',fill:'forwards'}));Promise.all(animations.map(a=>a.finished)).then(()=>{closing=false;if(d.open)d.close()},()=>{closing=false})}
 button.addEventListener('click',close,true);d.addEventListener('cancel',close,true);d.addEventListener('close',()=>{closing=false;cancel();d.classList.remove('icon-open')});})();
-</script><script>(()=>{const d=document.querySelector('#directory'),top=d.querySelector('.directory-top'),home=document.createElement('a');home.className='directory-home-brand';home.href='#/';home.textContent='LULIY';home.setAttribute('aria-label','首页');top.prepend(home);home.addEventListener('click',()=>d.close());const toggle=d.querySelector('.directory-language-toggle'),options=d.querySelector('.directory-language-options');function close(){options.hidden=true;toggle.setAttribute('aria-expanded','false')}toggle.addEventListener('click',()=>{options.hidden=!options.hidden;toggle.setAttribute('aria-expanded',String(!options.hidden))});options.addEventListener('click',close);d.addEventListener('close',close);d.addEventListener('click',e=>{if(!e.target.closest('.directory-quiet-language'))close()});function sync(){const lang=document.documentElement.lang.slice(0,2);toggle.querySelector('span').textContent=lang==='en'?'English':lang==='ja'?'日本語':'中文';}new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});sync();})();</script><script>(()=>{const d=document.querySelector('#directory'),home=d.querySelector('.directory-home-brand'),logo=document.querySelector('#header .brand-mark svg');if(home&&logo)home.prepend(logo.cloneNode(true));const other=d.querySelector('.directory-other');other.addEventListener('click',e=>{if(e.target.closest('.directory-other-options a,.directory-other-options button'))other.open=false});d.querySelector('.directory-other-home').addEventListener('click',()=>d.close());d.addEventListener('close',()=>other.open=false);d.addEventListener('click',e=>{if(!e.target.closest('.directory-other'))other.open=false});})();</script><script>(()=>{const d=document.querySelector('#directory'),bar=d.querySelector('.directory-other-bar'),other=bar.querySelector('.directory-other'),lang=bar.querySelector('.directory-quiet-language'),cloud=other.querySelector('a[href="https://cloud.luliy.me/"]'),theme=other.querySelector('[data-theme]');const left=document.createElement('div'),right=document.createElement('div');left.className='directory-other-left';right.className='directory-display-right';cloud.setAttribute('aria-label','云盘');cloud.title='云盘';const icon=document.querySelector('#header .cloud-link svg');cloud.replaceChildren(icon.cloneNode(true));theme.setAttribute('aria-label','切换纸墨');theme.title='切换纸墨';theme.querySelector('[data-i18n]')?.remove();left.append(other,cloud);right.append(theme,lang);bar.append(left,right);})();</script><script>(()=>{const d=document.querySelector('#directory'),home=d.querySelector('.directory-home-brand'),original=document.querySelector('#header .brand-mark');if(!home||!original)return;const group=document.createElement('div');group.className='directory-brand-group';home.before(group);const link=original.cloneNode(true);link.className='directory-brand-mark';home.querySelector('svg')?.remove();group.append(link,home);})();</script><script>(()=>{document.querySelector('#header .brand').textContent='ULIY';const home=document.querySelector('.directory-home-brand');if(home)home.textContent='ULIY';const data=window.LULIY_DATA;for(const type of ['books','posts','music']){const root=document.querySelector('.preview-'+type);if(!root)continue;root.classList.add('directory-composite');const shelf=document.createElement('img'),reader=document.createElement('img');shelf.className='directory-composite-shelf';shelf.src=data.collections.shelfPhotos[2];reader.className='directory-composite-reader';reader.src='https://cloud.luliy.me/api/image?path=shared%2F'+({books:'wei.png',posts:'Written.png',music:'listen.png'}[type]);for(const img of [shelf,reader]){img.alt='';img.decoding='async';img.setAttribute('aria-hidden','true');}root.prepend(shelf,reader);}})();</script><script>(()=>{const root=document.querySelector('.preview-projects'),img=document.createElement('img');img.className='directory-project-portrait';img.src=window.LULIY_DATA.scenes.sidePortrait||window.LULIY_DATA.scenes.portrait;img.alt='';img.setAttribute('aria-hidden','true');img.decoding='async';root.prepend(img);})();</script><script>(()=>{const root=document.querySelector('#directory .preview-about'),text=document.createElement('p');text.className='about-traditional-verse';text.textContent='長余佩之陸離';text.setAttribute('aria-hidden','true');root.append(text);})();</script><script>(()=>{for(const el of document.querySelectorAll('#header .brand,.directory-home-brand')){el.replaceChildren(document.createTextNode('ULI'));const y=document.createElement('span');y.className='brand-cross-anchor';y.textContent='Y';el.append(y);}})();</script><script>(()=>{const points=[[25,40],[32,30],[44,44],[36,59],[52,20],[56,44],[49,71],[66,65],[68,33],[76,52]],edges=[[0,1],[1,2],[2,3],[3,0],[2,4],[4,5],[5,2],[2,6],[6,7],[7,5],[5,8],[8,9],[9,7],[3,6]];function mount(){const nav=document.querySelector('.galaxy-orbits');if(!nav||nav.dataset.sagittarius)return;nav.dataset.sagittarius='true';const svg=nav.querySelector('svg'),ns='http://www.w3.org/2000/svg',path=document.createElementNS(ns,'path');path.setAttribute('class','sagittarius-lines');path.setAttribute('d',edges.map(([a,b])=>'M'+points[a][0]*8+' '+points[a][1]*6+'L'+points[b][0]*8+' '+points[b][1]*6).join(' '));svg.replaceChildren(path);points.forEach(([x,y],i)=>{const star=document.createElement('span');star.className='sagittarius-node';star.style.left=x+'%';star.style.top=y+'%';star.setAttribute('aria-hidden','true');star.dataset.constellationStar=i;nav.append(star)});const map={books:[0,'STUDY','edge-left'],posts:[4,'ARTICLES','edge-top'],projects:[9,'WORKS','edge-right'],music:[6,'RECORDS','edge-bottom']};for(const button of nav.querySelectorAll('[data-galaxy-entry]')){const [index,label,position]=map[button.dataset.galaxyEntry];button.querySelector('span').textContent=label;button.style.left=points[index][0]+'%';button.style.top=points[index][1]+'%';button.style.right='auto';button.style.bottom='auto';button.classList.add(position);}}new MutationObserver(mount).observe(document.querySelector('#main'),{childList:true});mount();})();</script><script>document.documentElement.classList.add("luliy-first-paint-ready");</script><script id="craftsmanship-js" src="/assets/site/home/694a05b1a358.js"></script>
+</script><script>(()=>{const d=document.querySelector('#directory'),top=d.querySelector('.directory-top'),home=document.createElement('a');home.className='directory-home-brand';home.href='#/';home.textContent='LULIY';home.setAttribute('aria-label','首页');top.prepend(home);home.addEventListener('click',()=>d.close());const toggle=d.querySelector('.directory-language-toggle'),options=d.querySelector('.directory-language-options');function close(){options.hidden=true;toggle.setAttribute('aria-expanded','false')}toggle.addEventListener('click',()=>{options.hidden=!options.hidden;toggle.setAttribute('aria-expanded',String(!options.hidden))});options.addEventListener('click',close);d.addEventListener('close',close);d.addEventListener('click',e=>{if(!e.target.closest('.directory-quiet-language'))close()});function sync(){const lang=document.documentElement.lang.slice(0,2);toggle.querySelector('span').textContent=lang==='en'?'English':lang==='ja'?'日本語':'中文';}new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});sync();})();</script><script>(()=>{const d=document.querySelector('#directory'),home=d.querySelector('.directory-home-brand'),logo=document.querySelector('#header .brand-mark svg');if(home&&logo)home.prepend(logo.cloneNode(true));const other=d.querySelector('.directory-other');other.addEventListener('click',e=>{if(e.target.closest('.directory-other-options a,.directory-other-options button'))other.open=false});d.querySelector('.directory-other-home').addEventListener('click',()=>d.close());d.addEventListener('close',()=>other.open=false);d.addEventListener('click',e=>{if(!e.target.closest('.directory-other'))other.open=false});})();</script><script>(()=>{const d=document.querySelector('#directory'),bar=d.querySelector('.directory-other-bar'),other=bar.querySelector('.directory-other'),lang=bar.querySelector('.directory-quiet-language'),cloud=other.querySelector('a[href="https://cloud.luliy.me/"]'),theme=other.querySelector('[data-theme]');const left=document.createElement('div'),right=document.createElement('div');left.className='directory-other-left';right.className='directory-display-right';cloud.setAttribute('aria-label','云盘');cloud.title='云盘';const icon=document.querySelector('#header .cloud-link svg');cloud.replaceChildren(icon.cloneNode(true));theme.setAttribute('aria-label','切换纸墨');theme.title='切换纸墨';theme.querySelector('[data-i18n]')?.remove();left.append(other,cloud);right.append(theme,lang);bar.append(left,right);})();</script><script>(()=>{const d=document.querySelector('#directory'),home=d.querySelector('.directory-home-brand'),original=document.querySelector('#header .brand-mark');if(!home||!original)return;const group=document.createElement('div');group.className='directory-brand-group';home.before(group);const link=original.cloneNode(true);link.className='directory-brand-mark';home.querySelector('svg')?.remove();group.append(link,home);})();</script><script>(()=>{document.querySelector('#header .brand').textContent='ULIY';const home=document.querySelector('.directory-home-brand');if(home)home.textContent='ULIY';const data=window.LULIY_DATA;for(const type of ['books','posts','music']){const root=document.querySelector('.preview-'+type);if(!root)continue;root.classList.add('directory-composite');const shelf=document.createElement('img'),reader=document.createElement('img');shelf.className='directory-composite-shelf';shelf.dataset.src=data.collections.shelfPhotos[2];reader.className='directory-composite-reader';reader.dataset.src='https://cloud.luliy.me/api/image?path=shared%2F'+({books:'wei.png',posts:'Written.png',music:'listen.png'}[type]);for(const img of [shelf,reader]){img.alt='';img.decoding='async';img.setAttribute('aria-hidden','true');}root.prepend(shelf,reader);}})();</script><script>(()=>{const root=document.querySelector('.preview-projects'),img=document.createElement('img');img.className='directory-project-portrait';img.dataset.src=window.LULIY_DATA.scenes.sidePortrait||window.LULIY_DATA.scenes.portrait;img.alt='';img.setAttribute('aria-hidden','true');img.decoding='async';root.prepend(img);})();</script><script>(()=>{const root=document.querySelector('#directory .preview-about'),text=document.createElement('p');text.className='about-traditional-verse';text.textContent='長余佩之陸離';text.setAttribute('aria-hidden','true');root.append(text);})();</script><script>(()=>{for(const el of document.querySelectorAll('#header .brand,.directory-home-brand')){el.replaceChildren(document.createTextNode('ULI'));const y=document.createElement('span');y.className='brand-cross-anchor';y.textContent='Y';el.append(y);}})();</script><script>(()=>{const points=[[25,40],[32,30],[44,44],[36,59],[52,20],[56,44],[49,71],[66,65],[68,33],[76,52]],edges=[[0,1],[1,2],[2,3],[3,0],[2,4],[4,5],[5,2],[2,6],[6,7],[7,5],[5,8],[8,9],[9,7],[3,6]];function mount(){const nav=document.querySelector('.galaxy-orbits');if(!nav||nav.dataset.sagittarius)return;nav.dataset.sagittarius='true';const svg=nav.querySelector('svg'),ns='http://www.w3.org/2000/svg',path=document.createElementNS(ns,'path');path.setAttribute('class','sagittarius-lines');path.setAttribute('d',edges.map(([a,b])=>'M'+points[a][0]*8+' '+points[a][1]*6+'L'+points[b][0]*8+' '+points[b][1]*6).join(' '));svg.replaceChildren(path);points.forEach(([x,y],i)=>{const star=document.createElement('span');star.className='sagittarius-node';star.style.left=x+'%';star.style.top=y+'%';star.setAttribute('aria-hidden','true');star.dataset.constellationStar=i;nav.append(star)});const map={books:[0,'STUDY','edge-left'],posts:[4,'ARTICLES','edge-top'],projects:[9,'WORKS','edge-right'],music:[6,'RECORDS','edge-bottom']};for(const button of nav.querySelectorAll('[data-galaxy-entry]')){const [index,label,position]=map[button.dataset.galaxyEntry];button.querySelector('span').textContent=label;button.style.left=points[index][0]+'%';button.style.top=points[index][1]+'%';button.style.right='auto';button.style.bottom='auto';button.classList.add(position);}}new MutationObserver(mount).observe(document.querySelector('#main'),{childList:true});mount();})();</script><script>document.documentElement.classList.add("luliy-first-paint-ready");</script><script id="craftsmanship-js" src="/assets/site/home/694a05b1a358.js"></script>
 <script id="luliy-drive-js" src="/assets/site/home/c3b7c6555451.js"></script><script id="site-route-tail">(()=>{'use strict';
 const group=document.querySelector('#header .brand-group');
 if(!group)return;
@@ -1041,5 +1219,5 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script>
 
-<script src="/site-publish/home-fixes.js?v=a56fddd2" async data-home-fixes></script></body>
+<script src="/site-publish/home-fixes.js?v=e31108c1" async data-home-fixes></script></body>
 </html>

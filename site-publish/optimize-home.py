@@ -13,6 +13,7 @@ What it does (idempotent, safe to re-run):
      <script src> / <link rel=stylesheet> at the same position.
   4. Runs site-publish/design-tokens.py (single source for theme colours, motion and fonts).
   5. Runs site-publish/runtime-fixes.py (performance / accessibility patches).
+  6. Runs site-publish/pwa.py (manifest, /sw.js for offline reading).
 """
 import hashlib, pathlib, re, sys
 
@@ -117,4 +118,7 @@ if __name__ == '__main__':
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()
     # Runtime fixes: performance and accessibility patches (see the file's FIXES list).
     spec = importlib.util.spec_from_file_location('runtime_fixes', ROOT / 'site-publish' / 'runtime-fixes.py')
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()
+    # Add to Home Screen + offline reading: /sw.js, /manifest.webmanifest and their <head> tags.
+    spec = importlib.util.spec_from_file_location('pwa', ROOT / 'site-publish' / 'pwa.py')
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()

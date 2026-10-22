@@ -17,13 +17,32 @@
  --accent:#8b6840;--focus-ring:#9b4a32;
 }
 :root[data-appearance=cc]{
- --bg:#101116;--paper:#1b1a1a;--raised:#242320;
+ --bg:#111222;--paper:#1a1a31;--raised:#24243f;
  --ink:#eadfbe;--text:#d5c8a5;--muted:#b3a487;
- --line:#494334;--line-strong:#82745c;
+ --line:#3a3955;--line-strong:#6a6688;
  --accent:#d2b878;--focus-ring:#e9ad88;
 }
-@media(prefers-contrast:more){:root[data-appearance]{--muted:var(--text)}}
-@media print{:root,:root[data-appearance]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
+/* Four more dark palettes, chosen in the theme picker (home-fixes.js block 14). <html data-palette> sits on top of
+   data-appearance=dark, so the dark scenes, text and gold stay and only the surfaces change; each palette's
+   four-stop sky gradient is in home-fixes.css.  forest 墨綠 | espresso 暖墨 | midnight 夜藍 | oxblood 酒紅 */
+:root[data-appearance=dark][data-palette=forest]{
+ --bg:#111a17;--paper:#16211d;--raised:#1e2b26;--muted:#a3a99f;
+ --line:#2c3b35;--line-strong:#5a6b63;
+}
+:root[data-appearance=dark][data-palette=espresso]{
+ --bg:#181411;--paper:#1f1a16;--raised:#29231e;--muted:#aaa194;
+ --line:#3d352d;--line-strong:#706455;
+}
+:root[data-appearance=dark][data-palette=midnight]{
+ --bg:#111319;--paper:#171a21;--raised:#20242d;--muted:#a3a3a6;
+ --line:#2e323d;--line-strong:#5c6170;
+}
+:root[data-appearance=dark][data-palette=oxblood]{
+ --bg:#190e10;--paper:#211315;--raised:#2b1a1d;--muted:#ad9f9c;
+ --line:#42292d;--line-strong:#76565b;
+}
+@media(prefers-contrast:more){:root[data-appearance],:root[data-appearance][data-palette]{--muted:var(--text)}}
+@media print{:root,:root[data-appearance],:root[data-appearance][data-palette]{--bg:#fff;--paper:#eee;--raised:#eee;--ink:#111;--text:#222;--muted:#555;--line:#ccc;--line-strong:#999}}
 
 /* Motion: three curves, three durations. `linear` stays literal (spins, progress, loops).
    ease        main curve: things appearing, opening, moving

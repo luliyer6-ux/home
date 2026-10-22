@@ -1,0 +1,16 @@
+{
+  "name": "Luliy",
+  "short_name": "Luliy",
+  "description": "Luliy 的網路小宇宙。寫作、閱讀、技術與生活。",
+  "lang": "zh-Hant",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    { "src": "/site-publish/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/site-publish/pwa/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/site-publish/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

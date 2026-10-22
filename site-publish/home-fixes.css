@@ -103,12 +103,468 @@
   html body #main :is(.reader-toc-toggle, .reader-back-top) {
     transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease) !important;
   }
-  /* When the header comes back mid-article, a soft wash keeps it off the text. */
-  html body.luliy-reading #header.is-scrolled {
-    background: linear-gradient(var(--bg) 55%, color-mix(in srgb, var(--bg) 75%, transparent) 78%, transparent) !important;
-  }
 }
 /* Touch: the section-link button keeps its small glyph but gets a finger-sized target. */
 @media (pointer: coarse) {
   html body .reader-heading-link { padding: 12px; margin: -12px -12px -12px 0; }
 }
+
+/* ---- Phones: lighter reading chrome ---- */
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  /* Article header becomes one quiet line: ← date · length · reading time … share.
+     Category, refresh and the blog link stay in the page, just not shown here. */
+  html body #main .source-reading > .source-meta { flex-wrap: nowrap; gap: 0; padding: 4px 0 10px; white-space: nowrap; }
+  html body #main .source-reading > .source-meta > :is(.source-category, .reader-refresh, a[target="_blank"]) { display: none; }
+  html body #main .source-reading > .source-meta > :is(time, #sourceReadingTime) {
+    padding: 0; min-height: 0; color: var(--muted); font-size: 12px; letter-spacing: .02em; white-space: nowrap;
+  }
+  html body #main .source-reading > .source-meta > :is(time, #sourceReadingTime)::before { display: none; }
+  html body #main .source-reading > .source-meta > time:has(+ #sourceReadingTime:not(:empty))::after { content: "·"; margin-inline: .55em; }
+  html body #main .source-reading > .source-meta > #sourceReadingTime { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  html body #main .source-reading > .source-meta > .reader-return { margin-inline: 0 4px; }
+  html body #main .source-reading > .source-meta > .source-share { margin-inline-start: auto; flex: none; }
+}
+@media (max-width: 700px) {
+  /* Wide photographs run edge to edge (home-fixes.js picks them: block images that fill the column). */
+  html body #main :is(.source-body, .article-body) img.luliy-bleed {
+    width: 100vw; max-width: 100vw; margin-inline: calc(50% - 50vw); border-radius: 0;
+  }
+  /* The contact curtain keeps signature, address, icons and the small print, without the empty band. */
+  :root { --footer-h: min(380px, 85svh); }
+  html body .contact-curtain .contact-inner { padding-top: 24px; }
+  /* On article pages the floating TOC / back-to-top buttons sit at the bottom right; keep the small print clear of them. */
+  html body.luliy-reading .contact-curtain .footer-bottom { padding-right: 60px; }
+}
+/* Article-list covers fade in when they arrive instead of popping. */
+@media (prefers-reduced-motion: no-preference) {
+  .article-list .study-entry.has-cover > .study-entry-cover { animation: luliy-cover-in var(--dur-slow) var(--ease-soft); }
+}
+@keyframes luliy-cover-in { from { opacity: 0; } }
+
+/* ---- Touch devices: compatibility ---- */
+/* Notches and rounded corners (viewport-fit=cover): keep text and controls inside the safe area, mostly in landscape. */
+@supports (padding: env(safe-area-inset-left)) {
+  html body .page-above { padding-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  html body #header { margin-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  html body #main :is(.reader-toc-toggle, .reader-back-top),
+  html body .lr-mini.lm-mini { margin-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  html body .contact-curtain .contact-inner { padding-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  @media (max-width: 700px) { html body .lr-mini.lm-mini { bottom: max(12px, env(safe-area-inset-bottom)); } }
+}
+/* Landscape phones: the contact curtain is taller than its room, so the signature steps down in size. */
+@media (pointer: coarse) and (max-height: 500px) {
+  html body .contact-curtain .contact-signature { zoom: .62; }
+  html body .contact-curtain .contact-inner { padding-top: 14px; padding-bottom: 14px; }
+  html body .contact-curtain .contact-email { font-size: 20px; }
+  html body .contact-curtain .contact-social { margin-top: 6px; }
+  html body .contact-curtain .footer-bottom { padding-top: 8px; }
+  html body.luliy-reading .contact-curtain .footer-bottom { padding-right: 64px; }
+}
+@media (pointer: coarse) {
+  /* Blur behind moving glass costs every scroll frame on phones; a nearly solid fill reads the same. */
+  html body .site-header::before { backdrop-filter: none; -webkit-backdrop-filter: none; background: color-mix(in srgb, var(--bg) 95%, transparent); }
+  html body #main :is(.reader-toc-toggle, .reader-back-top) { backdrop-filter: none; -webkit-backdrop-filter: none; background: color-mix(in srgb, var(--bg) 96%, transparent); }
+  html body .lr-mini.lm-mini { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  html body .study-panels-scrim { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 4, 4, .62); }
+  /* No grey flash on tap; a short press-down instead. The signature (long press) and the record player keep their own feedback. */
+  html { -webkit-tap-highlight-color: transparent; }
+  html body :is(#header, #main, #directory, .contact-social, .footer-bottom) :is(a, button, summary):not(.contact-signature):not([class*="lr-"]):active,
+  html body .contact-email:active { opacity: .6; transition-duration: 0s !important; }
+  /* iOS zooms the page into any text field under 16px. */
+  html body :is(input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=color]):not([type=file]), textarea, select) { font-size: max(16px, 1em); }
+}
+/* Data saver: skip the large decorative photo behind the footer. */
+html.luliy-save-data .footer-left-art { display: none; }
+@media (prefers-reduced-data: reduce) { .footer-left-art { display: none; } }
+
+/* ---- Phones: one header on every page (home-fixes.js block 4) ---- */
+:root { --luliy-wash: var(--bg); }
+:root[data-appearance=cc] { --luliy-wash: #1f1f38; }
+:root[data-appearance=dark][data-palette] { --luliy-wash: var(--luliy-sky-top); }
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  /* Flush with the top edge; the notch inset becomes padding, so the wash reaches the very top of the screen. */
+  html body #header { top: 0 !important; padding-top: calc(6px + env(safe-area-inset-top)) !important; }
+  /* Once the page has moved, a soft wash keeps content from showing through the header. */
+  html body #header.luliy-washed { background: none !important; }
+  html body #header.luliy-washed::before {
+    content: "" !important; display: block !important; position: absolute; inset: 0 0 -24px !important; z-index: -1; opacity: 1 !important;
+    background: var(--luliy-wash) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    -webkit-mask-image: linear-gradient(#000 70%, transparent) !important; mask-image: linear-gradient(#000 70%, transparent) !important;
+    pointer-events: none;
+  }
+  html body.luliy-sheet-open #header { opacity: 0 !important; pointer-events: none !important; }
+}
+
+/* ---- Phones: article list (home-fixes.js block 9) ---- */
+#header .luliy-header-modes { display: none; }
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  /* 文章 / 編年史 as header tabs: the current one bold with a short gold bar. */
+  html body #header .luliy-header-modes {
+    display: flex; gap: 20px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  }
+  html body #header .luliy-header-modes a {
+    position: relative; padding: 12px 2px; color: var(--muted); font-family: var(--font-ui); font-size: 16px; font-weight: 500;
+    line-height: 1; letter-spacing: .06em; text-decoration: none; white-space: nowrap;
+  }
+  html body #header .luliy-header-modes a[aria-current] { color: var(--ink); font-weight: 700; }
+  html body #header .luliy-header-modes a[aria-current]::after {
+    content: ""; position: absolute; left: 50%; bottom: 3px; width: 16px; height: 2px; margin-left: -8px; border-radius: 2px; background: var(--accent);
+  }
+  html body #main .luliy-has-header-modes .article-modes,
+  html body #main .article-browse-toolbar.luliy-emptied { display: none !important; }
+  html body #main .luliy-has-header-modes > #chronicleBrowse { margin-top: 4px; }
+
+  /* The filter sits on the first year's row, on the right. */
+  html body #main .post-year.luliy-filter-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  html body #main .post-year.luliy-filter-row > h2 { grid-column: 1; grid-row: 1; }
+  html body #main .post-year.luliy-filter-row > .article-filter-drawer { grid-column: 2; grid-row: 1; align-self: center; margin-bottom: 15px; }
+  html body #main .post-year.luliy-filter-row > :not(h2):not(.article-filter-drawer) { grid-column: 1 / -1; }
+  html body #main .article-filter-drawer > summary { position: relative; min-height: 44px; }
+  html body #main .article-filter-drawer > summary .article-filter-chevron { display: none; }
+  html body #main .article-filter-drawer.luliy-filtered > summary::after {
+    content: ""; position: absolute; top: 9px; right: -7px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+
+  /* Bottom sheet. */
+  html.luliy-sheet-lock, html.luliy-sheet-lock body { overflow: hidden !important; }
+  html body #main .article-filter-drawer[open] > summary::before {
+    content: ""; position: fixed; inset: 0; z-index: 70; background: rgba(0, 0, 0, .5); cursor: default;
+    animation: luliy-dim-in var(--dur-base) var(--ease-soft) both;
+  }
+  html body #main .article-filter-drawer > .article-filter-panel {
+    position: fixed !important; inset: auto 0 0 0 !important; z-index: 71; width: auto !important; max-width: none !important;
+    max-height: 78vh; max-height: 78svh; margin: 0 auto !important; overflow-y: auto; overscroll-behavior: contain;
+    padding: 26px 20px calc(22px + env(safe-area-inset-bottom)) !important;
+    border: 0 !important; border-radius: 16px 16px 0 0 !important; background: var(--raised) !important;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, .28) !important; transform: none;
+    animation: luliy-sheet-up 380ms var(--ease) backwards !important; transition: transform var(--dur-fast) var(--ease);
+  }
+  @media (min-width: 600px) { html body #main .article-filter-drawer > .article-filter-panel { max-width: 560px !important; } }
+  html body #main .article-filter-drawer > .article-filter-panel::before {
+    content: ""; position: absolute; top: 8px; left: 50%; width: 36px; height: 4px; margin-left: -18px; border-radius: 2px;
+    background: var(--line-strong); opacity: .55;
+  }
+  html body #main .article-filter-drawer.luliy-sheet-closing > .article-filter-panel { animation: luliy-sheet-down 230ms var(--ease-in-out) forwards !important; }
+  html body #main .article-filter-drawer.luliy-sheet-closing > summary::before { animation: luliy-dim-out 230ms var(--ease-in-out) forwards; }
+  html body #main .article-filter-panel .article-filter-heading { display: flex; align-items: center; gap: 14px; }
+  html body #main .article-filter-panel .article-filter-heading > span { margin-right: auto; color: var(--ink); font-size: 17px; font-weight: 700; }
+  html body #main .luliy-sheet-close {
+    display: grid; place-items: center; flex: none; width: 34px; height: 34px; margin: -6px -4px -6px 0; padding: 0;
+    border: 0; border-radius: 50%; background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--ink);
+  }
+  html body #main .luliy-sheet-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  /* 全部文章 · 23 篇, under the sheet title. */
+  html body #main .article-filter-panel > .article-filter-current {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 2px; color: var(--muted); font-size: 13px;
+  }
+  html body #main .article-filter-panel > .article-filter-current > small::before { content: "·"; margin-right: 6px; }
+}
+@media (max-width: 340px) { html body #header.luliy-has-tabs a.brand { display: none !important; } }
+@keyframes luliy-sheet-up { from { transform: translateY(100%); } }
+@keyframes luliy-sheet-down { to { transform: translateY(100%); } }
+@keyframes luliy-dim-in { from { opacity: 0; } }
+@keyframes luliy-dim-out { to { opacity: 0; } }
+
+/* ---- Phones: works in two columns ---- */
+@media (max-width: 700px) {
+  html body #main .project-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 24px 12px !important; }
+  html body #main .project-gallery-grid .project-caption { margin-top: 10px; padding: 0; }
+  html body #main .project-gallery-grid .project-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; margin: 0; }
+  html body #main .project-gallery-grid .project-title .numeral { font-size: 12px; }
+  html body #main .project-gallery-grid .project-title h3 { min-width: 0; margin: 0; font-size: 16px; line-height: 1.25; overflow-wrap: anywhere; }
+  html body #main .project-gallery-grid .project-title .status { margin-left: auto; font-size: 11px; }
+  html body #main .project-gallery-grid .project-caption p {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+    margin: 5px 0 0; font-size: 12.5px; line-height: 1.5;
+  }
+}
+
+/* ---- Phones: record player (home-fixes.js block 10) ---- */
+#main .lr-view-controls > .luliy-view-more { display: contents; }
+#main .lr-view-controls > .luliy-view-toggle { display: none; }
+@media (max-width: 700px) {
+  /* Under the turntable: 進入展覽 and ⋯ on the right; the other view controls in a small panel above them. */
+  html body #main .lr-standalone .lr-view-controls { left: auto !important; right: 0 !important; width: auto !important; justify-content: flex-end; gap: 4px; }
+  html body #main .lr-standalone .lr-view-controls > .luliy-view-toggle { display: inline-flex; }
+  html body #main .lr-standalone .luliy-view-toggle svg circle { fill: currentColor; stroke: none; }
+  html body #main .lr-standalone .lr-view-controls > .luliy-view-more { display: none; }
+  html body #main .lr-standalone .lr-view-controls.luliy-more-open > .luliy-view-more {
+    display: grid; grid-template-columns: repeat(4, 44px); gap: 2px; position: absolute; right: 0; bottom: calc(100% + 8px); z-index: 6;
+    padding: 6px; border: 1px solid var(--line); border-radius: 16px; background: var(--raised);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .3); animation: luliy-pop var(--dur-fast) var(--ease) both; transform-origin: bottom right;
+  }
+  html body #main .lr-standalone .luliy-view-more .lr-view-divider { display: none; }
+  html body #main .lr-standalone .luliy-view-more .lr-detail-actions { display: contents; }
+  html body #main .lr-standalone .lr-view-controls.luliy-more-open > .luliy-view-toggle { color: var(--accent); }
+
+  /* Now playing, laid out like a phone music app: title, progress, then
+     順序 · previous · play · next · 隨機, volume, and the small extras last. */
+  html body #main .lr-standalone .lr-meta {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; column-gap: 0; row-gap: 0;
+  }
+  html body #main .lr-standalone .lr-meta :is(.lr-meta-top, .lr-listening-actions, .lr-track-progress, .lr-sound-row, .lr-play-modes, .lr-volume) { display: contents; }
+  /* .lr-transport keeps a box: the player watches it (IntersectionObserver) to update the progress and hide the mini player. */
+  html body #main .lr-standalone .lr-meta .lr-transport {
+    display: grid; grid-area: 4 / 2 / 5 / 5; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 0; width: auto; margin: 0; padding: 0;
+  }
+  html body #main .lr-standalone .lr-meta .lr-title {
+    grid-area: 1 / 1 / 2 / 5; margin: 0; overflow: hidden; font-size: 26px; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap;
+  }
+  html body #main .lr-standalone .lr-meta [data-extra="favorite-current"] { grid-area: 1 / 5; justify-self: end; margin-right: -10px; }
+  html body #main .lr-standalone .lr-meta .lr-seek { grid-area: 2 / 1 / 3 / 6; width: 100%; margin: 12px 0 0; }
+  html body #main .lr-standalone .lr-meta .lr-elapsed { grid-area: 3 / 1 / 4 / 3; justify-self: start; font-size: 11px; }
+  html body #main .lr-standalone .lr-meta .lr-duration { grid-area: 3 / 4 / 4 / 6; justify-self: end; font-size: 11px; }
+  html body #main .lr-standalone .lr-meta [data-lr-action="sequence"] { grid-area: 4 / 1; justify-self: start; margin-left: -10px; }
+  html body #main .lr-standalone .lr-meta [data-lr-action="previous"] { grid-area: 1 / 1; justify-self: center; }
+  html body #main .lr-standalone .lr-meta .lr-primary {
+    grid-area: 1 / 2; justify-self: center; display: grid; place-items: center; width: 64px; height: 64px; margin: 14px 0; padding: 0;
+    border: 0; border-radius: 50%; background: var(--accent); color: var(--bg);
+  }
+  html body #main .lr-standalone .lr-meta .lr-primary svg { width: 24px; height: 24px; }
+  html body #main .lr-standalone .lr-meta .lr-primary > span {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  html body #main .lr-standalone .lr-meta [data-lr-action="next"] { grid-area: 1 / 3; justify-self: center; }
+  html body #main .lr-standalone .lr-meta [data-lr-action="shuffle"] { grid-area: 4 / 5; justify-self: end; margin-right: -10px; }
+  html body #main .lr-standalone .lr-meta .lr-mute { grid-area: 5 / 1; justify-self: start; margin-left: -10px; }
+  html body #main .lr-standalone .lr-meta .lr-volume-range { grid-area: 5 / 2 / 6 / 5; width: 100%; min-width: 0; margin: 0; }
+  html body #main .lr-standalone .lr-meta .lr-volume-output { grid-area: 5 / 5; justify-self: end; }
+  html body #main .lr-standalone .lr-meta .lr-counter { grid-area: 6 / 1; justify-self: start; margin: 0; white-space: nowrap; }
+  html body #main .lr-standalone .lr-meta .lr-counter::before { display: none; }
+  html body #main .lr-standalone .lr-meta .lr-sleep-label { grid-area: 6 / 2 / 7 / 4; justify-self: center; }
+  html body #main .lr-standalone .lr-meta [data-extra="noise"] { grid-area: 6 / 4; justify-self: center; }
+  html body #main .lr-standalone .lr-meta .lr-playlist-icon { grid-area: 6 / 5; justify-self: end; margin-right: -10px; }
+  html body #main .lr-standalone .lr-meta :is(.lr-audio-status, .lr-listening-status) { grid-column: 1 / -1; }
+  html body #main .lr-standalone .lr-meta .lr-audio-status { margin-top: 6px; }
+}
+@keyframes luliy-pop { from { opacity: 0; transform: scale(.94); } }
+
+/* ---- Directory button: two thick bars (=) everywhere; closing is a round × ----
+   Proportions of the GTA VI site: square-ended bars about 1/5 as thick as they are wide, the gap as thick as a bar. */
+html body #header #studyGlobalOpen svg, html body #header #studyGlobalOpen .menu-line { stroke-width: 4.5; stroke-linecap: butt; }
+html body #header #studyGlobalOpen .menu-line.line-top { transform: translateY(3.75px) scaleX(.84); }
+html body #header #studyGlobalOpen .menu-line.line-middle { opacity: 0; }
+html body #header #studyGlobalOpen .menu-line.line-bottom { transform: translateY(-3.75px) scaleX(.84); }
+html body #directory .plain-close {
+  display: grid; place-items: center; aspect-ratio: 1; padding: 0 !important; border-radius: 50% !important;
+  background: transparent !important; transition: background-color var(--dur-fast) var(--ease-in-out);
+}
+/* The × is the header's = turning over: same bars, same thickness. Opening, the two bars first slide together into
+   one line, then turn ±45° into the ×, and the round backing fades in (home-fixes.js block 13 adds .luliy-x once
+   the = has been drawn). Closing runs it backwards within the directory's 180 ms exit. The slide is the transform,
+   the turn the separate rotate property, so each has its own timing and the bars always cross at the centre.
+   Both buttons get the same 32-unit mark from the page's directory-mark script, so the numbers match the header's. */
+html body #directory .plain-close svg { width: 32px !important; height: 32px !important; overflow: visible; }
+html body #directory .plain-close svg, html body #directory .plain-close .menu-line { stroke-width: 4.5; stroke-linecap: butt; }
+html body #directory .plain-close .menu-line {
+  transform-box: view-box; transform-origin: 16px 16px; scale: .84 1; rotate: 0deg;
+  transition: rotate var(--dur-fast) var(--ease-in-out), transform var(--dur-fast) var(--ease-in-out) 60ms, opacity 0s;
+}
+html body #directory .plain-close .menu-line.line-top { transform: translateY(3.75px); }
+html body #directory .plain-close .menu-line.line-middle { opacity: 0; }
+html body #directory .plain-close .menu-line.line-bottom { transform: translateY(-3.75px); }
+html body #directory.luliy-x .plain-close { background: color-mix(in srgb, currentColor 13%, transparent) !important; transition-duration: var(--dur-base); }
+html body #directory.luliy-x .plain-close .menu-line {
+  transition: transform var(--dur-fast) var(--ease-in-out), rotate var(--dur-base) var(--ease) 120ms, opacity 0s;
+}
+html body #directory.luliy-x .plain-close .menu-line.line-top { transform: translateY(8px); rotate: 45deg; }
+html body #directory.luliy-x .plain-close .menu-line.line-bottom { transform: translateY(-8px); rotate: -45deg; }
+/* CC: the drawer's × lands exactly where the header's = was (offsets measured by block 13). */
+html:root[data-appearance=cc] #directory .plain-close { translate: var(--luliy-x-dx, 0px) var(--luliy-x-dy, 0px); }
+html:root[data-appearance=cc] #directory .directory-display-right { translate: 0px var(--luliy-x-dy, 0px); }
+html body #directory:focus, html body #directory:focus-visible { outline: none; }
+
+/* ---- 動態效果 off (home-early.js, switch in the directory): like system reduced motion ---- */
+html.luliy-calm {    scroll-behavior: auto; }
+html.luliy-calm *, html.luliy-calm *::before, html.luliy-calm *::after {
+  animation-duration: 1ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important;
+  transition-duration: var(--dur-fast) !important; transition-delay: 0s !important; scroll-behavior: auto !important;
+}
+html.luliy-calm::view-transition-group(*), html.luliy-calm::view-transition-old(*), html.luliy-calm::view-transition-new(*) { animation: none !important; }
+/* Extra drawer pieces stay out of the full-screen directory (its own button and link rules are more specific, hence !important). */
+html body #directory :is(.luliy-motion-switch, .luliy-sub-toggle, .luliy-sub, .luliy-colophon-link, .luliy-drawer-social) { display: none !important; }
+html.luliy-calm body #directory .luliy-motion-switch, html:root[data-appearance=cc] body #directory .luliy-motion-switch {
+  display: inline-flex !important; align-items: center; gap: 8px; width: auto !important; min-height: 44px; padding: 0 2px; border: 0; background: none;
+  color: inherit; font-family: var(--font-ui); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer;
+}
+#directory .luliy-switch-track {
+  position: relative; flex: none; width: 30px; height: 18px; border-radius: 9px;
+  background: color-mix(in srgb, currentColor 26%, transparent); transition: background var(--dur-fast) var(--ease-soft);
+}
+#directory .luliy-switch-track::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: currentColor;
+  transition: transform var(--dur-fast) var(--ease);
+}
+#directory .luliy-motion-switch[aria-checked="true"] .luliy-switch-track { background: var(--accent); }
+#directory .luliy-motion-switch[aria-checked="true"] .luliy-switch-track::after { transform: translateX(12px); background: var(--bg); }
+
+/* ---- CC: night-sky gradient (the GTA VI site's palette), every device ---- */
+html:root[data-appearance=cc] { --luliy-sky-top: #1f1f38; --luliy-sky-end: #0c0d1b; --day-gradient: linear-gradient(189deg, #1f1f38 .55%, #18182d 30.38%, #111222 65.19%, #0c0d1b 100%); }
+/* ---- Dark palettes (theme picker, home-fixes.js block 14): the same four-stop sky in their own colours.
+   Surfaces are in design-tokens.css. The dark appearance paints body / page / directory flat, so they get the sky here. ---- */
+html:root[data-palette=forest] { --luliy-sky-top: #1d2a25; --luliy-sky-end: #0b110f; --luliy-sky: linear-gradient(189deg, #1d2a25 .55%, #17221e 30.38%, #111a17 65.19%, #0b110f 100%); }
+html:root[data-palette=espresso] { --luliy-sky-top: #2a231d; --luliy-sky-end: #0f0d0b; --luliy-sky: linear-gradient(189deg, #2a231d .55%, #211c17 30.38%, #181411 65.19%, #0f0d0b 100%); }
+html:root[data-palette=midnight] { --luliy-sky-top: #1d212b; --luliy-sky-end: #0a0b0f; --luliy-sky: linear-gradient(189deg, #1d212b .55%, #171a22 30.38%, #111319 65.19%, #0a0b0f 100%); }
+html:root[data-palette=oxblood] { --luliy-sky-top: #2b181b; --luliy-sky-end: #10090a; --luliy-sky: linear-gradient(189deg, #2b181b .55%, #221316 30.38%, #190e10 65.19%, #10090a 100%); }
+html:root[data-appearance=dark][data-palette] { --day-gradient: var(--luliy-sky); }
+html:root[data-appearance=dark][data-palette] body,
+html:root[data-appearance=dark][data-palette] .page-above,
+html:root[data-appearance=dark][data-palette] #directory { background: var(--day-gradient) fixed, var(--luliy-sky-end) !important; }
+/* Touch screens ignore background-attachment: fixed, which would stretch the gradient over the whole page.
+   A fixed layer clipped to the page (runtime-fixes.py adds .luliy-sky to .page-above) keeps it screen-sized. */
+.luliy-sky { display: none; }
+@media (pointer: coarse) {
+  html:root[data-appearance=cc] .page-above { background: none; }
+  html:root[data-appearance=dark][data-palette] .page-above { background: none !important; }
+  html:root[data-appearance=cc] .luliy-sky,
+  html:root[data-appearance=dark][data-palette] .luliy-sky { display: block; position: absolute; inset: 0; z-index: -1; clip-path: inset(0); pointer-events: none; }
+  html:root[data-appearance=cc] .luliy-sky > i,
+  html:root[data-appearance=dark][data-palette] .luliy-sky > i { position: fixed; top: 0; left: 0; width: 100%; height: 100lvh; background: var(--day-gradient); }
+  html:root[data-appearance=dark][data-palette] #directory { background: var(--day-gradient) center top / 100% 100lvh no-repeat, var(--luliy-sky-end) !important; }
+}
+/* The CC passe-partout frame is painted with the same sky, so it reads as part of the background. */
+html:root[data-appearance=cc] .cc-frame { border-image: var(--day-gradient) 1; }
+/* The contact curtain shows the bottom of the same sky. */
+html:root[data-appearance=cc] .contact-curtain,
+html:root[data-appearance=dark][data-palette] .contact-curtain { background: var(--day-gradient) center bottom / 100% 100lvh no-repeat, var(--luliy-sky-end); }
+
+/* ---- CC opening (moon -> 書房): about half as long. The section was 7.2 screens tall and the moon never faded:
+   its 1.8 s arrival animation kept opacity 1 (fill-mode both), which beat the scroll-driven --cc-moon-opacity, so
+   the middle of the scroll showed nothing new. runtime-fixes.py moves the steps closer to match. ---- */
+html:root[data-appearance=cc] .cc-opening #heroMoon { animation-fill-mode: backwards; }
+@media (prefers-reduced-motion: no-preference) {
+  html:root[data-appearance=cc] body .library-home.cc-opening { height: max(420svh, 3600px) !important; }
+  @media (max-width: 700px) { html:root[data-appearance=cc] body .library-home.cc-opening { height: max(380svh, 3000px) !important; } }
+}
+
+/* ---- CC: the directory as a drawer from the right (home-fixes.js block 11) ---- */
+:root[data-appearance=cc] { --luliy-lav: #c9c1ea; --luliy-cream: #fff6cf; }
+html:root[data-appearance=cc] #directory {
+  inset: 0 0 0 auto !important; width: min(86vw, 420px) !important; max-width: none !important; height: 100% !important; max-height: none !important;
+  margin: 0 !important; padding: calc(16px + env(safe-area-inset-top)) 24px calc(16px + env(safe-area-inset-bottom)) !important;
+  overflow: hidden auto !important; overscroll-behavior: contain;
+  background-attachment: scroll !important; color: var(--luliy-lav); box-shadow: -30px 0 60px rgba(0, 0, 0, .3); touch-action: pan-y;
+}
+html:root[data-appearance=cc] #directory[open] { display: flex !important; flex-direction: column !important; }
+html:root[data-appearance=cc] #directory::backdrop { background: rgba(17, 17, 23, .6) !important; }
+@media (hover: hover) and (pointer: fine) {
+  html:root[data-appearance=cc] #directory::backdrop { -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.1); backdrop-filter: blur(40px) saturate(1.8) brightness(1.1); }
+}
+/* Top row: language · theme · 動態效果 on the left, a round × on the right; the brand below. */
+html:root[data-appearance=cc] #directory .directory-top {
+  flex: none !important; position: static !important; display: flex !important; flex-wrap: wrap; align-items: center; justify-content: flex-end;
+  min-height: 48px; height: auto !important; margin: 0 !important; padding: 0 !important;
+}
+html:root[data-appearance=cc] #directory #directoryTitle { display: none !important; }
+html:root[data-appearance=cc] #directory .plain-close {
+  position: relative !important; inset: auto !important; order: 1; flex: none; width: 48px !important; height: 48px !important; min-width: 0 !important; margin: 0 -4px 0 auto !important; transform: none !important;
+  color: var(--luliy-lav) !important;
+}
+html:root[data-appearance=cc] #directory .directory-brand-group {
+  order: 2; flex: 0 0 100%; display: flex; align-items: center; gap: 4px; margin: 22px 0 0 !important; position: static !important; transform: none !important;
+}
+html:root[data-appearance=cc] #directory .directory-display-right {
+  position: absolute !important; top: calc(16px + env(safe-area-inset-top)); left: 20px; right: 84px; z-index: 2;
+  display: flex !important; align-items: center; gap: 6px; height: 48px; margin: 0 !important;
+}
+html:root[data-appearance=cc] #directory :is(.directory-bottom, .directory-other-bar) { position: static !important; }
+html:root[data-appearance=cc] #directory .directory-quiet-language { position: relative; order: -1; }
+html:root[data-appearance=cc] #directory .directory-language-toggle { color: var(--luliy-lav); font-family: var(--font-ui); font-size: 13px; font-weight: 500; }
+html:root[data-appearance=cc] #directory .directory-language-toggle::after {
+  content: ""; position: static; inset: auto; flex: none; align-self: center; display: inline-block; width: 5px; height: 5px; margin: 0 2px 3px -5px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
+}
+html:root[data-appearance=cc] #directory .directory-language-options {
+  top: calc(100% + 6px) !important; bottom: auto !important; left: 0 !important; right: auto !important; z-index: 3;
+}
+html:root[data-appearance=cc] #directory .directory-theme-cycle { color: var(--luliy-lav); }
+/* One plain list: no pictures, no English captions. */
+html:root[data-appearance=cc] #directory .directory-main {
+  display: block !important; flex: 1 0 auto; height: auto !important; min-height: 0; margin: 0 !important; padding: 26px 0 24px !important;
+  transform: none; grid-template-columns: none !important;
+}
+html:root[data-appearance=cc] #directory :is(.directory-art, #directoryCaption) { display: none !important; }
+html:root[data-appearance=cc] #directory #directoryLinks {
+  display: grid !important; grid-template-columns: minmax(0, 1fr) auto; align-content: start; gap: 2px 0 !important;
+  width: auto !important; height: auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important;
+}
+html:root[data-appearance=cc] #directory #directoryLinks > a {
+  grid-column: 1 / -1; display: flex !important; align-items: center; min-height: 0 !important; height: auto !important;
+  margin: 0 !important; padding: 8px 0 !important; border: 0 !important; background: none !important;
+  color: var(--luliy-lav) !important; font-family: var(--font-ui) !important; font-size: 23px !important; font-weight: 700 !important;
+  line-height: 1.3 !important; letter-spacing: .02em !important; opacity: 1 !important; transform: none !important;
+}
+html:root[data-appearance=cc] #directory #directoryLinks > a::before,
+html:root[data-appearance=cc] #directory #directoryLinks > a::after { display: none !important; }
+html:root[data-appearance=cc] #directory #directoryLinks > a > span { color: inherit !important; font: inherit !important; transform: none !important; opacity: 1 !important; }
+html:root[data-appearance=cc] #directory #directoryLinks > a > em { display: none !important; }
+html:root[data-appearance=cc] #directory #directoryLinks > a[data-luliy-here] { color: var(--luliy-cream) !important; }
+@media (hover: hover) { html:root[data-appearance=cc] #directory #directoryLinks > a:hover { color: #fff !important; } }
+html:root[data-appearance=cc] #directory #directoryLinks > a.luliy-has-sub { grid-column: 1; }
+html:root[data-appearance=cc] #directory .luliy-sub-toggle {
+  display: grid !important; place-items: center; grid-column: 2; width: 44px; height: 44px; margin-right: -10px; padding: 0;
+  border: 0; background: none; color: var(--luliy-lav); cursor: pointer;
+}
+html:root[data-appearance=cc] #directory .luliy-sub-toggle svg {
+  width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform var(--dur-fast) var(--ease);
+}
+html:root[data-appearance=cc] #directory .luliy-sub-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+html:root[data-appearance=cc] #directory .luliy-sub:not([hidden]) { display: grid !important; grid-column: 1 / -1; gap: 0; margin: -2px 0 6px; padding-left: 16px; border-left: 1px solid color-mix(in srgb, var(--luliy-lav) 22%, transparent); }
+html:root[data-appearance=cc] #directory .luliy-sub a {
+  display: block !important; min-height: 0 !important; height: auto !important; margin: 0 !important; border: 0 !important; background: none !important;
+  padding: 7px 0; color: color-mix(in srgb, var(--luliy-lav) 82%, transparent); font-family: var(--font-ui); font-size: 17px; font-weight: 600; text-decoration: none;
+}
+html:root[data-appearance=cc] #directory .luliy-sub a[aria-current] { color: var(--luliy-cream); }
+/* Bottom: Other · Drive · 網站說明, then the social links. */
+html:root[data-appearance=cc] #directory .directory-bottom {
+  display: flex !important; flex-wrap: wrap; align-items: center; gap: 12px 0; margin: auto 0 0 !important; padding: 16px 0 0 !important;
+  border-top: 1px solid color-mix(in srgb, var(--luliy-lav) 18%, transparent) !important; transform: none;
+}
+html:root[data-appearance=cc] #directory .directory-other-left { display: flex !important; flex-wrap: wrap; align-items: center; gap: 0 16px; white-space: nowrap; }
+html:root[data-appearance=cc] #directory .directory-other-left > a,
+html:root[data-appearance=cc] #directory .directory-other > summary { color: var(--luliy-lav) !important; font-family: var(--font-ui); font-size: 14px; }
+html:root[data-appearance=cc] #directory .luliy-colophon-link { display: inline-flex !important; align-items: center; min-height: 44px; text-decoration: none; }
+html:root[data-appearance=cc] #directory .luliy-drawer-social { display: flex !important; flex: 0 0 100%; flex-wrap: wrap; gap: 4px 8px; margin: 0 -10px; }
+html:root[data-appearance=cc] #directory .luliy-drawer-social :is(a, button) { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--luliy-lav); cursor: pointer; }
+html:root[data-appearance=cc] #directory .luliy-drawer-social svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- Theme picker (home-fixes.js block 14): seven colour circles in a small window by the theme button ---- */
+dialog.luliy-theme-picker {
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0;
+  border: 0; background: transparent; color: var(--ink); overflow: hidden; animation: none;
+}
+dialog.luliy-theme-picker::backdrop { background: transparent; animation: none; }
+.luliy-tp-card {
+  position: absolute; left: 50%; top: 50%; box-sizing: border-box; width: max-content; max-width: calc(100vw - 24px);
+  padding: 16px 18px 14px; border-radius: 22px; border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--raised) 95%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.15); backdrop-filter: blur(24px) saturate(1.15);
+  box-shadow: 0 24px 60px -16px rgba(0, 0, 0, .55), 0 2px 10px rgba(0, 0, 0, .16);
+}
+.luliy-tp-title { margin: 0 0 14px; font: 500 11px/1.4 var(--font-ui); letter-spacing: .18em; color: var(--muted); }
+.luliy-tp-row { display: flex; gap: 10px; }
+.luliy-tp-swatch {
+  position: relative; flex: none; width: 34px; height: 34px; min-width: 0; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, var(--tp-a), var(--tp-b) 58%, var(--tp-c));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease-soft);
+}
+.luliy-tp-swatch[data-pick=light] { box-shadow: inset 0 0 0 1px rgba(20, 20, 19, .18); }
+/* A 44 px touch target around each 34 px circle. */
+.luliy-tp-swatch::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; }
+.luliy-tp-swatch[aria-pressed=true] { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14), 0 0 0 2.5px var(--raised), 0 0 0 4px var(--accent); }
+.luliy-tp-swatch[data-pick=light][aria-pressed=true] { box-shadow: inset 0 0 0 1px rgba(20, 20, 19, .18), 0 0 0 2.5px var(--raised), 0 0 0 4px var(--accent); }
+@media (hover: hover) { .luliy-tp-swatch:hover { transform: scale(1.08); } }
+.luliy-tp-swatch:active { transform: scale(.94); }
+.luliy-tp-swatch:focus { outline: none; }
+.luliy-tp-swatch:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 5px; }
+.luliy-tp-name { margin: 12px 0 0; min-height: 1.5em; font: 13px/1.5 var(--font-ui); color: var(--text); }
+.luliy-tp-name span { margin-left: 8px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+/* Changing theme cross-fades the whole page once (no slide, unlike route changes). The header keeps its own
+   transition name for route changes; here it stays part of the page, or it would be drawn above the open directory. */
+html[data-vt-dir="theme"] .site-header { view-transition-name: none !important; }
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-vt-dir=theme]::view-transition-old(root) { animation: none; }
+  :root[data-vt-dir=theme]::view-transition-new(root) { animation: luliy-theme-in var(--dur-base) var(--ease-soft) both; }
+}
+@keyframes luliy-theme-in { from { opacity: 0; } }
