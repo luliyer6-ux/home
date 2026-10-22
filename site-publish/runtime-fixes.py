@@ -63,6 +63,18 @@ STUDY_THREE_NEW = ("try{await pause();if(!current())return;if(!window.LuliyLoadT
                    "if(!current())return;}T=window.LuliyThree||window.LuliyLoadThree();")
 FIXES.append(('study room: wait for deferred Three.js', STUDY_THREE_OLD, STUDY_THREE_NEW))
 
+# Record player: on phones, wait for the deferred Three.js file before mounting (falls back to the flat
+# player if it cannot load, as before).
+REC_A_OLD = ("placeholder();frame=requestAnimationFrame(()=>{frame=requestAnimationFrame(()=>{if(!alive)return;"
+             "try{if(!window.LuliyRecords)throw Error('Records unavailable');")
+REC_A_NEW = ("placeholder();const go=()=>{frame=requestAnimationFrame(()=>{frame=requestAnimationFrame(()=>{if(!alive)return;"
+             "try{if(!window.LuliyRecords)throw Error('Records unavailable');")
+REC_B_OLD = "finally{preparing=false;el.setAttribute('aria-busy','false');}});});}"
+REC_B_NEW = ("finally{preparing=false;el.setAttribute('aria-busy','false');}});});};"
+             "if(!window.LuliyLoadThree&&window.LuliyThreeReady)window.LuliyThreeReady().then(go,go);else go();}")
+FIXES += [('records: wait for deferred Three.js (1/2)', REC_A_OLD, REC_A_NEW),
+          ('records: wait for deferred Three.js (2/2)', REC_B_OLD, REC_B_NEW)]
+
 # Three.js (190 KB compressed) shares a blocking script with the record player, but only runs when the
 # study room or a record is opened. split_three moves it to its own file. Computers still load it in
 # the same blocking position; phones fetch it when such a page is opened, or once the page is idle.
