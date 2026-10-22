@@ -98,4 +98,45 @@
     new MutationObserver(check).observe(main, { childList: true });
     check();
   })();
+  /* 3. Phones: the article list is home (see home-early.js), so the ULIY logo leads there too.
+     The full galaxy home stays in the directory (首頁). */
+  (() => {
+    // Same phone test as home-early.js.
+    const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
+    const brand = document.querySelector('#header a.brand');
+    if (phone && brand && brand.getAttribute('href') === '#/') brand.setAttribute('href', '#/posts');
+  })();
+
+  /* 4. Phones, article pages: the header and the two floating buttons step aside while reading down,
+     and come back on any upward scroll, near the top and near the end. */
+  (() => {
+    const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    const main = document.getElementById('main');
+    const body = document.body;
+    if (!main) return;
+    let reading = false, hidden = false, lastY = scrollY, queued = 0;
+    const setHidden = h => { if (h !== hidden) { hidden = h; body.classList.toggle('luliy-chrome-hidden', h); } };
+    const route = () => {
+      const next = mobile.matches && !!main.querySelector('.source-body, .article-body');
+      if (next !== reading) { reading = next; body.classList.toggle('luliy-reading', next); }
+      if (!reading) setHidden(false);
+      lastY = scrollY;
+    };
+    const measure = () => {
+      queued = 0;
+      if (!reading) { route(); return; } // the reader body can arrive after the route change
+      const y = scrollY, dy = y - lastY;
+      if (Math.abs(dy) < 8) return;
+      lastY = y;
+      const above = document.querySelector('.page-above');
+      const nearEnd = above && above.getBoundingClientRect().bottom - innerHeight < innerHeight * 0.5;
+      const tocOpen = !!main.querySelector('.reader-toc-toggle[aria-expanded="true"]');
+      setHidden(dy > 0 && y > 160 && !nearEnd && !tocOpen);
+    };
+    addEventListener('scroll', () => { if (!queued) queued = requestAnimationFrame(measure); }, { passive: true });
+    addEventListener('hashchange', route);
+    mobile.addEventListener('change', route);
+    new MutationObserver(route).observe(main, { childList: true });
+    route();
+  })();
 })();

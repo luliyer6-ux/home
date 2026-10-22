@@ -91,3 +91,24 @@
     transition-duration:var(--dur-fast),var(--dur-base)!important;
     transition-timing-function:var(--ease),var(--ease-soft)!important}
 }
+
+/* ---- Phones: articles first ---- */
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  /* Reading: header and floating buttons step aside while scrolling down (home-fixes.js). */
+  html body #header { transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease) !important; }
+  html body.luliy-chrome-hidden #header { opacity: 0 !important; transform: translateY(-24px) !important; pointer-events: none !important; }
+  html body.luliy-chrome-hidden #main :is(.reader-toc-toggle, .reader-back-top) {
+    opacity: 0 !important; transform: translateY(16px) !important; pointer-events: none !important;
+  }
+  html body #main :is(.reader-toc-toggle, .reader-back-top) {
+    transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease) !important;
+  }
+  /* When the header comes back mid-article, a soft wash keeps it off the text. */
+  html body.luliy-reading #header.is-scrolled {
+    background: linear-gradient(var(--bg) 55%, color-mix(in srgb, var(--bg) 75%, transparent) 78%, transparent) !important;
+  }
+}
+/* Touch: the section-link button keeps its small glyph but gets a finger-sized target. */
+@media (pointer: coarse) {
+  html body .reader-heading-link { padding: 12px; margin: -12px -12px -12px 0; }
+}

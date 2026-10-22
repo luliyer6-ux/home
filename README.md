@@ -145,7 +145,7 @@ assets/site/prologue/        开场照片墙缩略图
 assets/drive/                Drive 阅读与解析组件
 intro/                       开场脚本、视频与海报
 articles/Pxx/                独立文章静态页（Actions 生成）
-site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、design-tokens.*、runtime-fixes.py
+site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、home-early.js、design-tokens.*、runtime-fixes.py
 study/                       考研进度子应用（有自己的 _headers）
 works/                       作品子应用：408、英语二、数学、静钟（jingzhong）、考研看板等
 feed.xml / sitemap.xml / robots.txt / public-articles.json
@@ -226,7 +226,7 @@ python package-drive.py
 
 1. **拆分大块内嵌资源**：`<body>` 里超过 4 KB 的内嵌脚本和主样式表（`#site-styles`）会移到 `assets/site/home/<内容哈希>.js/.css`，原位置换成外部引用，**执行顺序不变**。`<head>` 里的脚本保持内嵌，避免拖慢首屏。CSS 里的相对路径 `url(assets/...)` 会自动改成 `/assets/...`。
 2. **长期缓存**：`assets/site/*` 由 `_headers` 设置为一年缓存且内容不变（immutable）。文件名就是内容哈希，内容一变文件名就变，不会读到旧缓存。
-3. **注入修复文件**：在 `</head>` 前加入 `site-publish/home-fixes.css`，在 `</body>` 前加入 `home-fixes.js`（`async`，不排在大脚本后面）。见下方 5.2。
+3. **注入修复文件**：在 `</head>` 前加入 `site-publish/home-fixes.css`，在 `</body>` 前加入 `home-fixes.js`（`async`，不排在大脚本后面），把 `home-early.js` 内联到 `<head>` 最前面。见下方 5.2。
 4. **繁简修正**：钟→鐘，补上 着→著，并修正 詞彙、字彙、語彙、乾淨、乾燥、餅乾、鍾情、鍾愛 等词组。
 5. **开场脚本版本号**：按 `intro/intro.js` 的内容自动更新 `?v=`。
 6. **设计变量（颜色、动效、字体）**：最后运行 `site-publish/design-tokens.py`（也可单独运行）。见下方 5.1。
@@ -314,6 +314,19 @@ python3 site-publish/optimize-home.py
 | 被盖住的页脚不可聚焦 | 页脚完全被盖住时设为 `inert`，按 Tab 不会跳进看不见的链接 |
 
 系统开启“减弱动态效果”时，切换、逐字出现和退后的过渡都关闭。
+
+**手机端：文章优先**（`home-early.js` 内联在 `<head>` 最前面，先于 `intro.js` 和路由运行）
+
+| 效果 | 做法 |
+|---|---|
+| 打开即文章列表 | 手机（触屏且屏幕短边 < 600px）打开 `luliy.me/` 时直接换成 `#/posts`；分享出去的具体链接不受影响 |
+| 不再遮罩等待 | 手机上把序幕记为“已看过”，文章不再被“正在载入”遮罩挡到全部资源加载完 |
+| 完整首页仍在 | 目录 → Other → 首頁，或目录左上角 ULIY；网址加 `?home` 或 `?intro=1` 也会打开完整首页 |
+| 顶栏 ULIY | 手机上指向文章列表 |
+| 阅读时收起控件 | 文章页向下读时，顶栏和目录、回到顶部两个按钮淡出；往上滑、回到顶部附近或接近文末时出现；顶栏出现时带一层底色渐变，不压字 |
+| 本节链接按钮 | 触屏上点击区域加大到约 30×42，图标大小不变 |
+
+判断手机用屏幕尺寸而不是视口：`<head>` 最前面运行时，视口标签还没解析，手机报告的宽度是 980px。
 
 ### 5.3 运行时修正：`site-publish/runtime-fixes.py`
 
