@@ -139,4 +139,36 @@
     new MutationObserver(route).observe(main, { childList: true });
     route();
   })();
+
+  /* 5. Phones: wide photographs in an article run edge to edge (CSS .luliy-bleed, max-width 700px).
+     Only a lone image that already fills a column centred on the screen; small pictures, inline icons,
+     images inside lists or quotes and very long screenshots keep their place. */
+  (() => {
+    const narrow = matchMedia('(max-width: 700px)');
+    const main = document.getElementById('main');
+    if (!main) return;
+    const check = img => {
+      if (!narrow.matches || img.classList.contains('luliy-bleed')) return;
+      if (!img.complete || !img.naturalWidth) { img.addEventListener('load', () => check(img), { once: true }); return; }
+      const body = img.closest('.source-body, .article-body');
+      if (!body) return;
+      const block = img.parentElement === body ? img : img.closest('p, figure');
+      if (!block || (block !== img && block.parentElement !== body)) return;
+      if (block !== img) {
+        if (block.querySelectorAll('img, video, iframe').length !== 1) return;
+        const caption = block.querySelector('figcaption')?.textContent.trim() || '';
+        if (block.textContent.trim() !== caption) return;
+      }
+      const col = body.getBoundingClientRect(), r = img.getBoundingClientRect();
+      const centred = Math.abs(col.left + col.width / 2 - document.documentElement.clientWidth / 2) < 2;
+      const fills = r.width >= col.width - 2 && img.naturalWidth >= col.width;
+      const long = img.naturalHeight > img.naturalWidth * 2;
+      if (centred && fills && !long) img.classList.add('luliy-bleed');
+    };
+    let queued = 0;
+    const scan = () => { queued = 0; if (narrow.matches) main.querySelectorAll('.source-body img, .article-body img').forEach(check); };
+    new MutationObserver(() => { if (!queued) queued = requestAnimationFrame(scan); }).observe(main, { childList: true, subtree: true });
+    narrow.addEventListener('change', scan);
+    scan();
+  })();
 })();

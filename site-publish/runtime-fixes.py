@@ -36,6 +36,76 @@ FIXES = [
      "{const v=String(fade>.005);if(canvas.dataset.dustVisible!==v)canvas.dataset.dustVisible=v;}"),
 ]
 
+# Article-list covers: each row fetches its article page to find the first photo. Remember the answer
+# per article so a return visit shows covers at once (still revalidated in the background), and let
+# the browser revalidate the page (ETag) instead of always downloading it again.
+COVER_OLD = ("const promise=fetch(entry.bodyUrl,{cache:'no-store',signal:AbortSignal.timeout(12000)})"
+             ".then(response=>{if(!response.ok)throw Error('Article cover unavailable');return response.text();})"
+             ".then(html=>{const text=summaryFromHtml(html);if(text){state.summaryCache.set(entry.id,text);"
+             "try{localStorage.setItem('luliy-summary-v2:'+entry.id,text);}catch(e){}}return coverFromHtml(html,entry.url);})")
+COVER_NEW = ("const coverKey='luliy-cover-v1:'+entry.bodyUrl;let stored=null;try{stored=JSON.parse(localStorage.getItem(coverKey)||'null');}catch(e){}"
+             "const promise=fetch(entry.bodyUrl,{cache:'no-cache',signal:AbortSignal.timeout(12000)})"
+             ".then(response=>{if(!response.ok)throw Error('Article cover unavailable');return response.text();})"
+             ".then(html=>{const text=summaryFromHtml(html);if(text){state.summaryCache.set(entry.id,text);"
+             "try{localStorage.setItem('luliy-summary-v2:'+entry.id,text);}catch(e){}}const src=coverFromHtml(html,entry.url);"
+             "try{localStorage.setItem(coverKey,JSON.stringify({src,at:Date.now()}));}catch(e){}return src;})")
+COVER_RET_OLD = "state.coverCache.set(entry.bodyUrl,{at:Date.now(),promise});return promise;"
+COVER_RET_NEW = ("state.coverCache.set(entry.bodyUrl,{at:Date.now(),promise});"
+                 "if(stored&&typeof stored.src==='string'&&Date.now()-stored.at<30*864e5)return Promise.resolve(stored.src);return promise;")
+FIXES += [
+    ('covers: revalidate article pages instead of re-downloading them', COVER_OLD, COVER_NEW),
+    ('covers: show the remembered cover at once', COVER_RET_OLD, COVER_RET_NEW),
+]
+
+# Study room: wait for the deferred Three.js file (phones, see split_three) before building the scene.
+STUDY_THREE_OLD = "try{await pause();if(!current())return;T=window.LuliyThree||window.LuliyLoadThree();"
+STUDY_THREE_NEW = ("try{await pause();if(!current())return;if(!window.LuliyLoadThree&&window.LuliyThreeReady){await window.LuliyThreeReady();"
+                   "if(!current())return;}T=window.LuliyThree||window.LuliyLoadThree();")
+FIXES.append(('study room: wait for deferred Three.js', STUDY_THREE_OLD, STUDY_THREE_NEW))
+
+# Three.js (190 KB compressed) shares a blocking script with the record player, but only runs when the
+# study room or a record is opened. split_three moves it to its own file. Computers still load it in
+# the same blocking position; phones fetch it when such a page is opened, or once the page is idle.
+THREE_HEAD = '/* Three.js r185'
+THREE_TAIL = 'PCFSoftShadowMap:2};};\n'
+THREE_LOADER = ("<script data-three-loader>(()=>{const src='%s';"
+    "const phone=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600;"
+    "if(!phone){document.write('<script src=\"'+src+'\"><\\/script>');return;}"
+    "let pending=null;"
+    "const load=window.LuliyThreeReady=()=>window.LuliyLoadThree?Promise.resolve():pending||(pending=new Promise((ok,fail)=>{"
+    "const s=document.createElement('script');s.src=src;s.onload=()=>ok();"
+    "s.onerror=()=>{pending=null;s.remove();fail(Error('Three.js unavailable'));};document.head.append(s);}));"
+    "const quiet=()=>load().catch(()=>{});"
+    "const soon=()=>{if(/^#\\/(study|records?)\\b/.test(location.hash))quiet();};addEventListener('hashchange',soon);soon();"
+    "const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;"
+    "addEventListener('load',()=>setTimeout(()=>window.requestIdleCallback?requestIdleCallback(quiet,{timeout:4000}):quiet(),2500),{once:true});"
+    "})();</script>")
+
+def split_three(s):
+    if 'data-three-loader' in s:
+        return s
+    for ref in re.findall(r'<script src="/assets/site/(home/[0-9a-f]+\.js)"></script>', s):
+        f = ROOT / 'assets' / 'site' / ref
+        if not f.exists():
+            continue
+        body = f.read_text(encoding='utf-8')
+        if not body.startswith(THREE_HEAD) or THREE_TAIL not in body:
+            continue
+        cut = body.index(THREE_TAIL) + len(THREE_TAIL)
+        three, rest = body[:cut], body[cut:]
+        three_f = f.with_name(h(three) + '.js')
+        rest_f = f.with_name(h(rest) + '.js')
+        three_f.write_text(three, encoding='utf-8')
+        rest_f.write_text(rest, encoding='utf-8')
+        f.unlink()
+        three_src = '/assets/site/home/' + three_f.name
+        old_tag = '<script src="/assets/site/' + ref + '"></script>'
+        new_tag = THREE_LOADER % three_src + '<script src="/assets/site/home/' + rest_f.name + '"></script>'
+        print(f'three.js split: {f.name} -> {three_f.name} (deferred on phones) + {rest_f.name}')
+        return s.replace(old_tag, new_tag)
+    print('three.js split skipped (bundle not found)', file=sys.stderr)
+    return s
+
 def h(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()[:12]
 
@@ -67,6 +137,7 @@ def main():
             f.unlink()
             s = s.replace('/assets/site/' + ref, '/assets/site/' + str(dest.relative_to(ROOT / 'assets' / 'site')))
             print(f'{name} -> {nn}')
+    s = split_three(s)
     for i, (why, _, _) in enumerate(FIXES):
         if i not in done:
             print('fix skipped (not found):', why, file=sys.stderr)

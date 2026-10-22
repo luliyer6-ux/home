@@ -112,3 +112,33 @@
 @media (pointer: coarse) {
   html body .reader-heading-link { padding: 12px; margin: -12px -12px -12px 0; }
 }
+
+/* ---- Phones: lighter reading chrome ---- */
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  /* Article header becomes one quiet line: ← date · length · reading time … share.
+     Category, refresh and the blog link stay in the page, just not shown here. */
+  html body #main .source-reading > .source-meta { flex-wrap: nowrap; gap: 0; padding: 4px 0 10px; white-space: nowrap; }
+  html body #main .source-reading > .source-meta > :is(.source-category, .reader-refresh, a[target="_blank"]) { display: none; }
+  html body #main .source-reading > .source-meta > :is(time, #sourceReadingTime) {
+    padding: 0; min-height: 0; color: var(--muted); font-size: 12px; letter-spacing: .02em; white-space: nowrap;
+  }
+  html body #main .source-reading > .source-meta > :is(time, #sourceReadingTime)::before { display: none; }
+  html body #main .source-reading > .source-meta > time:has(+ #sourceReadingTime:not(:empty))::after { content: "·"; margin-inline: .55em; }
+  html body #main .source-reading > .source-meta > #sourceReadingTime { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  html body #main .source-reading > .source-meta > .reader-return { margin-inline: -8px 4px; }
+  html body #main .source-reading > .source-meta > .source-share { margin-inline-start: auto; flex: none; }
+}
+@media (max-width: 700px) {
+  /* Wide photographs run edge to edge (home-fixes.js picks them: block images that fill the column). */
+  html body #main :is(.source-body, .article-body) img.luliy-bleed {
+    width: 100vw; max-width: 100vw; margin-inline: calc(50% - 50vw); border-radius: 0;
+  }
+  /* The contact curtain keeps signature, address, icons and the small print, without the empty band. */
+  :root { --footer-h: min(380px, 85svh); }
+  html body .contact-curtain .contact-inner { padding-top: 24px; }
+}
+/* Article-list covers fade in when they arrive instead of popping. */
+@media (prefers-reduced-motion: no-preference) {
+  .article-list .study-entry.has-cover > .study-entry-cover { animation: luliy-cover-in var(--dur-slow) var(--ease-soft); }
+}
+@keyframes luliy-cover-in { from { opacity: 0; } }

@@ -96,8 +96,8 @@ function create({data={},lang='zh',href}){
   if(!entry?.bodyUrl)return Promise.resolve('');
   const cached=state.coverCache.get(entry.bodyUrl);
   if(cached&&Date.now()-cached.at<COVER_TTL)return cached.promise;
-  const promise=fetch(entry.bodyUrl,{cache:'no-store',signal:AbortSignal.timeout(12000)}).then(response=>{if(!response.ok)throw Error('Article cover unavailable');return response.text();}).then(html=>{const text=summaryFromHtml(html);if(text){state.summaryCache.set(entry.id,text);try{localStorage.setItem('luliy-summary-v2:'+entry.id,text);}catch(e){}}return coverFromHtml(html,entry.url);}).catch(()=>{if(state.coverCache.get(entry.bodyUrl)?.promise===promise)state.coverCache.delete(entry.bodyUrl);return '';});
-  state.coverCache.set(entry.bodyUrl,{at:Date.now(),promise});return promise;
+  const coverKey='luliy-cover-v1:'+entry.bodyUrl;let stored=null;try{stored=JSON.parse(localStorage.getItem(coverKey)||'null');}catch(e){}const promise=fetch(entry.bodyUrl,{cache:'no-cache',signal:AbortSignal.timeout(12000)}).then(response=>{if(!response.ok)throw Error('Article cover unavailable');return response.text();}).then(html=>{const text=summaryFromHtml(html);if(text){state.summaryCache.set(entry.id,text);try{localStorage.setItem('luliy-summary-v2:'+entry.id,text);}catch(e){}}const src=coverFromHtml(html,entry.url);try{localStorage.setItem(coverKey,JSON.stringify({src,at:Date.now()}));}catch(e){}return src;}).catch(()=>{if(state.coverCache.get(entry.bodyUrl)?.promise===promise)state.coverCache.delete(entry.bodyUrl);return '';});
+  state.coverCache.set(entry.bodyUrl,{at:Date.now(),promise});if(stored&&typeof stored.src==='string'&&Date.now()-stored.at<30*864e5)return Promise.resolve(stored.src);return promise;
  }
  function hydrateCovers(root){
   const rows=[...(root||document).querySelectorAll('.article-list .study-entry[data-post-id]')];
