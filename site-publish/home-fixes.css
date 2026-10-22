@@ -348,21 +348,26 @@ html body #directory .plain-close {
   display: grid; place-items: center; aspect-ratio: 1; padding: 0 !important; border-radius: 50% !important;
   background: transparent !important; transition: background-color var(--dur-fast) var(--ease-in-out);
 }
-/* The × is the header's = turning over: same bars, same thickness. Each bar rotates 45° while it slides to the
-   centre, and the round backing fades in (home-fixes.js block 13 adds .luliy-x once the = has been drawn).
+/* The × is the header's = turning over: same bars, same thickness. Opening, the two bars first slide together into
+   one line, then turn ±45° into the ×, and the round backing fades in (home-fixes.js block 13 adds .luliy-x once
+   the = has been drawn). Closing runs it backwards within the directory's 180 ms exit. The slide is the transform,
+   the turn the separate rotate property, so each has its own timing and the bars always cross at the centre.
    Both buttons get the same 32-unit mark from the page's directory-mark script, so the numbers match the header's. */
 html body #directory .plain-close svg { width: 32px !important; height: 32px !important; overflow: visible; }
 html body #directory .plain-close svg, html body #directory .plain-close .menu-line { stroke-width: 4.5; stroke-linecap: butt; }
 html body #directory .plain-close .menu-line {
-  transform-box: view-box; transform-origin: 16px 16px; transition: transform var(--dur-fast) var(--ease-in-out), opacity 0s;
+  transform-box: view-box; transform-origin: 16px 16px; scale: .84 1; rotate: 0deg;
+  transition: rotate var(--dur-fast) var(--ease-in-out), transform var(--dur-fast) var(--ease-in-out) 60ms, opacity 0s;
 }
-html body #directory .plain-close .menu-line.line-top { transform: rotate(0deg) translateY(3.75px) scaleX(.84); }
+html body #directory .plain-close .menu-line.line-top { transform: translateY(3.75px); }
 html body #directory .plain-close .menu-line.line-middle { opacity: 0; }
-html body #directory .plain-close .menu-line.line-bottom { transform: rotate(0deg) translateY(-3.75px) scaleX(.84); }
+html body #directory .plain-close .menu-line.line-bottom { transform: translateY(-3.75px); }
 html body #directory.luliy-x .plain-close { background: color-mix(in srgb, currentColor 13%, transparent) !important; transition-duration: var(--dur-base); }
-html body #directory.luliy-x .plain-close .menu-line { transition: transform var(--dur-base) var(--ease), opacity 0s; }
-html body #directory.luliy-x .plain-close .menu-line.line-top { transform: rotate(45deg) translateY(8px) scaleX(.84); }
-html body #directory.luliy-x .plain-close .menu-line.line-bottom { transform: rotate(-45deg) translateY(-8px) scaleX(.84); }
+html body #directory.luliy-x .plain-close .menu-line {
+  transition: transform var(--dur-fast) var(--ease-in-out), rotate var(--dur-base) var(--ease) 120ms, opacity 0s;
+}
+html body #directory.luliy-x .plain-close .menu-line.line-top { transform: translateY(8px); rotate: 45deg; }
+html body #directory.luliy-x .plain-close .menu-line.line-bottom { transform: translateY(-8px); rotate: -45deg; }
 /* CC: the drawer's × lands exactly where the header's = was (offsets measured by block 13). */
 html:root[data-appearance=cc] #directory .plain-close { translate: var(--luliy-x-dx, 0px) var(--luliy-x-dy, 0px); }
 html:root[data-appearance=cc] #directory .directory-display-right { translate: 0px var(--luliy-x-dy, 0px); }
