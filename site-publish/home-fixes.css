@@ -1,7 +1,7 @@
 /* Layout fixes injected by optimize-home.py. Keep this file small.
    "Mobile" = phones in portrait (<=768px) or landscape (short + touch). */
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
-  /* Header: fully transparent and pinned; only thinker + ULIY + menu icon. */
+  /* Header: fully transparent and pinned; only the L mark + menu icon. */
   html body #header,
   html body #header.is-scrolled {
     position: fixed !important;
@@ -168,7 +168,7 @@
   html body .study-panels-scrim { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 4, 4, .62); }
   /* No grey flash on tap; a short press-down instead. The signature (long press) and the record player keep their own feedback. */
   html { -webkit-tap-highlight-color: transparent; }
-  html body :is(#header, #main, #directory, .contact-social, .footer-bottom) :is(a, button, summary):not(.contact-signature):not([class*="lr-"]):active,
+  html body :is(#header, #main, #directory, .contact-social, .footer-bottom) :is(a, button, summary):not(.contact-signature):not([class*="lr-"]):not([data-hold-href]):active,
   html body .contact-email:active { opacity: .6; transition-duration: 0s !important; }
   /* iOS zooms the page into any text field under 16px. */
   html body :is(input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=color]):not([type=file]), textarea, select) { font-size: max(16px, 1em); }
@@ -259,7 +259,6 @@ html.luliy-save-data .footer-left-art { display: none; }
   }
   html body #main .article-filter-panel > .article-filter-current > small::before { content: "·"; margin-right: 6px; }
 }
-@media (max-width: 340px) { html body #header.luliy-has-tabs a.brand { display: none !important; } }
 @keyframes luliy-sheet-up { from { transform: translateY(100%); } }
 @keyframes luliy-sheet-down { to { transform: translateY(100%); } }
 @keyframes luliy-dim-in { from { opacity: 0; } }
@@ -910,3 +909,11 @@ html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(3){stop-color
 html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(4){stop-color:#8a6630}
 html[data-appearance=light] .ll .ll-b{filter:none}html[data-appearance=light] .ll .ll-hl{display:none}
 html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fill:#b48d4c}
+/* The L mark is the only brand link (no ULIY wordmark): tap = home, hold = GitHub Issues (home-fixes.js block 16).
+   It shrinks while held and springs back when the half second is up; no system long-press menu, selection or drag.
+   The header star (site-route-tail) and the directory's star sit on its upper-right corner. */
+#header .brand-mark,#directory .directory-brand-mark{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+#header .brand-mark svg,#directory .directory-brand-mark svg{transform-origin:50% 70%;transition:transform var(--dur-fast) var(--ease)}
+#header .brand-mark.luliy-pressing svg,#directory .directory-brand-mark.luliy-pressing svg{transform:scale(.88);transition:transform var(--dur-base) linear}
+#header .brand-mark.luliy-held svg,#directory .directory-brand-mark.luliy-held svg{transform:scale(1.06);transition:transform var(--dur-fast) var(--ease)}
+#directory .directory-brand-mark.brand-cross-anchor::before,#directory .directory-brand-mark.brand-cross-anchor::after{top:0}

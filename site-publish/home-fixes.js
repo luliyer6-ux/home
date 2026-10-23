@@ -98,12 +98,12 @@
     new MutationObserver(check).observe(main, { childList: true });
     check();
   })();
-  /* 3. Phones: the article list is home (see home-early.js), so the ULIY logo leads there too.
-     The full galaxy home stays in the directory (首頁). */
+  /* 3. Phones: the article list is home (see home-early.js), so a tap on the L mark leads there too.
+     The full galaxy home stays in the directory (its L mark, and 首頁). */
   (() => {
     // Same phone test as home-early.js.
     const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
-    const brand = document.querySelector('#header a.brand');
+    const brand = document.querySelector('#header a.brand-mark');
     if (phone && brand && brand.getAttribute('href') === '#/') brand.setAttribute('href', '#/posts');
   })();
 
@@ -952,5 +952,64 @@
     };
     hook();
     new MutationObserver(() => { if (!subscribed || !P) hook(); }).observe(document.body, { childList: true });
+  })();
+
+  /* 16. The L mark (header and directory) is the only brand link: a tap goes home (as the ULIY wordmark did),
+     holding it for half a second opens its data-hold-href (the blog's GitHub Issues) in a new tab. While held the
+     mark shrinks slightly; when the half second is up it springs back (and a phone buzzes) to say "let go".
+     Touch opens on touchend and mouse on click, both user gestures, so pop-up blockers let the tab through.
+     Moving the finger or pointer more than 10px (scrolling) cancels; the system long-press menu is suppressed. */
+  (() => {
+    const SEL = '#header a.brand-mark[data-hold-href], #directory a.directory-brand-mark[data-hold-href]';
+    const HOLD = 500;
+    let el = null, timer = 0, held = false, x = 0, y = 0;
+    const clear = () => {
+      clearTimeout(timer); timer = 0;
+      if (el) el.classList.remove('luliy-pressing');
+    };
+    const end = () => { clear(); if (el) el.classList.remove('luliy-held'); el = null; held = false; };
+    const open = () => {
+      const url = el && el.dataset.holdHref;
+      end();
+      if (url) window.open(url, '_blank', 'noopener');
+    };
+    document.addEventListener('pointerdown', e => {
+      const t = e.target.closest && e.target.closest(SEL);
+      if (!t || !e.isPrimary || e.button !== 0) return;
+      end(); el = t; x = e.clientX; y = e.clientY;
+      t.classList.add('luliy-pressing');
+      timer = setTimeout(() => {
+        timer = 0; held = true;
+        t.classList.remove('luliy-pressing'); t.classList.add('luliy-held');
+        if (navigator.vibrate) navigator.vibrate(12);
+      }, HOLD);
+    }, true);
+    document.addEventListener('pointermove', e => {
+      if (el && !held && Math.hypot(e.clientX - x, e.clientY - y) > 10) end();
+    }, true);
+    document.addEventListener('pointercancel', () => { if (!held) end(); }, true);
+    // A short press: let the click through (home). Pointer up outside the mark: no click follows, so tidy up.
+    document.addEventListener('pointerup', e => {
+      if (!el) return;
+      if (!held) { clear(); if (!el.contains(e.target)) end(); }
+      else if (!el.contains(e.target) && e.pointerType === 'mouse') end();
+    }, true);
+    document.addEventListener('touchend', e => {
+      if (!held || !el) return;
+      e.preventDefault();               // no click (so no trip home) after a hold
+      open();
+    }, { capture: true, passive: false });
+    document.addEventListener('click', e => {
+      const t = e.target.closest && e.target.closest(SEL);
+      if (!t) return;
+      if (held && t === el) { e.preventDefault(); e.stopPropagation(); open(); }
+      else end();
+    }, true);
+    document.addEventListener('contextmenu', e => {
+      if (el && el.contains(e.target)) e.preventDefault();
+    }, true);
+    document.addEventListener('dragstart', e => {
+      if (e.target.closest && e.target.closest(SEL)) e.preventDefault();
+    }, true);
   })();
 })();
