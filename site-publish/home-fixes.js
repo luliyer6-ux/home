@@ -958,58 +958,60 @@
 
   /* 16. The brand on phones ("mobile", same media query as home-fixes.css). Computers keep the original header and
      directory: the L mark opens the blog's GitHub Issues in a new tab, ULIY goes home (and closes the directory).
-     Phones show only the L mark (ULIY is hidden by CSS, except on About), so the mark takes over both jobs:
-     a tap does what ULIY does (home, which on phones is the article list; in the directory the full home), and
-     holding it for half a second opens the mark's own link, GitHub Issues, in a new tab. While held the mark shrinks
+     Phones keep that wherever ULIY is shown: in the directory and in the header on About. Elsewhere the phone
+     header shows only the L mark (ULIY is hidden by CSS), so there the mark takes over both jobs: a tap does what
+     ULIY does (home, which on phones is the article list), and holding it for half a second opens the mark's own
+     link, GitHub Issues, in a new tab. While held the mark shrinks
      slightly; when the half second is up it springs back (and a phone buzzes) to say "let go". Touch opens on
      touchend and mouse on click, both user gestures, so pop-up blockers let the tab through. Moving more than 10px
      (scrolling) cancels; the system long-press menu, text selection and dragging are suppressed (CSS).
      The header star (site-route-tail) normally sits on ULIY's Y; while that is hidden it moves to the mark's corner. */
   (() => {
     const mq = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
-    const SEL = '#header a.brand-mark, #directory a.directory-brand-mark';
+    const SEL = '#header a.brand-mark';
     const HOLD = 500;
     const root = document.documentElement;
     const group = document.querySelector('#header .brand-group');
-    const marks = () => document.querySelectorAll(SEL);
-    const partner = t => t.closest('#directory') ? document.querySelector('#directory a.directory-home-brand') : document.querySelector('#header a.brand');
+    // The header mark takes over on phones while ULIY beside it is hidden (every page but About).
+    const takes = () => mq.matches && !root.classList.contains('luliy-route-about');
+    const mark = e => (takes() && e.target.closest && e.target.closest(SEL)) || null;
+    const partner = () => document.querySelector('#header a.brand');
     const phoneLabel = () => {
       const l = root.lang || '';
       return l.startsWith('en') ? ['Luliy home (hold: GitHub Issues)', 'Tap: home · Hold: GitHub Issues']
         : l.startsWith('ja') ? ['Luliy ホーム（長押し：GitHub Issues）', 'タップ：ホーム · 長押し：GitHub Issues']
         : ['Luliy 首页（长按：GitHub Issues）', '点按：首页 · 长按：GitHub Issues'];
     };
-    const sync = () => {
-      const phone = mq.matches, about = root.classList.contains('luliy-route-about');
-      for (const m of marks()) {
-        if (!('deskLabel' in m.dataset)) { m.dataset.deskLabel = m.getAttribute('aria-label') || ''; m.dataset.deskTitle = m.getAttribute('title') || ''; }
-        const [label, title] = phone ? phoneLabel() : [m.dataset.deskLabel, m.dataset.deskTitle];
-        if (m.getAttribute('aria-label') !== label) m.setAttribute('aria-label', label);
-        if (m.getAttribute('title') !== title) m.setAttribute('title', title);
-      }
-      const dm = document.querySelector('#directory a.directory-brand-mark');
-      if (dm) dm.classList.toggle('brand-cross-anchor', phone);
-      const hm = document.querySelector('#header a.brand-mark');
-      if (hm && group) hm.classList.toggle('brand-cross-anchor', phone && !about && !group.classList.contains('has-page-name'));
-    };
-    mq.addEventListener('change', sync);
-    if (group) new MutationObserver(sync).observe(group, { attributes: true, attributeFilter: ['class'] });
-    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class', 'lang'] });
-    sync();
-
     let el = null, timer = 0, held = false, x = 0, y = 0;
     const clear = () => {
       clearTimeout(timer); timer = 0;
       if (el) el.classList.remove('luliy-pressing');
     };
     const end = () => { clear(); if (el) el.classList.remove('luliy-held'); el = null; held = false; };
+    const sync = () => {
+      const on = takes();
+      const m = document.querySelector(SEL);
+      if (!m) return;
+      if (!('deskLabel' in m.dataset)) { m.dataset.deskLabel = m.getAttribute('aria-label') || ''; m.dataset.deskTitle = m.getAttribute('title') || ''; }
+      const [label, title] = on ? phoneLabel() : [m.dataset.deskLabel, m.dataset.deskTitle];
+      if (m.getAttribute('aria-label') !== label) m.setAttribute('aria-label', label);
+      if (m.getAttribute('title') !== title) m.setAttribute('title', title);
+      m.classList.toggle('luliy-takes', on);
+      if (!on) end();
+      if (group) m.classList.toggle('brand-cross-anchor', on && !group.classList.contains('has-page-name'));
+    };
+    mq.addEventListener('change', sync);
+    if (group) new MutationObserver(sync).observe(group, { attributes: true, attributeFilter: ['class'] });
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class', 'lang'] });
+    sync();
+
     const open = () => {
       const url = el && el.href;
       end();
       if (url) window.open(url, '_blank', 'noopener');
     };
     document.addEventListener('pointerdown', e => {
-      const t = mq.matches && e.target.closest && e.target.closest(SEL);
+      const t = mark(e);
       if (!t || !e.isPrimary || e.button !== 0) return;
       end(); el = t; x = e.clientX; y = e.clientY;
       t.classList.add('luliy-pressing');
@@ -1035,19 +1037,19 @@
       open();
     }, { capture: true, passive: false });
     document.addEventListener('click', e => {
-      const t = mq.matches && e.target.closest && e.target.closest(SEL);
+      const t = mark(e);
       if (!t) { end(); return; }
       e.preventDefault(); e.stopPropagation();
       if (held && t === el) { open(); return; }
       end();
-      const home = partner(t);
+      const home = partner();
       if (home) home.click();
     }, true);
     document.addEventListener('contextmenu', e => {
-      if (mq.matches && e.target.closest && e.target.closest(SEL)) e.preventDefault();
+      if (mark(e)) e.preventDefault();
     }, true);
     document.addEventListener('dragstart', e => {
-      if (mq.matches && e.target.closest && e.target.closest(SEL)) e.preventDefault();
+      if (mark(e)) e.preventDefault();
     }, true);
   })();
   /* 17. Phones, Works (#/projects): 網頁 · 真題區 · 照片牆 as header tabs, the same look as the article list's tabs

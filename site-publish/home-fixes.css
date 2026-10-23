@@ -911,18 +911,17 @@ html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(4){stop-color
 html[data-appearance=light] .ll .ll-b{filter:none}html[data-appearance=light] .ll .ll-hl{display:none}
 html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fill:#b48d4c}
 /* Brand on phones (home-fixes.js block 16). Computers keep L mark + ULIY (+ page name) in the header and directory.
-   Phones show only the L mark: ULIY is hidden, except in the header on About (html.luliy-route-about, home-early.js).
-   A tap on the mark goes home, holding it opens GitHub Issues: it shrinks while held and springs back when the
-   half second is up; no system long-press menu, selection or drag. While ULIY is hidden its star sits on the mark. */
+   Phones keep L mark + ULIY, with the computer's links, in the directory and in the header on About
+   (html.luliy-route-about, home-early.js); elsewhere the phone header shows only the L mark (.luliy-takes):
+   a tap goes home, holding it opens GitHub Issues: it shrinks while held and springs back when the half second
+   is up; no system long-press menu, selection or drag. While ULIY is hidden its star sits on the mark. */
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
-  html:not(.luliy-route-about) body #header .brand-group > a.brand,
-  html body #directory .directory-home-brand { display: none !important; }
-  #header .brand-mark,#directory .directory-brand-mark{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
-  #header .brand-mark svg,#directory .directory-brand-mark svg{transform-origin:50% 70%;transition:transform var(--dur-fast) var(--ease)}
-  #header .brand-mark.luliy-pressing svg,#directory .directory-brand-mark.luliy-pressing svg{transform:scale(.88);transition:transform var(--dur-base) linear}
-  #header .brand-mark.luliy-held svg,#directory .directory-brand-mark.luliy-held svg{transform:scale(1.06);transition:transform var(--dur-fast) var(--ease)}
+  html:not(.luliy-route-about) body #header .brand-group > a.brand { display: none !important; }
+  #header .brand-mark.luliy-takes{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+  #header .brand-mark.luliy-takes svg{transform-origin:50% 70%;transition:transform var(--dur-fast) var(--ease)}
+  #header .brand-mark.luliy-takes.luliy-pressing svg{transform:scale(.88);transition:transform var(--dur-base) linear}
+  #header .brand-mark.luliy-takes.luliy-held svg{transform:scale(1.06);transition:transform var(--dur-fast) var(--ease)}
 }
-#directory .directory-brand-mark.brand-cross-anchor::before,#directory .directory-brand-mark.brand-cross-anchor::after{top:0}
 
 /* ---- Phones, study page #/books (home-fixes.js block 18) ----
    The 3D room fills the whole screen (no bands above and below) behind the transparent header, which holds the
