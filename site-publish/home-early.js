@@ -251,3 +251,14 @@
     });
   };
 })();
+
+/* Route flag for CSS: <html class="luliy-route-about"> while #/about is open. Phones hide the ULIY wordmark
+   everywhere except About (home-fixes.css, "Brand on phones"); setting it here avoids a flash on a direct visit. */
+(function () {
+  function sync() {
+    var r = (location.hash || '').replace(/^#\/?/, '').split(/[\/?]/)[0];
+    document.documentElement.classList.toggle('luliy-route-about', r === 'about');
+  }
+  sync();
+  addEventListener('hashchange', sync);
+})();

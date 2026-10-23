@@ -1,7 +1,7 @@
 /* Layout fixes injected by optimize-home.py. Keep this file small.
    "Mobile" = phones in portrait (<=768px) or landscape (short + touch). */
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
-  /* Header: fully transparent and pinned; only the L mark + menu icon. */
+  /* Header: fully transparent and pinned; only the L mark + menu icon (ULIY too on About). */
   html body #header,
   html body #header.is-scrolled {
     position: fixed !important;
@@ -168,7 +168,7 @@
   html body .study-panels-scrim { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 4, 4, .62); }
   /* No grey flash on tap; a short press-down instead. The signature (long press) and the record player keep their own feedback. */
   html { -webkit-tap-highlight-color: transparent; }
-  html body :is(#header, #main, #directory, .contact-social, .footer-bottom) :is(a, button, summary):not(.contact-signature):not([class*="lr-"]):not([data-hold-href]):active,
+  html body :is(#header, #main, #directory, .contact-social, .footer-bottom) :is(a, button, summary):not(.contact-signature):not([class*="lr-"]):not(.brand-mark):not(.directory-brand-mark):active,
   html body .contact-email:active { opacity: .6; transition-duration: 0s !important; }
   /* iOS zooms the page into any text field under 16px. */
   html body :is(input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=color]):not([type=file]), textarea, select) { font-size: max(16px, 1em); }
@@ -198,16 +198,17 @@ html.luliy-save-data .footer-left-art { display: none; }
 /* ---- Phones: article list (home-fixes.js block 9) ---- */
 #header .luliy-header-modes { display: none; }
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
-  /* 文章 / 編年史 as header tabs: the current one bold with a short gold bar. */
+  /* 文章 / 編年史 as header tabs: the current one bold with a short gold bar. The Works page's
+     網頁 · 真題區 · 照片牆 (block 17) are buttons with the same look. */
   html body #header .luliy-header-modes {
     display: flex; gap: 20px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   }
-  html body #header .luliy-header-modes a {
-    position: relative; padding: 12px 2px; color: var(--muted); font-family: var(--font-ui); font-size: 16px; font-weight: 500;
+  html body #header .luliy-header-modes :is(a, button) {
+    position: relative; margin: 0; border: 0; background: none; cursor: pointer; padding: 12px 2px; color: var(--muted); font-family: var(--font-ui); font-size: 16px; font-weight: 500;
     line-height: 1; letter-spacing: .06em; text-decoration: none; white-space: nowrap;
   }
-  html body #header .luliy-header-modes a[aria-current] { color: var(--ink); font-weight: 700; }
-  html body #header .luliy-header-modes a[aria-current]::after {
+  html body #header .luliy-header-modes :is(a, button)[aria-current] { color: var(--ink); font-weight: 700; }
+  html body #header .luliy-header-modes :is(a, button)[aria-current]::after {
     content: ""; position: absolute; left: 50%; bottom: 3px; width: 16px; height: 2px; margin-left: -8px; border-radius: 2px; background: var(--accent);
   }
   html body #main .luliy-has-header-modes .article-modes,
@@ -849,7 +850,7 @@ html.lm-bar-mode body.lm-player-visible #main .reader-back-top { bottom: calc(va
      framing. The fade sits where the picture is cut off.
    - The small caption under the picture (THE STUDY · 01 / 05 …) is gone on every screen.
    - The vertical verse is outlined in the text colour (it relied on the black photo behind it).
-   - Other: the RSS item's label was hidden together with the ↗ arrows, leaving an empty row.
+   - Other: the RSS item's label was hidden together with the external-link arrows, leaving an empty row.
    - Works: the four newest titles (runtime-fixes.py) stay on one line each.
    --------------------------------------------------------------------------------------------- */
 #directory .preview-about > span { display: none; }
@@ -909,11 +910,269 @@ html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(3){stop-color
 html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(4){stop-color:#8a6630}
 html[data-appearance=light] .ll .ll-b{filter:none}html[data-appearance=light] .ll .ll-hl{display:none}
 html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fill:#b48d4c}
-/* The L mark is the only brand link (no ULIY wordmark): tap = home, hold = GitHub Issues (home-fixes.js block 16).
-   It shrinks while held and springs back when the half second is up; no system long-press menu, selection or drag.
-   The header star (site-route-tail) and the directory's star sit on its upper-right corner. */
-#header .brand-mark,#directory .directory-brand-mark{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
-#header .brand-mark svg,#directory .directory-brand-mark svg{transform-origin:50% 70%;transition:transform var(--dur-fast) var(--ease)}
-#header .brand-mark.luliy-pressing svg,#directory .directory-brand-mark.luliy-pressing svg{transform:scale(.88);transition:transform var(--dur-base) linear}
-#header .brand-mark.luliy-held svg,#directory .directory-brand-mark.luliy-held svg{transform:scale(1.06);transition:transform var(--dur-fast) var(--ease)}
+/* Brand on phones (home-fixes.js block 16). Computers keep L mark + ULIY (+ page name) in the header and directory.
+   Phones show only the L mark: ULIY is hidden, except in the header on About (html.luliy-route-about, home-early.js).
+   A tap on the mark goes home, holding it opens GitHub Issues: it shrinks while held and springs back when the
+   half second is up; no system long-press menu, selection or drag. While ULIY is hidden its star sits on the mark. */
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  html:not(.luliy-route-about) body #header .brand-group > a.brand,
+  html body #directory .directory-home-brand { display: none !important; }
+  #header .brand-mark,#directory .directory-brand-mark{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+  #header .brand-mark svg,#directory .directory-brand-mark svg{transform-origin:50% 70%;transition:transform var(--dur-fast) var(--ease)}
+  #header .brand-mark.luliy-pressing svg,#directory .directory-brand-mark.luliy-pressing svg{transform:scale(.88);transition:transform var(--dur-base) linear}
+  #header .brand-mark.luliy-held svg,#directory .directory-brand-mark.luliy-held svg{transform:scale(1.06);transition:transform var(--dur-fast) var(--ease)}
+}
 #directory .directory-brand-mark.brand-cross-anchor::before,#directory .directory-brand-mark.brand-cross-anchor::after{top:0}
+
+/* ---- Phones, study page #/books (home-fixes.js block 18) ----
+   The 3D room fills the whole screen (no bands above and below) behind the transparent header, which holds the
+   L mark, a "···" in the middle and the directory button. The tools drop down from the header. The music controls
+   float at the bottom like the site's music bar: the same theme colours (raised surface with a little accent, ink),
+   the same inset and rounded corners, clear of the iPhone home indicator; the room shows around them. */
+#header .luliy-header-dots { display: none; }
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  html body.study-single-page #studyRoom { background: transparent; }
+  html body.study-single-page #studyRoom::after { display: none !important; }   /* the shade over the old bottom band */
+  html body.study-single-page .study-room-stage,
+  html body.study-single-page.study-room-immersive .study-room-stage { position: absolute !important; inset: 0 !important; }
+  html body.study-single-page #studyRoom .study-room-tools-toggle { display: none !important; }
+
+  html body.study-single-page #header .luliy-header-dots {
+    position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: grid; place-items: center;
+    width: 48px; height: 44px; margin: 0; padding: 0; border: 0; border-radius: 22px; background: transparent; color: var(--ink); cursor: pointer;
+    transition: background-color var(--dur-fast) var(--ease-in-out);
+  }
+  html body.study-single-page #header .luliy-header-dots svg { width: 24px; height: 24px; fill: currentColor; filter: drop-shadow(0 1px 2px rgb(0 0 0 / .35)); }
+  html body.study-single-page #header .luliy-header-dots[aria-expanded="true"] { background: color-mix(in oklab, var(--raised) 84%, var(--accent)); }
+  html body.study-single-page #header .luliy-header-dots:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  /* CC draws the room in daylight (it sits on the light theme) under its pale ink: over the room the header's
+     icons take a dark ink. The tools and the music bar keep CC's own colours. */
+  html[data-appearance=cc] body.study-single-page #header :is(#studyGlobalOpen, .luliy-header-dots) { color: #2b2a40 !important; }
+  html[data-appearance=cc] body.study-single-page #header #studyGlobalOpen svg :is(line, path, .menu-line) { stroke: currentColor !important; }
+  html[data-appearance=cc] body.study-single-page #header .luliy-header-dots svg { filter: none; }
+  html[data-appearance=cc] body.study-single-page #header .luliy-header-dots[aria-expanded="true"] { background: rgb(43 42 64 / .1); }
+
+  html body.study-single-page #studyRoom {
+    --bar-bg: color-mix(in oklab, var(--raised) 84%, var(--accent));
+    --bar-ink: var(--ink);
+    --bar-muted: color-mix(in oklab, var(--ink) 64%, var(--bar-bg));
+    --bar-hover: color-mix(in oklab, var(--ink) 11%, transparent);
+    --bar-track: color-mix(in oklab, var(--ink) 24%, transparent);
+    --bar-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 8%, transparent), 0 14px 44px rgb(0 0 0 / .3);
+  }
+  /* The tools, dropped down from the header. */
+  html body.study-single-page #studyRoom .study-room-tools {
+    position: fixed !important; top: calc(var(--luliy-drop-top, 72px) + 2px) !important; bottom: auto !important; left: 50% !important; right: auto !important;
+    translate: -50% 0; transform: none; z-index: 5;
+    display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 2px !important;
+    width: min(360px, calc(100vw - 20px)) !important; max-height: calc(100dvh - var(--luliy-drop-top, 72px) - 120px); overflow: auto;
+    margin: 0 !important; padding: 8px !important; border: 0 !important; border-radius: 16px !important;
+    background: var(--bar-bg) !important; color: var(--bar-ink) !important; box-shadow: var(--bar-shadow) !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    transform-origin: 50% 0; animation: luliy-drop var(--dur-fast) var(--ease) both;
+  }
+  html body.study-single-page #studyRoom .study-room-tools[hidden] { display: none !important; }
+  html body.study-single-page #studyRoom .study-room-tools button {
+    width: 100% !important; height: 56px !important; min-height: 0 !important; margin: 0 !important; padding: 6px 2px !important;
+    border: 0 !important; border-radius: 12px !important; background: transparent !important; color: var(--bar-ink) !important; box-shadow: none !important;
+  }
+  html body.study-single-page #studyRoom .study-room-tools button:not(.study-room-more) { display: flex !important; }
+  html body.study-single-page #studyRoom .study-room-tools button::after { color: var(--bar-ink) !important; opacity: .86; }
+  html body.study-single-page #studyRoom .study-room-tools button:is(:active, [aria-pressed="true"]) { background: var(--bar-hover) !important; }
+  @media (hover: hover) { html body.study-single-page #studyRoom .study-room-tools button:hover { background: var(--bar-hover) !important; } }
+
+  /* The music controls: a floating bar. */
+  html body.study-single-page #studyRoom .study-room-dock {
+    top: auto !important; left: max(10px, env(safe-area-inset-left)) !important; right: max(10px, env(safe-area-inset-right)) !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important; width: auto !important; max-height: none !important; overflow: visible !important;
+    display: block !important; margin: 0 !important; padding: 8px 12px 4px !important; border: 0 !important; border-radius: 16px !important;
+    background: var(--bar-bg) !important; color: var(--bar-ink) !important; box-shadow: var(--bar-shadow) !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html body.study-single-page #studyRoom .study-room-player {
+    display: grid !important; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "track actions volume" "seek seek seek";
+    align-items: center; gap: 0 10px; width: 100% !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important;
+  }
+  html body.study-single-page #studyRoom .study-room-track { grid-area: track; min-width: 0; max-width: none !important; text-align: left; }
+  html body.study-single-page #studyRoom .study-room-track strong {
+    display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--bar-ink) !important; font: 600 13.5px/1.3 var(--font-ui) !important; letter-spacing: .02em;
+  }
+  html body.study-single-page #studyRoom .study-room-track small { display: block; color: var(--bar-muted) !important; font: 500 11.5px/1.3 var(--font-ui) !important; letter-spacing: .04em; }
+  html body.study-single-page #studyRoom .study-room-player-actions { grid-area: actions; display: flex !important; align-items: center; gap: 4px !important; }
+  html body.study-single-page #studyRoom .study-room-player-actions button {
+    display: grid !important; place-items: center; width: 36px !important; height: 36px !important; min-height: 0 !important; padding: 0 !important;
+    border: 0 !important; border-radius: 50% !important; background: transparent !important; color: var(--bar-ink) !important; box-shadow: none !important;
+  }
+  html body.study-single-page #studyRoom .study-room-player-actions button svg { width: 16px; height: 16px; }
+  html body.study-single-page #studyRoom .study-room-player-actions .study-room-play { width: 40px !important; height: 40px !important; background: var(--bar-ink) !important; color: var(--bar-bg) !important; }
+  html body.study-single-page #studyRoom :is(.study-room-seek, .study-room-volume) {
+    -webkit-appearance: none; appearance: none; display: block; min-width: 0; height: 22px !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important; cursor: pointer; accent-color: var(--bar-ink);
+  }
+  html body.study-single-page #studyRoom .study-room-seek { grid-area: seek; width: 100% !important; order: 0 !important; }
+  html body.study-single-page #studyRoom .study-room-volume { grid-area: volume; width: 60px !important; }
+  html body.study-single-page #studyRoom :is(.study-room-seek, .study-room-volume)::-webkit-slider-runnable-track {
+    height: 4px; border: 0; border-radius: 99px; background: linear-gradient(var(--bar-ink), var(--bar-ink)) 0 0 / var(--fill, 0%) 100% no-repeat, var(--bar-track);
+  }
+  html body.study-single-page #studyRoom :is(.study-room-seek, .study-room-volume)::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 12px; height: 12px; margin-top: -4px; border: 0; border-radius: 50%; background: var(--bar-ink); box-shadow: none;
+  }
+  html body.study-single-page #studyRoom :is(.study-room-seek, .study-room-volume)::-moz-range-track { height: 4px; border-radius: 99px; background: var(--bar-track); }
+  html body.study-single-page #studyRoom :is(.study-room-seek, .study-room-volume)::-moz-range-progress { height: 4px; border-radius: 99px; background: var(--bar-ink); }
+  html body.study-single-page #studyRoom :is(.study-room-seek, .study-room-volume)::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: var(--bar-ink); }
+  html body.study-single-page #studyRoom .study-room-seek:disabled { opacity: .45; cursor: default; }
+}
+@keyframes luliy-drop { from { opacity: 0; transform: translateY(-10px) scaleY(.96); } }
+@media (prefers-reduced-motion: reduce) { html body.study-single-page #studyRoom .study-room-tools { animation-name: luliy-fade; } }
+@keyframes luliy-fade { from { opacity: 0; } }
+
+/* ---- Phones, records page #/music (home-fixes.js block 19; runtime-fixes.py shows two covers on each side) ----
+   The cover playing keeps its size; the two on each side come forward and turn less, so more of each shows. */
+@media (max-width: 520px) {
+  html body .music-page .lr-standalone .lr-arc-shelf .lr-record {
+    --lr-x: calc(var(--lr-arc) * .76); --lr-z: calc(var(--lr-depth) * -390px); --lr-turn: calc(var(--lr-arc) * -7deg);
+    transform: translate3d(calc(-50% + var(--lr-x) * var(--lr-card)), calc(var(--lr-depth) * -3px), var(--lr-z)) rotateY(var(--lr-turn));
+  }
+  html body .music-page .lr-standalone .lr-arc-shelf .lr-record[data-arc-offset="1"] { --lr-x: .63; --lr-z: -330px; --lr-turn: -8deg; }
+  html body .music-page .lr-standalone .lr-arc-shelf .lr-record[data-arc-offset="-1"] { --lr-x: -.63; --lr-z: -330px; --lr-turn: 8deg; }
+  html body .music-page .lr-standalone .lr-arc-shelf .lr-record[data-arc-offset="2"] { --lr-x: 1.49; --lr-z: -770px; --lr-turn: -13deg; }
+  html body .music-page .lr-standalone .lr-arc-shelf .lr-record[data-arc-offset="-2"] { --lr-x: -1.49; --lr-z: -770px; --lr-turn: 13deg; }
+  /* Only the cover in the middle keeps its name; the others would run under it. */
+  html body .music-page .lr-standalone .lr-arc-shelf .lr-record:not([data-arc-offset="0"]) :is(.lr-record-name, .lr-record-info) { opacity: 0; transition: opacity var(--dur-fast) var(--ease-soft); }
+}
+.lr-standalone .luliy-sleep-badge { display: none; }   /* computers keep the select's own text */
+@media (max-width: 700px) {
+  /* The sleep timer: the clock only (the select lies over it, invisible), under 上一首; a badge while it runs. */
+  html body #main .lr-standalone .lr-meta .lr-sleep-label {
+    grid-area: 6 / 2; justify-self: center; position: relative; display: grid; place-items: center; width: 44px; height: 44px; gap: 0; color: var(--muted);
+  }
+  html body #main .lr-standalone .lr-meta .lr-sleep-label > svg { width: 20px; height: 20px; }
+  html body #main .lr-standalone .lr-meta .lr-sleep-label .lr-sleep {
+    position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; opacity: 0; font-size: 16px; cursor: pointer; -webkit-appearance: none; appearance: none;
+  }
+  html body #main .lr-standalone .lr-meta .lr-sleep-label.luliy-sleep-on { color: var(--accent); }
+  html body #main .lr-standalone .lr-meta .lr-sleep-label:has(.lr-sleep:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: -2px; border-radius: 50%; }
+  html body #main .lr-standalone .lr-meta .luliy-sleep-badge {
+    display: block; position: absolute; top: 3px; left: calc(50% + 5px); min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; pointer-events: none;
+    background: var(--accent); color: var(--bg); font: 700 10px/17px var(--font-ui); letter-spacing: 0; text-align: center; font-variant-numeric: tabular-nums;
+  }
+  html body #main .lr-standalone .lr-meta .luliy-sleep-badge:empty { display: none; }
+}
+
+/* 唱片 in the header and the cloth it lets down. */
+#header .luliy-header-records, .luliy-cloth { display: none; }
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  html body.record-single-page #header .luliy-header-records {
+    position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: flex; align-items: center; gap: 2px;
+    margin: 0; padding: 12px 6px 12px 10px; border: 0; background: none; color: var(--ink); cursor: pointer;
+    font: 700 16px/1 var(--font-ui); letter-spacing: .06em; white-space: nowrap;
+  }
+  html body.record-single-page #header .luliy-header-records svg {
+    width: 18px; height: 18px; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    transition: rotate var(--dur-base) var(--ease);
+  }
+  html body.record-single-page #header .luliy-header-records[aria-expanded="true"] svg { rotate: 180deg; stroke: var(--accent); }
+  html body.record-single-page #header .luliy-header-records:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 10px; }
+  html.luliy-cloth-open, html.luliy-cloth-open body { overflow: hidden !important; }
+  html.luliy-cloth-open body #header.luliy-washed::before { opacity: 0 !important; }
+
+  html body .luliy-cloth { display: block; position: fixed; inset: 0; z-index: 59; }
+  html body .luliy-cloth[hidden] { display: none; }
+  html body .luliy-cloth-shade {
+    position: absolute; inset: 0; background: rgb(0 0 0 / .42); opacity: 0; transition: opacity var(--dur-base) var(--ease-soft);
+  }
+  html body .luliy-cloth.is-open .luliy-cloth-shade { opacity: 1; }
+  /* The cloth hangs from above the screen (room for the settle), behind the header; the hem is a mask on the
+     fabric, so the shadow (on the part that moves) follows the waves. */
+  html body .luliy-cloth-hang {
+    position: absolute; left: 0; right: 0; top: -40px; filter: drop-shadow(0 8px 12px rgb(0 0 0 / .3));
+    transform: translateY(calc(-100% - 24px)); transition: transform var(--dur-base) cubic-bezier(.55, 0, .75, .3);
+  }
+  html body .luliy-cloth.is-open .luliy-cloth-hang { transform: none; transition: transform var(--dur-slow) cubic-bezier(.2, 1.18, .4, 1); }
+  html body .luliy-cloth-fabric {
+    --cloth: color-mix(in oklab, var(--raised) 84%, var(--accent));
+    --hem: 16px;
+    position: relative; display: flex; flex-direction: column;
+    height: min(calc(40px + 84dvh), calc(40px + var(--luliy-drop-top, 72px) + 760px));
+    padding: calc(40px + var(--luliy-drop-top, 72px)) 0 calc(var(--hem) + 18px);
+    background:
+      repeating-linear-gradient(90deg, rgb(255 255 255 / .028) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(0deg, rgb(0 0 0 / .03) 0 1px, transparent 1px 3px),
+      linear-gradient(90deg, rgb(0 0 0 / .10), rgb(255 255 255 / .05) 14%, rgb(0 0 0 / .05) 30%, rgb(255 255 255 / .06) 49%, rgb(0 0 0 / .06) 67%, rgb(255 255 255 / .05) 84%, rgb(0 0 0 / .10)),
+      linear-gradient(transparent 70%, rgb(0 0 0 / .14)),
+      var(--cloth);
+    color: var(--ink);
+    -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - var(--hem) + 1px) no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='16' viewBox='0 0 96 16'%3E%3Cpath d='M0 0H96V3C84 3 84 15 72 15S60 3 48 3 36 15 24 15 12 3 0 3Z'/%3E%3C/svg%3E") var(--hem-x, 0px) 100% / 96px var(--hem) repeat-x;
+    mask: linear-gradient(#000 0 0) top / 100% calc(100% - var(--hem) + 1px) no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='16' viewBox='0 0 96 16'%3E%3Cpath d='M0 0H96V3C84 3 84 15 72 15S60 3 48 3 36 15 24 15 12 3 0 3Z'/%3E%3C/svg%3E") var(--hem-x, 0px) 100% / 96px var(--hem) repeat-x;
+  }
+  html body .luliy-cloth.is-open .luliy-cloth-fabric { animation: luliy-hem .9s var(--ease) both; }
+  html body .luliy-cloth-scroll {
+    position: relative; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 6px max(18px, env(safe-area-inset-right)) 8px max(18px, env(safe-area-inset-left));
+    scrollbar-width: none;
+  }
+  html body .luliy-cloth-scroll::-webkit-scrollbar { display: none; }
+  html body .luliy-cloth-count { margin: 0 2px 14px; color: var(--muted); font: 500 11px/1.4 var(--font-ui); letter-spacing: .12em; }
+  html body .luliy-cloth-grid {
+    --cols: 3;
+    display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 18px 16px; margin: 0; padding: 0; list-style: none;
+  }
+  @media (min-width: 480px) { html body .luliy-cloth-grid { --cols: 4; } }
+  @media (min-width: 600px) { html body .luliy-cloth-grid { --cols: 5; } }
+  @media (min-width: 720px) { html body .luliy-cloth-grid { --cols: 6; } }
+  @media (min-width: 700px) and (max-height: 500px) { html body .luliy-cloth-grid { --cols: 8; } }   /* phones on their side */
+  html body .luliy-cloth-grid > li { min-width: 0; margin: 0; padding: 0; }
+  html body .luliy-cloth-grip {
+    position: absolute; left: 50%; bottom: calc(var(--hem) + 7px); width: 36px; height: 4px; margin-left: -18px; border-radius: 2px;
+    background: color-mix(in oklab, var(--ink) 26%, transparent);
+  }
+  /* A record: the vinyl of the study's middle drawer. Grooves at .63, .77, .9 and .98 of the radius; the cover
+     is the centre label (.386 of the diameter); the sheen stays still while the record playing turns. */
+  html body .luliy-disc {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; margin: 0; padding: 0; border: 0; background: none;
+    color: var(--muted); cursor: pointer; -webkit-tap-highlight-color: transparent; text-align: center;
+  }
+  html body .luliy-disc-art { position: relative; display: block; width: 100%; aspect-ratio: 1; border-radius: 50%; box-shadow: 0 7px 16px rgb(0 0 0 / .34); transition: scale var(--dur-fast) var(--ease), box-shadow var(--dur-base) var(--ease); }
+  html body .luliy-disc-art::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+    background: conic-gradient(from 20deg, transparent 0 6%, rgb(255 255 255 / .11) 11%, transparent 17% 50%, rgb(255 255 255 / .08) 61%, transparent 67%);
+  }
+  html body .luliy-disc-vinyl {
+    position: absolute; inset: 0; border-radius: 50%;
+    background:
+      radial-gradient(circle closest-side, transparent 62%, rgb(255 255 255 / .08) 62.6% 63.6%, transparent 64.2% 76.4%, rgb(255 255 255 / .08) 77% 78%, transparent 78.6% 89.4%, rgb(255 255 255 / .07) 90% 91%, transparent 91.6% 97.4%, rgb(255 255 255 / .1) 98% 99%, transparent 99.6%),
+      repeating-radial-gradient(circle closest-side, rgb(255 255 255 / .03) 0 1px, transparent 1px 3px),
+      #080909;
+  }
+  html body .luliy-disc-label {
+    position: absolute; inset: 30.7%; border-radius: 50%; background: #ded3bb center / cover no-repeat; box-shadow: 0 0 0 1px rgb(0 0 0 / .45);
+  }
+  html body .luliy-disc-label.luliy-disc-blank { display: grid; place-items: center; color: #39382f; font: 600 13px/1 var(--font-ui); }
+  html body .luliy-disc-label::after {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 9%; min-width: 3px; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+    background: #0b0b0c; box-shadow: 0 0 0 1px rgb(255 255 255 / .25);
+  }
+  html body .luliy-disc-name {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 12px/1.3 var(--font-ui); letter-spacing: .03em;
+  }
+  html body .luliy-disc:active .luliy-disc-art { scale: .96; }
+  html body .luliy-disc:focus-visible { outline: none; }
+  html body .luliy-disc:focus-visible .luliy-disc-art { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+  html body .luliy-disc[aria-current] { color: var(--ink); }
+  html body .luliy-disc[aria-current] .luliy-disc-name { font-weight: 700; }
+  html body .luliy-disc[aria-current] .luliy-disc-art {
+    box-shadow: 0 0 0 2px var(--accent), 0 0 22px color-mix(in oklab, var(--accent) 55%, transparent), 0 7px 16px rgb(0 0 0 / .34);
+  }
+  html body .luliy-disc[aria-current] .luliy-disc-vinyl { animation: luliy-spin 9s linear infinite paused; }
+  html body .luliy-cloth[data-playing="true"] .luliy-disc[aria-current] .luliy-disc-vinyl { animation-play-state: running; }
+}
+@keyframes luliy-spin { to { rotate: 360deg; } }
+@keyframes luliy-hem { from { --hem-x: -48px; } }
+@property --hem-x { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@media (prefers-reduced-motion: reduce) {
+  html body .luliy-cloth-hang, html body .luliy-cloth.is-open .luliy-cloth-hang { transform: none; opacity: 0; transition: opacity var(--dur-fast) linear; }
+  html body .luliy-cloth.is-open .luliy-cloth-hang { opacity: 1; }
+  html body .luliy-cloth.is-open .luliy-cloth-fabric { animation: none; }
+  html body .luliy-disc[aria-current] .luliy-disc-vinyl { animation: none; }
+}

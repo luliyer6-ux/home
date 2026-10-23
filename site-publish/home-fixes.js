@@ -98,12 +98,12 @@
     new MutationObserver(check).observe(main, { childList: true });
     check();
   })();
-  /* 3. Phones: the article list is home (see home-early.js), so a tap on the L mark leads there too.
-     The full galaxy home stays in the directory (its L mark, and 首頁). */
+  /* 3. Phones: the article list is home (see home-early.js), so the ULIY logo (and a tap on the L mark, block 16)
+     leads there too. The full galaxy home stays in the directory (its L mark, and 首頁). */
   (() => {
     // Same phone test as home-early.js.
     const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
-    const brand = document.querySelector('#header a.brand-mark');
+    const brand = document.querySelector('#header a.brand');
     if (phone && brand && brand.getAttribute('href') === '#/') brand.setAttribute('href', '#/posts');
   })();
 
@@ -131,7 +131,9 @@
       lastY = scrollY;
       wash();
     };
-    const busy = () => !!(main.querySelector('.reader-toc-toggle[aria-expanded="true"], .article-filter-drawer[open]') || document.querySelector('dialog[open]'));
+    // Also while a header tab (block 17) scrolls the page to its section, so the tabs stay in view, and while the
+    // records cloth (block 19) is down.
+    const busy = () => !!(root.classList.contains('luliy-tab-scrolling') || root.classList.contains('luliy-cloth-open') || main.querySelector('.reader-toc-toggle[aria-expanded="true"], .article-filter-drawer[open]') || document.querySelector('dialog[open]'));
     const measure = () => {
       queued = 0;
       wash();
@@ -954,14 +956,47 @@
     new MutationObserver(() => { if (!subscribed || !P) hook(); }).observe(document.body, { childList: true });
   })();
 
-  /* 16. The L mark (header and directory) is the only brand link: a tap goes home (as the ULIY wordmark did),
-     holding it for half a second opens its data-hold-href (the blog's GitHub Issues) in a new tab. While held the
-     mark shrinks slightly; when the half second is up it springs back (and a phone buzzes) to say "let go".
-     Touch opens on touchend and mouse on click, both user gestures, so pop-up blockers let the tab through.
-     Moving the finger or pointer more than 10px (scrolling) cancels; the system long-press menu is suppressed. */
+  /* 16. The brand on phones ("mobile", same media query as home-fixes.css). Computers keep the original header and
+     directory: the L mark opens the blog's GitHub Issues in a new tab, ULIY goes home (and closes the directory).
+     Phones show only the L mark (ULIY is hidden by CSS, except on About), so the mark takes over both jobs:
+     a tap does what ULIY does (home, which on phones is the article list; in the directory the full home), and
+     holding it for half a second opens the mark's own link, GitHub Issues, in a new tab. While held the mark shrinks
+     slightly; when the half second is up it springs back (and a phone buzzes) to say "let go". Touch opens on
+     touchend and mouse on click, both user gestures, so pop-up blockers let the tab through. Moving more than 10px
+     (scrolling) cancels; the system long-press menu, text selection and dragging are suppressed (CSS).
+     The header star (site-route-tail) normally sits on ULIY's Y; while that is hidden it moves to the mark's corner. */
   (() => {
-    const SEL = '#header a.brand-mark[data-hold-href], #directory a.directory-brand-mark[data-hold-href]';
+    const mq = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    const SEL = '#header a.brand-mark, #directory a.directory-brand-mark';
     const HOLD = 500;
+    const root = document.documentElement;
+    const group = document.querySelector('#header .brand-group');
+    const marks = () => document.querySelectorAll(SEL);
+    const partner = t => t.closest('#directory') ? document.querySelector('#directory a.directory-home-brand') : document.querySelector('#header a.brand');
+    const phoneLabel = () => {
+      const l = root.lang || '';
+      return l.startsWith('en') ? ['Luliy home (hold: GitHub Issues)', 'Tap: home · Hold: GitHub Issues']
+        : l.startsWith('ja') ? ['Luliy ホーム（長押し：GitHub Issues）', 'タップ：ホーム · 長押し：GitHub Issues']
+        : ['Luliy 首页（长按：GitHub Issues）', '点按：首页 · 长按：GitHub Issues'];
+    };
+    const sync = () => {
+      const phone = mq.matches, about = root.classList.contains('luliy-route-about');
+      for (const m of marks()) {
+        if (!('deskLabel' in m.dataset)) { m.dataset.deskLabel = m.getAttribute('aria-label') || ''; m.dataset.deskTitle = m.getAttribute('title') || ''; }
+        const [label, title] = phone ? phoneLabel() : [m.dataset.deskLabel, m.dataset.deskTitle];
+        if (m.getAttribute('aria-label') !== label) m.setAttribute('aria-label', label);
+        if (m.getAttribute('title') !== title) m.setAttribute('title', title);
+      }
+      const dm = document.querySelector('#directory a.directory-brand-mark');
+      if (dm) dm.classList.toggle('brand-cross-anchor', phone);
+      const hm = document.querySelector('#header a.brand-mark');
+      if (hm && group) hm.classList.toggle('brand-cross-anchor', phone && !about && !group.classList.contains('has-page-name'));
+    };
+    mq.addEventListener('change', sync);
+    if (group) new MutationObserver(sync).observe(group, { attributes: true, attributeFilter: ['class'] });
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class', 'lang'] });
+    sync();
+
     let el = null, timer = 0, held = false, x = 0, y = 0;
     const clear = () => {
       clearTimeout(timer); timer = 0;
@@ -969,12 +1004,12 @@
     };
     const end = () => { clear(); if (el) el.classList.remove('luliy-held'); el = null; held = false; };
     const open = () => {
-      const url = el && el.dataset.holdHref;
+      const url = el && el.href;
       end();
       if (url) window.open(url, '_blank', 'noopener');
     };
     document.addEventListener('pointerdown', e => {
-      const t = e.target.closest && e.target.closest(SEL);
+      const t = mq.matches && e.target.closest && e.target.closest(SEL);
       if (!t || !e.isPrimary || e.button !== 0) return;
       end(); el = t; x = e.clientX; y = e.clientY;
       t.classList.add('luliy-pressing');
@@ -988,7 +1023,7 @@
       if (el && !held && Math.hypot(e.clientX - x, e.clientY - y) > 10) end();
     }, true);
     document.addEventListener('pointercancel', () => { if (!held) end(); }, true);
-    // A short press: let the click through (home). Pointer up outside the mark: no click follows, so tidy up.
+    // A short press: the click follows (home). Pointer up outside the mark: no click follows, so tidy up.
     document.addEventListener('pointerup', e => {
       if (!el) return;
       if (!held) { clear(); if (!el.contains(e.target)) end(); }
@@ -1000,16 +1035,385 @@
       open();
     }, { capture: true, passive: false });
     document.addEventListener('click', e => {
-      const t = e.target.closest && e.target.closest(SEL);
-      if (!t) return;
-      if (held && t === el) { e.preventDefault(); e.stopPropagation(); open(); }
-      else end();
+      const t = mq.matches && e.target.closest && e.target.closest(SEL);
+      if (!t) { end(); return; }
+      e.preventDefault(); e.stopPropagation();
+      if (held && t === el) { open(); return; }
+      end();
+      const home = partner(t);
+      if (home) home.click();
     }, true);
     document.addEventListener('contextmenu', e => {
-      if (el && el.contains(e.target)) e.preventDefault();
+      if (mq.matches && e.target.closest && e.target.closest(SEL)) e.preventDefault();
     }, true);
     document.addEventListener('dragstart', e => {
-      if (e.target.closest && e.target.closest(SEL)) e.preventDefault();
+      if (mq.matches && e.target.closest && e.target.closest(SEL)) e.preventDefault();
     }, true);
+  })();
+  /* 17. Phones, Works (#/projects): 網頁 · 真題區 · 照片牆 as header tabs, the same look as the article list's tabs
+     (block 9). A tap scrolls smoothly to that section (the header stays while it does, block 4); while the page is
+     scrolled, the tab of the section in view lights up. 我的空間 at the bottom is not a tab: 照片牆 stays lit there. */
+  (() => {
+    const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    const main = document.getElementById('main');
+    const header = document.getElementById('header');
+    const inner = header?.querySelector('.header-inner');
+    if (!main || !inner) return;
+    const say = (zh, en, ja) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : zh);
+    const TABS = [
+      ['.works-page > .works-web-heading', '網頁', 'Web', 'ウェブ'],
+      ['.works-exams-section > .section-label', '真題區', 'Exams', '過去問'],
+      ['.works-photo-wall > .section-label', '照片牆', 'Photos', '写真'],
+    ];
+    let nav = null, targets = [], current = -1, queued = 0, settle = 0, onEnd = null;
+    const top = el => el.getBoundingClientRect().top;
+    const mark = i => {
+      if (!nav || i === current) return;
+      current = i;
+      nav.querySelectorAll('button').forEach((b, k) => { if (k === i) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+    };
+    const spy = () => {
+      queued = 0;
+      if (!nav || root.classList.contains('luliy-tab-scrolling')) return;
+      targets = TABS.map(([sel]) => main.querySelector(sel));     // sections can arrive after the page
+      const line = innerHeight * 0.35;
+      let i = 0;
+      targets.forEach((t, k) => { if (t && top(t) <= line) i = k; });
+      mark(i);
+    };
+    const done = () => {
+      clearTimeout(settle); settle = 0;
+      if (onEnd) { removeEventListener('scrollend', onEnd); onEnd = null; }
+      if (!root.classList.contains('luliy-tab-scrolling')) return;
+      root.classList.remove('luliy-tab-scrolling');
+      spy();
+    };
+    const go = i => {
+      const t = main.querySelector(TABS[i][0]);
+      if (!t) return;
+      mark(i);
+      const y = Math.max(0, top(t) + scrollY - (i ? 84 : 120));
+      done();
+      root.classList.add('luliy-tab-scrolling');
+      onEnd = () => done();
+      addEventListener('scrollend', onEnd, { once: true });
+      settle = setTimeout(done, 1200);                 // no scrollend (older Safari) or nothing to scroll
+      scrollTo({ top: y, behavior: reduced.matches ? 'auto' : 'smooth' });
+    };
+    const label = () => {
+      if (!nav) return;
+      nav.setAttribute('aria-label', say('作品分區', 'Works sections', '作品のセクション'));
+      nav.querySelectorAll('button').forEach((b, k) => { const t = say(TABS[k][1], TABS[k][2], TABS[k][3]); if (b.textContent !== t) b.textContent = t; });
+    };
+    const sync = () => {
+      const page = mobile.matches ? main.querySelector('.works-page') : null;
+      if (!page) {
+        if (nav) { nav.remove(); nav = null; targets = []; current = -1; header.classList.remove('luliy-has-works-tabs'); done(); }
+        return;
+      }
+      targets = TABS.map(([sel]) => main.querySelector(sel));
+      if (!nav) {
+        nav = document.createElement('nav');
+        nav.className = 'luliy-header-modes luliy-works-tabs';
+        TABS.forEach((_, k) => { const b = document.createElement('button'); b.type = 'button'; b.addEventListener('click', () => go(k)); nav.append(b); });
+        inner.append(nav);
+        header.classList.add('luliy-has-works-tabs');
+        current = -1;
+      }
+      label();
+      spy();
+    };
+    addEventListener('scroll', () => { if (nav && !queued) queued = requestAnimationFrame(spy); }, { passive: true });
+    addEventListener('resize', () => { if (nav && !queued) queued = requestAnimationFrame(spy); }, { passive: true });
+    new MutationObserver(sync).observe(main, { childList: true });
+    new MutationObserver(label).observe(root, { attributes: true, attributeFilter: ['lang'] });
+    mobile.addEventListener('change', sync);
+    sync();
+  })();
+  /* 18. Phones, study page (#/books): the 3D room fills the screen behind a transparent header (home-fixes.css).
+     The room's "··· 書房" button becomes a "···" in the middle of the header; its tools drop down from the header.
+     A tap outside, choosing a tool (except 更多), Esc or the Android back gesture closes them. The room's own button
+     stays in place, hidden, and does the work, so the room code is untouched. While a seek or volume line is
+     dragged its filled part follows (--fill; the player writes it too, runtime-fixes.py). */
+  (() => {
+    const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    const header = document.getElementById('header');
+    const inner = header?.querySelector('.header-inner');
+    if (!inner) return;
+    const say = (zh, en, ja) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : zh);
+    const toggle = () => document.querySelector('body.study-single-page #studyRoom .study-room-tools-toggle');
+    const tools = () => document.getElementById('studyRoomTools');
+    let dots = null, watcher = null;
+    const seen = new WeakSet();
+    const isOpen = () => { const t = tools(); return !!t && !t.hidden; };
+    const place = () => root.style.setProperty('--luliy-drop-top', Math.round(header.getBoundingClientRect().bottom) + 'px');
+    const reflect = () => {
+      const open = isOpen();
+      if (dots) dots.setAttribute('aria-expanded', String(open));
+      if (open && !watcher && 'CloseWatcher' in window) {
+        try { watcher = new CloseWatcher(); watcher.onclose = () => { watcher = null; close(); }; } catch (e) {}
+      } else if (!open && watcher) { const w = watcher; watcher = null; w.destroy(); }
+    };
+    const close = () => { const t = toggle(); if (t && isOpen()) t.click(); reflect(); };
+    const watch = () => {
+      const t = toggle();
+      if (t && !seen.has(t)) { seen.add(t); new MutationObserver(reflect).observe(t, { attributes: true, attributeFilter: ['aria-expanded'] }); }
+    };
+    const label = () => { if (dots) dots.setAttribute('aria-label', say('書房功能', 'Study controls', '書斎の操作')); };
+    const sync = () => {
+      const on = mobile.matches && document.body.classList.contains('study-single-page');
+      if (!on) {
+        if (dots) { close(); dots.remove(); dots = null; }
+        return;
+      }
+      if (!dots) {
+        dots = document.createElement('button');
+        dots.type = 'button';
+        dots.className = 'luliy-header-dots';
+        dots.setAttribute('aria-controls', 'studyRoomTools');
+        dots.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
+        dots.addEventListener('click', () => { const t = toggle(); if (!t) return; watch(); place(); t.click(); reflect(); });
+        inner.append(dots);
+      }
+      label();
+      watch();
+      reflect();
+    };
+    // A tap anywhere else closes the tools (the tap still reaches what it lands on).
+    document.addEventListener('pointerdown', e => {
+      if (!dots || !isOpen()) return;
+      if (e.target.closest('#studyRoomTools, .luliy-header-dots')) return;
+      close();
+    }, true);
+    document.addEventListener('click', e => {
+      if (!dots) return;
+      const b = e.target.closest('#studyRoomTools button');
+      if (b && !b.classList.contains('study-room-more')) setTimeout(close, 0);
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && dots && isOpen() && !watcher) close(); });
+    document.addEventListener('input', e => {
+      const r = e.target.closest && e.target.closest('#studyRoom :is(.study-room-seek, .study-room-volume)');
+      if (r) r.style.setProperty('--fill', ((r.value - r.min) / ((r.max - r.min) || 1)) * 100 + '%');
+    }, true);
+    addEventListener('resize', () => { if (isOpen()) place(); }, { passive: true });
+    new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    new MutationObserver(label).observe(root, { attributes: true, attributeFilter: ['lang'] });
+    mobile.addEventListener('change', sync);
+    sync();
+  })();
+  /* 19. Phones, records page (#/music). The sleep timer shows only its clock; while it runs, a small badge
+     beside it counts the minutes left (♪ = stop at the end of this song). The engine keeps the timer to itself,
+     so the badge starts from the moment it is chosen (or from the status line after a re-render) and checks the
+     select every 2 s: the engine resets it to 0 when the timer ends. 唱片 in the middle of the header lets a
+     cloth down from the header, with a wavy hem. On it every record lies as a vinyl disc, like those in the
+     study's middle drawer: black, grooved, the cover as its centre label; 3 columns on phones, more on wider
+     screens (home-fixes.css). A tap plays that record (LuliyRecords.play, as a tap on the shelf does) and the
+     cloth rolls back up. The record playing is lit and turns slowly. 唱片 again, a swipe up, a tap outside, Esc
+     or the Android back gesture closes it; with reduced motion it only fades. */
+  (() => {
+    const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    const header = document.getElementById('header');
+    const inner = header?.querySelector('.header-inner');
+    const main = document.getElementById('main');
+    if (!inner || !main) return;
+    const say = (zh, en, ja) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : zh);
+    const api = () => window.LuliyRecords;
+
+    // The sleep timer badge.
+    const started = new WeakMap();
+    let tick = 0;
+    const badge = () => {
+      const label = main.querySelector('.lr-standalone .lr-sleep-label'), sel = label?.querySelector('.lr-sleep');
+      if (!sel) { clearInterval(tick); tick = 0; return; }
+      let b = label.querySelector('.luliy-sleep-badge');
+      if (!b) { b = document.createElement('span'); b.className = 'luliy-sleep-badge'; b.setAttribute('aria-hidden', 'true'); label.append(b); }
+      const v = sel.value;
+      let text = '';
+      if (v === 'end') text = '♪';
+      else if (+v > 0) {
+        let t = started.get(sel);
+        if (!t || t.value !== v) {
+          const m = /(\d+)/.exec(main.querySelector('.lr-standalone .lr-listening-status')?.textContent || '');
+          t = { value: v, until: Date.now() + (m ? +m[1] : +v) * 60000 };
+          started.set(sel, t);
+        }
+        text = String(Math.max(1, Math.ceil((t.until - Date.now()) / 60000)));
+      }
+      if (b.textContent !== text) b.textContent = text;
+      label.classList.toggle('luliy-sleep-on', !!text);
+      if (text && !tick) tick = setInterval(badge, 2000);
+      else if (!text && tick) { clearInterval(tick); tick = 0; }
+    };
+    document.addEventListener('change', e => {
+      if (!e.target.matches?.('.lr-standalone .lr-sleep')) return;
+      started.set(e.target, { value: e.target.value, until: Date.now() + (+e.target.value || 0) * 60000 });
+      setTimeout(badge, 0);
+    }, true);
+
+    // 唱片 and the cloth.
+    let button = null, cloth = null, hang = null, scroller = null, list = null, watcher = null, unsubscribe = null;
+    let open = false, built = '', last = '', hideTimer = 0;
+    const lang = () => api()?.getState?.().lang || (/^en/.test(root.lang) ? 'en' : /^ja/.test(root.lang) ? 'ja' : 'zh');
+    const records = () => {
+      const r = api();
+      if (!r?.tracks) return [];
+      const tracks = r.tracks();
+      const shelf = [...main.querySelectorAll('.lr-standalone .lr-arc-shelf [data-lr-track]')].map(c => +c.dataset.lrTrack);
+      const order = shelf.length ? shelf : tracks.map((_, i) => i);
+      return order.map(i => [i, tracks[i]]).filter(([, t]) => t && !t.revoked);
+    };
+    const reflect = () => {
+      if (!list) return;
+      const s = api()?.getState?.();
+      if (!s) return;
+      const key = s.index + ':' + !!(s.playing || s.loading);
+      if (key === last) return;
+      last = key;
+      cloth.dataset.playing = String(!!(s.playing || s.loading));
+      list.querySelectorAll('.luliy-disc').forEach(d => { if (+d.dataset.track === s.index) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
+    };
+    const fill = () => {
+      const items = records(), l = lang();
+      const key = l + '|' + items.map(([i, t]) => i + ':' + t.id).join(',');
+      if (key === built) return;
+      built = key; last = '';
+      list.textContent = '';
+      for (const [i, t] of items) {
+        const li = document.createElement('li'), b = document.createElement('button'), art = document.createElement('span');
+        const vinyl = document.createElement('span'), label = document.createElement('span'), name = document.createElement('span');
+        const title = t.name?.[l] || t.name?.zh || t.title || '';
+        b.type = 'button'; b.className = 'luliy-disc'; b.dataset.track = i; b.setAttribute('aria-label', title);
+        art.className = 'luliy-disc-art'; vinyl.className = 'luliy-disc-vinyl'; label.className = 'luliy-disc-label';
+        if (t.cover && typeof t.cover === 'string') label.style.backgroundImage = 'url("' + t.cover.replace(/"/g, '%22') + '")';
+        else { label.classList.add('luliy-disc-blank'); label.textContent = title.slice(0, 1); }
+        name.className = 'luliy-disc-name'; name.textContent = title; name.setAttribute('aria-hidden', 'true');
+        vinyl.append(label); art.append(vinyl); b.append(art, name); li.append(b); list.append(li);
+      }
+      cloth.querySelector('.luliy-cloth-count').textContent = say('全部唱片 · ' + items.length, 'All records · ' + items.length, 'すべてのレコード · ' + items.length);
+      reflect();
+    };
+    const label = () => {
+      if (button) {
+        const t = say('唱片', 'Records', 'レコード');
+        const span = button.querySelector('span');
+        if (span.textContent !== t) span.textContent = t;
+        button.setAttribute('aria-label', say('唱片：陳列所有唱片', 'Records: show every record', 'レコード：すべてのレコードを表示'));
+      }
+      if (cloth) { hang.setAttribute('aria-label', say('全部唱片', 'All records', 'すべてのレコード')); if (open) fill(); else built = ''; }
+    };
+    const build = () => {
+      cloth = document.createElement('div');
+      cloth.className = 'luliy-cloth';
+      cloth.hidden = true;
+      cloth.innerHTML = '<div class="luliy-cloth-shade"></div><div class="luliy-cloth-hang" id="luliyCloth" role="region"><div class="luliy-cloth-fabric">'
+        + '<div class="luliy-cloth-scroll"><p class="luliy-cloth-count"></p><ul class="luliy-cloth-grid"></ul></div>'
+        + '<span class="luliy-cloth-grip" aria-hidden="true"></span></div></div>';
+      hang = cloth.querySelector('.luliy-cloth-hang');
+      scroller = cloth.querySelector('.luliy-cloth-scroll');
+      list = cloth.querySelector('.luliy-cloth-grid');
+      document.body.append(cloth);
+      list.addEventListener('click', e => {
+        const d = e.target.closest('.luliy-disc'), r = api();
+        if (!d || !r) return;
+        const i = +d.dataset.track, s = r.getState();
+        if (i !== s.index) r.play(i);
+        else if (!s.playing && !s.loading) r.toggle();
+        close();
+      });
+      cloth.querySelector('.luliy-cloth-shade').addEventListener('click', () => close());
+      cloth.addEventListener('touchmove', e => { if (!hang.contains(e.target)) e.preventDefault(); }, { passive: false });
+      // Swipe up: from the hem, or anywhere once the records are scrolled to the end.
+      let y0 = 0, dy = 0, t0 = 0, pull = false;
+      hang.addEventListener('touchstart', e => {
+        const y = e.touches[0].clientY, box = hang.getBoundingClientRect();
+        y0 = y; dy = 0; t0 = Date.now();
+        pull = y > box.bottom - 44 || scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
+      }, { passive: true });
+      hang.addEventListener('touchmove', e => {
+        if (!pull) return;
+        dy = Math.min(0, e.touches[0].clientY - y0);
+        if (!dy) { hang.style.transform = ''; return; }
+        e.preventDefault();
+        hang.style.transition = 'none';
+        hang.style.transform = 'translateY(' + dy + 'px)';
+      }, { passive: false });
+      const release = () => {
+        if (!pull) return;
+        pull = false;
+        const gone = dy < -70 || -dy / Math.max(1, Date.now() - t0) > 0.5;
+        hang.style.transition = '';
+        hang.style.transform = '';
+        if (gone) close();
+      };
+      hang.addEventListener('touchend', release);
+      hang.addEventListener('touchcancel', release);
+    };
+    const place = () => root.style.setProperty('--luliy-drop-top', Math.round(header.getBoundingClientRect().bottom) + 'px');
+    const show = () => {
+      if (open || !button) return;
+      if (!cloth) build();
+      clearTimeout(hideTimer);
+      open = true;
+      place();
+      fill();
+      scroller.scrollTop = 0;
+      const current = list.querySelector('.luliy-disc[aria-current]');
+      if (current) scroller.scrollTop = Math.max(0, current.offsetTop - scroller.clientHeight / 2 + current.offsetHeight / 2);
+      cloth.hidden = false;
+      void cloth.offsetWidth;                       // start the drop from the rolled-up position
+      cloth.classList.add('is-open');
+      root.classList.add('luliy-cloth-open');
+      button.setAttribute('aria-expanded', 'true');
+      if ('CloseWatcher' in window && !watcher) {
+        try { watcher = new CloseWatcher(); watcher.onclose = () => { watcher = null; close(); }; } catch (e) {}
+      }
+    };
+    const close = (instant = false) => {
+      if (!open) return;
+      open = false;
+      cloth.classList.remove('is-open');
+      root.classList.remove('luliy-cloth-open');
+      button?.setAttribute('aria-expanded', 'false');
+      if (watcher) { const w = watcher; watcher = null; w.destroy(); }
+      clearTimeout(hideTimer);
+      if (instant) cloth.hidden = true;
+      else hideTimer = setTimeout(() => { if (!open) cloth.hidden = true; }, reduced.matches ? 200 : 420);
+    };
+    const sync = () => {
+      const on = mobile.matches && document.body.classList.contains('record-single-page');
+      if (!on) {
+        if (button) { close(true); button.remove(); button = null; header.classList.remove('luliy-has-records-button'); }
+        if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+        built = '';
+        badge();
+        return;
+      }
+      if (!button) {
+        button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'luliy-header-records';
+        button.setAttribute('aria-expanded', 'false');
+        button.setAttribute('aria-controls', 'luliyCloth');
+        button.innerHTML = '<span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>';
+        button.addEventListener('click', () => (open ? close() : show()));
+        inner.append(button);
+        header.classList.add('luliy-has-records-button');
+      }
+      if (!unsubscribe && api()?.subscribe) { try { unsubscribe = api().subscribe(() => { if (!tick) badge(); reflect(); }); } catch (e) {} }
+      label();
+      badge();
+    };
+    // A tap outside the cloth and 唱片 closes it (the shade takes taps below the hem; this catches the header).
+    document.addEventListener('pointerdown', e => {
+      if (!open || e.target.closest('.luliy-cloth-hang, .luliy-header-records, .luliy-cloth-shade')) return;
+      close();
+    }, true);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && open && !watcher) { close(); button?.focus(); } });
+    addEventListener('resize', () => { if (open) place(); }, { passive: true });
+    addEventListener('hashchange', () => close(true));
+    new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    new MutationObserver(label).observe(root, { attributes: true, attributeFilter: ['lang'] });
+    mobile.addEventListener('change', sync);
+    sync();
   })();
 })();
