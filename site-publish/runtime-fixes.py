@@ -200,6 +200,34 @@ def split_three(s):
     print('three.js split skipped (bundle not found)', file=sys.stderr)
     return s
 
+# CC "Luliy" particle title: the brand mark is now the pensive-figure L (artwork spans x 4-56 of 60, was 12-48).
+FIXES += [
+    ('cc: Luliy particle title fits the new brand mark (width)', 'var groupWidth=symbolSize*.6+gap+metrics.width;', 'var groupWidth=symbolSize*52/60+gap+metrics.width;'),
+    ('cc: Luliy particle title fits the new brand mark (left)', 'rasterContext.translate(-symbolSize*.2,baseline-symbolSize*58/60);', 'rasterContext.translate(-symbolSize*4/60,baseline-symbolSize*58/60);'),
+    ('cc: Luliy particle title fits the new brand mark (text)', 'rasterContext.fillText(tail,symbolSize*.6+gap,rh/2);', 'rasterContext.fillText(tail,symbolSize*52/60+gap,rh/2);'),
+]
+
+# No "↗" arrows anywhere on the site (the favourites preview linked "进入… ↗").
+FIXES.append(('ui: no arrow after the favourites preview link', '进入${labels[id]} <span aria-hidden="true">↗</span></a>', '进入${labels[id]}</a>'))
+
+# Study room at #/books: phones defer Three.js (split_three); opening #/books directly mounted the room before the
+# file arrived (TypeError: LuliyLoadThree is not a function) and showed the flat fallback. Wait for it first.
+STUDY_MOUNT_OLD = ("mountFrame=requestAnimationFrame(()=>{if(!alive)return;room=activeStudy=LuliyStudyRoom.mount(host,{...studyData(library(),category),"
+                   "lang,theme:document.documentElement.dataset.theme,href,initialView:studyView,renderContent:renderStudyContent,onReady:revealRoom});});")
+STUDY_MOUNT_NEW = ("mountFrame=requestAnimationFrame(()=>{const mountRoom=()=>{if(!alive)return;room=activeStudy=LuliyStudyRoom.mount(host,{...studyData(library(),category),"
+                   "lang,theme:document.documentElement.dataset.theme,href,initialView:studyView,renderContent:renderStudyContent,onReady:revealRoom});};"
+                   "if(!window.LuliyLoadThree&&window.LuliyThreeReady)window.LuliyThreeReady().then(mountRoom,mountRoom);else mountRoom();});")
+FIXES.append(('study page: wait for deferred Three.js before mounting the room', STUDY_MOUNT_OLD, STUDY_MOUNT_NEW))
+
+# Study room player on phones (home-fixes.css): the seek and volume lines fill up to the current value like the music
+# bar; a range input cannot style its filled part, so the player writes the value into --fill (home-fixes.js does the same while dragging).
+STUDY_FILL_OLD = ("volume.value=String(Math.round((next.volume??.45)*100));if(document.activeElement!==seek)seek.value=next.duration?next.position/next.duration:0;")
+STUDY_FILL_NEW = (STUDY_FILL_OLD + "seek.style.setProperty('--fill',(seek.value*100)+'%');volume.style.setProperty('--fill',volume.value+'%');")
+FIXES.append(('study room: seek and volume report their fill', STUDY_FILL_OLD, STUDY_FILL_NEW))
+
+# Phones, records page: five covers in the carousel (two on each side of the one playing), was three.
+FIXES.append(('records: five covers on phones', "Math.abs(offset)<=(window.LuliyMobilePhone?1:3)", "Math.abs(offset)<=(window.LuliyMobilePhone?2:3)"))
+
 def h(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()[:12]
 

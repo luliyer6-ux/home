@@ -551,7 +551,7 @@
     "riemann-sum": ["▥", "Riemann 和面积", "改变分割数观察面积逼近。"],
     "wallis-recursion": ["π", "Wallis 递推", "理解高次三角积分如何递推压缩。"],
     "unit-circle": ["⭕", "单位圆三角", "用单位圆读 sin、cos、tan。"],
-    "matrix-transform": ["↗️", "2D 矩阵变换", "看矩阵对向量和单位方格的作用。"],
+    "matrix-transform": ["🔄", "2D 矩阵变换", "看矩阵对向量和单位方格的作用。"],
     "distribution-plot": ["📊", "常见分布图像", "调参数观察概率分布形状。"],
     "clt-demo": ["🔔", "中心极限定理", "看样本均值分布逐渐接近正态。"]
   };
