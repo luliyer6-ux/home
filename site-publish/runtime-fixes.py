@@ -140,11 +140,25 @@ FIXES += [
 FIXES.append(('china: portraits through the GitHub relay', 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/static/img/',
               '/gh/raw/static/img/'))
 
-# CC writes text in letter by letter (dim -> bright) as it scrolls into view. In the writing section (article list,
-# chronicle, article pages) the text stays fully lit instead, so reading and scrolling are not interrupted.
+# CC wrote text in letter by letter (dim -> bright) as it scrolled into view. Text now stays fully lit on every
+# page. CC_WORDS_V1 is the earlier writing-section-only version, upgraded in place in already-patched files.
 CC_WORDS_OLD = "function words(){if(!cc()||reduce.matches)return;"
-CC_WORDS_NEW = "function words(){if(!cc()||reduce.matches||/^#\\/(posts?|article)(\\/|\\?|$)/.test(location.hash))return;"
-FIXES.append(('cc: articles stay lit (no letter-by-letter reveal)', CC_WORDS_OLD, CC_WORDS_NEW))
+CC_WORDS_V1 = "function words(){if(!cc()||reduce.matches||/^#\\/(posts?|article)(\\/|\\?|$)/.test(location.hash))return;"
+CC_WORDS_NEW = "function words(){return;if(!cc()||reduce.matches)return;"
+FIXES += [
+    ('cc: text stays lit (no letter-by-letter reveal)', CC_WORDS_OLD, CC_WORDS_NEW),
+    ('cc: text stays lit everywhere (was: writing section only)', CC_WORDS_V1, CC_WORDS_NEW),
+]
+
+# Directory: the About portrait is a cut-out of the same photo (transparent background, grey, 710x960), so each
+# appearance shows its own colour behind it instead of a black box. The old black-backed PNG stays for the intro.
+FIXES.append(('directory: transparent About portrait', "$('#directoryPortrait').src='assets/site/51d8aa192fa1e25ebfc8.png'",
+              "$('#directoryPortrait').src='assets/site/813c3f14546d3ff6cdb6.webp'"))
+
+# Directory: the Works preview lists only the four newest works (the list grew upward over the WORKS title).
+# New works are appended to the end of the list, so the newest come first here.
+FIXES.append(('directory: Works preview shows the four newest', "$('.preview-project-list').innerHTML=projects.map(p=>esc(p[0])).join('<br>')",
+              "$('.preview-project-list').innerHTML=projects.slice(-4).reverse().map(p=>esc(p[0])).join('<br>')"))
 
 THREE_HEAD = '/* Three.js r185'
 THREE_TAIL = 'PCFSoftShadowMap:2};};\n'

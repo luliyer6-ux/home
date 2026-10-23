@@ -840,3 +840,42 @@ html.lm-bar-mode body.lm-player-visible #main .reader-back-top { bottom: calc(va
 @media (prefers-reduced-motion: reduce) {
   html body .lr-mini.lm-mini.lm-bar, html body .lr-mini.lm-mini.lm-bar * { animation: none !important; transition: none !important; }
 }
+
+/* ---------------------------------------------------------------------------------------------
+   Directory tidy (2026-10)
+   - About portrait: a transparent cut-out (runtime-fixes.py), so each appearance shows its own
+     colour behind it. It is placed absolutely: as a grid item next to the hidden "LULIY" label its
+     percentage height resolved differently per browser, which on iPhones left the figure small and
+     low. Phones show head and shoulders from the top of the picture; larger screens keep the earlier
+     framing. The fade sits where the picture is cut off.
+   - The small caption under the picture (THE STUDY · 01 / 05 …) is gone on every screen.
+   - The vertical verse is outlined in the text colour (it relied on the black photo behind it).
+   - Other: the RSS item's label was hidden together with the ↗ arrows, leaving an empty row.
+   - Works: the four newest titles (runtime-fixes.py) stay on one line each.
+   --------------------------------------------------------------------------------------------- */
+#directory .preview-about > span { display: none; }
+#directory .preview-about #directoryPortrait {
+  position: absolute; left: 5%; top: 8%; width: 90%; height: 99%; margin: 0;
+  object-fit: contain; object-position: 50% 0;
+  -webkit-mask-image: linear-gradient(#000 78%, transparent 92%); mask-image: linear-gradient(#000 78%, transparent 92%);
+}
+@media (max-width: 700px) {
+  #directory .preview-about #directoryPortrait {
+    left: 0; top: 4%; width: 100%; height: 190%;
+    -webkit-mask-image: linear-gradient(#000 36%, transparent 50%); mask-image: linear-gradient(#000 36%, transparent 50%);
+  }
+}
+/* The verse beside the portrait was outlined in cream on the black photo; with no box behind it the outline
+   follows the text colour, so it also reads on the light appearance. */
+#directory .preview-about .about-traditional-verse {
+  -webkit-text-stroke-color: var(--ink);
+  text-shadow: 1px 0 var(--ink), -1px 0 var(--ink), 0 1px var(--ink), 0 -1px var(--ink);
+}
+#directory #directoryCaption { display: none; }
+#directory .directory-other-options a.directory-rss > span[data-rss-label] { display: inline; font-size: inherit; color: inherit; }
+#directory .directory-other-options > .directory-other-divider:last-child { display: none; }
+#directory .preview-projects .preview-project-list { white-space: nowrap; }
+@media (min-width: 701px) {
+  /* The list takes the big italic label size (5vw); a little smaller so the longest title fits beside the portrait. */
+  #directory .preview-projects .preview-project-list { font-size: clamp(28px, 4.2vw, 64px); }
+}
