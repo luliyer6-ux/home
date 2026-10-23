@@ -200,6 +200,13 @@ def split_three(s):
     print('three.js split skipped (bundle not found)', file=sys.stderr)
     return s
 
+# CC "Luliy" particle title: the brand mark is now the pensive-figure L (artwork spans x 4-56 of 60, was 12-48).
+FIXES += [
+    ('cc: Luliy particle title fits the new brand mark (width)', 'var groupWidth=symbolSize*.6+gap+metrics.width;', 'var groupWidth=symbolSize*52/60+gap+metrics.width;'),
+    ('cc: Luliy particle title fits the new brand mark (left)', 'rasterContext.translate(-symbolSize*.2,baseline-symbolSize*58/60);', 'rasterContext.translate(-symbolSize*4/60,baseline-symbolSize*58/60);'),
+    ('cc: Luliy particle title fits the new brand mark (text)', 'rasterContext.fillText(tail,symbolSize*.6+gap,rh/2);', 'rasterContext.fillText(tail,symbolSize*52/60+gap,rh/2);'),
+]
+
 def h(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()[:12]
 

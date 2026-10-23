@@ -879,3 +879,34 @@ html.lm-bar-mode body.lm-player-visible #main .reader-back-top { bottom: calc(va
   /* The list takes the big italic label size (5vw); a little smaller so the longest title fits beside the portrait. */
   #directory .preview-projects .preview-project-list { font-size: clamp(28px, 4.2vw, 64px); }
 }
+
+/* Brand mark (the L of LULIY): a pensive figure in gold. Leaves drift off her back, sparkles twinkle,
+   the light behind her head breathes, and a sheen crosses the figure every 8 s. Still with reduced motion or calm mode. */
+.ll .ll-lf,.ll .ll-sp,.ll .ll-dt,.ll .ll-hl{transform-box:fill-box;transform-origin:center}
+.ll .ll-sp{fill:#fbeac0}.ll .ll-dt{fill:#f8e4b0}
+.ll .ll-lf{opacity:0;animation:ll-drift 8s var(--ease-in-out) infinite}
+.ll .ll-l1{--sx:4px;--sy:-3px;--ex:-5px;--ey:4px;--r0:25deg;--r1:-40deg}
+.ll .ll-l2{--sx:4px;--sy:-4px;--ex:-6px;--ey:5px;--r0:30deg;--r1:-50deg;animation-delay:-2.6s}
+.ll .ll-l3{--sx:5px;--sy:-5px;--ex:-5px;--ey:4px;--r0:35deg;--r1:-35deg;animation-delay:-5.2s}
+.ll .ll-l4{--sx:3px;--sy:-3px;--ex:-5px;--ey:5px;--r0:20deg;--r1:-70deg;animation-delay:-1.3s}
+.ll .ll-l5{--sx:4px;--sy:-5px;--ex:-4px;--ey:4px;--r0:30deg;--r1:-45deg;animation-delay:-6.4s}
+.ll .ll-sp{animation:ll-twinkle 4s var(--ease-in-out) infinite}
+.ll .ll-s2{animation-delay:-1.4s}.ll .ll-s3{animation-delay:-2.7s}
+.ll .ll-dt{animation:ll-mote 8s var(--ease-in-out) infinite}
+.ll .ll-d2{animation-delay:-1.1s}.ll .ll-d3{animation-delay:-2.3s}.ll .ll-d4{animation-delay:-3.6s}.ll .ll-d5{animation-delay:-4.8s}.ll .ll-d6{animation-delay:-6.1s}
+.ll .ll-hl{animation:ll-halo 4s var(--ease-in-out) infinite}
+.ll .ll-sh{transform:translateX(-24px);animation:ll-sheen 8s cubic-bezier(.45,.05,.35,1) infinite}
+@keyframes ll-drift{0%{opacity:0;transform:translate(var(--sx),var(--sy)) rotate(var(--r0))}18%,62%{opacity:1}100%{opacity:0;transform:translate(var(--ex),var(--ey)) rotate(var(--r1))}}
+@keyframes ll-twinkle{0%,100%{opacity:.2;transform:scale(.35) rotate(-15deg)}50%{opacity:1;transform:scale(1) rotate(15deg)}}
+@keyframes ll-mote{0%{opacity:0;transform:translate(1.5px,-1px)}30%,55%{opacity:1}100%{opacity:0;transform:translate(-2.5px,2px)}}
+@keyframes ll-halo{0%,100%{opacity:.65;transform:scale(.94)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes ll-sheen{0%{transform:translateX(-24px)}38%,100%{transform:translateX(70px)}}
+@media (prefers-reduced-motion:reduce){.ll *{animation:none!important}.ll .ll-l1,.ll .ll-l2{opacity:1}}
+html.luliy-calm .ll *{animation:none!important}html.luliy-calm .ll .ll-l1,html.luliy-calm .ll .ll-l2{opacity:1}
+/* Light appearance: deeper gold so the head stays visible on paper; no glow. */
+html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(1){stop-color:#d9b874}
+html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(2){stop-color:#c39a55}
+html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(3){stop-color:#a8803f}
+html[data-appearance=light] #luliy-brand-defs #ll-g stop:nth-child(4){stop-color:#8a6630}
+html[data-appearance=light] .ll .ll-b{filter:none}html[data-appearance=light] .ll .ll-hl{display:none}
+html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fill:#b48d4c}

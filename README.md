@@ -147,7 +147,7 @@ intro/                       开场脚本、视频与海报
 articles/Pxx/                独立文章静态页（Actions 生成）
 mirror/                      博客文章列表与文章页的备份副本（Actions 生成，供 /gh/ 中转兜底，见 9.4）
 functions/gh/[[path]].js     GitHub 内容中转（Pages Functions，地址 /gh/*，见 9.4）
-site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、home-early.js、design-tokens.*、runtime-fixes.py、pwa.py、sw.js、pwa/
+site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、home-early.js、design-tokens.*、runtime-fixes.py、brand.py、brand/、pwa.py、sw.js、pwa/
 sw.js / manifest.webmanifest  由 pwa.py 从 site-publish/ 复制，不要手改
 study/                       考研进度子应用（有自己的 _headers）
 works/                       作品子应用：408、英语二、数学、静钟（jingzhong）、考研看板等
@@ -234,7 +234,8 @@ python package-drive.py
 5. **开场脚本版本号**：按 `intro/intro.js` 的内容自动更新 `?v=`。
 6. **设计变量（颜色、动效、字体）**：最后运行 `site-publish/design-tokens.py`（也可单独运行）。见下方 5.1。
 7. **运行时修正（性能、无障碍）**：再运行 `site-publish/runtime-fixes.py`（也可单独运行）。见下方 5.3。
-8. **离线阅读与添加到主屏幕**：最后运行 `site-publish/pwa.py`。见下方 5.4。
+8. **品牌图标**：运行 `site-publish/brand.py`，把顶栏的 L 换成 `site-publish/brand/` 里的图标。见下方 5.5。
+9. **离线阅读与添加到主屏幕**：最后运行 `site-publish/pwa.py`。见下方 5.4。
 
 用法：
 
@@ -344,7 +345,7 @@ cc 外观的底色是一道靛蓝夜空渐变（参考 GTA VI 官网）：`--day
 | 顶栏 ULIY | 手机上指向文章列表 |
 | 滚动时收起控件 | 所有页面向下滑时顶栏淡出（文章页连同目录、回到顶部两个按钮）；往上滑、回到顶部附近或接近文末时出现。顶栏离开页顶后带一层底色渐变（`#header.luliy-washed::before`，向下延伸 24px 渐隐），不压字（`home-fixes.js` 第 4 段） |
 | 本节链接按钮 | 触屏上点击区域加大到约 30×42，图标大小不变 |
-| 开场画面 | 只在手机、每次会话第一次打开时出现：按当前外观（含深色的四套配色）的底色，思想者细线轮廓上有一点光绕行、缓慢呼吸；页面渲染好就淡出（至少 0.7 秒、最多 1.5 秒）。`sessionStorage` 的 `luliy-loader-seen` 记录本次已看过，刷新不再出现；`?intro=1` 时让给完整序幕。电脑端不显示 |
+| 开场画面 | 只在手机、每次会话第一次打开时出现：按当前外观（含深色的四套配色）的底色，品牌图标（沉思人像）的细线轮廓缓慢呼吸，最大的四块轮廓上有光绕行；页面渲染好就淡出（至少 0.7 秒、最多 1.5 秒）。`sessionStorage` 的 `luliy-loader-seen` 记录本次已看过，刷新不再出现；`?intro=1` 时让给完整序幕。电脑端不显示 |
 
 判断手机用屏幕尺寸而不是视口：`<head>` 最前面运行时，视口标签还没解析，手机报告的宽度是 980px。
 
@@ -449,6 +450,24 @@ cc 外观的底色是一道靛蓝夜空渐变（参考 GTA VI 官网）：`--day
 | 其他（Drive、登录、GitHub API、外站图片、视频、非 GET） | 不经过 Service Worker |
 
 读过的文章断网也能打开；第一次访问时 Service Worker 还没接管，从第二次访问开始生效。缓存名带版本号（`VERSION`），改规则时把它加一，旧缓存会在激活时清掉。要整体停用：把 `site-publish/sw.js` 换成只调用 `self.registration.unregister()` 的版本再发布，不要直接删掉 `/sw.js`。
+
+### 5.5 品牌图标：`site-publish/brand.py`
+
+LULIY 的 L 是一个金色的沉思人像：背是竖笔，裙摆的飘带是横笔（2026-10-23 起，取代原来的思想者）。`optimize-home.py` 在运行时修正之后运行 `brand.py`（可重复运行）：
+
+- 把 `site-publish/brand/mark.svg` 放进顶栏的图标链接（链接地址不变）；全局目录里的图标由页面脚本从顶栏复制；
+- 把共用的渐变、发光滤镜和扫光裁切（`site-publish/brand/defs.svg`）放在 `<body>` 开头，顶栏和目录两份图标共用，不会出现重复 id；
+- 删除旧的思想者渐变脚本和“图标保持静止”的旧样式；
+- 按 `favicon.svg` 和 `favicon.ico` 的内容更新它们的 `?v=`。
+
+| 位置 | 文件 | 说明 |
+|---|---|---|
+| 顶栏、目录 | `site-publish/brand/mark.svg` + `defs.svg` | 动画写在 `home-fixes.css` 的「Brand mark」一段：5 片叶子从背后轮流飘走、3 颗星芒闪烁、6 个光点明灭、头后的光晕呼吸、每 8 秒一道扫光。系统“减少动态效果”或站内“安静模式”（`html.luliy-calm`）时静止，只留两片叶子。浅色外观换深一档的金色，不发光 |
+| 原稿 | `site-publish/brand/luliy-l.svg` | 同一图形的独立动画 SVG，可直接用浏览器打开；以后改图形从这里改，再导出上面两个文件 |
+| 浏览器标签 | `favicon.svg`、`favicon.ico` | 只有人像，不发光；浏览器界面是浅色时用深一档的金色 |
+| 主屏图标 | `site-publish/pwa/*.png` | `#050505` 底，人像带光晕、两片叶子和星芒（静态）；maskable 版留足安全区 |
+| 手机开场画面 | `home-early.js` | 人像的细线轮廓，最大的四块轮廓上有光绕行 |
+| cc 粒子标题 | `runtime-fixes.py` | 粒子拼出的“Luliy”直接用顶栏图标的形状，按新图形的宽度（x 4–56）排版 |
 
 ---
 

@@ -1194,13 +1194,13 @@ window.LuliyChronicle={mount,mountFilters};
       if(message==='Luliy'){
         var symbol=document.querySelector('#header .brand-mark svg'),tail='uliy';
         var metrics=rasterContext.measureText(tail),symbolSize=fontSize*.92,gap=fontSize*.015;
-        var groupWidth=symbolSize*.6+gap+metrics.width;
+        var groupWidth=symbolSize*52/60+gap+metrics.width;
         var groupScale=Math.min(1,rw*.87/groupWidth);
         var baseline=rh/2+rasterContext.measureText('u').actualBoundingBoxDescent;
         rasterContext.save();rasterContext.translate(rw/2,rh/2);rasterContext.scale(groupScale,groupScale);rasterContext.translate(-groupWidth/2,-rh/2);
-        rasterContext.save();rasterContext.translate(-symbolSize*.2,baseline-symbolSize*58/60);rasterContext.scale(symbolSize/60,symbolSize/60);
+        rasterContext.save();rasterContext.translate(-symbolSize*4/60,baseline-symbolSize*58/60);rasterContext.scale(symbolSize/60,symbolSize/60);
         if(symbol)Array.from(symbol.querySelectorAll('rect,path,ellipse')).forEach(function(shape){rasterContext.save();rasterContext.globalAlpha=Number(shape.getAttribute('opacity')||1);if(shape.tagName.toLowerCase()==='path')rasterContext.fill(new Path2D(shape.getAttribute('d')));else if(shape.tagName.toLowerCase()==='rect')rasterContext.fillRect(+shape.getAttribute('x'),+shape.getAttribute('y'),+shape.getAttribute('width'),+shape.getAttribute('height'));else{rasterContext.beginPath();rasterContext.ellipse(+shape.getAttribute('cx'),+shape.getAttribute('cy'),+shape.getAttribute('rx'),+shape.getAttribute('ry'),0,0,Math.PI*2);rasterContext.fill();}rasterContext.restore();});
-        rasterContext.restore();rasterContext.textAlign='left';rasterContext.fillText(tail,symbolSize*.6+gap,rh/2);rasterContext.restore();
+        rasterContext.restore();rasterContext.textAlign='left';rasterContext.fillText(tail,symbolSize*52/60+gap,rh/2);rasterContext.restore();
       }else lines.forEach(function (part, index) {
         rasterContext.fillText(part, rw / 2, rh / 2 + (index - (lines.length - 1) / 2) * lineHeight, rw * 0.87);
       });
