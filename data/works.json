@@ -98,27 +98,16 @@
       "url": "https://jin.luliy.me/",
       "cover": "./assets/works/jingzhong.svg",
       "exam": false
-    },
-    {
-      "name": "test-luliy-lists-check",
-      "zh": "test-luliy-lists-check",
-      "en": "test-luliy-lists-check",
-      "ja": "test-luliy-lists-check",
-      "url": "./works/test-luliy-lists-check.html",
-      "cover": "",
-      "exam": false,
-      "draft": true
     }
   ],
   "knownPaths": [
     "408",
     "gpt-e2-data",
-    "gpt-english-2-exams.html",
-    "gpt-english-2.html",
     "jingzhong",
     "kaoyan-dashboard",
     "math-handbook",
     "math2",
-    "test-luliy-lists-check.html"
+    "gpt-english-2-exams.html",
+    "gpt-english-2.html"
   ]
 }
