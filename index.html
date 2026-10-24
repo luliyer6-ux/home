@@ -1157,6 +1157,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 <dialog class="directory" id="directory" aria-labelledby="directoryTitle">
  <div class="directory-top"><span id="directoryTitle">目录</span><button class="plain-close" data-close="directory" aria-label="关闭目录"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="menu-line line-top" d="M4 6h16"/><path class="menu-line line-middle" d="M4 12h16"/><path class="menu-line line-bottom" d="M4 18h16"/></svg></button></div>
  <div class="directory-main"><div class="directory-art" id="directoryArt" data-preview="books"><div class="directory-preview preview-books" aria-hidden="true"><div class="preview-book-stack"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span>THE STUDY</span></div><div class="directory-preview preview-projects" aria-hidden="true"><span class="preview-project-title">WORKS</span><span class="preview-project-list">CET4<br>Latter<br>408</span></div><div class="directory-preview preview-posts" aria-hidden="true"><div class="preview-paper"><span>ΔιάΝους</span><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="directory-preview preview-music" aria-hidden="true"><div class="preview-vinyl"><i></i></div><span>RECORDS</span></div><div class="directory-preview preview-about" aria-hidden="true"><img id="directoryPortrait" alt=""><span>LULIY</span></div><small id="directoryCaption">THE STUDY · 01 / 05</small></div><nav class="directory-links" id="directoryLinks" aria-label="完整目录"></nav></div>
+ <div class="directory-add-view" hidden><iframe id="directoryAddFrame" title="添加"></iframe></div>
  <div class="directory-bottom directory-other-bar"><details class="directory-other"><summary>Other <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg></summary><div class="directory-other-options"><a href="#/" class="directory-other-home" data-i18n="home">首页</a><button data-go-contact data-i18n="contact">联系</button><button data-search data-i18n="search">搜索</button><span class="directory-other-divider"></span><a href="https://blog.luliy.me/" target="_blank" rel="noopener noreferrer">Blog A</a><a href="https://cloud.luliy.me/" target="_blank" rel="noopener noreferrer">云盘</a><a href="https://mini.luliy.me/" target="_blank" rel="noopener noreferrer">Blog B</a><a class="directory-rss" href="https://luliy.me/feed.xml" target="_blank" rel="noopener noreferrer"><span data-rss-label>RSS 訂閱</span></a><a class="directory-issues" href="https://github.com/luliy6/luliy6.github.io/issues" target="_blank" rel="noopener noreferrer">Issues</a><a class="directory-add" href="/add/">+ 添加</a><span class="directory-other-divider"></span><button data-theme><span class="theme-disc" aria-hidden="true"></span><span data-i18n="theme">切换纸墨</span></button></div></details><div class="directory-quiet-language"><button class="directory-language-toggle" aria-expanded="false" aria-controls="directoryLanguageOptions"><span>中文</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></button><div id="directoryLanguageOptions" class="directory-language-options" hidden><button data-lang="zh">简体中文</button><button type="button" data-lang="zh-Hant">繁體中文</button><button data-lang="ja">日本語</button><button data-lang="en">English</button></div></div></div>
 </dialog>
 <dialog class="search-dialog" id="searchDialog" aria-labelledby="searchTitle">
@@ -1272,5 +1273,83 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script><script src="/reading-timeline.js?v=20261022-mobile" defer></script><script id="experience-layer-js" src="/assets/site/home/eda1d076c5f3.js"></script>
 
-<script src="/site-publish/home-fixes.js?v=02df3cae" async data-home-fixes></script></body>
+<script src="/site-publish/home-fixes.js?v=02df3cae" async data-home-fixes></script><style id="directory-add-style">
+#directory .directory-add-view{display:none;flex:1;min-height:0;overflow:auto}
+#directory.directory-add-mode .directory-main{display:none}
+#directory.directory-add-mode .directory-add-view{display:block}
+#directory .directory-add-view iframe{display:block;width:100%;height:100%;min-height:520px;border:0;background:transparent}
+#directory.directory-add-mode .plain-close{font-size:32px;line-height:1}
+</style>
+<script id="directory-add-js">(function(){
+'use strict';
+var dialog=document.getElementById('directory');
+if(!dialog)return;
+var closeBtn=dialog.querySelector('.plain-close');
+var mainView=dialog.querySelector('.directory-main');
+var addView=dialog.querySelector('.directory-add-view');
+var frame=document.getElementById('directoryAddFrame');
+var title=dialog.querySelector('#directoryTitle');
+if(!closeBtn||!mainView||!addView||!frame)return;
+var originalHTML=closeBtn.innerHTML;
+var originalLabel=closeBtn.getAttribute('aria-label')||'关闭目录';
+var originalTitle=title?title.textContent:'目录';
+var addMode=false,press=null,suppressUntil=0;
+function enterAdd(){
+  if(addMode)return;
+  addMode=true;
+  dialog.classList.add('directory-add-mode');
+  mainView.hidden=true;
+  addView.hidden=false;
+  if(!frame.getAttribute('src'))frame.setAttribute('src','/add/');
+  closeBtn.innerHTML='<span aria-hidden="true">+</span>';
+  closeBtn.setAttribute('aria-label','回到目录');
+  closeBtn.title='回到目录';
+  if(title)title.textContent='添加';
+}
+function exitAdd(){
+  if(!addMode)return;
+  addMode=false;
+  dialog.classList.remove('directory-add-mode');
+  mainView.hidden=false;
+  addView.hidden=true;
+  closeBtn.innerHTML=originalHTML;
+  closeBtn.setAttribute('aria-label',originalLabel);
+  closeBtn.title=originalLabel;
+  if(title)title.textContent=originalTitle;
+}
+dialog.addEventListener('close',function(){exitAdd();});
+window.addEventListener('message',function(e){
+  if(e.data==='luliy-add-close'&&dialog.open)dialog.close();
+});
+document.addEventListener('pointerdown',function(e){
+  var btn=e.target.closest?e.target.closest('#directory .plain-close'):null;
+  if(!btn||!dialog.open)return;
+  e.stopPropagation();
+  press={id:e.pointerId,x:e.clientX,y:e.clientY,start:performance.now()};
+},true);
+document.addEventListener('pointermove',function(e){
+  if(press&&e.pointerId===press.id&&Math.hypot(e.clientX-press.x,e.clientY-press.y)>12)press=null;
+},{passive:true});
+document.addEventListener('pointerup',function(e){
+  if(!press||e.pointerId!==press.id)return;
+  var held=performance.now()-press.start>=650;
+  var b=closeBtn.getBoundingClientRect();
+  var inside=e.clientX>=b.left&&e.clientX<=b.right&&e.clientY>=b.top&&e.clientY<=b.bottom;
+  press=null;
+  if(held&&inside){
+    suppressUntil=performance.now()+800;
+    if(!addMode)enterAdd();
+  }
+},true);
+document.addEventListener('pointercancel',function(){press=null;},true);
+document.addEventListener('click',function(e){
+  var btn=e.target.closest?e.target.closest('#directory .plain-close'):null;
+  if(performance.now()<suppressUntil){
+    if(btn){e.preventDefault();e.stopPropagation();}
+    return;
+  }
+  if(addMode&&btn){e.preventDefault();e.stopPropagation();exitAdd();}
+},true);
+})();</script>
+</body>
 </html>
