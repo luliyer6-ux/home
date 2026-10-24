@@ -24,6 +24,11 @@ data/, works/, music/ or photos/ changes. It:
   6. Inserts the directory Other "添加" entry (linking to /add/) right
      after the Issues link in index.html, if it is not there yet, so
      the entry survives future rebuilds of the lists.
+  7. Inserts the directory add view: a hidden iframe panel between
+     directory-main and directory-bottom, plus the script that makes
+     a long-press on the directory close button (×) enter add mode
+     (the button becomes +, tapping it returns to the directory),
+     instead of toggling full screen while the directory is open.
 
 Idempotent: with unchanged inputs it changes nothing. Any failed
 sanity check raises, so the workflow stops before committing.
@@ -281,6 +286,105 @@ def patch_index_html(text):
     return text.replace(ADD_ANCHOR, ADD_ANCHOR + ADD_LINK, 1), True
 
 
+ADD_VIEW_HTML = ('<div class="directory-add-view" hidden>'
+                 '<iframe id="directoryAddFrame" title="添加"></iframe></div>')
+ADD_VIEW_ANCHOR = '</nav></div>\n <div class="directory-bottom directory-other-bar">'
+ADD_STYLE = """<style id="directory-add-style">
+#directory .directory-add-view{display:none;flex:1;min-height:0;overflow:auto}
+#directory.directory-add-mode .directory-main{display:none}
+#directory.directory-add-mode .directory-add-view{display:block}
+#directory .directory-add-view iframe{display:block;width:100%;height:100%;min-height:520px;border:0;background:transparent}
+#directory.directory-add-mode .plain-close{font-size:32px;line-height:1}
+</style>"""
+ADD_SCRIPT = """<script id="directory-add-js">(function(){
+'use strict';
+var dialog=document.getElementById('directory');
+if(!dialog)return;
+var closeBtn=dialog.querySelector('.plain-close');
+var mainView=dialog.querySelector('.directory-main');
+var addView=dialog.querySelector('.directory-add-view');
+var frame=document.getElementById('directoryAddFrame');
+var title=dialog.querySelector('#directoryTitle');
+if(!closeBtn||!mainView||!addView||!frame)return;
+var originalHTML=closeBtn.innerHTML;
+var originalLabel=closeBtn.getAttribute('aria-label')||'关闭目录';
+var originalTitle=title?title.textContent:'目录';
+var addMode=false,press=null,suppressUntil=0;
+function enterAdd(){
+  if(addMode)return;
+  addMode=true;
+  dialog.classList.add('directory-add-mode');
+  mainView.hidden=true;
+  addView.hidden=false;
+  if(!frame.getAttribute('src'))frame.setAttribute('src','/add/');
+  closeBtn.innerHTML='<span aria-hidden="true">+</span>';
+  closeBtn.setAttribute('aria-label','回到目录');
+  closeBtn.title='回到目录';
+  if(title)title.textContent='添加';
+}
+function exitAdd(){
+  if(!addMode)return;
+  addMode=false;
+  dialog.classList.remove('directory-add-mode');
+  mainView.hidden=false;
+  addView.hidden=true;
+  closeBtn.innerHTML=originalHTML;
+  closeBtn.setAttribute('aria-label',originalLabel);
+  closeBtn.title=originalLabel;
+  if(title)title.textContent=originalTitle;
+}
+dialog.addEventListener('close',function(){exitAdd();});
+window.addEventListener('message',function(e){
+  if(e.data==='luliy-add-close'&&dialog.open)dialog.close();
+});
+document.addEventListener('pointerdown',function(e){
+  var btn=e.target.closest?e.target.closest('#directory .plain-close'):null;
+  if(!btn||!dialog.open)return;
+  e.stopPropagation();
+  press={id:e.pointerId,x:e.clientX,y:e.clientY,start:performance.now()};
+},true);
+document.addEventListener('pointermove',function(e){
+  if(press&&e.pointerId===press.id&&Math.hypot(e.clientX-press.x,e.clientY-press.y)>12)press=null;
+},{passive:true});
+document.addEventListener('pointerup',function(e){
+  if(!press||e.pointerId!==press.id)return;
+  var held=performance.now()-press.start>=650;
+  var b=closeBtn.getBoundingClientRect();
+  var inside=e.clientX>=b.left&&e.clientX<=b.right&&e.clientY>=b.top&&e.clientY<=b.bottom;
+  press=null;
+  if(held&&inside){
+    suppressUntil=performance.now()+800;
+    if(!addMode)enterAdd();
+  }
+},true);
+document.addEventListener('pointercancel',function(){press=null;},true);
+document.addEventListener('click',function(e){
+  var btn=e.target.closest?e.target.closest('#directory .plain-close'):null;
+  if(performance.now()<suppressUntil){
+    if(btn){e.preventDefault();e.stopPropagation();}
+    return;
+  }
+  if(addMode&&btn){e.preventDefault();e.stopPropagation();exitAdd();}
+},true);
+})();</script>"""
+
+
+def patch_directory_add(text):
+    """Insert the directory add view (iframe panel + long-press script)."""
+    if "directory-add-view" in text:
+        return text, False
+    if ADD_VIEW_ANCHOR not in text:
+        fail("index.html: directory-main / directory-bottom anchor not found")
+    if "</body>" not in text:
+        fail("index.html: </body> not found, cannot insert directory add script")
+    text = text.replace(
+        ADD_VIEW_ANCHOR,
+        '</nav></div>\n ' + ADD_VIEW_HTML + '\n <div class="directory-bottom directory-other-bar">', 1)
+    text = text.replace("</body>", ADD_STYLE + "\n" + ADD_SCRIPT + "\n</body>", 1)
+    print("build_lists: index.html directory add view inserted")
+    return text, True
+
+
 def regenerate_data_chunk(chunk_text, songs, works):
     prefix = "window.LULIY_DATA="
     if not chunk_text.startswith(prefix):
@@ -391,6 +495,7 @@ def main():
             cc_path, new_cc.encode("utf-8"), index_text)
 
     index_text, _ = patch_index_html(index_text)
+    index_text, _ = patch_directory_add(index_text)
 
     INDEX_HTML.write_text(index_text, encoding="utf-8")
 
