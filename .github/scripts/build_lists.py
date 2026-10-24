@@ -290,15 +290,15 @@ ADD_VIEW_HTML = ('<div class="directory-add-view" hidden>'
                  '<iframe id="directoryAddFrame" title="添加"></iframe></div>')
 ADD_VIEW_ANCHOR = '</nav></div>\n <div class="directory-bottom directory-other-bar">'
 ADD_STYLE = """<style id="directory-add-style">
-/* directory-add v2 */
+/* directory-add v3 */
 #directory .directory-add-view{display:none;flex:1;min-height:0;overflow:auto}
 #directory.directory-add-mode .directory-main{display:none}
 #directory.directory-add-mode .directory-add-view{display:block;animation:directory-add-in 260ms cubic-bezier(.19,1,.22,1)}
 #directory .directory-add-view iframe{display:block;width:100%;height:100%;min-height:520px;border:0;background:transparent}
-#directory .plain-close .menu-line{transition:transform 280ms cubic-bezier(.19,1,.22,1),opacity 280ms cubic-bezier(.19,1,.22,1)}
-#directory.directory-add-mode .plain-close .line-top{transform:translateY(8px);transform-origin:16px 16px}
-#directory.directory-add-mode .plain-close .line-bottom{transform:translateY(-8px) rotate(90deg);transform-origin:16px 16px}
-#directory.directory-add-mode .plain-close .line-middle{opacity:0}
+html body #directory.directory-add-mode .plain-close svg .menu-line{transition:transform 280ms cubic-bezier(.19,1,.22,1),rotate 280ms cubic-bezier(.19,1,.22,1),opacity 280ms cubic-bezier(.19,1,.22,1)}
+html body #directory.directory-add-mode .plain-close svg .menu-line.line-top{transform:translateY(8px);rotate:0deg;transform-origin:16px 16px}
+html body #directory.directory-add-mode .plain-close svg .menu-line.line-bottom{transform:translateY(-8px);rotate:90deg;transform-origin:16px 16px}
+html body #directory.directory-add-mode .plain-close svg .menu-line.line-middle{opacity:0}
 #directory #directoryTitle{transition:opacity 200ms cubic-bezier(.19,1,.22,1),transform 200ms cubic-bezier(.19,1,.22,1)}
 #directory.directory-add-mode #directoryTitle{opacity:.85}
 @keyframes directory-add-in{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
@@ -307,15 +307,13 @@ ADD_STYLE = """<style id="directory-add-style">
 #directory.directory-add-leaving .directory-add-view{display:none}
 #directory.directory-add-exiting .directory-add-view{animation:directory-add-out 180ms cubic-bezier(.65,.35,1,1) forwards}
 #directory.directory-main-in .directory-main{animation:directory-add-in 260ms cubic-bezier(.19,1,.22,1)}
-@media (min-width:900px){
-#directory.directory-add-mode{width:min(1100px,92vw);max-width:min(1100px,92vw);transition:width 280ms cubic-bezier(.19,1,.22,1),max-width 280ms cubic-bezier(.19,1,.22,1)}
-}
+/* v3: dialog stays full-screen; add page centers its own 1200px content, so no right-side blank */
 @media (prefers-reduced-motion:reduce){
 #directory .plain-close .menu-line,#directory #directoryTitle,#directory .directory-add-view{transition:none;animation:none}
 #directory.directory-add-mode{transition:none}
 }
 </style>"""
-ADD_SCRIPT = """<script id="directory-add-js">/* directory-add v2 */(function(){
+ADD_SCRIPT = """<script id="directory-add-js">/* directory-add v3 */(function(){
 'use strict';
 var dialog=document.getElementById('directory');
 if(!dialog)return;
@@ -432,11 +430,11 @@ document.addEventListener('click',function(e){
 def patch_directory_add(text):
     """Insert the directory add view (iframe panel + long-press script).
 
-    v2 marker: if an older add view is present without the v2 marker,
+    v3 marker: if an older add view is present without the v3 marker,
     replace its style/script blocks in place instead of inserting a
     second copy.
     """
-    if "directory-add v2" in text:
+    if "directory-add v3" in text:
         return text, False
     if "directory-add-view" in text:
         new_text, n_style = re.subn(
@@ -447,7 +445,7 @@ def patch_directory_add(text):
             count=1, flags=re.S)
         if n_style != 1 or n_script != 1:
             fail("index.html: old directory add style/script blocks not found for v2 upgrade")
-        print("build_lists: index.html directory add style/script upgraded to v2")
+        print("build_lists: index.html directory add style/script upgraded to v3")
         return new_text, True
     if ADD_VIEW_ANCHOR not in text:
         fail("index.html: directory-main / directory-bottom anchor not found")

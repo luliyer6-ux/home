@@ -24,7 +24,8 @@
   details.token summary::-webkit-details-marker{display:none}
   .token-body{margin-top:12px}
   label{display:block;font-size:13px;margin:12px 0 4px;color:var(--muted)}
-  input[type=text],input[type=url],input[type=password],input[type=color],select{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:15px}
+  input[type=text],input[type=url],input[type=password],select{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:15px}
+  input[type=color]{width:100%;box-sizing:border-box;height:44px;padding:4px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer}
   input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-color:var(--accent)}
   .tabs{display:flex;gap:8px;flex-wrap:wrap}
   .tabs button,.mode button{padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-size:14px;cursor:pointer}
@@ -42,7 +43,7 @@
   .side-col{margin-top:20px}
   .card{background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:16px}
   .card img{width:100%;max-height:240px;object-fit:cover;border-radius:8px;display:block;margin-bottom:12px}
-  .card .cover-block{height:120px;border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--paper);background:var(--accent)}
+  .card .cover-block{height:80px;border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--paper);background:var(--accent)}
   .card h3{margin:0 0 4px;font-size:17px;color:var(--ink)}
   .card p{margin:0;font-size:14px;color:var(--muted)}
   .card .badge{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-top:8px;color:var(--muted)}
@@ -54,8 +55,8 @@
   #success{display:none;background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
   #success .ok{color:var(--text)}
   .small{font-size:13px;color:var(--muted)}
-  @media (min-width:900px){
-    main{max-width:none;padding:24px 32px 32px}
+  @media (min-width:600px){
+    main{max-width:1200px;padding:24px 32px 32px}
     body.in-directory main{padding:8px 16px 24px}
     .layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:32px;align-items:start}
     .side-col{margin-top:0;position:sticky;top:24px}
@@ -222,8 +223,7 @@ function syncTokenState(){
   var has=!!token();
   $('tokenStateLine').textContent=has?'已保存':'未设置';
   $('tokenSummary').textContent='钥匙';
-  if(has) $('tokenDetails').removeAttribute('open');
-  else $('tokenDetails').setAttribute('open','');
+  $('tokenDetails').removeAttribute('open');
   if(has) $('token').value='';
 }
 function switchType(t){
@@ -328,8 +328,8 @@ function currentEntry(){
 function renderPreview(imgData){
   var e=currentEntry(),html='';
   if(type==='song'){
-    var initial=(e.zh||'?').charAt(0);
-    html=(e.cover?'<img src="'+esc(e.cover)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="cover-block" style="background:'+esc(e.color)+'">'+esc(initial)+'</div>')
+    var initial=(e.zh||'').charAt(0);
+    html=(e.cover?'<img src="'+esc(e.cover)+'" alt="" onerror="this.style.display=\'none\'">':(initial?'<div class="cover-block" style="background:'+esc(e.color)+'">'+esc(initial)+'</div>':'<p class="small">填写后这里会实时预览。</p>'))
       +'<h3>'+esc(e.zh||'未填歌名')+'</h3><p>'+esc(e.src||'未选文件或未填直链')+'</p>'
       +'<span class="badge">'+(e.duration?esc(e.duration)+' 秒':'时长未填')+'</span>'
       +(e.draft?' <span class="badge">草稿</span>':'');
@@ -388,7 +388,7 @@ function decodeB64(b64){
 $('publish').addEventListener('click',async function(){
   var btn=$('publish');
   try{
-    if(!token()){setStatus('尚未保存钥匙：先在钥匙区粘贴并保存。',true);return}
+    if(!token()){$('tokenDetails').setAttribute('open','');setStatus('尚未保存钥匙：先在钥匙区粘贴并保存。',true);return}
     var e=currentEntry(),file=null,targetPath='',dataPath='',goHref='/',goText='去看看';
     if(type==='song'){
       if(!e.zh) throw new Error('请填写歌名（中文）。');
