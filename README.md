@@ -1,6 +1,6 @@
 # LULIY 网站搭建、构建与维护指南
 
-核对日期：2026-10-19。本文依据本地源码说明、`luliyer6-ux/home` 仓库现状、Cloudflare Pages 实际部署与线上检查整理。上一版（2026-10-09）的内容全部保留并补充；新增内容主要是首页优化步骤、分支预览发布、404 与重定向规则、路由说明和风险清单。
+核对日期：2026-10-24。本文依据本地源码说明、`luliyer6-ux/home` 仓库现状、Cloudflare Pages 实际部署与线上检查整理。上一版（2026-10-19）的内容全部保留并补充；2026-10-24 新增：唱片与作品列表改为数据文件驱动，不再需要本机 `build-preview.py` 才能改列表（见 7.4 节）。
 
 ---
 
@@ -9,6 +9,9 @@
 | 我要…… | 做法 | 详见 |
 |---|---|---|
 | 发一篇文章 | 在 Blog A（Gmeek）发布；想立即生成独立页就手动运行 Actions | 第 7 节 |
+| 加一首公开歌曲 | 传 mp3 到 `music/`，或在 `data/songs.json` 里加一条（含 R2 直链）；推送后 Action 自动重生成 | 第 7.4 节 |
+| 加一个作品 | 传 HTML 或文件夹到 `works/`，或在 `data/works.json` 里加一条；推送后 Action 自动登记 | 第 7.4 节 |
+| 删一个作品或歌曲 | 只删文件不够，还要同步删 `data/works.json` / `data/songs.json` 里的条目 | 第 7.4 节 |
 | 改首页界面 | 改本机源模块 → `build-preview.py` → `package-drive.py` → 放入 home 仓库 → `optimize-home.py` → 推分支看预览 → 合并 | 第 4、5、6 节 |
 | 上线后自检 | 第 6.4 节的清单与命令 | 第 6 节 |
 | 回退 | Git 回退提交，或在 Pages 部署历史里把旧部署设为正式 | 第 9 节 |
@@ -150,9 +153,11 @@ functions/gh/[[path]].js     GitHub 内容中转（Pages Functions，地址 /gh/
 site-publish/                generate.py、optimize-home.py、article.css、home-fixes.css/js、home-early.js、design-tokens.*、runtime-fixes.py、brand.py、brand/、pwa.py、sw.js、pwa/
 sw.js / manifest.webmanifest  由 pwa.py 从 site-publish/ 复制，不要手改
 study/                       考研进度子应用（有自己的 _headers）
-works/                       作品子应用：408、英语二、数学、静钟（jingzhong）、考研看板等
+works/                       作品子应用：408、英语二、数学、静钟（jingzhong）、考研看板等；顶层新 HTML 或文件夹会被 7.4 的流程自动登记为草稿作品
+data/                         唱片与作品列表的数据源：`songs.json`（18 首，2026-10-24）、`works.json`（11 个，2026-10-24）
+music/                        新音频文件放这里会被自动登记为草稿歌曲（见 7.4）
 feed.xml / sitemap.xml / robots.txt / public-articles.json
-.github/workflows/public-articles.yml
+.github/workflows/public-articles.yml、.github/workflows/build-lists.yml（唱片与作品列表重生成，见 7.4）
 *.md                         各类说明文档（会被公开发布，可直接下载）
 ```
 
@@ -524,7 +529,7 @@ git push -u origin 改动名称
 
 ### 6.3 发布时不要遗漏
 
-`assets/`、`articles/`、`site-publish/`（含 `optimize-home.py`、`home-fixes.*`）、RSS 与索引、`_headers`、`_redirects`、`404.html`、`favicon.ico`、指南下载文件；自动文章更新还需要 `.github/workflows/public-articles.yml`。
+`assets/`、`articles/`、`site-publish/`（含 `optimize-home.py`、`home-fixes.*`）、RSS 与索引、`_headers`、`_redirects`、`404.html`、`favicon.ico`、指南下载文件；自动文章更新还需要 `.github/workflows/public-articles.yml、.github/workflows/build-lists.yml（唱片与作品列表重生成，见 7.4）`。
 
 不要把 `tg-s3`、整个本地工程或历史预览上传成公开静态文件。
 
@@ -586,6 +591,55 @@ python site-publish/generate.py preview
 所以主站文章列表（浏览器实时读取公开数据）和独立文章页（依赖生成和部署）可能短时间不同步。更新文章后手动运行一次工作流程，并确认 Pages 部署完成，就能缩短这段差异。
 
 ---
+
+
+### 7.4 唱片与作品列表（2026-10-24 起：数据文件驱动）
+
+以前唱片 18 首和作品 11 个的列表写死在网站数据块和主脚本里，改列表要靠本机源工程跑 `build-preview.py` 重新构建发布。现在列表的数据源是仓库里的两个数据文件，推送后由 GitHub Actions 自动重生成网站数据，**不用再跑本机构建**。文章（7.1–7.3）和私人歌曲（Drive「加入唱片」，仅登录可见）的做法不变。
+
+**数据文件（仓库根目录）**
+
+| 文件 | 内容（2026-10-24） |
+|---|---|
+| `data/songs.json` | 公开唱片 18 首：每首含 `id`、三语歌名 `name{zh,en,ja}`、音频地址 `src`、时长秒数 `duration`（没有就填 `null`，现有 13 首就是 `null`）、主色 `color`、封面 `cover` |
+| `data/works.json` | 作品 11 个：每项含名称、三语简介、链接 `url`、封面 `cover`、`exam`（`true` 进真題區，`false` 进網頁）；另有 `knownPaths`，记录已登记过的 `works/` 路径，防止重复登记 |
+
+**自动流程：`.github/workflows/build-lists.yml` + `.github/scripts/build_lists.py`**
+
+触发条件（任一）：推送改动了 `data/**`、`works/**`、`music/**`、重生成脚本或 workflow 本身；或在仓库 Actions 里手动运行。流程：
+
+1. 登记草稿：`works/` 顶层新增的 `.html` 文件或文件夹、以及 `music/` 里新增的音频文件，会被自动加进数据文件，标记 `draft: true`（作品名默认取文件名，`exam: false`，封面为空，之后要在数据文件里补全名称、简介和封面）。
+2. 探时长：用 `ffprobe` 尽力而为地给新歌探时长，探不到就保持 `null`，不阻塞发布。
+3. 重生成数据块：从两个数据文件重写数据块里的 `records` / `recordCovers` / `projects` / `projectCovers`。
+4. 修补主脚本：删掉主脚本里原来写死的后加 7 个作品的 `.concat([...])` 段，按 `works.json` 的 `exam` 标记重写真题链接名单。
+5. 换名防缓存：内容变了的文件按 sha256 前 12 位改名，并同步改 `index.html` 里的引用；再做 `node --check` 和引用存在性校验。无变更时零改动。
+6. 提交：由 `github-actions[bot]` 提交，提交信息是 `chore: rebuild song/work lists from data`。bot 的提交不会再次触发本流程；**提交信息里绝不能带 `[skip ci]`，Cloudflare Pages 会跳过部署**。
+
+**为什么不是“网页运行时直接读 JSON”**：唱片播放器在脚本加载时就读定了 `LULIY_DATA.collections.records`，Drive 的 `mediaLibrary.upsert` 只供私人曲目（强制私人、空地址），不能用来加公开歌曲；再加上 `_headers` 对 `/assets/site/*` 设了一年 immutable 缓存、Service Worker 对其 cache-first，改 chunk 必须换哈希文件名。所以只能在推送时重生成，访客那边的体验是一样的：传文件或贴直链，推送后自动上线。
+
+**加一首公开歌曲（三选一）**
+
+- 传 mp3 到 `music/`：自动登记为草稿歌曲，`src` 为 `./music/<文件名>`。
+- 在 `data/songs.json` 里加一条：`src` 可以是 Drive `shared/` 的音频地址，也可以是 R2 直链。
+- 私人歌曲不变：在 Drive 上传后点「加入唱片」，马上出现但只有登录时可见，不需要发布。
+
+**加一个作品（二选一）**
+
+- 传 HTML 文件或文件夹到 `works/` 顶层：自动登记为草稿作品，`url` 为 `./works/<文件名>` 或 `./works/<文件夹名>/`。
+- 在 `data/works.json` 里加一条：写清名称、三语简介、链接和封面，`exam` 决定进真題區还是網頁。
+
+**删一个作品或歌曲（必须两步）**
+
+只删 `works/` 或 `music/` 里的文件不够，数据文件里的条目不会自动消失，会留一个指向不存在文件的空条目。正确顺序：先删文件并推送，再把数据文件里对应的条目（作品还要删 `knownPaths` 里的对应路径）删掉并推送；第二步的 Action 跑完后，网站数据里才真正没有它。
+
+**一个硬限制：workflow 文件不能走 API 推送**
+
+`.github/workflows/build-lists.yml` 不能经 Muse 的 GitHub 集成用 API 创建或修改——即使应用已是 All repositories + 代码读写权限，也会报 `403 Resource not accessible by integration`，整批推送都会被挡回（2026-10-24 实测：去掉 workflow 文件后，其余 3 个文件一次推成功）。workflow 文件只能在 GitHub 网页上手动建或传；**不要删它，删了自动更新就停了**。其他文件（数据文件、重生成脚本）走 API 没有这个问题。
+
+**验证（2026-10-24 实测）**
+
+- 传 `works/test-luliy-lists-check.html` 后，bot 约 40 秒内提交，`data/works.json` 从 11 个变成 12 个（含草稿测试项）；按上面两步清理后，bot 再跑一次，作品回到 11 个，测试文件与测试条目均已不在仓库。
+- 上线后检查：确认 Pages 部署对应的提交号，再用无痕窗口或强制刷新打开 `luliy.me`（旧 chunk 有一年 immutable 缓存，老访客要等新引用生效）。
 
 ## 8. Drive 后台的搭建顺序
 
@@ -738,7 +792,7 @@ python site-publish/generate.py preview
 
 ## 13. 已知风险与待办（按优先级）
 
-1. **源工程只在本机**：把源工程和原始快照放进私有 GitHub 仓库；之后可以让 Actions 在云端自动跑“生成 → 优化 → 发布”。
+1. **源工程只在本机**：把源工程和原始快照放进私有 GitHub 仓库；之后可以让 Actions 在云端自动跑“生成 → 优化 → 发布”。（2026-10-24 注：唱片与作品列表已不再依赖本机，见 7.4；但首页界面本身的重建仍依赖本机。）
 2. **把优化步骤并入构建**：把 `optimize-home.py` 并入 `package-drive.py`，或者把它的拆分逻辑写进 `site-release.py`，避免漏跑。
 3. **Three.js 等大脚本仍在首页启动时加载**：在源工程里改成需要时再加载（唱片区进入视野、打开书房时），首次访问还能再省约 0.6 MB。
 4. **文章封面图偏大**（2000px 以上的 PNG，存放在博客仓库和网盘）：在源头转成 WebP 并控制尺寸。国内访客现在经由 `/gh/` 中转读取这些图（9.4），图越大，首次加载越慢。
