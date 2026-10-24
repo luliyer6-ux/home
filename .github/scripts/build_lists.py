@@ -290,13 +290,32 @@ ADD_VIEW_HTML = ('<div class="directory-add-view" hidden>'
                  '<iframe id="directoryAddFrame" title="添加"></iframe></div>')
 ADD_VIEW_ANCHOR = '</nav></div>\n <div class="directory-bottom directory-other-bar">'
 ADD_STYLE = """<style id="directory-add-style">
+/* directory-add v2 */
 #directory .directory-add-view{display:none;flex:1;min-height:0;overflow:auto}
 #directory.directory-add-mode .directory-main{display:none}
-#directory.directory-add-mode .directory-add-view{display:block}
+#directory.directory-add-mode .directory-add-view{display:block;animation:directory-add-in 260ms cubic-bezier(.19,1,.22,1)}
 #directory .directory-add-view iframe{display:block;width:100%;height:100%;min-height:520px;border:0;background:transparent}
-#directory.directory-add-mode .plain-close{font-size:32px;line-height:1}
+#directory .plain-close .menu-line{transition:transform 280ms cubic-bezier(.19,1,.22,1),opacity 280ms cubic-bezier(.19,1,.22,1)}
+#directory.directory-add-mode .plain-close .line-top{transform:translateY(8px);transform-origin:16px 16px}
+#directory.directory-add-mode .plain-close .line-bottom{transform:translateY(-8px) rotate(90deg);transform-origin:16px 16px}
+#directory.directory-add-mode .plain-close .line-middle{opacity:0}
+#directory #directoryTitle{transition:opacity 200ms cubic-bezier(.19,1,.22,1),transform 200ms cubic-bezier(.19,1,.22,1)}
+#directory.directory-add-mode #directoryTitle{opacity:.85}
+@keyframes directory-add-in{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes directory-add-out{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(32px)}}
+#directory.directory-add-leaving .directory-main{animation:directory-add-out 180ms cubic-bezier(.65,.35,1,1) forwards}
+#directory.directory-add-leaving .directory-add-view{display:none}
+#directory.directory-add-exiting .directory-add-view{animation:directory-add-out 180ms cubic-bezier(.65,.35,1,1) forwards}
+#directory.directory-main-in .directory-main{animation:directory-add-in 260ms cubic-bezier(.19,1,.22,1)}
+@media (min-width:900px){
+#directory.directory-add-mode{width:min(1100px,92vw);max-width:min(1100px,92vw);transition:width 280ms cubic-bezier(.19,1,.22,1),max-width 280ms cubic-bezier(.19,1,.22,1)}
+}
+@media (prefers-reduced-motion:reduce){
+#directory .plain-close .menu-line,#directory #directoryTitle,#directory .directory-add-view{transition:none;animation:none}
+#directory.directory-add-mode{transition:none}
+}
 </style>"""
-ADD_SCRIPT = """<script id="directory-add-js">(function(){
+ADD_SCRIPT = """<script id="directory-add-js">/* directory-add v2 */(function(){
 'use strict';
 var dialog=document.getElementById('directory');
 if(!dialog)return;
@@ -306,37 +325,78 @@ var addView=dialog.querySelector('.directory-add-view');
 var frame=document.getElementById('directoryAddFrame');
 var title=dialog.querySelector('#directoryTitle');
 if(!closeBtn||!mainView||!addView||!frame)return;
-var originalHTML=closeBtn.innerHTML;
 var originalLabel=closeBtn.getAttribute('aria-label')||'关闭目录';
 var originalTitle=title?title.textContent:'目录';
-var addMode=false,press=null,suppressUntil=0;
-function enterAdd(){
-  if(addMode)return;
+var addMode=false,press=null,suppressUntil=0,switchTimer=0;
+var reducedMotion=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function postTheme(){
+  if(!frame.contentWindow)return;
+  var root=document.documentElement;
+  frame.contentWindow.postMessage({type:'luliy-theme',appearance:root.dataset.appearance,palette:root.dataset.palette||''},location.origin);
+}
+function showAdd(){
   addMode=true;
   dialog.classList.add('directory-add-mode');
+  dialog.classList.remove('directory-add-leaving');
+  dialog.classList.remove('directory-add-exiting');
   mainView.hidden=true;
   addView.hidden=false;
   if(!frame.getAttribute('src'))frame.setAttribute('src','/add/');
-  closeBtn.innerHTML='<span aria-hidden="true">+</span>';
   closeBtn.setAttribute('aria-label','回到目录');
   closeBtn.title='回到目录';
   if(title)title.textContent='添加';
+  postTheme();
+  closeBtn.focus();
+}
+function enterAdd(){
+  if(addMode)return;
+  if(reducedMotion){showAdd();return;}
+  dialog.classList.add('directory-add-leaving');
+  clearTimeout(switchTimer);
+  switchTimer=setTimeout(showAdd,180);
+}
+function showDirectory(){
+  addMode=false;
+  dialog.classList.remove('directory-add-mode');
+  dialog.classList.remove('directory-add-leaving');
+  dialog.classList.remove('directory-add-exiting');
+  mainView.hidden=false;
+  addView.hidden=true;
+  closeBtn.setAttribute('aria-label',originalLabel);
+  closeBtn.title=originalLabel;
+  if(title)title.textContent=originalTitle;
+  if(!reducedMotion){
+    dialog.classList.add('directory-main-in');
+    setTimeout(function(){dialog.classList.remove('directory-main-in');},300);
+  }
+  closeBtn.focus();
 }
 function exitAdd(){
   if(!addMode)return;
+  if(reducedMotion){showDirectory();return;}
+  dialog.classList.add('directory-add-exiting');
+  clearTimeout(switchTimer);
+  switchTimer=setTimeout(showDirectory,180);
+}
+function forceReset(){
+  clearTimeout(switchTimer);
   addMode=false;
   dialog.classList.remove('directory-add-mode');
+  dialog.classList.remove('directory-add-leaving');
+  dialog.classList.remove('directory-add-exiting');
   mainView.hidden=false;
   addView.hidden=true;
-  closeBtn.innerHTML=originalHTML;
   closeBtn.setAttribute('aria-label',originalLabel);
   closeBtn.title=originalLabel;
   if(title)title.textContent=originalTitle;
 }
-dialog.addEventListener('close',function(){exitAdd();});
+dialog.addEventListener('close',function(){forceReset();});
 window.addEventListener('message',function(e){
   if(e.data==='luliy-add-close'&&dialog.open)dialog.close();
 });
+if(window.MutationObserver){
+  new MutationObserver(function(){if(addMode)postTheme();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-appearance','data-palette']});
+}
 document.addEventListener('pointerdown',function(e){
   var btn=e.target.closest?e.target.closest('#directory .plain-close'):null;
   if(!btn||!dialog.open)return;
@@ -370,9 +430,25 @@ document.addEventListener('click',function(e){
 
 
 def patch_directory_add(text):
-    """Insert the directory add view (iframe panel + long-press script)."""
-    if "directory-add-view" in text:
+    """Insert the directory add view (iframe panel + long-press script).
+
+    v2 marker: if an older add view is present without the v2 marker,
+    replace its style/script blocks in place instead of inserting a
+    second copy.
+    """
+    if "directory-add v2" in text:
         return text, False
+    if "directory-add-view" in text:
+        new_text, n_style = re.subn(
+            r'<style id="directory-add-style">.*?</style>', ADD_STYLE, text,
+            count=1, flags=re.S)
+        new_text, n_script = re.subn(
+            r'<script id="directory-add-js">.*?</script>', ADD_SCRIPT, new_text,
+            count=1, flags=re.S)
+        if n_style != 1 or n_script != 1:
+            fail("index.html: old directory add style/script blocks not found for v2 upgrade")
+        print("build_lists: index.html directory add style/script upgraded to v2")
+        return new_text, True
     if ADD_VIEW_ANCHOR not in text:
         fail("index.html: directory-main / directory-bottom anchor not found")
     if "</body>" not in text:
