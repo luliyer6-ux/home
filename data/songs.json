@@ -215,5 +215,18 @@
     "color": "#98a79b",
     "cover": "assets/site/known-your-name-fd79ecf3119a.svg",
     "coverInline": "assets/site/known-your-name-fd79ecf3119a.svg"
+  },
+  {
+    "id": "track",
+    "name": {
+      "zh": "在加納共和國離婚",
+      "en": "在加納共和國離婚",
+      "ja": "在加納共和國離婚"
+    },
+    "src": "./music/在加納共和國離婚.mp3",
+    "duration": 262,
+    "color": "#9a8f83",
+    "cover": "",
+    "draft": true
   }
 ]
