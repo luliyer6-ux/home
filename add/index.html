@@ -51,6 +51,9 @@
   button.primary:disabled{opacity:.5}
   button.ghost{padding:9px 14px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--text);cursor:pointer}
   #status{white-space:pre-wrap;font-size:14px;color:var(--accent);min-height:1.6em;margin-top:12px}
+  .progress{display:none;height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:10px}
+  .progress i{display:block;height:100%;width:0%;background:var(--accent)}
+  #progressText{display:none;font-size:13px;color:var(--muted);margin:6px 0 0}
   #status.err{color:var(--danger)}
   #success{display:none;background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
   #success .ok{color:var(--text)}
@@ -180,6 +183,8 @@
       <div class="card" id="preview"><div id="previewBody"></div></div>
       <button type="button" class="primary" id="publish">发布</button>
       <div id="status"></div>
+      <div class="progress" id="progressBar"><i id="progressFill"></i></div>
+      <p class="small" id="progressText"></p>
     </div>
   </div>
 </main>
@@ -362,6 +367,44 @@ async function gh(path,method,body){
   return d;
 }
 async function ghGet(path){return gh(path,'GET')}
+// File upload must use XHR, not fetch: fetch cannot report upload progress,
+// which is why the old page stayed on "正在上传文件…" with no movement.
+function ghUpload(path,body,onProgress){
+  return new Promise(function(res,rej){
+    var xhr=new XMLHttpRequest();
+    xhr.open('PUT',API+path);
+    xhr.setRequestHeader('Accept','application/vnd.github+json');
+    xhr.setRequestHeader('Authorization','Bearer '+token());
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.upload.onprogress=function(e){
+      if(e.lengthComputable&&onProgress) onProgress(e.loaded,e.total);
+    };
+    xhr.onload=function(){
+      var d={}; try{d=JSON.parse(xhr.responseText||'{}')}catch(e){}
+      if(xhr.status===404) return res(null);
+      if(xhr.status>=200&&xhr.status<300) return res(d);
+      if(xhr.status===401) return rej(new Error('钥匙无效或已过期，请重新粘贴保存。'));
+      if(xhr.status===403) return rej(new Error('GitHub 拒绝了这次请求（可能是钥匙权限不足或触发频率限制）。'));
+      rej(new Error((d&&d.message)||('GitHub 返回 '+xhr.status)));
+    };
+    xhr.onerror=function(){rej(new Error('上传失败：网络中断，请检查网络后重试。'))};
+    xhr.send(JSON.stringify(body));
+  });
+}
+function showProgress(loaded,total){
+  var bar=$('progressBar'),fill=$('progressFill'),txt=$('progressText');
+  if(!bar) return;
+  var pct=total>0?Math.min(100,Math.round(loaded/total*100)):0;
+  bar.style.display='block'; txt.style.display='block';
+  fill.style.width=pct+'%';
+  txt.textContent=total>1?'正在上传文件… '+pct+'%（'+(loaded/1048576).toFixed(2)+' / '+(total/1048576).toFixed(2)+' MB）':'正在上传文件… 0%';
+}
+function hideProgress(){
+  var bar=$('progressBar'),txt=$('progressText');
+  if(bar) bar.style.display='none';
+  if(txt) txt.style.display='none';
+  var fill=$('progressFill'); if(fill) fill.style.width='0%';
+}
 function b64FromFile(file){
   return new Promise(function(res,rej){
     var r=new FileReader();
@@ -430,7 +473,11 @@ $('publish').addEventListener('click',async function(){
       setStatus('正在上传文件…');
       var exists=await ghGet(targetPath);
       if(exists) throw new Error('仓库里已有同名文件：'+targetPath+'，请改名后再发布，或先删旧文件。');
-      await gh(targetPath,'PUT',{message:'Add '+targetPath+' via add page',content:await b64FromFile(file),branch:'main'});
+      var fileB64=await b64FromFile(file);
+      setStatus('正在上传文件…');
+      showProgress(0,1);
+      await ghUpload(targetPath,{message:'Add '+targetPath+' via add page',content:fileB64,branch:'main'},showProgress);
+      hideProgress();
     }
     setStatus('正在写入清单…');
     for(var attempt=0;attempt<2;attempt++){
@@ -469,6 +516,7 @@ $('publish').addEventListener('click',async function(){
   }catch(err){
     setStatus('发布失败：'+err.message,true);
   }finally{
+    hideProgress();
     btn.disabled=false;
   }
 });
