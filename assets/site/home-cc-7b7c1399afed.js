@@ -1630,7 +1630,9 @@ const wallPhotos=[
  {src:'https://cloud.luliy.me/api/image?path='+encodeURIComponent('shared/照片墙/'+'IMG_2893.JPEG'),title:'照片 07',credit:''},
  {src:'https://cloud.luliy.me/api/image?path='+encodeURIComponent('shared/照片墙/'+'footer-smile-transparent.png'),title:'照片 08',credit:''},
  {src:'https://cloud.luliy.me/api/image?path='+encodeURIComponent('shared/照片墙/'+'ChatGPT Image Feb 9, 2026, 01_44_34 AM_upscayl_2x_high-fidelity-4x.png'),title:'照片 09',credit:''},
- {src:'https://cloud.luliy.me/api/image?path='+encodeURIComponent('shared/照片墙/'+'ChatGPT Image Feb 9, 2026, 01_44_34 AM_upscayl_2x_high-fidelity-4x_upscayl_1x_upscayl-standard-4x.png'),title:'照片 10',credit:''}
+ {src:'https://cloud.luliy.me/api/image?path='+encodeURIComponent('shared/照片墙/'+'ChatGPT Image Feb 9, 2026, 01_44_34 AM_upscayl_2x_high-fidelity-4x_upscayl_1x_upscayl-standard-4x.png'),title:'照片 10',credit:''},
+ {src:'./photos/4444.png',title:'4444',credit:''},
+ {src:'./photos/777.png',title:'777',credit:''}
 ];
 function renderProjects(){cleanup.push(LuliyProjects.render({root:$('#main'),title,projectCard,projects,spaces,sectionLabel,wallPhotos,L,esc}));}
 

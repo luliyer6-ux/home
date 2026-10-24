@@ -48,5 +48,17 @@
     "title": "照片 10",
     "drive": "ChatGPT Image Feb 9, 2026, 01_44_34 AM_upscayl_2x_high-fidelity-4x_upscayl_1x_upscayl-standard-4x.png",
     "credit": ""
+  },
+  {
+    "title": "4444",
+    "src": "./photos/4444.png",
+    "credit": "",
+    "draft": true
+  },
+  {
+    "title": "777",
+    "src": "./photos/777.png",
+    "credit": "",
+    "draft": true
   }
 ]
