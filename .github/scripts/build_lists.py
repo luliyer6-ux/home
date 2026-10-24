@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Rebuild luliy.me's song and work lists from data/songs.json + data/works.json.
+"""Rebuild luliy.me's song, work and photo-wall lists from data/*.json.
 
 Runs in GitHub Actions (see .github/workflows/build-lists.yml) whenever
-data/, works/ or music/ changes. It:
+data/, works/, music/ or photos/ changes. It:
 
   1. Registers drafts: new top-level entries in works/ (folders or .html
      files) and new audio files in music/ are appended to the JSON data
@@ -13,9 +13,11 @@ data/, works/ or music/ changes. It:
   3. Regenerates the site data chunk (window.LULIY_DATA) so its
      collections.records / recordCovers / collections.projects /
      projectCovers match the JSON files.
-  4. One-time migration inside the main script (home-cc): drops the
-     hardcoded .concat([...]) of extra works (they live in the data
-     chunk now) and rewrites the isExam URL list from works.json.
+  4. Inside the main script (home-cc): drops the hardcoded .concat([...])
+     of extra works (they live in the data chunk now), rewrites the isExam
+     URL list from works.json, and rewrites the wallPhotos array from
+     data/photos.json (Drive photos use a "drive" filename, repo photos
+     and direct links use a "src" URL).
   5. Renames regenerated chunks to their content hash and updates the
      references in index.html (the /assets/site/* files are served
      immutable, so a changed file must change its name).
@@ -33,8 +35,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 SONGS_JSON = ROOT / "data" / "songs.json"
 WORKS_JSON = ROOT / "data" / "works.json"
+PHOTOS_JSON = ROOT / "data" / "photos.json"
 INDEX_HTML = ROOT / "index.html"
 AUDIO_EXTS = {".mp3", ".m4a", ".ogg", ".opus", ".wav", ".flac"}
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"}
 DEFAULT_COLOR = "#9a8f83"
 
 
@@ -116,6 +120,27 @@ def register_music(songs):
     return changed
 
 
+def register_photos(photos):
+    photos_dir = ROOT / "photos"
+    if not photos_dir.is_dir():
+        return False
+    srcs = {ph.get("src") for ph in photos}
+    changed = False
+    for f in sorted(photos_dir.iterdir(), key=lambda p: p.name):
+        if not f.is_file() or f.suffix.lower() not in IMAGE_EXTS:
+            continue
+        src = f"./photos/{f.name}"
+        if src in srcs:
+            continue
+        photos.append({
+            "title": f.stem, "src": src, "credit": "", "draft": True,
+        })
+        srcs.add(src)
+        changed = True
+        print(f"build_lists: registered draft photo {f.name!r} -> {src}")
+    return changed
+
+
 # ------------------------------------------------------------------- durations
 
 def probe_duration(src):
@@ -171,7 +196,23 @@ def bracket_match(text, start):
     fail("unbalanced brackets while scanning home-cc")
 
 
-def patch_home_cc(text, works):
+def js_str(s):
+    return "'" + str(s).replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+
+def photo_js(photo):
+    title = js_str(photo.get("title", ""))
+    credit = js_str(photo.get("credit", ""))
+    if photo.get("drive") is not None:
+        src = ("'https://cloud.luliy.me/api/image?path='+"
+               "encodeURIComponent('shared/照片墙/'+"
+               + js_str(photo["drive"]) + ")")
+    else:
+        src = js_str(photo.get("src", ""))
+    return "{src:" + src + ",title:" + title + ",credit:" + credit + "}"
+
+
+def patch_home_cc(text, works, photos):
     """Remove the hardcoded works concat and sync the isExam URL list."""
     changed = False
 
@@ -207,6 +248,18 @@ def patch_home_cc(text, works):
         text = text[:arr_start] + new_arr + text[arr_end:]
         changed = True
         print("build_lists: home-cc isExam list synced")
+
+    wall_key = "const wallPhotos="
+    w = text.find(wall_key)
+    if w < 0:
+        fail("home-cc: 'const wallPhotos=' anchor not found")
+    wall_start = text.find("[", w)
+    wall_end = bracket_match(text, wall_start)
+    new_wall = ("[\n" + ",\n".join(" " + photo_js(ph) for ph in photos) + "\n]")
+    if text[wall_start:wall_end] != new_wall:
+        text = text[:wall_start] + new_wall + text[wall_end:]
+        changed = True
+        print("build_lists: home-cc wallPhotos synced from data/photos.json")
     return text, changed
 
 
@@ -278,6 +331,7 @@ def main():
     songs = load_json(SONGS_JSON)
     wdata = load_json(WORKS_JSON)
     works = wdata["works"]
+    photos = load_json(PHOTOS_JSON)
 
     dirty_data = False
     dirty_data |= register_works(wdata)
@@ -287,6 +341,9 @@ def main():
         dump_json(SONGS_JSON, songs)
         dump_json(WORKS_JSON, wdata)
         print("build_lists: data files updated")
+    if register_photos(photos):
+        dump_json(PHOTOS_JSON, photos)
+        print("build_lists: photos data file updated")
 
     index_text = INDEX_HTML.read_text(encoding="utf-8")
 
@@ -310,7 +367,7 @@ def main():
     cc_name = find_referenced(index_text, r"home-cc-[0-9a-f]{12}\.js", "home-cc script")
     cc_path = ROOT / "assets" / "site" / cc_name
     cc_text = cc_path.read_text(encoding="utf-8")
-    new_cc, cc_changed = patch_home_cc(cc_text, works)
+    new_cc, cc_changed = patch_home_cc(cc_text, works, photos)
     if cc_changed:
         index_text, _ = rename_if_changed(
             cc_path, new_cc.encode("utf-8"), index_text)
