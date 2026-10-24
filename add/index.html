@@ -35,12 +35,14 @@
   #success{display:none;border:1px solid #6a7d5a;border-radius:12px;padding:18px;margin:0 0 18px;background:#1e241a}
   .ok{color:#a8c686}
   .small{font-size:13px;color:#b8ad9c}
+  body.in-directory{background:transparent}
+  body.in-directory main{padding:12px 0 24px}
 </style>
 </head>
 <body>
 <main>
   <h1>添加</h1>
-  <p class="sub">站长工具：直接往仓库里加歌曲、作品或照片。提交后自动流程约 1 分钟内处理，网站部署还要几分钟，不是立刻上线。<a href="/">回首页</a> · <a href="https://github.com/luliy6/luliy6.github.io/issues/new" target="_blank" rel="noopener noreferrer">写文章，去 Blog Issues</a></p>
+  <p class="sub">站长工具：直接往仓库里加歌曲、作品或照片。提交后自动流程约 1 分钟内处理，网站部署还要几分钟，不是立刻上线。<a id="homeLink" href="/">回首页</a> · <a href="https://github.com/luliy6/luliy6.github.io/issues/new" target="_blank" rel="noopener noreferrer">写文章，去 Blog Issues</a></p>
 
   <section id="setup">
     <h2>第一步：钥匙（只在你这台设备上存一次）</h2>
@@ -420,6 +422,18 @@ $('publish').addEventListener('click',async function(){
 syncTokenState();
 switchType(type);
 renderPreview();
+// 目录内嵌模式：被目录对话框的 iframe 装载时，背景透明、链接跳出 iframe、
+// 点“去看看”时先通知父页关闭目录对话框。
+if(window.self!==window.top){
+  document.body.classList.add('in-directory');
+  var hl=$('homeLink');if(hl) hl.target='_top';
+  var gl=$('goLink');if(gl){
+    gl.target='_top';
+    gl.addEventListener('click',function(){
+      try{window.parent.postMessage('luliy-add-close',location.origin);}catch(e){}
+    });
+  }
+}
 })();
 </script>
 </body>
