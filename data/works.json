@@ -103,11 +103,11 @@
   "knownPaths": [
     "408",
     "gpt-e2-data",
+    "gpt-english-2-exams.html",
+    "gpt-english-2.html",
     "jingzhong",
     "kaoyan-dashboard",
     "math-handbook",
-    "math2",
-    "gpt-english-2-exams.html",
-    "gpt-english-2.html"
+    "math2"
   ]
 }

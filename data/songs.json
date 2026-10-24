@@ -19,7 +19,7 @@
       "ja": "Call Me Now"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FCall_Me_Now-Serlek-Yarim-bolmisun.mp3",
-    "duration": null,
+    "duration": 145,
     "color": "#989fa8",
     "cover": "assets/site/5e03e2b4aea7e4e0e099.webp"
   },
@@ -67,7 +67,7 @@
       "ja": "1 to 2"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2F1%20to%202%20.mp3",
-    "duration": null,
+    "duration": 218,
     "color": "#a69b9b",
     "cover": "assets/site/aac6e0dd39f855845c40.webp"
   },
@@ -79,7 +79,7 @@
       "ja": "Something Just Like This (Megamix)"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FSOMETHING%20JUST%20LIKE%20THIS%20(Megamix)%20.mp3",
-    "duration": null,
+    "duration": 265,
     "color": "#b6a184",
     "cover": "assets/site/37cca2f354ec875f822b.webp"
   },
@@ -91,7 +91,7 @@
       "ja": "撒野"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2F%E7%9B%8A%E5%96%84-%E6%92%92%E9%87%8E-%20%E5%8C%BA.mp3",
-    "duration": null,
+    "duration": 248,
     "color": "#a39993",
     "cover": "assets/site/7568e5809d06f2ef9256.webp"
   },
@@ -103,7 +103,7 @@
       "ja": "这世界那么多人"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2F%E7%9B%8A%E5%96%84-%E8%BF%99%E4%B8%96%E7%95%8C%E9%82%A3%E4%B9%88%E5%A4%9A%E4%BA%BA.mp3",
-    "duration": null,
+    "duration": 133,
     "color": "#949c9b",
     "cover": "assets/site/beab717d6ede520e2b73.webp"
   },
@@ -115,7 +115,7 @@
       "ja": "最后一页"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2F%E7%9B%8A%E5%96%84-%E6%9C%80%E5%90%8E%E4%B8%80%E9%A1%B5-.mp3",
-    "duration": null,
+    "duration": 104,
     "color": "#ada59c",
     "cover": "assets/site/ecc9d141dd673055516d.webp"
   },
@@ -127,7 +127,7 @@
       "ja": "Love Story"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2F%E7%9B%8A%E5%96%84-Love%20Story.mp3",
-    "duration": null,
+    "duration": 77,
     "color": "#b1a6a1",
     "cover": "assets/site/f7adcfc1d96e2209f69e.webp"
   },
@@ -139,7 +139,7 @@
       "ja": "Wendy"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2FWendy.mp3",
-    "duration": null,
+    "duration": 311,
     "color": "#a4aaa4",
     "cover": "assets/site/7b4c0ab051ad44312c7f.webp"
   },
@@ -151,7 +151,7 @@
       "ja": "Black Magic"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FBlack%20Magic%20-%20Jonasu.mp3",
-    "duration": null,
+    "duration": 174,
     "color": "#94909e",
     "cover": "assets/site/4c634428dedfaaad9fe3.webp"
   },
@@ -163,7 +163,7 @@
       "ja": "Dance Monkey"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FDance%20Monkey%20-%20Tones%20And%20I.mp3",
-    "duration": null,
+    "duration": 209,
     "color": "#a28e85",
     "cover": "assets/site/1982d00386ea76976007.webp"
   },
@@ -175,7 +175,7 @@
       "ja": "Human"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FHumen.mp3",
-    "duration": null,
+    "duration": 245,
     "color": "#b9a67e",
     "cover": "assets/site/feeccb59c79e9a171e13.webp"
   },
@@ -187,7 +187,7 @@
       "ja": "2002"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2F2002.mp3",
-    "duration": null,
+    "duration": 145,
     "color": "#a89c85",
     "cover": "assets/site/72975f4403b24f44fe2b.webp"
   },
@@ -199,7 +199,7 @@
       "ja": "Lie"
     },
     "src": "https://cloud.luliy.me/api/audio?path=shared%2FLie.mp3",
-    "duration": null,
+    "duration": 267,
     "color": "#b4a690",
     "cover": "assets/site/76579b4072eda18f617c.webp"
   },
