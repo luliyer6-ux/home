@@ -21,6 +21,9 @@ data/, works/, music/ or photos/ changes. It:
   5. Renames regenerated chunks to their content hash and updates the
      references in index.html (the /assets/site/* files are served
      immutable, so a changed file must change its name).
+  6. Inserts the directory Other "添加" entry (linking to /add/) right
+     after the Issues link in index.html, if it is not there yet, so
+     the entry survives future rebuilds of the lists.
 
 Idempotent: with unchanged inputs it changes nothing. Any failed
 sanity check raises, so the workflow stops before committing.
@@ -263,6 +266,21 @@ def patch_home_cc(text, works, photos):
     return text, changed
 
 
+ADD_LINK = '<a class="directory-add" href="/add/">+ 添加</a>'
+ADD_ANCHOR = ('<a class="directory-issues" href="https://github.com/luliy6/luliy6.github.io/issues" '
+              'target="_blank" rel="noopener noreferrer">Issues</a>')
+
+
+def patch_index_html(text):
+    """Insert the directory Other "添加" entry after the Issues link."""
+    if "directory-add" in text:
+        return text, False
+    if ADD_ANCHOR not in text:
+        fail("index.html: directory Issues anchor not found, cannot insert Add entry")
+    print("build_lists: index.html directory Other Add entry inserted")
+    return text.replace(ADD_ANCHOR, ADD_ANCHOR + ADD_LINK, 1), True
+
+
 def regenerate_data_chunk(chunk_text, songs, works):
     prefix = "window.LULIY_DATA="
     if not chunk_text.startswith(prefix):
@@ -371,6 +389,8 @@ def main():
     if cc_changed:
         index_text, _ = rename_if_changed(
             cc_path, new_cc.encode("utf-8"), index_text)
+
+    index_text, _ = patch_index_html(index_text)
 
     INDEX_HTML.write_text(index_text, encoding="utf-8")
 
