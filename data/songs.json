@@ -228,5 +228,18 @@
     "color": "#9a8f83",
     "cover": "",
     "draft": true
+  },
+  {
+    "id": "hot-together",
+    "name": {
+      "zh": "Hot Together",
+      "en": "Hot Together",
+      "ja": "Hot Together"
+    },
+    "src": "./music/Hot Together.m4a",
+    "duration": 216,
+    "color": "#9a8f83",
+    "cover": "https://y.qq.com/music/photo_new/T002R300x300M00000103DoE3Yyqho_1.jpg?max_age=2592000",
+    "draft": false
   }
 ]
