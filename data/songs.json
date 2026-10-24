@@ -1,0 +1,219 @@
+[
+  {
+    "id": "qingge",
+    "name": {
+      "zh": "情歌",
+      "en": "Qing Ge",
+      "ja": "情歌"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2F%E6%83%85%E6%AD%8C%E4%B8%80%E4%B8%AA%E7%90%83.mp3",
+    "duration": 251,
+    "color": "#b9a39a",
+    "cover": "assets/site/307fceafdddbf5c3eb9d.webp"
+  },
+  {
+    "id": "call-me-now",
+    "name": {
+      "zh": "Call Me Now",
+      "en": "Call Me Now",
+      "ja": "Call Me Now"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FCall_Me_Now-Serlek-Yarim-bolmisun.mp3",
+    "duration": null,
+    "color": "#989fa8",
+    "cover": "assets/site/5e03e2b4aea7e4e0e099.webp"
+  },
+  {
+    "id": "dark",
+    "name": {
+      "zh": "dark",
+      "en": "dark",
+      "ja": "dark"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2Fdark.mp3",
+    "duration": 166,
+    "color": "#858d92",
+    "cover": "assets/site/81e5b5829adca30de16f.webp"
+  },
+  {
+    "id": "yesterday",
+    "name": {
+      "zh": "Yesterday",
+      "en": "Yesterday",
+      "ja": "Yesterday"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FYesterday.mp3",
+    "duration": 60,
+    "color": "#b9ae94",
+    "cover": "assets/site/3346d3fd6aa97e896c8a.webp"
+  },
+  {
+    "id": "someone-like-you",
+    "name": {
+      "zh": "Echos",
+      "en": "Echos",
+      "ja": "Echos"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FSomeone%20Like%20You.mp3",
+    "duration": 160,
+    "color": "#aea195",
+    "cover": "assets/site/b390d7a49ad8546f102e.webp"
+  },
+  {
+    "id": "one-to-two",
+    "name": {
+      "zh": "1 to 2",
+      "en": "1 to 2",
+      "ja": "1 to 2"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2F1%20to%202%20.mp3",
+    "duration": null,
+    "color": "#a69b9b",
+    "cover": "assets/site/aac6e0dd39f855845c40.webp"
+  },
+  {
+    "id": "something-just-like-this-megamix",
+    "name": {
+      "zh": "Something Just Like This (Megamix)",
+      "en": "Something Just Like This (Megamix)",
+      "ja": "Something Just Like This (Megamix)"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FSOMETHING%20JUST%20LIKE%20THIS%20(Megamix)%20.mp3",
+    "duration": null,
+    "color": "#b6a184",
+    "cover": "assets/site/37cca2f354ec875f822b.webp"
+  },
+  {
+    "id": "sa-ye",
+    "name": {
+      "zh": "撒野",
+      "en": "Sa Ye",
+      "ja": "撒野"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2F%E7%9B%8A%E5%96%84-%E6%92%92%E9%87%8E-%20%E5%8C%BA.mp3",
+    "duration": null,
+    "color": "#a39993",
+    "cover": "assets/site/7568e5809d06f2ef9256.webp"
+  },
+  {
+    "id": "zhe-shi-jie-na-me-duo-ren",
+    "name": {
+      "zh": "这世界那么多人",
+      "en": "So Many People in This World",
+      "ja": "这世界那么多人"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2F%E7%9B%8A%E5%96%84-%E8%BF%99%E4%B8%96%E7%95%8C%E9%82%A3%E4%B9%88%E5%A4%9A%E4%BA%BA.mp3",
+    "duration": null,
+    "color": "#949c9b",
+    "cover": "assets/site/beab717d6ede520e2b73.webp"
+  },
+  {
+    "id": "zui-hou-yi-ye",
+    "name": {
+      "zh": "最后一页",
+      "en": "The Last Page",
+      "ja": "最后一页"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2F%E7%9B%8A%E5%96%84-%E6%9C%80%E5%90%8E%E4%B8%80%E9%A1%B5-.mp3",
+    "duration": null,
+    "color": "#ada59c",
+    "cover": "assets/site/ecc9d141dd673055516d.webp"
+  },
+  {
+    "id": "love-story",
+    "name": {
+      "zh": "Love Story",
+      "en": "Love Story",
+      "ja": "Love Story"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2F%E7%9B%8A%E5%96%84-Love%20Story.mp3",
+    "duration": null,
+    "color": "#b1a6a1",
+    "cover": "assets/site/f7adcfc1d96e2209f69e.webp"
+  },
+  {
+    "id": "wendy",
+    "name": {
+      "zh": "Wendy",
+      "en": "Wendy",
+      "ja": "Wendy"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FWendy%2FWendy.mp3",
+    "duration": null,
+    "color": "#a4aaa4",
+    "cover": "assets/site/7b4c0ab051ad44312c7f.webp"
+  },
+  {
+    "id": "black-magic",
+    "name": {
+      "zh": "Black Magic",
+      "en": "Black Magic",
+      "ja": "Black Magic"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FBlack%20Magic%20-%20Jonasu.mp3",
+    "duration": null,
+    "color": "#94909e",
+    "cover": "assets/site/4c634428dedfaaad9fe3.webp"
+  },
+  {
+    "id": "dance-monkey",
+    "name": {
+      "zh": "Dance Monkey",
+      "en": "Dance Monkey",
+      "ja": "Dance Monkey"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FDance%20Monkey%20-%20Tones%20And%20I.mp3",
+    "duration": null,
+    "color": "#a28e85",
+    "cover": "assets/site/1982d00386ea76976007.webp"
+  },
+  {
+    "id": "humen",
+    "name": {
+      "zh": "Human",
+      "en": "Human",
+      "ja": "Human"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FHumen.mp3",
+    "duration": null,
+    "color": "#b9a67e",
+    "cover": "assets/site/feeccb59c79e9a171e13.webp"
+  },
+  {
+    "id": "2002",
+    "name": {
+      "zh": "2002",
+      "en": "2002",
+      "ja": "2002"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2F2002.mp3",
+    "duration": null,
+    "color": "#a89c85",
+    "cover": "assets/site/72975f4403b24f44fe2b.webp"
+  },
+  {
+    "id": "lie",
+    "name": {
+      "zh": "Lie",
+      "en": "Lie",
+      "ja": "Lie"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2FLie.mp3",
+    "duration": null,
+    "color": "#b4a690",
+    "cover": "assets/site/76579b4072eda18f617c.webp"
+  },
+  {
+    "id": "known-your-name",
+    "name": {
+      "zh": "Known Your Name",
+      "en": "Known Your Name",
+      "ja": "Known Your Name"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2Fknown%20your%20name.mp3",
+    "duration": 236.416,
+    "color": "#98a79b",
+    "cover": "assets/site/known-your-name-fd79ecf3119a.svg",
+    "coverInline": "assets/site/known-your-name-fd79ecf3119a.svg"
+  }
+]
