@@ -1,8 +1,8 @@
 name: Build lists
 
-# Keeps the song list and work list in sync with data/songs.json and
-# data/works.json (see .github/scripts/build_lists.py). Uploading a file
-# to works/ or music/, or pushing an R2/direct link into the data files,
+# Keeps the song, work and photo-wall lists in sync with data/*.json
+# (see .github/scripts/build_lists.py). Uploading a file to works/,
+# music/ or photos/, or pushing an R2/direct link into the data files,
 # is enough: this workflow regenerates the site data and commits it back.
 
 on:
@@ -12,6 +12,7 @@ on:
       - "data/**"
       - "works/**"
       - "music/**"
+      - "photos/**"
       - ".github/scripts/build_lists.py"
       - ".github/workflows/build-lists.yml"
   workflow_dispatch:
