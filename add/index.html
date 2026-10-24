@@ -1,166 +1,186 @@
 <!doctype html>
-<html lang="zh-Hans">
+<html lang="zh-Hans" data-appearance="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>添加 · Luliy</title>
 <style>
-  :root{color-scheme:dark}
-  body{margin:0;background:#141210;color:#efe9df;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6}
-  main{max-width:640px;margin:0 auto;padding:28px 18px 60px}
-  a{color:#e8c98a}
-  h1{font-size:26px;margin:0 0 4px}
-  .sub{color:#b8ad9c;font-size:14px;margin:0 0 24px}
-  section{border:1px solid #3a332a;border-radius:12px;padding:18px;margin:0 0 18px;background:#1c1915}
-  h2{font-size:17px;margin:0 0 12px}
-  label{display:block;font-size:14px;margin:12px 0 4px;color:#d8cfbf}
-  input[type=text],input[type=url],input[type=password],input[type=color],select{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #4a4237;border-radius:8px;background:#141210;color:#efe9df;font-size:15px}
-  input[type=file]{width:100%;font-size:14px}
+  :root[data-appearance="dark"]{color-scheme:dark;--bg:#111110;--paper:#191918;--raised:#222220;--ink:#f2ede4;--text:#e8e3d9;--muted:#a6a198;--line:#3b3935;--line-strong:#777168;--accent:#b89a6a;--danger:#f0a08a}
+  :root[data-appearance="dark"][data-palette="forest"]{--bg:#111a17;--paper:#16211d;--raised:#1e2b26;--muted:#a3a99f;--line:#2c3b35;--line-strong:#5a6b63}
+  :root[data-appearance="dark"][data-palette="espresso"]{--bg:#181411;--paper:#1f1a16;--raised:#29231e;--muted:#aaa194;--line:#3d352d;--line-strong:#706455}
+  :root[data-appearance="dark"][data-palette="midnight"]{--bg:#111319;--paper:#171a21;--raised:#20242d;--muted:#a3a3a6;--line:#2e323d;--line-strong:#5c6170}
+  :root[data-appearance="dark"][data-palette="oxblood"]{--bg:#190e10;--paper:#211315;--raised:#2b1a1d;--muted:#ad9f9c;--line:#42292d;--line-strong:#76565b}
+  :root[data-appearance="light"],:root[data-appearance="cc"]{color-scheme:light;--bg:#faf9f5;--paper:#f0eee7;--raised:#e9e6dd;--ink:#141413;--text:#30302d;--muted:#66645e;--line:#d8d5cd;--line-strong:#918b80;--accent:#8b6840;--danger:#b03a2e}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6}
+  body.in-directory{background:transparent}
+  main{max-width:640px;margin:0 auto;padding:24px 18px 48px}
+  body.in-directory main{padding:12px 0 24px}
+  a{color:var(--accent)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  h1{font-size:24px;margin:0;color:var(--ink)}
+  .head a{font-size:14px;white-space:nowrap}
+  details.token{border-bottom:1px solid var(--line);padding:10px 0;margin-bottom:16px}
+  details.token summary{cursor:pointer;font-size:14px;color:var(--muted);list-style:none}
+  details.token summary::-webkit-details-marker{display:none}
+  .token-body{margin-top:12px}
+  label{display:block;font-size:13px;margin:12px 0 4px;color:var(--muted)}
+  input[type=text],input[type=url],input[type=password],input[type=color],select{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:15px}
+  input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-color:var(--accent)}
   .tabs{display:flex;gap:8px;flex-wrap:wrap}
-  .tabs button,.mode button{padding:8px 16px;border:1px solid #4a4237;border-radius:999px;background:transparent;color:#efe9df;font-size:14px;cursor:pointer}
-  .tabs button.on,.mode button.on{background:#e8c98a;color:#141210;border-color:#e8c98a}
-  .mode{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px}
+  .tabs button,.mode button{padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-size:14px;cursor:pointer}
+  .tabs button.on,.mode button.on{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+  .mode{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
   .row{display:flex;gap:12px}
-  .row>*{flex:1}
-  .hint{font-size:13px;color:#b8ad9c;margin:4px 0 0}
+  .row>*{flex:1;min-width:0}
+  .dropzone{border:1px dashed var(--line-strong);border-radius:10px;padding:18px 14px;text-align:center;cursor:pointer;color:var(--muted);font-size:14px}
+  .dropzone.over{border-color:var(--accent);color:var(--text)}
+  .dropzone input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+  .dropzone strong{color:var(--text)}
+  .hint{font-size:13px;color:var(--muted);margin:6px 0 0}
   .check{font-size:14px}
   .check input{width:auto}
-  button.primary{width:100%;padding:13px;border:0;border-radius:10px;background:#e8c98a;color:#141210;font-size:16px;cursor:pointer;margin-top:16px}
+  .side-col{margin-top:20px}
+  .card{background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card img{width:100%;max-height:240px;object-fit:cover;border-radius:8px;display:block;margin-bottom:12px}
+  .card .cover-block{height:120px;border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--paper);background:var(--accent)}
+  .card h3{margin:0 0 4px;font-size:17px;color:var(--ink)}
+  .card p{margin:0;font-size:14px;color:var(--muted)}
+  .card .badge{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-top:8px;color:var(--muted)}
+  button.primary{width:100%;padding:13px;border:0;border-radius:10px;background:var(--accent);color:var(--paper);font-size:16px;cursor:pointer;margin-top:16px}
   button.primary:disabled{opacity:.5}
-  button.ghost{padding:9px 14px;border:1px solid #4a4237;border-radius:8px;background:transparent;color:#efe9df;cursor:pointer}
-  #status{white-space:pre-wrap;font-size:14px;color:#e8c98a;min-height:1.6em;margin-top:12px}
-  #status.err{color:#f0a08a}
-  #preview{border:1px dashed #4a4237;border-radius:10px;padding:14px;margin-top:16px}
-  #preview img{max-width:100%;max-height:220px;display:block;margin:8px 0}
-  #success{display:none;border:1px solid #6a7d5a;border-radius:12px;padding:18px;margin:0 0 18px;background:#1e241a}
-  .ok{color:#a8c686}
-  .small{font-size:13px;color:#b8ad9c}
-  body.in-directory{background:transparent}
-  body.in-directory main{padding:12px 0 24px}
+  button.ghost{padding:9px 14px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--text);cursor:pointer}
+  #status{white-space:pre-wrap;font-size:14px;color:var(--accent);min-height:1.6em;margin-top:12px}
+  #status.err{color:var(--danger)}
+  #success{display:none;background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+  #success .ok{color:var(--text)}
+  .small{font-size:13px;color:var(--muted)}
+  @media (min-width:900px){
+    main{max-width:none;padding:24px 32px 32px}
+    body.in-directory main{padding:8px 16px 24px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:32px;align-items:start}
+    .side-col{margin-top:0;position:sticky;top:24px}
+    .card img{max-height:280px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
 </style>
 </head>
 <body>
 <main>
-  <h1>添加</h1>
-  <p class="sub">站长工具：直接往仓库里加歌曲、作品或照片。提交后自动流程约 1 分钟内处理，网站部署还要几分钟，不是立刻上线。<a id="homeLink" href="/">回首页</a> · <a href="https://github.com/luliy6/luliy6.github.io/issues/new" target="_blank" rel="noopener noreferrer">写文章，去 Blog Issues</a></p>
+  <div class="head"><h1>添加</h1><a id="homeLink" href="/">回首页</a></div>
 
-  <section id="setup">
-    <h2>第一步：钥匙（只在你这台设备上存一次）</h2>
-    <p class="small">去 GitHub 设置 &gt; Developer settings &gt; Personal access tokens &gt; Fine-grained tokens，新建一把只给 home 仓库 Contents 读写权限的钥匙，粘贴进来。钥匙只存在这台浏览器的 localStorage 里，不会写进仓库，也不会出现在网址里。访客没有钥匙，打开这个页面也推不上去。</p>
-    <label for="token">GitHub 钥匙</label>
-    <input type="password" id="token" autocomplete="off" placeholder="粘贴 GitHub 细粒度钥匙">
-    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-      <button type="button" class="ghost" id="saveToken">保存钥匙</button>
-      <button type="button" class="ghost" id="clearToken">清除钥匙</button>
-      <button type="button" class="ghost" id="testToken">测试钥匙</button>
+  <details class="token" id="tokenDetails">
+    <summary><span id="tokenSummary">钥匙</span> · <span id="tokenStateLine"></span></summary>
+    <div class="token-body">
+      <p class="small">GitHub 设置 &gt; Developer settings &gt; Personal access tokens &gt; Fine-grained tokens，只给 home 仓库 Contents 读写。</p>
+      <label for="token">GitHub 钥匙</label>
+      <input type="password" id="token" autocomplete="off" placeholder="粘贴钥匙">
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="ghost" id="saveToken">保存</button>
+        <button type="button" class="ghost" id="clearToken">清除</button>
+        <button type="button" class="ghost" id="testToken">测试</button>
+      </div>
+      <p class="small" id="tokenMsg"></p>
     </div>
-    <p class="small" id="tokenState"></p>
-  </section>
+  </details>
 
   <div id="success">
-    <p class="ok"><strong>已提交。</strong><span id="successText"></span></p>
-    <p class="small">自动流程约 1 分钟内会提交一次，Pages 部署还要几分钟。部署完成后用强制刷新打开下面链接查看。</p>
+    <p class="ok"><strong>已提交。</strong></p>
     <p><a id="goLink" href="/">去看看</a> · <button type="button" class="ghost" id="again">再加一个</button></p>
   </div>
 
-  <section id="formSec">
-    <h2>第二步：填内容</h2>
-    <div class="tabs" role="tablist">
-      <button type="button" data-type="song" class="on">歌曲</button>
-      <button type="button" data-type="work">作品</button>
-      <button type="button" data-type="photo">照片</button>
+  <div class="layout">
+    <div class="form-col">
+      <div class="tabs" role="tablist">
+        <button type="button" data-type="song" class="on">歌曲</button>
+        <button type="button" data-type="work">作品</button>
+        <button type="button" data-type="photo">照片</button>
+      </div>
+
+      <div data-panel="song">
+        <div class="mode">
+          <button type="button" data-mode="upload" class="on">上传文件</button>
+          <button type="button" data-mode="link">贴直链</button>
+        </div>
+        <div data-field="upload">
+          <div class="dropzone" id="sDrop"><strong>拖入音频文件，或点此选择</strong><br><span id="sFileInfo">mp3 等，不超过 20MB</span><input type="file" id="sFile" accept="audio/*"></div>
+        </div>
+        <div data-field="link" hidden>
+          <label for="sUrl">音频直链</label>
+          <input type="url" id="sUrl" placeholder="https://…">
+        </div>
+        <label for="sZh">歌名（中文）</label>
+        <input type="text" id="sZh">
+        <div class="row">
+          <div><label for="sEn">英文名</label><input type="text" id="sEn"></div>
+          <div><label for="sJa">日文名</label><input type="text" id="sJa"></div>
+        </div>
+        <div class="row">
+          <div><label for="sDur">时长（秒）</label><input type="text" id="sDur" inputmode="numeric"></div>
+          <div><label for="sColor">主色</label><input type="color" id="sColor" value="#9a8f83"></div>
+        </div>
+        <label for="sCover">封面网址</label>
+        <input type="url" id="sCover" placeholder="https://…">
+        <label class="check"><input type="checkbox" id="sDraft"> 存为草稿</label>
+      </div>
+
+      <div data-panel="work" hidden>
+        <div class="mode">
+          <button type="button" data-mode="upload" class="on">上传 HTML 文件</button>
+          <button type="button" data-mode="link">贴外部链接</button>
+        </div>
+        <div data-field="upload">
+          <div class="dropzone" id="wDrop"><strong>拖入 HTML 文件，或点此选择</strong><br><span id="wFileInfo">单个 HTML 文件</span><input type="file" id="wFile" accept=".html,text/html"></div>
+        </div>
+        <div data-field="link" hidden>
+          <label for="wUrl">作品链接</label>
+          <input type="url" id="wUrl" placeholder="https://…">
+        </div>
+        <label for="wName">作品名</label>
+        <input type="text" id="wName">
+        <label for="wZh">中文简介</label>
+        <input type="text" id="wZh">
+        <div class="row">
+          <div><label for="wEn">英文简介</label><input type="text" id="wEn"></div>
+          <div><label for="wJa">日文简介</label><input type="text" id="wJa"></div>
+        </div>
+        <label for="wExam">分类</label>
+        <select id="wExam"><option value="false">網頁</option><option value="true">真題區</option></select>
+        <label for="wCover">封面网址</label>
+        <input type="url" id="wCover" placeholder="https://…">
+        <label class="check"><input type="checkbox" id="wDraft"> 存为草稿</label>
+      </div>
+
+      <div data-panel="photo" hidden>
+        <div class="mode">
+          <button type="button" data-mode="upload" class="on">上传图片</button>
+          <button type="button" data-mode="link">贴直链</button>
+          <button type="button" data-mode="drive">Drive 文件名</button>
+        </div>
+        <div data-field="upload">
+          <div class="dropzone" id="pDrop"><strong>拖入图片，或点此选择</strong><br><span id="pFileInfo">jpg、png、webp 等，不超过 20MB</span><input type="file" id="pFile" accept="image/*"></div>
+        </div>
+        <div data-field="link" hidden>
+          <label for="pUrl">图片直链</label>
+          <input type="url" id="pUrl" placeholder="https://…">
+        </div>
+        <div data-field="drive" hidden>
+          <label for="pDrive">Drive 文件名</label>
+          <input type="text" id="pDrive" placeholder="文件须已在 shared/照片墙/ 里">
+        </div>
+        <label for="pTitle">标题</label>
+        <input type="text" id="pTitle">
+        <label class="check"><input type="checkbox" id="pDraft"> 存为草稿</label>
+      </div>
     </div>
 
-    <!-- 歌曲 -->
-    <div data-panel="song">
-      <div class="mode">
-        <button type="button" data-mode="upload" class="on">上传文件</button>
-        <button type="button" data-mode="link">贴直链</button>
-      </div>
-      <div data-field="upload">
-        <label>音频文件（mp3 等，建议不超过 20MB）</label>
-        <input type="file" id="sFile" accept="audio/*">
-        <p class="hint" id="sFileInfo"></p>
-      </div>
-      <div data-field="link" hidden>
-        <label for="sUrl">音频直链</label>
-        <input type="url" id="sUrl" placeholder="https://…">
-      </div>
-      <label for="sZh">歌名（中文，必填）</label>
-      <input type="text" id="sZh">
-      <div class="row">
-        <div><label for="sEn">英文名</label><input type="text" id="sEn"></div>
-        <div><label for="sJa">日文名</label><input type="text" id="sJa"></div>
-      </div>
-      <div class="row">
-        <div><label for="sDur">时长（秒，上传文件会自动填）</label><input type="text" id="sDur" inputmode="numeric"></div>
-        <div><label for="sColor">主色</label><input type="color" id="sColor" value="#9a8f83"></div>
-      </div>
-      <label for="sCover">封面网址（可选，第一版只填网址）</label>
-      <input type="url" id="sCover" placeholder="https://…">
-      <label class="check"><input type="checkbox" id="sDraft"> 先存为草稿（之后可在清单里去掉 draft）</label>
+    <div class="side-col">
+      <div class="card" id="preview"><div id="previewBody"></div></div>
+      <button type="button" class="primary" id="publish">发布</button>
+      <div id="status"></div>
     </div>
-
-    <!-- 作品 -->
-    <div data-panel="work" hidden>
-      <div class="mode">
-        <button type="button" data-mode="upload" class="on">上传 HTML 文件</button>
-        <button type="button" data-mode="link">贴外部链接</button>
-      </div>
-      <div data-field="upload">
-        <label>HTML 文件（单个文件）</label>
-        <input type="file" id="wFile" accept=".html,text/html">
-        <p class="hint" id="wFileInfo"></p>
-      </div>
-      <div data-field="link" hidden>
-        <label for="wUrl">作品链接</label>
-        <input type="url" id="wUrl" placeholder="https://…">
-      </div>
-      <label for="wName">作品名（必填，作唯一标识，不建议带空格）</label>
-      <input type="text" id="wName">
-      <label for="wZh">中文简介（必填）</label>
-      <input type="text" id="wZh">
-      <div class="row">
-        <div><label for="wEn">英文简介</label><input type="text" id="wEn"></div>
-        <div><label for="wJa">日文简介</label><input type="text" id="wJa"></div>
-      </div>
-      <label for="wExam">分类</label>
-      <select id="wExam"><option value="false">網頁</option><option value="true">真題區</option></select>
-      <label for="wCover">封面网址（可选，第一版只填网址）</label>
-      <input type="url" id="wCover" placeholder="https://…">
-      <label class="check"><input type="checkbox" id="wDraft"> 先存为草稿（之后可在清单里去掉 draft）</label>
-    </div>
-
-    <!-- 照片 -->
-    <div data-panel="photo" hidden>
-      <div class="mode">
-        <button type="button" data-mode="upload" class="on">上传图片</button>
-        <button type="button" data-mode="link">贴直链</button>
-        <button type="button" data-mode="drive">Drive 文件名</button>
-      </div>
-      <div data-field="upload">
-        <label>图片文件（jpg、png、webp 等，建议不超过 20MB）</label>
-        <input type="file" id="pFile" accept="image/*">
-        <p class="hint" id="pFileInfo"></p>
-      </div>
-      <div data-field="link" hidden>
-        <label for="pUrl">图片直链</label>
-        <input type="url" id="pUrl" placeholder="https://…">
-      </div>
-      <div data-field="drive" hidden>
-        <label for="pDrive">Drive 文件名（文件须已在 shared/照片墙/ 里）</label>
-        <input type="text" id="pDrive" placeholder="例如：IMG_2913.JPEG">
-      </div>
-      <label for="pTitle">标题（必填）</label>
-      <input type="text" id="pTitle">
-      <label class="check"><input type="checkbox" id="pDraft"> 先存为草稿（之后可在清单里去掉 draft）</label>
-    </div>
-
-    <div id="preview"><strong>预览</strong><div id="previewBody" class="small">填好内容后，这里会显示将要写入清单的那一条。</div></div>
-    <button type="button" class="primary" id="publish">发布</button>
-    <div id="status"></div>
-    <p class="small">删东西不在这个页面做：先删仓库里的文件，再删清单里的条目，两步走，否则会留空条目。</p>
-  </section>
+  </div>
 </main>
 <script>
 (function(){
@@ -173,13 +193,38 @@ var type='song', mode='upload';
 var params=new URLSearchParams(location.search);
 if(params.get('type')==='work'||params.get('type')==='photo'||params.get('type')==='song') type=params.get('type');
 if(params.get('exam')==='1') $('wExam').value='true';
+var dropped={song:null,work:null,photo:null};
 
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function setStatus(msg,err){var el=$('status');el.textContent=msg;el.className=err?'err':''}
 function token(){return localStorage.getItem(TOKEN_KEY)||''}
+function applyTheme(appearance,palette){
+  if(!appearance||['dark','light','cc'].indexOf(appearance)<0) return;
+  document.documentElement.dataset.appearance=appearance;
+  if(palette) document.documentElement.dataset.palette=palette;
+  else document.documentElement.removeAttribute('data-palette');
+}
+(function initTheme(){
+  try{
+    if(window.self!==window.top){
+      var p=window.parent.document.documentElement;
+      applyTheme(p.dataset.appearance,p.dataset.palette);
+      return;
+    }
+  }catch(e){}
+  try{applyTheme(localStorage.getItem('luliy-appearance'),localStorage.getItem('luliy-palette'));}catch(e){}
+})();
+window.addEventListener('message',function(e){
+  if(e.data==='luliy-add-close') return;
+  if(e.data&&e.data.type==='luliy-theme') applyTheme(e.data.appearance,e.data.palette);
+});
 function syncTokenState(){
-  $('tokenState').textContent=token()?'已保存钥匙（本设备，页面不显示钥匙原文）。钥匙过期时发布会提示重新粘贴。':'尚未保存钥匙：先在上面粘贴并保存，表单才能发布。';
-  if(token()) $('token').value='';
+  var has=!!token();
+  $('tokenStateLine').textContent=has?'已保存':'未设置';
+  $('tokenSummary').textContent='钥匙';
+  if(has) $('tokenDetails').removeAttribute('open');
+  else $('tokenDetails').setAttribute('open','');
+  if(has) $('token').value='';
 }
 function switchType(t){
   type=t;
@@ -190,7 +235,7 @@ function switchType(t){
   mode=on?on.dataset.mode:'upload';
   renderPreview();
 }
-function switchMode(panel,m){
+function switchMode(m){
   mode=m;
   var p=document.querySelector('[data-panel="'+type+'"]');
   p.querySelectorAll('.mode button').forEach(function(b){b.classList.toggle('on',b.dataset.mode===m)});
@@ -198,18 +243,18 @@ function switchMode(panel,m){
   renderPreview();
 }
 document.querySelectorAll('[data-type]').forEach(function(b){b.addEventListener('click',function(){switchType(b.dataset.type)})});
-document.querySelectorAll('[data-panel] .mode button').forEach(function(b){b.addEventListener('click',function(){switchMode(b.closest('[data-panel]'),b.dataset.mode)})});
+document.querySelectorAll('[data-panel] .mode button').forEach(function(b){b.addEventListener('click',function(){switchMode(b.dataset.mode)})});
 $('saveToken').addEventListener('click',function(){
   var v=$('token').value.trim();
-  if(!v){setStatus('请先粘贴钥匙。',true);return}
-  localStorage.setItem(TOKEN_KEY,v);$('token').value='';syncTokenState();setStatus('钥匙已保存在这台浏览器里。');
+  if(!v){$('tokenMsg').textContent='请先粘贴钥匙。';return}
+  localStorage.setItem(TOKEN_KEY,v);$('token').value='';$('tokenMsg').textContent='已保存。';syncTokenState();
 });
-$('clearToken').addEventListener('click',function(){localStorage.removeItem(TOKEN_KEY);syncTokenState();setStatus('钥匙已清除。');});
+$('clearToken').addEventListener('click',function(){localStorage.removeItem(TOKEN_KEY);$('tokenMsg').textContent='已清除。';syncTokenState();});
 $('testToken').addEventListener('click',async function(){
-  if(!token()){setStatus('尚未保存钥匙。',true);return}
-  setStatus('正在测试钥匙…');
-  try{await ghGet('data/songs.json');setStatus('钥匙可用。');}
-  catch(e){setStatus('钥匙测试失败：'+e.message,true);}
+  if(!token()){$('tokenMsg').textContent='尚未保存钥匙。';return}
+  $('tokenMsg').textContent='正在测试…';
+  try{await ghGet('data/songs.json');$('tokenMsg').textContent='钥匙可用。';}
+  catch(e){$('tokenMsg').textContent='失败：'+e.message;}
 });
 $('again').addEventListener('click',function(){$('success').style.display='none';});
 
@@ -218,73 +263,88 @@ function slugify(s){
   var s2=String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
   return s2||'track';
 }
-function fileInfo(input,infoId,after){
-  var f=input.files&&input.files[0];
-  if(!f){$(infoId).textContent='';return}
-  $(infoId).textContent=f.name+' · '+(f.size/1048576).toFixed(2)+' MB';
-  if(after) after(f);
+function getFile(t){
+  var d=dropped[t];
+  if(d) return d;
+  var input=t==='song'?$('sFile'):t==='work'?$('wFile'): $('pFile');
+  return input.files&&input.files[0];
 }
-$('sFile').addEventListener('change',function(){
-  fileInfo(this,'sFileInfo',function(f){
-    var base=stem(f.name);
-    if(!$('sZh').value) $('sZh').value=base;
+function onFile(t,f,infoId){
+  dropped[t]=f;
+  $(infoId).textContent=f.name+' · '+(f.size/1048576).toFixed(2)+' MB';
+  if(t==='song'){
+    if(!$('sZh').value) $('sZh').value=stem(f.name);
     var a=new Audio();a.preload='metadata';
     a.onloadedmetadata=function(){if(!$('sDur').value) $('sDur').value=String(Math.round(a.duration));URL.revokeObjectURL(a.src);renderPreview()};
     a.src=URL.createObjectURL(f);
-  });
-  renderPreview();
-});
-$('wFile').addEventListener('change',function(){
-  fileInfo(this,'wFileInfo',function(f){
-    var base=stem(f.name);
-    if(!$('wName').value) $('wName').value=base;
-    if(!$('wZh').value) $('wZh').value=base;
-  });
-  renderPreview();
-});
-$('pFile').addEventListener('change',function(){
-  fileInfo(this,'pFileInfo',function(f){
+  } else if(t==='work'){
+    if(!$('wName').value) $('wName').value=stem(f.name);
+    if(!$('wZh').value) $('wZh').value=stem(f.name);
+  } else {
     if(!$('pTitle').value) $('pTitle').value=stem(f.name);
     var r=new FileReader();
     r.onload=function(){renderPreview(r.result)};
     r.readAsDataURL(f);
-  });
+    return;
+  }
   renderPreview();
-});
+}
+function bindDrop(dropId,inputId,t,infoId){
+  var drop=$(dropId),input=$(inputId);
+  drop.addEventListener('click',function(e){if(e.target!==input) input.click()});
+  input.addEventListener('change',function(){if(input.files[0]) onFile(t,input.files[0],infoId)});
+  ['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over')})});
+  ['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over')})});
+  drop.addEventListener('drop',function(e){
+    var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+    if(f) onFile(t,f,infoId);
+  });
+}
+bindDrop('sDrop','sFile','song','sFileInfo');
+bindDrop('wDrop','wFile','work','wFileInfo');
+bindDrop('pDrop','pFile','photo','pFileInfo');
 document.querySelectorAll('input,select').forEach(function(el){el.addEventListener('input',function(){renderPreview()})});
 
 function currentEntry(){
   if(type==='song'){
-    var zh=$('sZh').value.trim();
+    var zh=$('sZh').value.trim(),f=getFile('song');
     return {zh:zh,en:$('sEn').value.trim()||zh,ja:$('sJa').value.trim()||zh,
-      src:mode==='link'?$('sUrl').value.trim():($('sFile').files[0]?'./music/'+$('sFile').files[0].name:''),
+      src:mode==='link'?$('sUrl').value.trim():(f?'./music/'+f.name:''),
       duration:$('sDur').value.trim(),color:$('sColor').value,cover:$('sCover').value.trim(),draft:$('sDraft').checked};
   }
   if(type==='work'){
-    var wzh=$('wZh').value.trim();
+    var wzh=$('wZh').value.trim(),f=getFile('work');
     return {name:$('wName').value.trim(),zh:wzh,en:$('wEn').value.trim()||wzh,ja:$('wJa').value.trim()||wzh,
-      url:mode==='link'?$('wUrl').value.trim():($('wFile').files[0]?'./works/'+$('wFile').files[0].name:''),
+      url:mode==='link'?$('wUrl').value.trim():(f?'./works/'+f.name:''),
       exam:$('wExam').value==='true',cover:$('wCover').value.trim(),draft:$('wDraft').checked};
   }
-  var title=$('pTitle').value.trim();
+  var title=$('pTitle').value.trim(),f=getFile('photo');
   var e={title:title,credit:'',draft:$('pDraft').checked};
   if(mode==='link') e.src=$('pUrl').value.trim();
   else if(mode==='drive') e.drive=$('pDrive').value.trim();
-  else e.src=$('pFile').files[0]?'./photos/'+$('pFile').files[0].name:'';
+  else e.src=f?'./photos/'+f.name:'';
   return e;
 }
 function renderPreview(imgData){
   var e=currentEntry(),html='';
   if(type==='song'){
-    html='歌曲 · '+esc(e.zh||'（未填歌名）')+'<br>地址：'+esc(e.src||'（未选文件或未填直链）');
-    if(e.cover) html+='<br><img src="'+esc(e.cover)+'" alt="" onerror="this.style.display=\'none\'">';
+    var initial=(e.zh||'?').charAt(0);
+    html=(e.cover?'<img src="'+esc(e.cover)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="cover-block" style="background:'+esc(e.color)+'">'+esc(initial)+'</div>')
+      +'<h3>'+esc(e.zh||'未填歌名')+'</h3><p>'+esc(e.src||'未选文件或未填直链')+'</p>'
+      +'<span class="badge">'+(e.duration?esc(e.duration)+' 秒':'时长未填')+'</span>'
+      +(e.draft?' <span class="badge">草稿</span>':'');
   } else if(type==='work'){
-    html='作品 · '+esc(e.name||'（未填作品名）')+'（'+(e.exam?'真題區':'網頁')+'）<br>简介：'+esc(e.zh||'（未填）')+'<br>地址：'+esc(e.url||'（未选文件或未填链接）');
-    if(e.cover) html+='<br><img src="'+esc(e.cover)+'" alt="" onerror="this.style.display=\'none\'">';
+    html=(e.cover?'<img src="'+esc(e.cover)+'" alt="" onerror="this.style.display=\'none\'">':'')
+      +'<h3>'+esc(e.name||'未填作品名')+'</h3><p>'+esc(e.zh||'未填简介')+'</p>'
+      +'<span class="badge">'+(e.exam?'真題區':'網頁')+'</span>'
+      +(e.url?'<p>'+esc(e.url)+'</p>':'')
+      +(e.draft?' <span class="badge">草稿</span>':'');
   } else {
-    html='照片 · '+esc(e.title||'（未填标题）')+'<br>地址：'+esc(e.src||e.drive||'（未选文件或未填地址）');
-    if(imgData) html+='<br><img src="'+imgData+'" alt="">';
-    else if(e.src&&e.src.indexOf('http')===0) html+='<br><img src="'+esc(e.src)+'" alt="" onerror="this.style.display=\'none\'">';
+    if(imgData) html+='<img src="'+imgData+'" alt="">';
+    else if(e.src&&e.src.indexOf('http')===0) html+='<img src="'+esc(e.src)+'" alt="" onerror="this.style.display=\'none\'">';
+    else if(e.drive) html+='<p>Drive：'+esc(e.drive)+'</p>';
+    html+='<h3>'+esc(e.title||'未填标题')+'</h3><p>'+esc(e.src||e.drive||'未选文件或未填地址')+'</p>'
+      +(e.draft?' <span class="badge">草稿</span>':'');
   }
   $('previewBody').innerHTML=html;
 }
@@ -328,12 +388,12 @@ function decodeB64(b64){
 $('publish').addEventListener('click',async function(){
   var btn=$('publish');
   try{
-    if(!token()){setStatus('尚未保存钥匙：先在第一步粘贴并保存。',true);return}
+    if(!token()){setStatus('尚未保存钥匙：先在钥匙区粘贴并保存。',true);return}
     var e=currentEntry(),file=null,targetPath='',dataPath='',goHref='/',goText='去看看';
     if(type==='song'){
       if(!e.zh) throw new Error('请填写歌名（中文）。');
       if(mode==='upload'){
-        file=$('sFile').files[0];if(!file) throw new Error('请先选择音频文件。');
+        file=getFile('song');if(!file) throw new Error('请先选择音频文件。');
         if(file.size>MAX_BYTES) throw new Error('文件超过 20MB，请改走直链。');
         targetPath='music/'+file.name;
       } else {
@@ -344,7 +404,7 @@ $('publish').addEventListener('click',async function(){
       if(!e.name) throw new Error('请填写作品名。');
       if(!e.zh) throw new Error('请填写中文简介。');
       if(mode==='upload'){
-        file=$('wFile').files[0];if(!file) throw new Error('请先选择 HTML 文件。');
+        file=getFile('work');if(!file) throw new Error('请先选择 HTML 文件。');
         if(!/\.html?$/i.test(file.name)) throw new Error('作品文件须为 HTML 文件。');
         if(file.size>MAX_BYTES) throw new Error('文件超过 20MB，请改走外部链接。');
         targetPath='works/'+file.name;
@@ -355,7 +415,7 @@ $('publish').addEventListener('click',async function(){
     } else {
       if(!e.title) throw new Error('请填写照片标题。');
       if(mode==='upload'){
-        file=$('pFile').files[0];if(!file) throw new Error('请先选择图片文件。');
+        file=getFile('photo');if(!file) throw new Error('请先选择图片文件。');
         if(file.size>MAX_BYTES) throw new Error('文件超过 20MB，请改走直链。');
         targetPath='photos/'+file.name;
       } else if(mode==='link'){
@@ -377,7 +437,6 @@ $('publish').addEventListener('click',async function(){
       var cur=await ghGet(dataPath);
       if(!cur) throw new Error('读不到清单文件 '+dataPath+'，请稍后再试。');
       var data=JSON.parse(decodeB64(cur.content));
-      var ok=false;
       if(type==='song'){
         var ids=data.map(function(s){return s.id});
         var id=slugify(e.zh),n=2;
@@ -385,21 +444,17 @@ $('publish').addEventListener('click',async function(){
         if(data.some(function(s){return s.src===e.src})) throw new Error('清单里已有相同地址的歌曲。');
         var dur=parseFloat(e.duration);
         data.push({id:id,name:{zh:e.zh,en:e.en,ja:e.ja},src:e.src,duration:isNaN(dur)?null:dur,color:e.color,cover:e.cover,draft:!!e.draft});
-        ok=true;
       } else if(type==='work'){
         if(data.works.some(function(w){return w.url===e.url})) throw new Error('清单里已有相同地址的作品。');
         if(data.works.some(function(w){return w.name===e.name})) throw new Error('清单里已有同名作品，请换一个作品名。');
         data.works.push({name:e.name,zh:e.zh,en:e.en,ja:e.ja,url:e.url,cover:e.cover,exam:e.exam,draft:!!e.draft});
-        ok=true;
       } else {
         var key=e.src||e.drive;
         if(data.some(function(p){return (p.src||p.drive)===key})) throw new Error('清单里已有相同地址的照片。');
         var ph={title:e.title,credit:'',draft:!!e.draft};
         if(e.src) ph.src=e.src; else ph.drive=e.drive;
         data.push(ph);
-        ok=true;
       }
-      if(!ok) throw new Error('未知类型，无法写入清单。');
       try{
         await gh(dataPath,'PUT',{message:'Add entry via add page',content:b64Text(JSON.stringify(data,null,2)+'\n'),sha:cur.sha,branch:'main'});
         break;
@@ -408,7 +463,6 @@ $('publish').addEventListener('click',async function(){
         throw err;
       }
     }
-    $('successText').textContent='清单已写入。';
     $('goLink').href=goHref;$('goLink').textContent=goText;
     $('success').style.display='block';
     setStatus('发布成功。');
@@ -422,8 +476,6 @@ $('publish').addEventListener('click',async function(){
 syncTokenState();
 switchType(type);
 renderPreview();
-// 目录内嵌模式：被目录对话框的 iframe 装载时，背景透明、链接跳出 iframe、
-// 点“去看看”时先通知父页关闭目录对话框。
 if(window.self!==window.top){
   document.body.classList.add('in-directory');
   var hl=$('homeLink');if(hl) hl.target='_top';
