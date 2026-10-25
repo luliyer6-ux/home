@@ -993,7 +993,9 @@
      slightly; when the half second is up it springs back (and a phone buzzes) to say "let go". Touch opens on
      touchend and mouse on click, both user gestures, so pop-up blockers let the tab through. Moving more than 10px
      (scrolling) cancels; the system long-press menu, text selection and dragging are suppressed (CSS).
-     The header star (site-route-tail) normally sits on ULIY's Y; while that is hidden it moves to the mark's corner. */
+     The header star (site-route-tail) normally sits on ULIY's Y; while that is hidden it moves to the mark's corner.
+     On article pages (list #/posts and reading #/article/…) tap and hold swap: tap opens GitHub
+     Issues, holding goes home. */
   (() => {
     const mq = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
     const SEL = '#header a.brand-mark';
@@ -1004,8 +1006,15 @@
     const takes = () => mq.matches && !root.classList.contains('luliy-route-about');
     const mark = e => (takes() && e.target.closest && e.target.closest(SEL)) || null;
     const partner = () => document.querySelector('#header a.brand');
+    // Article pages (list #/posts and reading #/article/…): tap and hold swap —
+    // tap opens GitHub Issues, holding goes home. Elsewhere the original meaning stands.
+    const isArticlePage = () => /^#\/(posts|article)(\/|$|\?)/.test(location.hash || '');
+    const swap = () => takes() && isArticlePage();
     const phoneLabel = () => {
       const l = root.lang || '';
+      if (swap()) return l.startsWith('en') ? ['Luliy Issues (hold: home)', 'Tap: GitHub Issues · Hold: home']
+        : l.startsWith('ja') ? ['Luliy Issues（長押し：ホーム）', 'タップ：GitHub Issues · 長押し：ホーム']
+        : ['Luliy Issues（长按：首页）', '点按：GitHub Issues · 长按：首页'];
       return l.startsWith('en') ? ['Luliy home (hold: GitHub Issues)', 'Tap: home · Hold: GitHub Issues']
         : l.startsWith('ja') ? ['Luliy ホーム（長押し：GitHub Issues）', 'タップ：ホーム · 長押し：GitHub Issues']
         : ['Luliy 首页（长按：GitHub Issues）', '点按：首页 · 长按：GitHub Issues'];
@@ -1029,6 +1038,7 @@
       if (group) m.classList.toggle('brand-cross-anchor', on && !group.classList.contains('has-page-name'));
     };
     mq.addEventListener('change', sync);
+    addEventListener('hashchange', sync);
     if (group) new MutationObserver(sync).observe(group, { attributes: true, attributeFilter: ['class'] });
     new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class', 'lang'] });
     sync();
@@ -1062,14 +1072,16 @@
     document.addEventListener('touchend', e => {
       if (!held || !el) return;
       e.preventDefault();               // no click (so no trip home) after a hold
+      if (swap()) { const home = partner(); end(); if (home) home.click(); return; }
       open();
     }, { capture: true, passive: false });
     document.addEventListener('click', e => {
       const t = mark(e);
       if (!t) { end(); return; }
       e.preventDefault(); e.stopPropagation();
-      if (held && t === el) { open(); return; }
+      if (held && t === el) { if (swap()) { end(); const home = partner(); if (home) home.click(); } else open(); return; }
       end();
+      if (swap()) { open(); return; }
       const home = partner();
       if (home) home.click();
     }, true);
