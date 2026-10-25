@@ -13,6 +13,13 @@
   }
   html body #header .brand-page-name { display: none !important; }
 
+  /* Reading page only (body.luliy-reading, home-fixes.js block 4): the header middle
+     shows the article number (P56), not the section name. Short text, no truncation. */
+  html body.luliy-reading #header .brand-page-name {
+    display: inline-block !important; flex: 1 1 auto !important; min-width: 0; max-width: none !important;
+    margin-left: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
+  }
+
   /* No reading progress on phones (top bar + side rail). */
   html body .reading-progress,
   html body .reading-timeline { display: none !important; }
@@ -188,7 +195,7 @@ html.luliy-save-data .footer-left-art { display: none; }
   html body #header.luliy-washed { background: none !important; }
   html body #header.luliy-washed::before {
     content: "" !important; display: block !important; position: absolute; inset: 0 0 -24px !important; z-index: -1; opacity: 1 !important;
-    background: var(--luliy-wash) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    background: color-mix(in srgb, var(--luliy-wash) 80%, transparent) !important; -webkit-backdrop-filter: blur(16px) !important; backdrop-filter: blur(16px) !important;
     -webkit-mask-image: linear-gradient(#000 70%, transparent) !important; mask-image: linear-gradient(#000 70%, transparent) !important;
     pointer-events: none;
   }

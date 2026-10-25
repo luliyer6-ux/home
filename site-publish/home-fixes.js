@@ -155,6 +155,34 @@
     route();
   })();
 
+  /* 4b. Phones, article reading page: the header middle shows the article number (P56),
+     the number the article carries in the article list (the route segment itself:
+     #/article/P56). The inline site-route-tail script writes the section name
+     (Articles) into the same .brand-page-name, so this re-applies after it: on
+     hashchange, on the next frame, whenever #main changes, and whenever the label
+     itself is rewritten. Other pages are left alone. */
+  (() => {
+    const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    const main = document.getElementById('main');
+    const number = () => {
+      const m = /^#\/article\/(P\d+)/i.exec(location.hash || '');
+      return m ? m[1].toUpperCase() : '';
+    };
+    const apply = () => {
+      const n = number();
+      const s = document.querySelector('#header .brand-page-name');
+      if (!mobile.matches || !n || !s) return;
+      if (s.textContent !== n) s.textContent = n;
+      s.hidden = false;
+      s.setAttribute('aria-label', n + ' \u00b7 \u5237\u65b0\u76ee\u524d\u9801\u9762');
+    };
+    addEventListener('hashchange', () => { apply(); requestAnimationFrame(apply); });
+    mobile.addEventListener('change', apply);
+    new MutationObserver(apply).observe(main, { childList: true, subtree: true });
+    const s0 = document.querySelector('#header .brand-page-name');
+    if (s0) new MutationObserver(apply).observe(s0, { childList: true, characterData: true, subtree: true });
+    apply();
+  })();
   /* 5. Phones: wide photographs in an article run edge to edge (CSS .luliy-bleed, max-width 700px).
      Only a lone image that already fills a column centred on the screen; small pictures, inline icons,
      images inside lists or quotes and very long screenshots keep their place. */
