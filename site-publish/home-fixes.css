@@ -1182,3 +1182,20 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
   html body .luliy-cloth.is-open .luliy-cloth-fabric { animation: none; }
   html body .luliy-disc[aria-current] .luliy-disc-vinyl { animation: none; }
 }
+
+/* Records player: a real cover photo (Hot Together) sits over the generated card;
+   if the photo fails to load it is removed and the card underneath shows. */
+.lr-cover.lr-public-artwork img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+.lr-cover.lr-public-artwork .lr-cover-art,
+.lr-cover.lr-public-artwork .lr-cover-top,
+.lr-cover.lr-public-artwork .lr-cover-number,
+.lr-cover.lr-public-artwork .lr-cover-title,
+.lr-cover.lr-public-artwork .lr-cover-bottom{display:none}
+.lr-cover.lr-public-artwork.lr-cover-failed .lr-cover-art,
+.lr-cover.lr-public-artwork.lr-cover-failed .lr-cover-top,
+.lr-cover.lr-public-artwork.lr-cover-failed .lr-cover-number,
+.lr-cover.lr-public-artwork.lr-cover-failed .lr-cover-title,
+.lr-cover.lr-public-artwork.lr-cover-failed .lr-cover-bottom{display:block}
+/* Records volume: on iOS the slider cannot change loudness (hardware keys only);
+   the hint next to it says so. Hidden everywhere else by the player (hidden attr). */
+.lr-volume-hint{font-size:11px;color:var(--muted);letter-spacing:.06em}
