@@ -22,11 +22,13 @@
 })();
 
 /* Dark palettes (墨綠 / 暖墨 / 夜藍 / 酒紅, chosen in the theme picker, home-fixes.js block 14): put the saved one on
-   <html data-palette> before the first paint. The colours only apply on top of the dark appearance (design-tokens.css). */
+   <html data-palette> before the first paint; no saved choice defaults to 夜藍 (midnight), 'dark' means base dark chosen.
+   The colours only apply on top of the dark appearance (design-tokens.css). */
 (function () {
   try {
     var p = localStorage.getItem('luliy-palette');
     if (/^(forest|espresso|midnight|oxblood)$/.test(p || '')) document.documentElement.dataset.palette = p;
+    else if (p !== 'dark') document.documentElement.dataset.palette = 'midnight';
   } catch (e) {}
 })();
 

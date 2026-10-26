@@ -448,7 +448,8 @@
   /* 14. Theme picker. The directory's theme button (runtime-fixes.py sends its click here instead of cycling
      dark -> light -> cc) opens a small window with seven colour circles: 暗黑, 白天, CC and four dark palettes,
      墨綠 / 暖墨 / 夜藍 / 酒紅 (design-tokens.css, skies in home-fixes.css). A palette is the dark appearance plus
-     <html data-palette>, saved as localStorage luliy-palette; home-early.js restores it before the first paint.
+     <html data-palette>, saved as localStorage luliy-palette; home-early.js restores it before the first paint
+     (default 夜藍 midnight when nothing saved; base dark 暗黑 saves 'dark').
      A circle applies its theme at once (a short cross-fade where view transitions exist) and the window stays
      open, so themes can be compared; tap outside, Esc or the theme button closes it. */
   (() => {
@@ -516,7 +517,7 @@
       const pal = PALETTES.includes(id) ? id : '', ap = pal ? 'dark' : id;
       fade(() => {
         if (pal) root.dataset.palette = pal; else delete root.dataset.palette;
-        try { if (pal) localStorage.setItem('luliy-palette', pal); else localStorage.removeItem('luliy-palette'); } catch (e) {}
+        try { localStorage.setItem('luliy-palette', pal || 'dark'); } catch (e) {}
         if (root.dataset.appearance !== ap) {
           if (window.LuliySetAppearance) window.LuliySetAppearance(ap);
           else {
