@@ -13,13 +13,6 @@
   }
   html body #header .brand-page-name { display: none !important; }
 
-  /* Reading page only (body.luliy-reading, home-fixes.js block 4): the header middle
-     shows the article number (P56), not the section name. Short text, no truncation. */
-  html body.luliy-reading #header .brand-page-name {
-    display: inline-block !important; flex: 1 1 auto !important; min-width: 0; max-width: none !important;
-    margin-left: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
-  }
-
   /* No reading progress on phones (top bar + side rail). */
   html body .reading-progress,
   html body .reading-timeline { display: none !important; }
@@ -1066,7 +1059,7 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
 }
 
 /* 唱片 in the header and the cloth it lets down. */
-#header .luliy-header-records, .luliy-cloth { display: none; }
+#header .luliy-header-records, #header .luliy-header-articles, .luliy-cloth { display: none; }
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
   html body.record-single-page #header .luliy-header-records {
     position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: flex; align-items: center; gap: 2px;
@@ -1079,6 +1072,21 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
   }
   html body.record-single-page #header .luliy-header-records[aria-expanded="true"] svg { rotate: 180deg; stroke: var(--accent); }
   html body.record-single-page #header .luliy-header-records:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 10px; }
+  /* 文章 in the header (reading page only, home-fixes.js block 20): same button as 唱片. */
+  html body.luliy-reading #header .luliy-header-articles {
+    position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: flex; align-items: center; gap: 2px;
+    margin: 0; padding: 12px 6px 12px 10px; border: 0; background: none; color: var(--ink); cursor: pointer;
+    font: 700 16px/1 var(--font-ui); letter-spacing: .06em; white-space: nowrap;
+  }
+  html body.luliy-reading #header .luliy-header-articles svg {
+    width: 18px; height: 18px; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    transition: rotate var(--dur-base) var(--ease);
+  }
+  html body.luliy-reading #header .luliy-header-articles[aria-expanded="true"] svg { rotate: 180deg; stroke: var(--accent); }
+  html body.luliy-reading #header .luliy-header-articles:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 10px; }
+  /* Records volume: the slider cannot change loudness on a phone (hardware keys only),
+     so the whole volume row is hidden on phones. Desktop keeps it. */
+  html body #main .lr-volume { display: none !important; }
   html.luliy-cloth-open, html.luliy-cloth-open body { overflow: hidden !important; }
   html.luliy-cloth-open body #header.luliy-washed::before { opacity: 0 !important; }
 
@@ -1128,6 +1136,25 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
   @media (min-width: 600px) { html body .luliy-cloth-grid { --cols: 5; } }
   @media (min-width: 720px) { html body .luliy-cloth-grid { --cols: 6; } }
   @media (min-width: 700px) and (max-height: 500px) { html body .luliy-cloth-grid { --cols: 8; } }   /* phones on their side */
+  /* An article row in the cloth: list number + title, no date. The article being read is marked. */
+  html body .luliy-cloth-articles { margin: 0; padding: 0; list-style: none; }
+  html body .luliy-cloth-articles > li { margin: 0; padding: 0; }
+  html body .luliy-article-row {
+    display: flex; align-items: baseline; gap: 14px; width: 100%; margin: 0; padding: 13px 2px;
+    border: 0; border-bottom: 1px solid color-mix(in oklab, var(--ink) 9%, transparent); background: none;
+    color: var(--ink); cursor: pointer; text-align: left; -webkit-tap-highlight-color: transparent;
+  }
+  html body .luliy-article-row .luliy-article-no {
+    flex: none; width: 2ch; color: var(--muted);
+    font: 600 12px/1.4 var(--font-ui); font-variant-numeric: tabular-nums; letter-spacing: .08em;
+  }
+  html body .luliy-article-row .luliy-article-title {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font: 600 17px/1.4 var(--font-ui);
+  }
+  html body .luliy-article-row[aria-current="true"] .luliy-article-no,
+  html body .luliy-article-row[aria-current="true"] .luliy-article-title { color: var(--accent); }
+  html body .luliy-cloth-note { margin: 0; padding: 18px 2px; color: var(--muted); font: 500 13px/1.5 var(--font-ui); }
   html body .luliy-cloth-grid > li { min-width: 0; margin: 0; padding: 0; }
   html body .luliy-cloth-grip {
     position: absolute; left: 50%; bottom: calc(var(--hem) + 7px); width: 36px; height: 4px; margin-left: -18px; border-radius: 2px;
@@ -1196,6 +1223,7 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
 .lr-cover.lr-public-artwork.lr-cover-failed .lr-cover-number,
 .lr-cover.lr-public-artwork.lr-cover-failed .lr-cover-title,
 .lr-cover.lr-public-artwork.lr-cover-failed .lr-cover-bottom{display:block}
-/* Records volume: on iOS the slider cannot change loudness (hardware keys only);
-   the hint next to it says so. Hidden everywhere else by the player (hidden attr). */
-.lr-volume-hint{font-size:11px;color:var(--muted);letter-spacing:.06em}
+
+/* Study room: the "Luliy的房间" title screen is gone (home-fixes.js block 21);
+   the site loader holds the entry instead, until the room is actually entering. */
+html body #main .study-room-intro { display: none !important; }
