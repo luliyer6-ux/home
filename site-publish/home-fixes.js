@@ -1687,6 +1687,12 @@
           '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-draw{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:1}55%{stroke-dashoffset:0;opacity:1}75%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}@keyframes luliy-loader-draw-trail{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:.3}55%{stroke-dashoffset:0;opacity:.3}75%{stroke-dashoffset:0;opacity:.3}100%{stroke-dashoffset:0;opacity:0}}' +
           '@media(prefers-reduced-motion:reduce){#luliy-room-loader .o{animation:none;opacity:1}#luliy-room-loader .l,#luliy-room-loader .t{display:none}}' +
           'html.luliy-calm #luliy-room-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-room-loader .l,html.luliy-calm #luliy-room-loader .t{display:none}';
+          if (a === 'light') css = '#luliy-room-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
+            '#luliy-room-loader.is-done{opacity:0;pointer-events:none}' +
+            '#luliy-room-loader img{width:120px;height:120px;object-fit:contain;animation:luliy-loader-breathe-img 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
+            '@keyframes luliy-loader-breathe-img{from{opacity:.55;transform:scale(.96)}to{opacity:1;transform:scale(1)}}' +
+            '@media(prefers-reduced-motion:reduce){#luliy-room-loader img{animation:none;opacity:1;transform:none}}' +
+            'html.luliy-calm #luliy-room-loader img{animation:none;opacity:1;transform:none}';
         var style = document.createElement('style');
         style.textContent = css;
         (document.head || document.documentElement).appendChild(style);
@@ -1694,6 +1700,7 @@
         el.id = 'luliy-room-loader';
         el.setAttribute('aria-hidden', 'true');
         el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + paths('t', 4) + paths('l', 4) + '</svg>';
+        if (a === 'light') el.innerHTML = '<img src="/assets/site/%5BIT-XIAOBIN%5D-1792981037054.png" alt="" aria-hidden="true">';
         document.documentElement.appendChild(el);
       return el;
     }
