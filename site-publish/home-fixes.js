@@ -1764,4 +1764,20 @@
     if (isBooks()) show();
   })();
 
+  /* 22. Homepage Records portrait: use the user's own flipped photo (listen2.png).
+     The app shell renders listen.png; swap it to listen2.png as soon as the Records
+     portrait appears, so the flipped photo shows and no CSS flip is needed. */
+  (function () {
+    var URL2 = 'https://cloud.luliy.me/api/image?path=shared%2Flisten2.png';
+    function swap() {
+      var img = document.querySelector('#recordsHome .home-corner-image');
+      if (img && img.getAttribute('src') !== URL2) img.setAttribute('src', URL2);
+      return !!img;
+    }
+    if (!swap()) {
+      var mo = new MutationObserver(function () { if (swap()) mo.disconnect(); });
+      mo.observe(document.documentElement, { childList: true, subtree: true });
+    }
+  })();
+
 })();
