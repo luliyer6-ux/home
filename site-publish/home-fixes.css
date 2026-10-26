@@ -1227,3 +1227,39 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
 /* Study room: the "Luliy的房间" title screen is gone (home-fixes.js block 21);
    the site loader holds the entry instead, until the room is actually entering. */
 html body #main .study-room-intro { display: none !important; }
+
+/* Homepage Records section, desktop only (min-width:1101px) — tighten the layout
+   (2026-10-26, records-desktop-tighten):
+   - Less top padding / shorter section (was ~120px top + 460px min-height).
+   - Wider player group so the turntable + track info use more of the section
+     and sit closer to the portrait.
+   - Taller scene so the turntable renders bigger.
+   - Track title: 2-line clamp + smaller type so long titles stop pushing
+     the controls down.
+   - Portrait: squarer box matching the near-square photo, more opaque.
+   - Turntable zoom must not grow the section (clearance forced to 0 here). */
+@media (min-width: 1101px) {
+  html body #recordsHome .record-mount .lr-layout {
+    padding-top: clamp(48px, 6svh, 72px);
+    min-height: 400px;
+    --lr-control-clearance: 0px;
+  }
+  html body #recordsHome .home-player-group {
+    width: min(1180px, calc(100% - 6vw));
+  }
+  html body #recordsHome .record-mount .lr-scene {
+    height: 430px;
+  }
+  html body #recordsHome .record-mount .lr-title {
+    font-size: clamp(26px, 2.6vw, 38px);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  html body #recordsHome .home-corner-image {
+    width: min(32%, 460px);
+    height: clamp(400px, 32vw, 470px);
+    opacity: .8;
+  }
+}
