@@ -1228,28 +1228,37 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
    the site loader holds the entry instead, until the room is actually entering. */
 html body #main .study-room-intro { display: none !important; }
 
-/* Homepage Records section, desktop only (min-width:1101px) — new layout
-   (2026-10-26, records-new-layout; replaces records-desktop-tighten):
-   Portrait large on the left, track info centred in the middle,
-   3D turntable small at the bottom-right. Playback logic untouched. */
+/* Homepage Records section, desktop only (min-width:1101px) — new layout, full-bleed
+   (2026-10-26, records-new-layout; replaces the flex version):
+   No fixed side blanks: the body breaks out of the centred 1360px box to the
+   viewport edges (the section itself is already 100vw with a gutter). Portrait
+   large on the left, track info centred in the middle-right, 3D turntable
+   small at the bottom-right. Playback logic untouched. */
 @media (min-width: 1101px) {
+  html body #recordsHome .record-feature-body {
+    width: auto;
+    max-width: none;
+    margin-inline: calc(-1 * var(--gutter));
+  }
   html body #recordsHome .record-mount .lr-layout {
+    display: grid;
+    grid-template-columns: min(32%, 560px) minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
     padding-top: 24px;
     min-height: 540px;
-    align-items: stretch;
-    gap: clamp(16px, 2vw, 32px);
+    gap: 0;
     --lr-control-clearance: 0px;
   }
   html body #recordsHome .home-player-group {
     display: contents;
   }
   html body #recordsHome .home-corner-image {
-    order: 1;
+    grid-column: 1;
+    grid-row: 1 / 3;
     position: static;
     right: auto;
     bottom: auto;
-    flex-shrink: 0;
-    width: min(40%, 540px);
+    width: 100%;
     height: auto;
     align-self: stretch;
     object-fit: contain;
@@ -1262,20 +1271,23 @@ html body #main .study-room-intro { display: none !important; }
     -webkit-mask-composite: source-in;
   }
   html body #recordsHome .record-mount .lr-meta {
-    order: 2;
-    flex: 0 1 440px;
-    min-width: 0;
-    max-width: 440px;
+    grid-column: 2;
+    grid-row: 1 / 3;
     align-self: center;
+    justify-self: center;
+    min-width: 0;
+    max-width: 480px;
+    width: 100%;
     padding: 0;
   }
   html body #recordsHome .record-mount .lr-scene {
-    order: 3;
-    flex: 0 0 300px;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    align-self: end;
     width: 300px;
     height: 240px;
-    align-self: flex-end;
-    margin-left: auto;
+    margin-right: 24px;
   }
   html body #recordsHome .record-mount .lr-title {
     font-size: clamp(26px, 2.6vw, 38px);
