@@ -1678,22 +1678,22 @@
           'M19.4 10.4q0-.5.5-.8l.5.1c0 .2-.9.8-1 .7',
           'm17.6 13.9-.2-.2-.1-.1v-.2q.4-.5.7 0 .2.2 0 .3-.4.4-.4.2'];
         var paths = function (cls, n) { return shapes.slice(0, n).map(function (d, i) { return '<path class="' + cls + '" pathLength="1" d="' + d + '" style="--i:' + i + '"/>'; }).join(''); };
-        var css = '#luliy-room-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1)}' +
+        var css = '#luliy-room-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
           '#luliy-room-loader.is-done{opacity:0;pointer-events:none}' +
-          '#luliy-room-loader svg{width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round}' +
+          '#luliy-room-loader svg{width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round;transform:translateZ(0)}' +
           '#luliy-room-loader .o{stroke:' + C[1] + ';stroke-width:.55;animation:luliy-loader-breathe 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
-          '#luliy-room-loader .l{stroke:' + C[2] + ';stroke-width:.9;stroke-dasharray:.16 .84;stroke-dashoffset:1;animation:luliy-loader-run 1.9s linear infinite;animation-delay:calc(var(--i) * -.21s)}' +
-          '#luliy-room-loader .g{filter:drop-shadow(0 0 2.2px ' + C[2] + ')}' +
-          '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-run{to{stroke-dashoffset:0}}' +
-          '@media(prefers-reduced-motion:reduce){#luliy-room-loader .o{animation:none;opacity:1}#luliy-room-loader .l{display:none}}' +
-          'html.luliy-calm #luliy-room-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-room-loader .l{display:none}';
+          '#luliy-room-loader .l{stroke:' + C[2] + ';stroke-width:1;stroke-dasharray:1 1;stroke-dashoffset:1;animation:luliy-loader-draw 3.6s cubic-bezier(.65,0,.35,1) infinite;animation-delay:calc(var(--i) * -.45s)}' +
+          '#luliy-room-loader .t{stroke:' + C[2] + ';stroke-width:2.4;stroke-dasharray:1 1;stroke-dashoffset:1;animation:luliy-loader-draw-trail 3.6s cubic-bezier(.65,0,.35,1) infinite;animation-delay:calc(var(--i) * -.45s + .28s)}' +
+          '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-draw{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:1}55%{stroke-dashoffset:0;opacity:1}75%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}@keyframes luliy-loader-draw-trail{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:.3}55%{stroke-dashoffset:0;opacity:.3}75%{stroke-dashoffset:0;opacity:.3}100%{stroke-dashoffset:0;opacity:0}}' +
+          '@media(prefers-reduced-motion:reduce){#luliy-room-loader .o{animation:none;opacity:1}#luliy-room-loader .l,#luliy-room-loader .t{display:none}}' +
+          'html.luliy-calm #luliy-room-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-room-loader .l,html.luliy-calm #luliy-room-loader .t{display:none}';
         var style = document.createElement('style');
         style.textContent = css;
         (document.head || document.documentElement).appendChild(style);
         var el = document.createElement('div');
         el.id = 'luliy-room-loader';
         el.setAttribute('aria-hidden', 'true');
-        el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + '<g class="g">' + paths('l', 4) + '</g></svg>';
+        el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + paths('t', 4) + paths('l', 4) + '</svg>';
         document.documentElement.appendChild(el);
       return el;
     }
