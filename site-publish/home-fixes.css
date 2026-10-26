@@ -1262,12 +1262,12 @@ html body #main .study-room-intro { display: none !important; }
     height: auto;
     align-self: stretch;
     object-fit: contain;
-    object-position: left bottom;
-    transform: none;
+    object-position: right bottom;
+    transform: scaleX(-1);
     opacity: 1;
-    mask-image: linear-gradient(to top, transparent, #000 15%, #000 85%, transparent), linear-gradient(to right, #000 70%, transparent);
+    mask-image: linear-gradient(to top, transparent, #000 15%, #000 85%, transparent), linear-gradient(to left, #000 70%, transparent);
     mask-composite: intersect;
-    -webkit-mask-image: linear-gradient(to top, transparent, #000 15%, #000 85%, transparent), linear-gradient(to right, #000 70%, transparent);
+    -webkit-mask-image: linear-gradient(to top, transparent, #000 15%, #000 85%, transparent), linear-gradient(to left, #000 70%, transparent);
     -webkit-mask-composite: source-in;
   }
   html body #recordsHome .record-mount .lr-meta {
