@@ -1015,8 +1015,9 @@
     new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class', 'lang'] });
     sync();
 
-    const open = () => {
-      const url = el && el.href;
+    const open = (node) => {
+      const target = node || el;
+      const url = target && target.href;
       end();
       if (url) window.open(url, '_blank', 'noopener');
     };
@@ -1051,9 +1052,9 @@
       const t = mark(e);
       if (!t) { end(); return; }
       e.preventDefault(); e.stopPropagation();
-      if (held && t === el) { if (swap()) { end(); const home = partner(); if (home) home.click(); } else open(); return; }
+      if (held && t === el) { if (swap()) { end(); const home = partner(); if (home) home.click(); } else open(t); return; }
       end();
-      if (swap()) { open(); return; }
+      if (swap()) { open(t); return; }
       const home = partner();
       if (home) home.click();
     }, true);
