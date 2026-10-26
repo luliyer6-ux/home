@@ -1229,21 +1229,21 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
 html body #main .study-room-intro { display: none !important; }
 
 /* Homepage Records section, desktop only (min-width:1101px) — new layout, full-bleed
-   (2026-10-26, records-new-layout; replaces the flex version):
-   No fixed side blanks: the body breaks out of the centred 1360px box to the
-   viewport edges (the section itself is already 100vw with a gutter). Portrait
-   large on the left, track info centred in the middle-right, 3D turntable
-   small at the bottom-right. Playback logic untouched. */
+   (2026-10-26, records-new-layout; the track list below is untouched):
+   The body stays at the centred 1360px box, so the track list below keeps its
+   original width. Only the main view (.lr-layout) breaks out to the viewport
+   edges, so there is no fixed blank on the left or right. Portrait large on
+   the left, track info centred in the middle-right, 3D turntable small at
+   the bottom-right. Playback logic untouched. */
 @media (min-width: 1101px) {
-  html body #recordsHome .record-feature-body {
-    width: auto;
-    max-width: none;
-    margin-inline: calc(-1 * var(--gutter));
-  }
   html body #recordsHome .record-mount .lr-layout {
     display: grid;
     grid-template-columns: min(32%, 560px) minmax(0, 1fr);
     grid-template-rows: 1fr auto;
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
     padding-top: 24px;
     min-height: 540px;
     gap: 0;
