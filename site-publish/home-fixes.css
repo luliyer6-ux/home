@@ -1337,3 +1337,145 @@ html body #main .study-room-intro { display: none !important; }
     width: 39px;
   }
 }
+
+/* Homepage Records section, desktop wide only (min-width:1600px) — vinyl track list
+   (2026-10-27; the track list below becomes a column of vinyl discs):
+   The shelf (.lr-gallery) moves from below into grid column 3, right of the track
+   info, as a vertical column showing 5 vinyl-disc rows (scrollable for all 20).
+   The shelf heading ("我的唱片" + prev/next) and the album trigger ("目前播放列表 /
+   20 首曲目" + "+") are hidden here — the vinyl column IS the playlist, no title,
+   no "+". Below 1600px everything stays as-is (horizontal list below).
+   Disc look reuses the mobile cloth vinyl (.luliy-disc-vinyl): black grooved disc,
+   cover photo as centre label when present, beige label otherwise, spindle hole.
+   CSS-only: the chunk's click handlers on .lr-record keep working. */
+@media (min-width: 1600px) {
+  html body #recordsHome .record-mount .lr-gallery {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    grid-template-rows: minmax(0, 1fr);
+    min-width: 0;
+  }
+  html body #recordsHome .record-mount .lr-shelf-heading {
+    display: none;
+  }
+  html body #recordsHome .lr-album-trigger {
+    display: none;
+  }
+  html body #recordsHome .record-mount .lr-shelf {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scroll-snap-type: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    cursor: default;
+  }
+  html body #recordsHome .record-mount .lr-shelf::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+  }
+  html body #recordsHome .record-mount .lr-shelf::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / .18);
+    border-radius: 3px;
+  }
+  html body #recordsHome .record-mount .lr-record {
+    flex: 0 0 auto;
+    height: 128px;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 14px;
+    align-items: center;
+    text-align: left;
+    padding: 0;
+  }
+  html body #recordsHome .record-mount .lr-record .lr-cover {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    flex: none;
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    transform: none;
+    background:
+      radial-gradient(circle closest-side, #ded3bb 0 38%, rgb(0 0 0 / .45) 38.6%, transparent 39%),
+      radial-gradient(circle closest-side, transparent 62%, rgb(255 255 255 / .08) 62.6% 63.6%, transparent 64.2% 76.4%, rgb(255 255 255 / .08) 77% 78%, transparent 78.6% 89.4%, rgb(255 255 255 / .07) 90% 91%, transparent 91.6% 97.4%, rgb(255 255 255 / .1) 98% 99%, transparent 99.6%),
+      repeating-radial-gradient(circle closest-side, rgb(255 255 255 / .03) 0 1px, transparent 1px 3px),
+      #080909;
+    box-shadow: 0 7px 16px rgb(0 0 0 / .34);
+  }
+  html body #recordsHome .record-mount .lr-record .lr-cover::before {
+    display: none;
+  }
+  html body #recordsHome .record-mount .lr-record .lr-cover::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3.5%;
+    min-width: 3px;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: #0b0b0c;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / .25);
+    z-index: 3;
+  }
+  html body #recordsHome .record-mount .lr-record .lr-cover .lr-cover-art,
+  html body #recordsHome .record-mount .lr-record .lr-cover .lr-cover-top,
+  html body #recordsHome .record-mount .lr-record .lr-cover .lr-cover-number,
+  html body #recordsHome .record-mount .lr-record .lr-cover .lr-cover-title,
+  html body #recordsHome .record-mount .lr-record .lr-cover .lr-cover-bottom {
+    display: none;
+  }
+  html body #recordsHome .record-mount .lr-record .lr-cover img {
+    position: absolute;
+    inset: 30.7%;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 2;
+  }
+  html body #recordsHome .record-mount .lr-record .lr-record-name {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 0;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  html body #recordsHome .record-mount .lr-record .lr-record-info {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 3px;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  html body #recordsHome .record-mount .lr-record .lr-record-state {
+    display: none;
+  }
+  html body #recordsHome .record-mount .lr-record:hover .lr-cover {
+    transform: none;
+  }
+  html body #recordsHome .record-mount .lr-record[aria-current="true"] .lr-cover {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent), 0 0 22px color-mix(in oklab, var(--accent) 55%, transparent), 0 7px 16px rgb(0 0 0 / .34);
+  }
+  html body #recordsHome .record-mount .lr-record[aria-current="true"] .lr-record-name {
+    font-weight: 700;
+  }
+}
