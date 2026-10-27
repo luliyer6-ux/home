@@ -1262,14 +1262,18 @@ html body #main .study-room-intro { display: none !important; }
     width: min(1760px, 100%);
   }
   html body #recordsHome {
-    /* Section is 120px shorter than the viewport so the centred content
-       still fits when the galaxy nav lands it ~110px low (its scrollTo
-       offset; scroll-margin/scroll-padding do not affect it). At 1080px
-       viewport the section is 960px, content ~865px centred inside. */
     min-height: calc(100svh - 120px);
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+  /* Shift the centred content up 110px: the galaxy nav lands the section
+     ~110px too low (scrollTo offset; scroll-margin/scroll-padding do not
+     affect it) and the section height is set by its content, so changing
+     min-height (push28) had no effect. Children only, so the section box
+     stays in place and does not overlap ARTICLES above. */
+  html body #recordsHome > * {
+    transform: translateY(-110px);
   }
   /* Records lands at viewport y=0 (not y~110): html{scroll-padding-top:110px}
      in main css pushes every scroll landing down 110px. At desktop width
