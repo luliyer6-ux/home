@@ -1796,6 +1796,25 @@
     function layout() { return document.querySelector('#recordsHome .record-mount .lr-layout'); }
     function root() { return document.querySelector('#recordsHome .record-mount .lr-room'); }
     function collection() { return document.querySelector('#recordsHome .record-mount .lr-collection'); }
+    function injectCovers() {
+      var api = window.LuliyRecords;
+      if (!api || typeof api.tracks !== 'function') return;
+      var list;
+      try { list = api.tracks(); } catch (e) { return; }
+      if (!Array.isArray(list)) return;
+      var cards = document.querySelectorAll('#recordsHome .record-mount .lr-record');
+      for (var i = 0; i < cards.length; i++) {
+        var t = list[i];
+        if (!t || !t.cover) continue;
+        var cover = cards[i].querySelector('.lr-cover');
+        if (!cover || cover.querySelector('img')) continue;
+        var img = document.createElement('img');
+        img.src = t.cover;
+        img.alt = '';
+        img.setAttribute('aria-hidden', 'true');
+        cover.appendChild(img);
+      }
+    }
     function place() {
       var s = shelf(), l = layout(), r = root();
       if (!s || !l || !r) return;
@@ -1805,6 +1824,7 @@
         var c = collection();
         if (c) r.insertBefore(s, c); else r.appendChild(s);
       }
+      injectCovers();
     }
     var mo = new MutationObserver(place);
     mo.observe(document.documentElement, { childList: true, subtree: true });

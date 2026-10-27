@@ -1370,8 +1370,11 @@ html body #main .study-room-intro { display: none !important; }
     scroll-snap-type: none;
     padding: 0;
     margin: 0;
-    height: 100%;
+    height: 700px;
     cursor: default;
+  }
+  html body #recordsHome .record-mount .lr-layout {
+    grid-template-rows: minmax(0, 1fr) auto;
   }
   html body #recordsHome .record-mount .lr-shelf-heading {
     display: none;
