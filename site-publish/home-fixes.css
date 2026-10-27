@@ -1266,11 +1266,15 @@ html body #main .study-room-intro { display: none !important; }
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* Cancel html{scroll-padding-top:110px} for this section only, so it
-       lands at viewport y=0 and the centred content sits centred in the
-       viewport (without this it lands ~110px down and the player bottom
-       is clipped). Site-wide 110px scroll-padding is untouched. */
-    scroll-margin-top: -110px;
+  }
+  /* Records lands at viewport y=0 (not y~110): html{scroll-padding-top:110px}
+     in main css pushes every scroll landing down 110px. At desktop width
+     there is no tall fixed header needing that clearance, and article
+     headings keep their own scroll-margin-top:120-125px, so clearing it
+     here is safe. (push26 tried scroll-margin-top:-110px on the section;
+     it had no effect, so it is removed.) */
+  html {
+    scroll-padding-top: 0;
   }
   html body #recordsHome .home-player-group {
     display: contents;
