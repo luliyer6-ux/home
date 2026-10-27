@@ -1339,29 +1339,27 @@ html body #main .study-room-intro { display: none !important; }
 }
 
 /* Homepage Records section, desktop wide only (min-width:1600px) — vinyl track list
-   (2026-10-27; the track list below becomes a column of vinyl discs):
-   The shelf (.lr-gallery) moves from below into grid column 3, right of the track
+   (2026-10-27, push22; replaces push21, which targeted .lr-gallery).
+   Why this shape: on the home page the player mounts with layout 'home', so the
+   chunk never wraps the shelf in .lr-gallery (that only happens on the standalone
+   #/music page). .lr-shelf is a direct child of .lr-room, a sibling of .lr-layout,
+   and pure CSS cannot put a sibling into .lr-layout's grid — so home-fixes.js
+   block 23 moves .lr-shelf into .lr-layout at >=1600px (and back below it).
+   Once inside, this block puts the shelf in grid column 3, right of the track
    info, as a vertical column showing 5 vinyl-disc rows (scrollable for all 20).
    The shelf heading ("我的唱片" + prev/next) and the album trigger ("目前播放列表 /
    20 首曲目" + "+") are hidden here — the vinyl column IS the playlist, no title,
    no "+". Below 1600px everything stays as-is (horizontal list below).
    Disc look reuses the mobile cloth vinyl (.luliy-disc-vinyl): black grooved disc,
    cover photo as centre label when present, beige label otherwise, spindle hole.
-   CSS-only: the chunk's click handlers on .lr-record keep working. */
+   CSS-only except for the shelf move in home-fixes.js block 23; the chunk's click
+   handlers on .lr-record keep working (moving the node keeps its listeners). */
 @media (min-width: 1600px) {
-  html body #recordsHome .record-mount .lr-gallery {
+  html body #recordsHome .record-mount .lr-shelf {
     grid-column: 3;
     grid-row: 1 / 3;
-    grid-template-rows: minmax(0, 1fr);
     min-width: 0;
-  }
-  html body #recordsHome .record-mount .lr-shelf-heading {
-    display: none;
-  }
-  html body #recordsHome .lr-album-trigger {
-    display: none;
-  }
-  html body #recordsHome .record-mount .lr-shelf {
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -1374,6 +1372,12 @@ html body #main .study-room-intro { display: none !important; }
     margin: 0;
     height: 100%;
     cursor: default;
+  }
+  html body #recordsHome .record-mount .lr-shelf-heading {
+    display: none;
+  }
+  html body #recordsHome .lr-album-trigger {
+    display: none !important;
   }
   html body #recordsHome .record-mount .lr-shelf::-webkit-scrollbar {
     display: block;
@@ -1420,6 +1424,8 @@ html body #main .study-room-intro { display: none !important; }
     position: absolute;
     left: 50%;
     top: 50%;
+    right: auto;
+    bottom: auto;
     width: 3.5%;
     min-width: 3px;
     aspect-ratio: 1;
@@ -1438,11 +1444,13 @@ html body #main .study-room-intro { display: none !important; }
   }
   html body #recordsHome .record-mount .lr-record .lr-cover img {
     position: absolute;
-    inset: 30.7%;
-    width: auto;
-    height: auto;
-    max-width: none;
-    max-height: none;
+    left: 50%;
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    width: 38.6%;
+    height: 38.6%;
+    translate: -50% -50%;
     border-radius: 50%;
     object-fit: cover;
     z-index: 2;

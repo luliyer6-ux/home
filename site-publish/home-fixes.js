@@ -1780,4 +1780,37 @@
     }
   })();
 
+  /* 23. Homepage Records vinyl column (2026-10-27): at >=1600px the track list
+     becomes a vinyl column to the right of the player (see home-fixes.css).
+     The shelf is a sibling of .lr-layout, not inside it — home mounts the player
+     with layout 'home', so the chunk never wraps the shelf in .lr-gallery (that
+     only happens on the standalone #/music page) — and pure CSS cannot put a
+     sibling into .lr-layout's grid. So move .lr-shelf into .lr-layout here when
+     the viewport is >=1600px, and move it back (before .lr-collection) when it
+     narrows. Moving the node keeps its listeners, so playback still works.
+     Idempotent and stateless: place() only moves when the parent is wrong, so it
+     is safe to run on every mutation and media change, including remounts. */
+  (function () {
+    var MQ = window.matchMedia('(min-width: 1600px)');
+    function shelf() { return document.querySelector('#recordsHome .record-mount .lr-shelf'); }
+    function layout() { return document.querySelector('#recordsHome .record-mount .lr-layout'); }
+    function root() { return document.querySelector('#recordsHome .record-mount .lr-room'); }
+    function collection() { return document.querySelector('#recordsHome .record-mount .lr-collection'); }
+    function place() {
+      var s = shelf(), l = layout(), r = root();
+      if (!s || !l || !r) return;
+      if (MQ.matches) {
+        if (s.parentElement !== l) l.appendChild(s);
+      } else if (s.parentElement === l) {
+        var c = collection();
+        if (c) r.insertBefore(s, c); else r.appendChild(s);
+      }
+    }
+    var mo = new MutationObserver(place);
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+    if (MQ.addEventListener) MQ.addEventListener('change', place);
+    else if (MQ.addListener) MQ.addListener(place);
+    place();
+  })();
+
 })();
