@@ -1262,7 +1262,11 @@ html body #main .study-room-intro { display: none !important; }
     width: min(1760px, 100%);
   }
   html body #recordsHome {
-    min-height: 100svh;
+    /* Section is 120px shorter than the viewport so the centred content
+       still fits when the galaxy nav lands it ~110px low (its scrollTo
+       offset; scroll-margin/scroll-padding do not affect it). At 1080px
+       viewport the section is 960px, content ~865px centred inside. */
+    min-height: calc(100svh - 120px);
     display: flex;
     flex-direction: column;
     justify-content: center;
