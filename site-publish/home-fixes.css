@@ -1490,3 +1490,11 @@ html body #main .study-room-intro { display: none !important; }
     font-weight: 700;
   }
 }
+
+/* Records: remove the divider line above "目前播放列表" (2026-10-27).
+   The line is .lr-collection's border-top. User asked to delete it.
+   Removed at all widths (at >=1600px the trigger is hidden, so the line
+   would otherwise sit there alone with nothing under it). */
+html body #recordsHome .lr-collection {
+  border-top: none;
+}
