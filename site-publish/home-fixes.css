@@ -1266,6 +1266,11 @@ html body #main .study-room-intro { display: none !important; }
     display: flex;
     flex-direction: column;
     justify-content: center;
+    /* Cancel html{scroll-padding-top:110px} for this section only, so it
+       lands at viewport y=0 and the centred content sits centred in the
+       viewport (without this it lands ~110px down and the player bottom
+       is clipped). Site-wide 110px scroll-padding is untouched. */
+    scroll-margin-top: -110px;
   }
   html body #recordsHome .home-player-group {
     display: contents;
