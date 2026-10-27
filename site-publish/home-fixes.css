@@ -1228,8 +1228,11 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
    the site loader holds the entry instead, until the room is actually entering. */
 html body #main .study-room-intro { display: none !important; }
 
-/* Homepage Records section, desktop only (min-width:1101px) — new layout, full-bleed, 1.3x
-   (2026-10-26, records-new-layout; 2026-10-27, gap fix; the track list below is untouched):
+/* Homepage Records section, desktop only (min-width:1101px) — new layout, centred 1760px, 1.3x
+   (2026-10-26, records-new-layout; 2026-10-27, gap fix; 2026-10-27, Scheme A centre:
+   body widened 1360px -> 1760px centred, grid fills it instead of breaking out
+   full-bleed, section fills the viewport and centres header+body vertically;
+   the track list below is untouched):
    Portrait uses the user's own flipped photo (listen2.png, swapped in by home-fixes.js
    block 22), so no CSS flip is needed here. Portrait, track info and turntable are all
    1.3x. Track info sits left-aligned next to the portrait (3-column grid: portrait /
@@ -1241,14 +1244,28 @@ html body #main .study-room-intro { display: none !important; }
     display: grid;
     grid-template-columns: min(40%, 710px) minmax(0, 624px) minmax(0, 1fr);
     grid-template-rows: 1fr auto;
-    width: 100vw;
+    width: 100%;
     max-width: none;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+    margin-left: 0;
+    margin-right: 0;
     padding-top: 24px;
     min-height: 700px;
     gap: 0 clamp(24px, 3vw, 48px);
     --lr-control-clearance: 0px;
+  }
+  /* Scheme A centre (2026-10-27): the body was capped at 1360px in main CSS
+     while the grid broke out full-bleed (100vw), so the content only reached
+     ~1450px and left ~470px empty on the right, top-aligned with blank below.
+     Body is now 1760px centred; the section fills the viewport and centres
+     header+body vertically, so the blank is split evenly top/bottom. */
+  html body #recordsHome .record-feature-body {
+    width: min(1760px, 100%);
+  }
+  html body #recordsHome {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   html body #recordsHome .home-player-group {
     display: contents;
