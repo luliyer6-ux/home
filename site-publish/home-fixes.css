@@ -1262,7 +1262,8 @@ html body #main .study-room-intro { display: none !important; }
     width: min(1760px, 100%);
   }
   html body #recordsHome {
-    min-height: 100svh;
+    min-height: 0;
+    padding-bottom: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1523,4 +1524,34 @@ html body #main .study-room-intro { display: none !important; }
    would otherwise sit there alone with nothing under it). */
 html body #recordsHome .lr-collection {
   border-top: none;
+}
+
+/* Zero blank below Records (push31, 2026-10-29, user confirmed the
+   "blank directly removed" preview): the footer stops being a fixed
+   curtain and becomes a normal block directly after the content, so
+   there is no empty reveal void below Records (or any last section).
+   .page-above loses its footer-height bottom margin; the footer is
+   positioned in flow and sized to its content; its inner elements are
+   forced visible (no curtain reveal animation to wait for). Site-wide. */
+html body .page-above {
+  margin-bottom: 0;
+}
+html body .contact-curtain {
+  position: relative;
+  height: auto;
+  z-index: 1;
+}
+html body .contact-curtain .contact-inner {
+  height: auto;
+}
+html body .contact-curtain .contact-inner > .eyebrow,
+html body .contact-curtain .contact-signature,
+html body .contact-curtain .contact-email,
+html body .contact-curtain .contact-social,
+html body .contact-curtain .footer-bottom {
+  opacity: 1;
+  transform: none;
+}
+html body .contact-curtain .contact-signature {
+  clip-path: none;
 }
