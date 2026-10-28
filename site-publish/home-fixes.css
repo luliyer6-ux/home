@@ -1264,6 +1264,11 @@ html body #main .study-room-intro { display: none !important; }
   html body #recordsHome {
     min-height: 0;
     padding-bottom: 0;
+    /* push32: the section still carries ~350-400px of trailing space below
+       the player (its bottom extension, above the footer gold line). Pull
+       the footer up over it. -350px is the safe lower bound: it never
+       overlaps the controls, and leaves at most ~50px if the gap is 400px. */
+    margin-bottom: -350px;
     display: flex;
     flex-direction: column;
     justify-content: center;
