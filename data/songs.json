@@ -241,5 +241,18 @@
     "color": "#9a8f83",
     "cover": "https://y.qq.com/music/photo_new/T002R300x300M00000103DoE3Yyqho_1.jpg?max_age=2592000",
     "draft": false
+  },
+  {
+    "id": "about-you",
+    "name": {
+      "zh": "About-You",
+      "en": "About-You",
+      "ja": "About-You"
+    },
+    "src": "./music/About-You.mp3",
+    "duration": 325,
+    "color": "#9a8f83",
+    "cover": "http://y.qq.com/music/photo_new/T002R300x300M0000008ZIaY1fFDEz_2.jpg?max_age=2592000",
+    "draft": false
   }
 ]
