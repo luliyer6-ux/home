@@ -108,9 +108,7 @@
   })();
 
   /* 4. Phones, every page: one header. It steps aside while scrolling down (on articles together with the two
-     floating buttons) and comes back on any upward scroll, near the top and near the end. On reading
-     pages it never steps aside: block 20 shows the current title instead (so the two floating
-     buttons stay visible there too). Once the page has
+     floating buttons) and comes back on any upward scroll, near the top and near the end. Once the page has
      moved, a soft wash in the page colour keeps content from showing through it (on the galaxy home only after
      the opening scene, which turns on .is-scrolled itself). It stays put while a sheet or dialog is open. */
   (() => {
@@ -147,9 +145,7 @@
       lastY = y;
       const above = document.querySelector('.page-above');
       const nearEnd = above && above.getBoundingClientRect().bottom - innerHeight < innerHeight * 0.5;
-      // Reading pages keep the header: block 20 swaps its middle label to the title on scroll down.
-      if (reading) setHidden(false);
-      else setHidden(dy > 0 && y > 160 && !nearEnd && !busy());
+      setHidden(dy > 0 && y > 160 && !nearEnd && !busy());
     };
     addEventListener('scroll', () => { if (!queued) queued = requestAnimationFrame(measure); }, { passive: true });
     addEventListener('hashchange', route);
@@ -1442,9 +1438,7 @@
      page) and the title, no date. A tap opens that article (the cloth rolls back up); the
      article being read is marked. 文章 again, a swipe up, a tap outside, Esc or the Android
      back gesture closes it; with reduced motion it only fades. The list comes from the blog's
-     postList.json (same source as the article list page), fetched once and cached. While reading,
-     scrolling down swaps the middle label to the current article title (the header stays put);
-     scrolling up, reaching the top or the end restores 文章. */
+     postList.json (same source as the article list page), fetched once and cached. */
   (() => {
     const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
     const header = document.getElementById('header');
@@ -1519,37 +1513,9 @@
       }
       reflect();
     };
-    // Title-mode: on reading pages, scrolling down swaps the middle button label to the current
-    // article title (the header itself stays; block 4 no longer hides it on reading pages).
-    let titleMode = false, lastTitleY = scrollY, titleQueued = 0;
-    const currentTitle = () => {
-      const h1 = main.querySelector('.article-head h1');
-      return h1 ? h1.textContent.replace(/\s+/g, ' ').trim() : '';
-    };
-    const titleAtRest = () => {
-      const y = scrollY;
-      const above = document.querySelector('.page-above');
-      const nearEnd = above && above.getBoundingClientRect().bottom - innerHeight < innerHeight * 0.5;
-      return y > 160 && !nearEnd && !open;
-    };
-    const setTitleMode = on => {
-      if (!button) on = false;
-      if (on === titleMode) return;
-      titleMode = on;
-      header.classList.toggle('luliy-header-title-mode', on);
-      label();
-    };
-    const measureTitle = () => {
-      titleQueued = 0;
-      if (!mobile.matches || !document.body.classList.contains('luliy-reading') || !button) { setTitleMode(false); return; }
-      const y = scrollY, dy = y - lastTitleY;
-      if (Math.abs(dy) < 8) return;
-      lastTitleY = y;
-      setTitleMode(dy > 0 && titleAtRest());
-    };
     const label = () => {
       if (button) {
-        const t = titleMode ? (currentTitle() || say('文章', 'Articles', '記事')) : say('文章', 'Articles', '記事');
+        const t = say('文章', 'Articles', '記事');
         const span = button.querySelector('span');
         if (span.textContent !== t) span.textContent = t;
         button.setAttribute('aria-label', say('文章：陳列所有文章', 'Articles: show every article', '記事：すべての記事を表示'));
@@ -1632,7 +1598,6 @@
       clearTimeout(hideTimer);
       if (instant) cloth.hidden = true;
       else hideTimer = setTimeout(() => { if (!open) cloth.hidden = true; }, reduced.matches ? 200 : 420);
-      measureTitle();
     };
     const sync = () => {
       const on = mobile.matches && document.body.classList.contains('luliy-reading');
@@ -1653,9 +1618,6 @@
         header.classList.add('luliy-has-articles-button');
       }
       label();
-      // Landing mid-article (or after a route change) should already show the title, not wait for a scroll.
-      lastTitleY = scrollY;
-      setTitleMode(titleAtRest());
     };
     // A tap outside the cloth and 文章 closes it (the shade takes taps below the hem; this catches the header).
     document.addEventListener('pointerdown', e => {
@@ -1668,7 +1630,6 @@
     new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     new MutationObserver(label).observe(root, { attributes: true, attributeFilter: ['lang'] });
     mobile.addEventListener('change', sync);
-    addEventListener('scroll', () => { if (!titleQueued) titleQueued = requestAnimationFrame(measureTitle); }, { passive: true });
     sync();
   })();
 
