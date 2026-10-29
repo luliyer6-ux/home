@@ -1915,7 +1915,9 @@
      mobile TOC and layout are untouched. A fixed full-viewport artwork layer is
      appended to .page-above with z-index -1, so it paints above .page-above's solid
      background but below #main content (whose containers are transparent), and it
-     is hidden while the footer curtain is revealing (near page end). The article
+     is hidden while the footer curtain is revealing (near page end),
+     except on short pages (page height within viewport + 80px), where it
+     would otherwise be hidden always (fixed 2026-10-30, P57). The article
      TOC aside gets a "背景" section (after the label, before the chapter nav):
      默认 = this article's cover image if present, else the first entry of
      data/backgrounds.json, else none; 无背景; one button per backgrounds.json entry;
@@ -2015,7 +2017,13 @@
     function removeLayer() { var el = layer(); if (el) el.remove(); }
     function nearEnd() {
       var a = above(); if (!a) return false;
-      return a.getBoundingClientRect().bottom - window.innerHeight < 80;
+      var r = a.getBoundingClientRect();
+      // Short pages (e.g. P57, 199 chars): .page-above fits in the viewport,
+      // so its bottom is within 80px of the viewport bottom from the start and
+      // the layer would be hidden always. Never hide on such pages; the
+      // footer-curtain hide only applies when the page is actually tall.
+      if (r.height <= window.innerHeight + 80) return false;
+      return r.bottom - window.innerHeight < 80;
     }
     function apply() {
       if (!isActive()) {
