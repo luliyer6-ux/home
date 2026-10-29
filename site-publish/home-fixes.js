@@ -1833,4 +1833,247 @@
     place();
   })();
 
+  /* 24. Desktop article-page background option in the article TOC (2026-10-29):
+     Desktop article pages only (min-width 769px, blog articles with .article-toc);
+     mobile TOC and layout are untouched. A fixed full-viewport artwork layer is
+     appended to .page-above with z-index -1, so it paints above .page-above's solid
+     background but below #main content (whose containers are transparent), and it
+     is hidden while the footer curtain is revealing (near page end). The article
+     TOC aside gets a "背景" section (after the label, before the chapter nav):
+     默认 = this article's cover image if present, else the first entry of
+     data/backgrounds.json, else none; 无背景; one button per backgrounds.json entry;
+     我的图片 = a device file picker (downscaled to a JPEG data URL, persisted in
+     localStorage when it fits, otherwise this visit only); a scrim-darkness slider
+     (center-weighted gradient, so side artwork stays vivid while the text column
+     stays readable); and a 恢复默认 button. Choice + scrim persist in localStorage.
+     When any background image is active, the .article-cover block is hidden (the
+     cover becomes the backdrop instead of a duplicate block); choosing 无背景
+     restores it. Idempotent: sync runs on every mutation and media change, and
+     injected nodes are removed when leaving article pages or desktop. */
+  (function () {
+    var DESKTOP = window.matchMedia('(min-width: 769px)');
+    var LS_CHOICE = 'luliy-article-bg-choice';
+    var LS_SCRIM = 'luliy-article-bg-scrim';
+    var LS_CUSTOM = 'luliy-article-bg-custom';
+    var BG_ID = 'luliy-article-bg';
+    var SEC_CLASS = 'luliy-toc-bg';
+    var listCache = null, listLoading = false, sessionCustom = '';
+
+    function main() { return document.getElementById('main'); }
+    function above() { return document.querySelector('.page-above'); }
+    function toc() {
+      var m = main(); if (!m) return null;
+      if (!m.querySelector('.article-body')) return null;
+      return m.querySelector('.article-toc');
+    }
+    function isActive() { return DESKTOP.matches && !!toc(); }
+    function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    function read(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+    function removeKey(k) { try { localStorage.removeItem(k); } catch (e) {} }
+    function choice() { return read(LS_CHOICE) || 'default'; }
+    function scrimVal() {
+      var v = parseInt(read(LS_SCRIM), 10);
+      return isNaN(v) ? 65 : Math.max(0, Math.min(100, v));
+    }
+    function coverSrc() {
+      var m = main();
+      var img = m && m.querySelector('.article-cover img');
+      return img && img.getAttribute('src') ? img.getAttribute('src') : '';
+    }
+    function loadList(cb) {
+      if (listCache) { cb(listCache); return; }
+      if (listLoading) { setTimeout(function () { loadList(cb); }, 200); return; }
+      listLoading = true;
+      fetch('data/backgrounds.json', { cache: 'no-store' }).then(function (r) {
+        return r.ok ? r.json() : [];
+      }).then(function (j) {
+        listCache = Array.isArray(j) ? j : [];
+        listLoading = false;
+        cb(listCache);
+      }).catch(function () {
+        listCache = [];
+        listLoading = false;
+        cb(listCache);
+      });
+    }
+    function resolveSrc(list) {
+      var c = choice();
+      if (c === 'none') return '';
+      if (c === 'custom') return read(LS_CUSTOM) || sessionCustom || '';
+      if (c && c !== 'default') {
+        for (var i = 0; i < list.length; i++) {
+          if (list[i] && list[i].id === c) return list[i].src || '';
+        }
+      }
+      var cov = coverSrc();
+      if (cov) return cov;
+      if (list.length && list[0]) return list[0].src || '';
+      return '';
+    }
+    function layer() { return document.getElementById(BG_ID); }
+    function ensureLayer() {
+      var a = above(); if (!a) return null;
+      var el = layer();
+      if (!el) {
+        el = document.createElement('div');
+        el.id = BG_ID;
+        el.setAttribute('aria-hidden', 'true');
+        el.innerHTML = '<img alt=""><div class="luliy-article-bg-scrim"></div>';
+        var img = el.querySelector('img');
+        img.addEventListener('load', function () { img.style.opacity = '1'; });
+        a.appendChild(el);
+      }
+      return el;
+    }
+    function removeLayer() { var el = layer(); if (el) el.remove(); }
+    function nearEnd() {
+      var a = above(); if (!a) return false;
+      return a.getBoundingClientRect().bottom - window.innerHeight < 80;
+    }
+    function apply() {
+      if (!isActive()) {
+        removeLayer();
+        document.body.classList.remove('luliy-article-bg-on');
+        return;
+      }
+      loadList(function (list) {
+        if (!isActive()) {
+          removeLayer();
+          document.body.classList.remove('luliy-article-bg-on');
+          return;
+        }
+        var c = choice();
+        if (c === 'custom' && !read(LS_CUSTOM) && !sessionCustom) {
+          removeKey(LS_CHOICE);
+          c = 'default';
+        }
+        var src = resolveSrc(list);
+        if (!src && c === 'custom') src = coverSrc() || (list.length && list[0] ? list[0].src || '' : '');
+        var el = ensureLayer();
+        var img = el.querySelector('img');
+        if (src) {
+          if (img.getAttribute('src') !== src) {
+            img.style.opacity = '0';
+            img.setAttribute('src', src);
+          }
+          el.style.setProperty('--luliy-bg-scrim', (scrimVal() / 100).toFixed(2));
+          document.body.classList.add('luliy-article-bg-on');
+          el.classList.toggle('luliy-article-bg-hide', nearEnd());
+        } else {
+          document.body.classList.remove('luliy-article-bg-on');
+        }
+        syncSection(list);
+      });
+    }
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+    function syncSection(list) {
+      var t = toc(); if (!t) return;
+      var sec = t.querySelector('.' + SEC_CLASS);
+      var c = choice(), s = scrimVal();
+      if (!sec) {
+        sec = document.createElement('div');
+        sec.className = SEC_CLASS;
+        var label = t.querySelector('p');
+        if (label && label.nextSibling) t.insertBefore(sec, label.nextSibling);
+        else if (t.firstChild) t.insertBefore(sec, t.firstChild);
+        else t.appendChild(sec);
+        sec.innerHTML = '<p class="luliy-toc-bg-title">背景</p>'
+          + '<div class="luliy-toc-bg-options" role="group" aria-label="文章背景"></div>'
+          + '<label class="luliy-toc-bg-scrim">遮罩 <input type="range" min="0" max="100" step="1" aria-label="遮罩深浅"></label>'
+          + '<div class="luliy-toc-bg-foot"><button type="button" class="luliy-toc-bg-reset">恢复默认</button>'
+          + '<input type="file" class="luliy-toc-bg-file" accept="image/*" hidden></div>';
+        sec.querySelector('.luliy-toc-bg-reset').addEventListener('click', function () {
+          removeKey(LS_CHOICE);
+          apply();
+        });
+        sec.querySelector('.luliy-toc-bg-scrim input').addEventListener('input', function (e) {
+          store(LS_SCRIM, String(e.target.value));
+          var el = layer();
+          if (el) el.style.setProperty('--luliy-bg-scrim', (e.target.value / 100).toFixed(2));
+        });
+        sec.querySelector('.luliy-toc-bg-file').addEventListener('change', function (e) {
+          var f = e.target.files && e.target.files[0];
+          e.target.value = '';
+          if (!f) return;
+          var rd = new FileReader();
+          rd.onload = function () {
+            var im = new Image();
+            im.onload = function () {
+              var max = 1600, w = im.naturalWidth, h = im.naturalHeight;
+              var sc = Math.min(1, max / Math.max(w, h));
+              var cv = document.createElement('canvas');
+              cv.width = Math.max(1, Math.round(w * sc));
+              cv.height = Math.max(1, Math.round(h * sc));
+              var ctx = cv.getContext('2d');
+              ctx.drawImage(im, 0, 0, cv.width, cv.height);
+              var url = '';
+              try { url = cv.toDataURL('image/jpeg', 0.82); } catch (err) {}
+              if (url) {
+                sessionCustom = url;
+                store(LS_CUSTOM, url);
+                store(LS_CHOICE, 'custom');
+                apply();
+              }
+            };
+            im.src = rd.result;
+          };
+          rd.readAsDataURL(f);
+        });
+      }
+      var box = sec.querySelector('.luliy-toc-bg-options');
+      var opts = [{ id: 'default', name: '默认' }, { id: 'none', name: '无背景' }];
+      for (var i = 0; i < list.length; i++) {
+        if (list[i] && list[i].id) opts.push({ id: list[i].id, name: list[i].name || ('背景' + (i + 1)) });
+      }
+      opts.push({ id: 'custom', name: '我的图片' });
+      var html = '';
+      for (var j = 0; j < opts.length; j++) {
+        html += '<button type="button" data-bg="' + esc(opts[j].id) + '"' +
+          (c === opts[j].id ? ' aria-pressed="true"' : '') + '>' + esc(opts[j].name) + '</button>';
+      }
+      if (box.getAttribute('data-sig') !== html) {
+        box.setAttribute('data-sig', html);
+        box.innerHTML = html;
+        var btns = box.querySelectorAll('button');
+        for (var k = 0; k < btns.length; k++) {
+          (function (btn) {
+            btn.addEventListener('click', function () {
+              if (btn.getAttribute('data-bg') === 'custom') {
+                sec.querySelector('.luliy-toc-bg-file').click();
+                return;
+              }
+              store(LS_CHOICE, btn.getAttribute('data-bg'));
+              apply();
+            });
+          })(btns[k]);
+        }
+      } else {
+        var cur = box.querySelectorAll('button');
+        for (var m = 0; m < cur.length; m++) {
+          if (cur[m].getAttribute('data-bg') === c) cur[m].setAttribute('aria-pressed', 'true');
+          else cur[m].removeAttribute('aria-pressed');
+        }
+      }
+      var range = sec.querySelector('.luliy-toc-bg-scrim input');
+      if (document.activeElement !== range) range.value = String(s);
+    }
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var el = layer();
+        if (el && document.body.classList.contains('luliy-article-bg-on')) {
+          el.classList.toggle('luliy-article-bg-hide', nearEnd());
+        }
+      });
+    }, { passive: true });
+    var mo = new MutationObserver(apply);
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+    if (DESKTOP.addEventListener) DESKTOP.addEventListener('change', apply);
+    else if (DESKTOP.addListener) DESKTOP.addListener(apply);
+    apply();
+  })();
+
 })();
