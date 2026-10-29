@@ -1833,8 +1833,11 @@
     place();
   })();
 
-  /* 24. Desktop article-page background option in the article TOC (2026-10-29):
-     Desktop article pages only (min-width 769px, blog articles with .article-toc);
+  /* 24. Desktop article-page background option in the article TOC (2026-10-29,
+     fixed 2026-10-30 for blog articles):
+     Desktop article pages only (min-width 769px). Blog articles (#/article/Pxx)
+     render via the source reader (.source-toc), while the renderArticle template
+     uses .article-toc; both layouts are targeted, study/book pages are not.
      mobile TOC and layout are untouched. A fixed full-viewport artwork layer is
      appended to .page-above with z-index -1, so it paints above .page-above's solid
      background but below #main content (whose containers are transparent), and it
@@ -1863,8 +1866,13 @@
     function above() { return document.querySelector('.page-above'); }
     function toc() {
       var m = main(); if (!m) return null;
-      if (!m.querySelector('.article-body')) return null;
-      return m.querySelector('.article-toc');
+      // Blog articles (#/article/Pxx) render via the source reader (.source-toc),
+      // not the renderArticle template (.article-toc); study/book pages are out
+      // of scope, so only these two article layouts are targeted.
+      var hash = location.hash || '';
+      if (hash.indexOf('#/article/') === 0) return m.querySelector('.source-toc');
+      if (m.querySelector('.article-body')) return m.querySelector('.article-toc');
+      return null;
     }
     function isActive() { return DESKTOP.matches && !!toc(); }
     function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -1878,7 +1886,12 @@
     function coverSrc() {
       var m = main();
       var img = m && m.querySelector('.article-cover img');
-      return img && img.getAttribute('src') ? img.getAttribute('src') : '';
+      if (img && img.getAttribute('src')) return img.getAttribute('src');
+      // Source-reader articles have no cover block; fall back to the first image
+      // in the article body (the article's hero image, when it has one).
+      var body = m && (m.querySelector('#sourceArticleBody') || m.querySelector('.article-body'));
+      var first = body && body.querySelector('img');
+      return first && first.getAttribute('src') ? first.getAttribute('src') : '';
     }
     function loadList(cb) {
       if (listCache) { cb(listCache); return; }
