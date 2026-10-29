@@ -272,7 +272,17 @@
   }
   sync();
   addEventListener('hashchange', sync);
-})();</script><script src="intro/intro.js?v=7172b464ca"></script><script id="mobile-performance-policy">(()=>{const phone=matchMedia('(max-width: 767px)'),tablet=matchMedia('(min-width: 768px) and (max-width: 1024px)'),coarse=matchMedia('(pointer: coarse)');const sync=()=>{window.LuliyMobilePhone=phone.matches;window.LuliyMobileTablet=tablet.matches;window.LuliyMobileLite=phone.matches||tablet.matches||coarse.matches;document.documentElement.dataset.performance=window.LuliyMobileLite?'lite':'full';};sync();for(const query of [phone,tablet,coarse])query.addEventListener('change',sync);})();</script><!-- intro-layout-coordinates-v1 --><script>(function(){if(/^\/(?:article|post)\/P\d+\/?$/.test(location.pathname)){var b=document.createElement("base");b.href="/";document.head.appendChild(b)}})();</script>
+})();
+/* Room gate (2026-10-30). Registered here, before the router's own hashchange listener, so that
+   home-fixes.js (section 21) can hold a Study (#/books) or Records (#/music) navigation until its
+   loader has painted. Until home-fixes.js has loaded, nothing is held. */
+(function () {
+  addEventListener('hashchange', function (e) {
+    var gate = window.LuliyRoomGate;
+    if (typeof gate === 'function') gate(e);
+  });
+})();
+</script><script src="intro/intro.js?v=7172b464ca"></script><script id="mobile-performance-policy">(()=>{const phone=matchMedia('(max-width: 767px)'),tablet=matchMedia('(min-width: 768px) and (max-width: 1024px)'),coarse=matchMedia('(pointer: coarse)');const sync=()=>{window.LuliyMobilePhone=phone.matches;window.LuliyMobileTablet=tablet.matches;window.LuliyMobileLite=phone.matches||tablet.matches||coarse.matches;document.documentElement.dataset.performance=window.LuliyMobileLite?'lite':'full';};sync();for(const query of [phone,tablet,coarse])query.addEventListener('change',sync);})();</script><!-- intro-layout-coordinates-v1 --><script>(function(){if(/^\/(?:article|post)\/P\d+\/?$/.test(location.pathname)){var b=document.createElement("base");b.href="/";document.head.appendChild(b)}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="/manifest.webmanifest" data-pwa><link rel="apple-touch-icon" href="/site-publish/pwa/apple-touch-icon.png" data-pwa><meta name="apple-mobile-web-app-title" content="Luliy" data-pwa>
 <meta name="description" content="Luliy 的網路小宇宙。寫作、閱讀、技術與生活，記錄成長、思考與熱愛。">
@@ -1186,7 +1196,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 <div class="vault-veil" id="vaultVeil" aria-hidden="true"></div><div class="toast" id="toast" role="status"></div>
 <noscript><style>body{visibility:visible!important}.site-header,.contact-curtain{display:none}.page-above{margin:0}</style><div style="padding:60px;max-width:800px;margin:auto"><h1>Luliy</h1><p>个人书房、作品、文章与唱片。</p><p><a href="https://blog.luliy.me">博客 A</a>　<a href="https://mini.luliy.me">博客 B</a>　<a href="https://web.telegram.org/a/#-1002032433504">Telegram</a></p><p>开启 JavaScript 可浏览完整内容。</p></div></noscript>
 <!-- 可编辑内容在 LULIY_DATA；样式与交互均已内嵌。书房与文章列表读取 Gmeek 数据。 -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/assets/site/home/ff55e07bb428.js"></script>
+<script src="/assets/site/home/cbb9d214d3d3.js"></script>
 <script src="/assets/site/home/749fec1d3355.js"></script>
 <script src="/assets/site/home/c3963e5651e0.js"></script>
 <script src="/assets/site/home/d295dfad1d46.js"></script>
@@ -1282,7 +1292,7 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script><script src="/reading-timeline.js?v=20261022-mobile" defer></script><script id="experience-layer-js" src="/assets/site/home/eda1d076c5f3.js"></script>
 
-<script src="/site-publish/home-fixes.js?v=21474bc214af" async data-home-fixes></script><style id="directory-add-style">
+<script src="/site-publish/home-fixes.js?v=748e67d66702" async data-home-fixes></script><style id="directory-add-style">
 /* directory-add v3 */
 #directory .directory-add-view{display:none;flex:1;min-height:0;overflow:auto}
 #directory.directory-add-mode .directory-main{display:none}

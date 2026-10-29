@@ -262,3 +262,13 @@
   sync();
   addEventListener('hashchange', sync);
 })();
+
+/* Room gate (2026-10-30). Registered here, before the router's own hashchange listener, so that
+   home-fixes.js (section 21) can hold a Study (#/books) or Records (#/music) navigation until its
+   loader has painted. Until home-fixes.js has loaded, nothing is held. */
+(function () {
+  addEventListener('hashchange', function (e) {
+    var gate = window.LuliyRoomGate;
+    if (typeof gate === 'function') gate(e);
+  });
+})();

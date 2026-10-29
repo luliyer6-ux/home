@@ -1633,12 +1633,26 @@
     sync();
   })();
 
-  /* 21. Study room (#/books), all devices: hold the site loader up until the room is actually
-     entering — the mount's first rendered frame plus the entrance start (host.is-revealing) —
-     or 8 s, then fall through to the static preview the scene fallback already provides.
-     The room's own "Luliy的房间" title screen is gone (hidden by CSS); the loader replaces it.
-     The loader here is a separate element (#luliy-room-loader) from the entry loader, so a
-     direct load on #/books cannot pull it away. */
+  /* 21. Study (#/books) and Records (#/music), all devices: a loader that covers the switch.
+     2026-10-30 rework — before, the loader only appeared after the heavy work and then flickered:
+       - The router's hashchange handler runs first and, inside a View Transition, tears down the
+         homepage WebGL scenes (renderer.forceContextLoss) and builds the room. That blocks the main
+         thread for a second or more. This loader's listener used to run after it, so it was created
+         only once the work was nearly over.
+       - Its animation (SVG stroke-dashoffset, SVG child opacity) runs on the main thread, so even
+         when it was visible it froze, then jumped and faded out — the "flash at the end".
+     Now:
+       a) A hashchange listener in home-early.js (inlined at the top of <head>) runs before the
+          router's and calls window.LuliyRoomGate below. For a room route it holds the event, shows the loader, waits two painted frames, then dispatches hashchange again for the
+          router (with View Transitions off for that one dispatch: the loader already covers the swap).
+       b) The loader animates only transform/opacity on its own layers, which the compositor keeps
+          running while the main thread is busy.
+       c) WEBGL_lose_context.loseContext() (what forceContextLoss calls) is queued until the room is
+          visible and the browser is idle, instead of running in the middle of the switch.
+     The loader stays up until the room is actually entering (Study: #studyRoom gets is-revealing or
+     has-fallback; Records: the turntable host gets lr-webgl-ready or has-fallback), at most 8 s.
+     It is a separate element (#luliy-room-loader) from the entry loader, so a direct load cannot
+     pull it away. */
   (() => {
     const main = document.getElementById('main');
     if (!main) return;
@@ -1682,16 +1696,18 @@
         var paths = function (cls, n) { return shapes.slice(0, n).map(function (d, i) { return '<path class="' + cls + '" pathLength="1" d="' + d + '" style="--i:' + i + '"/>'; }).join(''); };
         var css = '#luliy-room-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
           '#luliy-room-loader.is-done{opacity:0;pointer-events:none}' +
-          '#luliy-room-loader svg{width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round;transform:translateZ(0)}' +
-          '#luliy-room-loader .o{stroke:' + C[1] + ';stroke-width:.55;animation:luliy-loader-breathe 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
-          '#luliy-room-loader .l{stroke:' + C[2] + ';stroke-width:1;stroke-dasharray:1 1;stroke-dashoffset:1;animation:luliy-loader-draw 3.6s cubic-bezier(.65,0,.35,1) infinite;animation-delay:calc(var(--i) * -.45s)}' +
-          '#luliy-room-loader .t{stroke:' + C[2] + ';stroke-width:2.4;stroke-dasharray:1 1;stroke-dashoffset:1;animation:luliy-loader-draw-trail 3.6s cubic-bezier(.65,0,.35,1) infinite;animation-delay:calc(var(--i) * -.45s + .28s)}' +
-          '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-draw{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:1}55%{stroke-dashoffset:0;opacity:1}75%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}@keyframes luliy-loader-draw-trail{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:.3}55%{stroke-dashoffset:0;opacity:.3}75%{stroke-dashoffset:0;opacity:.3}100%{stroke-dashoffset:0;opacity:0}}' +
-          '@media(prefers-reduced-motion:reduce){#luliy-room-loader .o{animation:none;opacity:1}#luliy-room-loader .l,#luliy-room-loader .t{display:none}}' +
-          'html.luliy-calm #luliy-room-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-room-loader .l,html.luliy-calm #luliy-room-loader .t{display:none}';
+          '#luliy-room-loader .lrl-mark{position:relative;width:88px;height:88px;will-change:transform,opacity;animation:luliy-loader-breathe 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
+          '#luliy-room-loader svg{display:block;width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round}' +
+          '#luliy-room-loader .o{stroke:' + C[1] + ';stroke-width:.55}' +
+          '#luliy-room-loader .l{stroke:' + C[2] + ';stroke-width:1}' +
+          '#luliy-room-loader .t{stroke:' + C[2] + ';stroke-width:2.4;opacity:.3}' +
+          '#luliy-room-loader .lrl-ring{position:absolute;inset:-22px;border-radius:50%;border:1px solid transparent;border-top-color:' + C[2] + ';border-right-color:' + C[1] + ';opacity:.7;will-change:transform;animation:luliy-loader-spin 1.6s linear infinite}' +
+          '@keyframes luliy-loader-breathe{from{opacity:.6;transform:scale(.97)}to{opacity:1;transform:scale(1)}}@keyframes luliy-loader-spin{to{transform:rotate(360deg)}}' +
+          '@media(prefers-reduced-motion:reduce){#luliy-room-loader .lrl-mark,#luliy-room-loader .lrl-ring{animation:none}#luliy-room-loader .lrl-ring{display:none}}' +
+          'html.luliy-calm #luliy-room-loader .lrl-mark,html.luliy-calm #luliy-room-loader .lrl-ring{animation:none}html.luliy-calm #luliy-room-loader .lrl-ring{display:none}';
           if (a === 'light') css = '#luliy-room-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
             '#luliy-room-loader.is-done{opacity:0;pointer-events:none}' +
-            '#luliy-room-loader img{width:120px;height:120px;object-fit:contain;animation:luliy-loader-breathe-img 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
+            '#luliy-room-loader img{width:120px;height:120px;object-fit:contain;will-change:transform,opacity;animation:luliy-loader-breathe-img 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
             '@keyframes luliy-loader-breathe-img{from{opacity:.55;transform:scale(.96)}to{opacity:1;transform:scale(1)}}' +
             '@media(prefers-reduced-motion:reduce){#luliy-room-loader img{animation:none;opacity:1;transform:none}}' +
             'html.luliy-calm #luliy-room-loader img{animation:none;opacity:1;transform:none}';
@@ -1701,13 +1717,16 @@
         var el = document.createElement('div');
         el.id = 'luliy-room-loader';
         el.setAttribute('aria-hidden', 'true');
-        el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + paths('t', 4) + paths('l', 4) + '</svg>';
+        el.innerHTML = '<div class="lrl-mark"><i class="lrl-ring"></i><svg viewBox="0 0 60 60">' + paths('o') + paths('t', 4) + paths('l', 4) + '</svg></div>';
         if (a === 'light') el.innerHTML = '<img src="/assets/site/%5BIT-XIAOBIN%5D-1792981037054.png" alt="" aria-hidden="true">';
         document.documentElement.appendChild(el);
       return el;
     }
     let loader = null, done = false, t0 = 0, cap = 0, hostObs = null, mainObs = null;
-    const isBooks = () => /^#\/books\b/.test(location.hash || '');
+    const ROOM = /^#\/(books|music)(?=$|[/?])/;
+    const roomOf = h => { const m = ROOM.exec(h || ''); return m ? m[1] : ''; };
+    const isRoom = () => !!roomOf(location.hash);
+    const pathOf = u => { const h = String(u || '').split('#')[1] || ''; return h.split('?')[0]; };
     const finish = () => {
       if (done || !loader) return;
       done = true;
@@ -1726,25 +1745,26 @@
       if (loader) { loader.remove(); loader = null; }
       done = false;
     };
-    const watchHost = host => {
-      if (!host) return;
-      if (host.classList.contains('is-revealing') || host.classList.contains('has-fallback')) { finish(); return; }
-      hostObs = new MutationObserver(() => {
-        if (host.classList.contains('is-revealing') || host.classList.contains('has-fallback')) finish();
-      });
-      hostObs.observe(host, { attributes: true, attributeFilter: ['class'] });
+    // Records: the turntable marks its host lr-webgl-ready after its first frame; let that frame
+    // reach the screen before lifting the loader.
+    const ready = () => {
+      if (roomOf(location.hash) === 'music') {
+        return !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount .has-fallback, #recordMount.has-fallback');
+      }
+      const host = document.getElementById('studyRoom');
+      return !!host && (host.classList.contains('is-revealing') || host.classList.contains('has-fallback'));
     };
     const watchMain = () => {
-      const host = document.getElementById('studyRoom');
-      if (host) { watchHost(host); return; }
+      if (ready()) { requestAnimationFrame(() => requestAnimationFrame(finish)); return; }
       mainObs = new MutationObserver(() => {
-        const h = document.getElementById('studyRoom');
-        if (h) { mainObs.disconnect(); mainObs = null; watchHost(h); }
+        if (!ready()) return;
+        mainObs.disconnect(); mainObs = null;
+        requestAnimationFrame(() => requestAnimationFrame(finish));
       });
-      mainObs.observe(main, { childList: true, subtree: true });
+      mainObs.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
     };
     const show = () => {
-      if (!isBooks()) return;
+      if (!isRoom()) return;
       if (loader) { // already gating (a category switch re-mounted the room): re-watch the new host
         done = false;
         clearTimeout(cap);
@@ -1760,8 +1780,62 @@
       cap = setTimeout(finish, 8000);
       watchMain();
     };
-    addEventListener('hashchange', () => { if (isBooks()) show(); else cancel(); });
-    if (isBooks()) show();
+    // Hold a room navigation until the loader has painted, then hand the same change to the router
+    // and every other hashchange listener.
+    let releasing = false;
+    // home-early.js calls LuliyRoomGate from a hashchange listener registered before the router's.
+    window.LuliyRoomGate = e => {
+      if (releasing) return;
+      if (!isRoom()) { cancel(); return; }
+      if (pathOf(e.oldURL) === pathOf(e.newURL)) return; // query-only change: nothing is rebuilt
+      e.stopImmediatePropagation();
+      show();
+      const target = location.hash;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (location.hash !== target) return; // a newer change already took over
+        releasing = true;
+        let shadowed = false;
+        try { Object.defineProperty(document, 'startViewTransition', { value: undefined, configurable: true }); shadowed = true; } catch (err) {}
+        try { dispatchEvent(new HashChangeEvent('hashchange', { oldURL: e.oldURL, newURL: e.newURL })); }
+        finally {
+          if (shadowed) delete document.startViewTransition;
+          releasing = false;
+        }
+      }));
+    };
+    if (isRoom()) show();
+
+    // forceContextLoss() from the scenes being torn down: run it once the room is showing and the
+    // browser is idle. The scenes have already disposed their buffers and textures and removed their
+    // canvases, so a few seconds' delay only keeps an empty context alive a little longer.
+    const queue = [];
+    let flushing = false;
+    const flush = () => {
+      if (loader || !queue.length) { flushing = false; if (queue.length) later(); return; }
+      try { queue.shift()(); } catch (err) {}
+      if (queue.length) later(); else flushing = false;
+    };
+    const later = () => {
+      flushing = true;
+      if (window.requestIdleCallback) requestIdleCallback(flush, { timeout: 4000 });
+      else setTimeout(flush, 600);
+    };
+    const wrap = proto => {
+      if (!proto || proto.__luliyLoseWrapped) return;
+      const get = proto.getExtension;
+      proto.getExtension = function (name) {
+        const ext = get.apply(this, arguments);
+        if (ext && name === 'WEBGL_lose_context' && !ext.__luliyDeferred) {
+          const lose = ext.loseContext;
+          ext.loseContext = function () { queue.push(() => lose.call(ext)); if (!flushing) later(); };
+          ext.__luliyDeferred = true;
+        }
+        return ext;
+      };
+      proto.__luliyLoseWrapped = true;
+    };
+    if (window.WebGLRenderingContext) wrap(WebGLRenderingContext.prototype);
+    if (window.WebGL2RenderingContext) wrap(WebGL2RenderingContext.prototype);
   })();
 
   /* 22. Homepage Records portrait: use the user's own flipped photo (listen2.png).
@@ -1833,11 +1907,8 @@
     place();
   })();
 
-  /* 24. Desktop article-page background option in the article TOC (2026-10-29,
-     fixed 2026-10-30 for blog articles):
-     Desktop article pages only (min-width 769px). Blog articles (#/article/Pxx)
-     render via the source reader (.source-toc), while the renderArticle template
-     uses .article-toc; both layouts are targeted, study/book pages are not.
+  /* 24. Desktop article-page background option in the article TOC (2026-10-29):
+     Desktop article pages only (min-width 769px, blog articles with .article-toc);
      mobile TOC and layout are untouched. A fixed full-viewport artwork layer is
      appended to .page-above with z-index -1, so it paints above .page-above's solid
      background but below #main content (whose containers are transparent), and it
@@ -1866,13 +1937,8 @@
     function above() { return document.querySelector('.page-above'); }
     function toc() {
       var m = main(); if (!m) return null;
-      // Blog articles (#/article/Pxx) render via the source reader (.source-toc),
-      // not the renderArticle template (.article-toc); study/book pages are out
-      // of scope, so only these two article layouts are targeted.
-      var hash = location.hash || '';
-      if (hash.indexOf('#/article/') === 0) return m.querySelector('.source-toc');
-      if (m.querySelector('.article-body')) return m.querySelector('.article-toc');
-      return null;
+      if (!m.querySelector('.article-body')) return null;
+      return m.querySelector('.article-toc');
     }
     function isActive() { return DESKTOP.matches && !!toc(); }
     function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -1886,12 +1952,7 @@
     function coverSrc() {
       var m = main();
       var img = m && m.querySelector('.article-cover img');
-      if (img && img.getAttribute('src')) return img.getAttribute('src');
-      // Source-reader articles have no cover block; fall back to the first image
-      // in the article body (the article's hero image, when it has one).
-      var body = m && (m.querySelector('#sourceArticleBody') || m.querySelector('.article-body'));
-      var first = body && body.querySelector('img');
-      return first && first.getAttribute('src') ? first.getAttribute('src') : '';
+      return img && img.getAttribute('src') ? img.getAttribute('src') : '';
     }
     function loadList(cb) {
       if (listCache) { cb(listCache); return; }
