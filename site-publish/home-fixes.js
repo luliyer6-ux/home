@@ -2430,6 +2430,18 @@
     peek.hidden = true;
     peek.textContent = '召唤看板娘';
     const stage = box.querySelector('.luliy-mascot-stage'), bubble = box.querySelector('.luliy-mascot-bubble');
+    // Gold particles around her (LuliyParticles, home-early.js), shown only while she moves or talks (2026-10-30).
+    if (window.LuliyParticles) {
+      const pf = window.LuliyParticles('.luliy-mascot', 300, 250, 18, root.dataset.theme === 'light', 5);
+      const ps = document.createElement('style'); ps.textContent = pf.css; document.head.appendChild(ps);
+      stage.insertAdjacentHTML('afterbegin', pf.html);
+    }
+    let mvT = 0;
+    function moving(on) {
+      clearTimeout(mvT);
+      if (on) { box.classList.add('lm-moving'); return; }
+      mvT = setTimeout(() => { if (!raf && !bubble.classList.contains('show')) box.classList.remove('lm-moving'); }, 700);
+    }
     const canvas = box.querySelector('canvas'), ctx = canvas.getContext('2d');
     const tocBtn = box.querySelector('[data-m="toc"]'), topBtn = box.querySelector('[data-m="top"]');
 
@@ -2459,7 +2471,7 @@
       im.onerror = () => { loading = false; };
       im.src = ATLAS;
     }
-    function kick() { if (!raf && atlas) { lastT = performance.now(); raf = requestAnimationFrame(tick); } }
+    function kick() { if (!raf && atlas) { moving(true); lastT = performance.now(); raf = requestAnimationFrame(tick); } }
     // The clip does not end on the resting pose and is still moving in its last frames. Instead of stopping on the
     // last frame and then dissolving (which read as a hitch), the opening clip slows down over its final frames
     // and, from BLEND_FROM on, fades into the resting frame while it is still moving: one continuous settle.
@@ -2487,9 +2499,10 @@
         draw(pos); // v2 atlas: the clip itself moves back to rest (interpolated frames), no dissolve needed
       }
       if (Math.abs(target - pos) <= 1e-3) {
-        if (mode === 'intro') { pos = 0; target = 0; mode = 'idle'; drawn = -1; draw(0); retarget(); return; }
+        if (mode === 'intro') { pos = 0; target = 0; mode = 'idle'; drawn = -1; draw(0); retarget(); if (!raf) moving(false); return; }
         pos = target; draw(pos);
         if (pos === 0) mode = 'idle';
+        moving(false);
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -2549,9 +2562,9 @@
     let timer = 0, li = -1, lines = readingLines;
     function say(text, ms) {
       bubble.textContent = T(text);
-      bubble.classList.add('show');
+      bubble.classList.add('show'); moving(true);
       clearTimeout(timer);
-      timer = setTimeout(() => bubble.classList.remove('show'), ms || 4200);
+      timer = setTimeout(() => { bubble.classList.remove('show'); moving(false); }, ms || 4200);
     }
     function talk() { lines = journal() ? journalLines : readingLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; say(lines[li]); }
     function greet() {

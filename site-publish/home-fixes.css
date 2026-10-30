@@ -1881,3 +1881,9 @@ body.lj-viewing { overflow: hidden; }
 .lj-comments { margin-top: 10px; padding-top: 12px; border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent); }
 .lj-comments[hidden] { display: none; }
 .lj-cbar[hidden] { display: none; }
+
+/* 27b. Mascot particles (2026-10-30): the gold specks around her show only while she moves or talks. */
+.luliy-mascot .lpf { z-index: 0; opacity: 0; transition: opacity .6s ease; }
+.luliy-mascot.lm-moving .lpf { opacity: 1; }
+.luliy-mascot:not(.lm-moving) .lpf > * { animation-play-state: paused; }
+.luliy-mascot-stage :is(img, canvas) { z-index: 1; }

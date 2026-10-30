@@ -121,6 +121,13 @@
    (a canvas drawn from JS would freeze exactly then). Her still sitting pose shows at once (21 KB, shared with the
    page mascot); the moving sheet starts once it has downloaded (~460 KB, hashed name, cached for a year).
    When the page is ready the cover fades on whatever frame she is on: nobody waits for the loop to end.
+   Particles (2026-10-30): a field of tiny gold specks and a few four-point stars drifts up-left around her, like the
+   sparkles in the opening video (LuliyParticles, CSS only, transform/opacity).
+   Opening (2026-10-30): on a first visit (then not again for 7 days; ?intro=1 forces it, ?intro=0 skips it) the loader
+   plays the opening video instead: the logo grows into the mascot and back (10.5 s, 60 fps, silent, ~300 KB). Its black
+   is dropped with screen blending, so she floats on the loader's dark background (dark in every theme). At the end the
+   logo flies into the header logo (.brand-mark) while the background fades; tap anywhere or 跳過 to skip. If the video
+   cannot play within 3 s (or on Android WeChat), the normal mascot loader is used instead.
    window.LuliyLoaderLook() / LuliyLoaderArm() / LuliyLoaderFinish() let the Study / Records switch (home-fixes.js
    section 21) use the very same loader.
    It lifts only when the page below is really ready, so nobody sees a half-built page or a stutter:
@@ -135,6 +142,36 @@
   // sprite: 76 frames of 240 x 196 in a 19 x 4 sheet, 15 frames a second
   var SHEET = '/assets/mascot/loader-4d243acdf8.webp', REST = '/assets/mascot/luliy-rest.webp?v=2';
   var FW = 240, FH = 196, COLS = 19, ROWS = 4, NFR = 76, FPS = 15;
+  var INTRO = { mp4: '/assets/mascot/intro-c6408c0cb2.mp4', webm: '/assets/mascot/intro-8f9fbca116.webm', icon: '/assets/mascot/intro-icon-91ecb5a101.webp',
+    box: [109 / 432, 64 / 432, 282 / 432], key: 'luliy_intro_seen_v2' }; // box: where the logo sits in the last frame
+
+  // Gold particle field: specks and a few four-point stars drifting up-left and twinkling, denser near the centre.
+  function particles(sel, w, h, n, light, seed) {
+    var sd = seed || 7; var rnd = function () { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; };
+    var core = light ? '#a87a3c' : '#fff0c4', glow = light ? 'rgba(168,122,60,.35)' : 'rgba(240,200,120,.75)';
+    var css = sel + ' .lpf{position:absolute;left:50%;top:50%;width:' + w + 'px;height:' + h + 'px;margin:' + (-h / 2) + 'px 0 0 ' + (-w / 2) + 'px;pointer-events:none}' +
+      sel + ' .lpf i{position:absolute;left:0;top:0;border-radius:50%;background:' + core + ';box-shadow:0 0 6px 1px ' + glow + ';opacity:0;will-change:transform,opacity}' +
+      sel + ' .lpf b{position:absolute;left:0;top:0;width:9px;height:9px;opacity:0;will-change:transform,opacity;background:' +
+        'linear-gradient(90deg,transparent,' + core + ' 45%,' + core + ' 55%,transparent) center/9px 1px no-repeat,' +
+        'linear-gradient(0deg,transparent,' + core + ' 45%,' + core + ' 55%,transparent) center/1px 9px no-repeat;filter:drop-shadow(0 0 3px ' + glow + ')}' +
+      '@media(prefers-reduced-motion:reduce){' + sel + ' .lpf{display:none}}html.luliy-calm ' + sel + ' .lpf{display:none}';
+    var html = '<div class="lpf" aria-hidden="true">';
+    for (var i = 0; i < n; i++) {
+      var ang = rnd() * Math.PI * 2, rad = Math.pow(rnd(), .75);
+      var x = w / 2 + Math.cos(ang) * rad * w / 2, y = h / 2 + Math.sin(ang) * rad * h / 2;
+      var star = rnd() < .14, size = (1 + rnd() * 2).toFixed(1);
+      var dx = -(18 + rnd() * 60), dy = -(12 + rnd() * 48), dur = (5 + rnd() * 6).toFixed(2), del = (-rnd() * 10).toFixed(2);
+      var al = star ? .85 : .3 + rnd() * .6, name = 'lpf' + (seed || 7) + '_' + i;
+      css += '@keyframes ' + name + '{0%{opacity:0;transform:translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) scale(.6)}' +
+        '18%{opacity:' + al.toFixed(2) + '}35%{opacity:' + (al * .45).toFixed(2) + '}55%{opacity:' + al.toFixed(2) + '}80%{opacity:' + (al * .6).toFixed(2) + '}' +
+        '100%{opacity:0;transform:translate(' + (x + dx).toFixed(1) + 'px,' + (y + dy).toFixed(1) + 'px) scale(1)}}';
+      html += star ? '<b style="animation:' + name + ' ' + dur + 's linear ' + del + 's infinite"></b>'
+                   : '<i style="width:' + size + 'px;height:' + size + 'px;animation:' + name + ' ' + dur + 's linear ' + del + 's infinite"></i>';
+    }
+    return { css: css, html: html + '</div>' };
+  }
+  window.LuliyParticles = particles;
+
   function still() {
     try { return matchMedia('(prefers-reduced-motion: reduce)').matches || root.classList.contains('luliy-calm') || root.classList.contains('luliy-save-data'); } catch (e) { return false; }
   }
@@ -168,8 +205,28 @@
       '@keyframes luliy-loader-y{to{transform:translateY(-' + FH * ROWS + 'px)}}@keyframes luliy-loader-x{to{transform:translateX(-' + FW * COLS + 'px)}}' +
       '@media(prefers-reduced-motion:reduce){' + K + '.lrl-sprite{display:none}' + K + '.lrl-rest{opacity:1!important}}' +
       'html.luliy-calm ' + K + '.lrl-sprite{display:none}html.luliy-calm ' + K + '.lrl-rest{opacity:1!important}';
-    var html = '<div class="lrl-m"><img class="lrl-rest" src="' + REST + '" alt="" width="' + FW + '" height="' + FH + '"><div class="lrl-sprite"><div class="lrl-row"><img class="lrl-sheet" alt=""></div></div></div>';
-    return { css: css, html: html };
+    var pf = particles('#luliy-room-loader', Math.min(460, innerWidth * .95), 380, 26, a === 'light', 3);
+    var bgDark = a === 'light' ? sky(['#1f1f38', '#18182d', '#111222', '#0c0d1b']) : C[0];
+    var mask = 'linear-gradient(to right,transparent,#000 7%,#000 93%,transparent),linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent)';
+    css += pf.css + K + '.lrl-m{z-index:1}' +
+      // the opening video
+      '#luliy-room-loader.is-intro{--vs:min(440px,78vw,58vh);background:' + bgDark + '}' +
+      K + '.lri-v{position:relative;z-index:1;width:var(--vs);height:var(--vs);mix-blend-mode:screen;opacity:0;transition:opacity .45s ease-out;-webkit-mask-image:' + mask + ';-webkit-mask-composite:source-in;mask-image:' + mask + ';mask-composite:intersect}' +
+      K + '.lri-v.in{opacity:1}' +
+      K + '.lri-skip{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right));top:max(20px,env(safe-area-inset-top));padding:7px 16px;border-radius:99px;border:1px solid rgba(240,214,143,.45);background:rgba(10,10,20,.35);color:#f0d68f;font:13px/1.2 system-ui,sans-serif;letter-spacing:.1em;cursor:pointer;transition:opacity .3s}' +
+      '#luliy-room-loader.is-gone{opacity:0;pointer-events:none;transition:opacity .62s cubic-bezier(.4,0,.2,1) .32s}#luliy-room-loader.is-gone .lri-skip{opacity:0}' +
+      '#luliy-intro-fly{position:fixed;z-index:2147483001;transform-origin:0 0;pointer-events:none;will-change:transform}' +
+      '#luliy-intro-fly img{position:absolute;inset:0;width:100%;height:100%}#luliy-intro-fly svg{position:absolute;opacity:0}' +
+      '#luliy-intro-fly :is(.ll-hl,.ll-sh,.ll-sp,.ll-dt){display:none}' +
+      '#luliy-intro-fly.go{transition:transform .95s cubic-bezier(.55,0,.25,1)}#luliy-intro-fly.go img{opacity:0;transition:opacity .2s linear .55s}#luliy-intro-fly.go svg{opacity:1;transition:opacity .2s linear .55s}' +
+      '#luliy-intro-fly.land{opacity:0;transition:opacity .12s linear}';
+    var html = pf.html + '<div class="lrl-m"><img class="lrl-rest" src="' + REST + '" alt="" width="' + FW + '" height="' + FH + '"><div class="lrl-sprite"><div class="lrl-row"><img class="lrl-sheet" alt=""></div></div></div>';
+    var ipf = particles('#luliy-room-loader', Math.min(760, innerWidth), Math.min(600, innerHeight * .8), 30, false, 11);
+    css += ipf.css;
+    var intro = ipf.html + '<video class="lri-v" muted playsinline autoplay preload="auto" disablepictureinpicture aria-hidden="true">' +
+      '<source src="' + INTRO.mp4 + '" type="video/mp4"><source src="' + INTRO.webm + '" type="video/webm"></video>' +
+      '<button type="button" class="lri-skip">' + (/^en/i.test(root.lang) ? 'Skip' : '跳過') + '</button>';
+    return { css: css, html: html, intro: intro };
   }
 
   // Start her moving once the sheet is decoded (the still pose covers the wait). Not with reduced motion / calm / save-data.
@@ -201,6 +258,78 @@
   arm(el);
   root.classList.add('intro-pending');
   var state = window.LuliySiteLoader = { active: true };
+
+  /* ---- the opening (first visit) ---- */
+  function wantIntro() {
+    try {
+      var q = new URLSearchParams(location.search).get('intro'), ua = navigator.userAgent || '';
+      if (q === '0' || still()) return false;
+      if (/MicroMessenger/i.test(ua) && /Android/i.test(ua)) return false; // its in-app player hijacks inline video
+      if (q === '1') return true;
+      var seen = Number(localStorage.getItem(INTRO.key)) || 0;
+      return !(seen && Date.now() - seen < 7 * 864e5);
+    } catch (e) { return false; }
+  }
+  var intro = wantIntro(), introEnded = false, video = null;
+  function introFallback() { // could not play: become the normal mascot loader
+    if (!intro) return;
+    intro = false; introEnded = true;
+    el.classList.remove('is-intro'); el.innerHTML = L.html; arm(el);
+    clearTimeout(cap); cap = setTimeout(lift, 6000);
+  }
+  if (intro) {
+    el.classList.add('is-intro');
+    el.innerHTML = L.intro;
+    video = el.querySelector('video');
+    var playing = false;
+    video.addEventListener('playing', function () {
+      playing = true; video.classList.add('in');
+      try { localStorage.setItem(INTRO.key, String(Date.now())); } catch (e) {}
+    }, { once: true });
+    video.addEventListener('ended', function () { introEnded = true; });
+    video.addEventListener('error', introFallback);
+    var stall = 0;
+    video.addEventListener('waiting', function () { clearTimeout(stall); stall = setTimeout(function () { if (playing) skipIntro(); }, 2500); });
+    video.addEventListener('playing', function () { clearTimeout(stall); });
+    try { var pr = video.play(); if (pr && pr.catch) pr.catch(function () { setTimeout(function () { if (!playing) introFallback(); }, 400); }); } catch (e) {}
+    setTimeout(function () { if (!playing) introFallback(); }, 3000);
+    el.addEventListener('click', function () { if (playing) skipIntro(); });
+  }
+  function skipIntro() { // straight to the last frame (the logo); it flies as soon as the page is ready
+    if (!video || introEnded) return;
+    try { video.pause(); if (isFinite(video.duration)) video.currentTime = Math.max(0, video.duration - 0.04); } catch (e) {}
+    introEnded = true;
+  }
+  function flyOut() {
+    if (gone) return;
+    gone = true; state.reason = 'intro'; state.at = Date.now() - t0;
+    clearTimeout(cap);
+    var r = video.getBoundingClientRect(), mark = document.querySelector('.brand-mark svg'), m = mark && mark.getBoundingClientRect();
+    var ok = m && m.width > 4 && m.bottom > 0 && m.top < innerHeight && r.width > 0;
+    if (ok) {
+      var B = INTRO.box, fly = document.createElement('div'), clone = mark.cloneNode(true);
+      fly.id = 'luliy-intro-fly'; fly.setAttribute('aria-hidden', 'true');
+      fly.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px';
+      clone.removeAttribute('id');
+      clone.style.cssText = 'left:' + B[0] * r.width + 'px;top:' + B[1] * r.height + 'px;width:' + B[2] * r.width + 'px;height:' + B[2] * r.height + 'px';
+      fly.innerHTML = '<img src="' + INTRO.icon + '" alt="">';
+      fly.appendChild(clone);
+      root.appendChild(fly);
+      video.style.transition = 'none'; video.style.opacity = '0';
+      var s = m.width / (B[2] * r.width), tx = m.left - B[0] * r.width * s - r.left, ty = m.top - B[1] * r.height * s - r.top;
+      fly.getBoundingClientRect();
+      fly.classList.add('go');
+      fly.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+      setTimeout(function () { fly.classList.add('land'); setTimeout(function () { fly.remove(); }, 200); }, 1000);
+    }
+    el.classList.add('is-gone');
+    setTimeout(function () {
+      root.classList.remove('intro-pending'); state.active = false;
+      try { dispatchEvent(new CustomEvent('luliy:intro-complete')); } catch (e) {}
+    }, 950);
+    setTimeout(function () { el.remove(); style.remove(); }, 1100);
+  }
+
 
   var t0 = Date.now(), gone = false, finishing = false, fontsOk = !document.fonts, prep = null, prepDone = false;
   if (document.fonts) document.fonts.ready.then(function () { fontsOk = true; }, function () { fontsOk = true; });
@@ -246,10 +375,13 @@
   }
   function check() {
     if (gone) return;
-    if (fontsOk && ready()) { if (!finishing) { finishing = true; finish(el, function () { lift('ready'); }); } return; }
+    if (intro && introEnded && (fontsOk && ready())) { flyOut(); return; }
+    if (!intro && fontsOk && ready()) { if (!finishing) { finishing = true; finish(el, function () { lift('ready'); }); } return; }
     setTimeout(check, 80);
   }
-  var r0 = route(), cap = setTimeout(lift, r0 === 'books' || r0 === 'music' ? 8000 : 6000);
+  var r0 = route(), cap = intro
+    ? setTimeout(function () { skipIntro(); flyOut(); }, 20000) // the video is 10.5 s; never longer than 20 s
+    : setTimeout(lift, r0 === 'books' || r0 === 'music' ? 8000 : 6000);
   check();
 })();
 

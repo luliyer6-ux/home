@@ -123,6 +123,13 @@
    (a canvas drawn from JS would freeze exactly then). Her still sitting pose shows at once (21 KB, shared with the
    page mascot); the moving sheet starts once it has downloaded (~460 KB, hashed name, cached for a year).
    When the page is ready the cover fades on whatever frame she is on: nobody waits for the loop to end.
+   Particles (2026-10-30): a field of tiny gold specks and a few four-point stars drifts up-left around her, like the
+   sparkles in the opening video (LuliyParticles, CSS only, transform/opacity).
+   Opening (2026-10-30): on a first visit (then not again for 7 days; ?intro=1 forces it, ?intro=0 skips it) the loader
+   plays the opening video instead: the logo grows into the mascot and back (10.5 s, 60 fps, silent, ~300 KB). Its black
+   is dropped with screen blending, so she floats on the loader's dark background (dark in every theme). At the end the
+   logo flies into the header logo (.brand-mark) while the background fades; tap anywhere or 跳過 to skip. If the video
+   cannot play within 3 s (or on Android WeChat), the normal mascot loader is used instead.
    window.LuliyLoaderLook() / LuliyLoaderArm() / LuliyLoaderFinish() let the Study / Records switch (home-fixes.js
    section 21) use the very same loader.
    It lifts only when the page below is really ready, so nobody sees a half-built page or a stutter:
@@ -137,6 +144,36 @@
   // sprite: 76 frames of 240 x 196 in a 19 x 4 sheet, 15 frames a second
   var SHEET = '/assets/mascot/loader-4d243acdf8.webp', REST = '/assets/mascot/luliy-rest.webp?v=2';
   var FW = 240, FH = 196, COLS = 19, ROWS = 4, NFR = 76, FPS = 15;
+  var INTRO = { mp4: '/assets/mascot/intro-c6408c0cb2.mp4', webm: '/assets/mascot/intro-8f9fbca116.webm', icon: '/assets/mascot/intro-icon-91ecb5a101.webp',
+    box: [109 / 432, 64 / 432, 282 / 432], key: 'luliy_intro_seen_v2' }; // box: where the logo sits in the last frame
+
+  // Gold particle field: specks and a few four-point stars drifting up-left and twinkling, denser near the centre.
+  function particles(sel, w, h, n, light, seed) {
+    var sd = seed || 7; var rnd = function () { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; };
+    var core = light ? '#a87a3c' : '#fff0c4', glow = light ? 'rgba(168,122,60,.35)' : 'rgba(240,200,120,.75)';
+    var css = sel + ' .lpf{position:absolute;left:50%;top:50%;width:' + w + 'px;height:' + h + 'px;margin:' + (-h / 2) + 'px 0 0 ' + (-w / 2) + 'px;pointer-events:none}' +
+      sel + ' .lpf i{position:absolute;left:0;top:0;border-radius:50%;background:' + core + ';box-shadow:0 0 6px 1px ' + glow + ';opacity:0;will-change:transform,opacity}' +
+      sel + ' .lpf b{position:absolute;left:0;top:0;width:9px;height:9px;opacity:0;will-change:transform,opacity;background:' +
+        'linear-gradient(90deg,transparent,' + core + ' 45%,' + core + ' 55%,transparent) center/9px 1px no-repeat,' +
+        'linear-gradient(0deg,transparent,' + core + ' 45%,' + core + ' 55%,transparent) center/1px 9px no-repeat;filter:drop-shadow(0 0 3px ' + glow + ')}' +
+      '@media(prefers-reduced-motion:reduce){' + sel + ' .lpf{display:none}}html.luliy-calm ' + sel + ' .lpf{display:none}';
+    var html = '<div class="lpf" aria-hidden="true">';
+    for (var i = 0; i < n; i++) {
+      var ang = rnd() * Math.PI * 2, rad = Math.pow(rnd(), .75);
+      var x = w / 2 + Math.cos(ang) * rad * w / 2, y = h / 2 + Math.sin(ang) * rad * h / 2;
+      var star = rnd() < .14, size = (1 + rnd() * 2).toFixed(1);
+      var dx = -(18 + rnd() * 60), dy = -(12 + rnd() * 48), dur = (5 + rnd() * 6).toFixed(2), del = (-rnd() * 10).toFixed(2);
+      var al = star ? .85 : .3 + rnd() * .6, name = 'lpf' + (seed || 7) + '_' + i;
+      css += '@keyframes ' + name + '{0%{opacity:0;transform:translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) scale(.6)}' +
+        '18%{opacity:' + al.toFixed(2) + '}35%{opacity:' + (al * .45).toFixed(2) + '}55%{opacity:' + al.toFixed(2) + '}80%{opacity:' + (al * .6).toFixed(2) + '}' +
+        '100%{opacity:0;transform:translate(' + (x + dx).toFixed(1) + 'px,' + (y + dy).toFixed(1) + 'px) scale(1)}}';
+      html += star ? '<b style="animation:' + name + ' ' + dur + 's linear ' + del + 's infinite"></b>'
+                   : '<i style="width:' + size + 'px;height:' + size + 'px;animation:' + name + ' ' + dur + 's linear ' + del + 's infinite"></i>';
+    }
+    return { css: css, html: html + '</div>' };
+  }
+  window.LuliyParticles = particles;
+
   function still() {
     try { return matchMedia('(prefers-reduced-motion: reduce)').matches || root.classList.contains('luliy-calm') || root.classList.contains('luliy-save-data'); } catch (e) { return false; }
   }
@@ -170,8 +207,28 @@
       '@keyframes luliy-loader-y{to{transform:translateY(-' + FH * ROWS + 'px)}}@keyframes luliy-loader-x{to{transform:translateX(-' + FW * COLS + 'px)}}' +
       '@media(prefers-reduced-motion:reduce){' + K + '.lrl-sprite{display:none}' + K + '.lrl-rest{opacity:1!important}}' +
       'html.luliy-calm ' + K + '.lrl-sprite{display:none}html.luliy-calm ' + K + '.lrl-rest{opacity:1!important}';
-    var html = '<div class="lrl-m"><img class="lrl-rest" src="' + REST + '" alt="" width="' + FW + '" height="' + FH + '"><div class="lrl-sprite"><div class="lrl-row"><img class="lrl-sheet" alt=""></div></div></div>';
-    return { css: css, html: html };
+    var pf = particles('#luliy-room-loader', Math.min(460, innerWidth * .95), 380, 26, a === 'light', 3);
+    var bgDark = a === 'light' ? sky(['#1f1f38', '#18182d', '#111222', '#0c0d1b']) : C[0];
+    var mask = 'linear-gradient(to right,transparent,#000 7%,#000 93%,transparent),linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent)';
+    css += pf.css + K + '.lrl-m{z-index:1}' +
+      // the opening video
+      '#luliy-room-loader.is-intro{--vs:min(440px,78vw,58vh);background:' + bgDark + '}' +
+      K + '.lri-v{position:relative;z-index:1;width:var(--vs);height:var(--vs);mix-blend-mode:screen;opacity:0;transition:opacity .45s ease-out;-webkit-mask-image:' + mask + ';-webkit-mask-composite:source-in;mask-image:' + mask + ';mask-composite:intersect}' +
+      K + '.lri-v.in{opacity:1}' +
+      K + '.lri-skip{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right));top:max(20px,env(safe-area-inset-top));padding:7px 16px;border-radius:99px;border:1px solid rgba(240,214,143,.45);background:rgba(10,10,20,.35);color:#f0d68f;font:13px/1.2 system-ui,sans-serif;letter-spacing:.1em;cursor:pointer;transition:opacity .3s}' +
+      '#luliy-room-loader.is-gone{opacity:0;pointer-events:none;transition:opacity .62s cubic-bezier(.4,0,.2,1) .32s}#luliy-room-loader.is-gone .lri-skip{opacity:0}' +
+      '#luliy-intro-fly{position:fixed;z-index:2147483001;transform-origin:0 0;pointer-events:none;will-change:transform}' +
+      '#luliy-intro-fly img{position:absolute;inset:0;width:100%;height:100%}#luliy-intro-fly svg{position:absolute;opacity:0}' +
+      '#luliy-intro-fly :is(.ll-hl,.ll-sh,.ll-sp,.ll-dt){display:none}' +
+      '#luliy-intro-fly.go{transition:transform .95s cubic-bezier(.55,0,.25,1)}#luliy-intro-fly.go img{opacity:0;transition:opacity .2s linear .55s}#luliy-intro-fly.go svg{opacity:1;transition:opacity .2s linear .55s}' +
+      '#luliy-intro-fly.land{opacity:0;transition:opacity .12s linear}';
+    var html = pf.html + '<div class="lrl-m"><img class="lrl-rest" src="' + REST + '" alt="" width="' + FW + '" height="' + FH + '"><div class="lrl-sprite"><div class="lrl-row"><img class="lrl-sheet" alt=""></div></div></div>';
+    var ipf = particles('#luliy-room-loader', Math.min(760, innerWidth), Math.min(600, innerHeight * .8), 30, false, 11);
+    css += ipf.css;
+    var intro = ipf.html + '<video class="lri-v" muted playsinline autoplay preload="auto" disablepictureinpicture aria-hidden="true">' +
+      '<source src="' + INTRO.mp4 + '" type="video/mp4"><source src="' + INTRO.webm + '" type="video/webm"></video>' +
+      '<button type="button" class="lri-skip">' + (/^en/i.test(root.lang) ? 'Skip' : '跳過') + '</button>';
+    return { css: css, html: html, intro: intro };
   }
 
   // Start her moving once the sheet is decoded (the still pose covers the wait). Not with reduced motion / calm / save-data.
@@ -203,6 +260,78 @@
   arm(el);
   root.classList.add('intro-pending');
   var state = window.LuliySiteLoader = { active: true };
+
+  /* ---- the opening (first visit) ---- */
+  function wantIntro() {
+    try {
+      var q = new URLSearchParams(location.search).get('intro'), ua = navigator.userAgent || '';
+      if (q === '0' || still()) return false;
+      if (/MicroMessenger/i.test(ua) && /Android/i.test(ua)) return false; // its in-app player hijacks inline video
+      if (q === '1') return true;
+      var seen = Number(localStorage.getItem(INTRO.key)) || 0;
+      return !(seen && Date.now() - seen < 7 * 864e5);
+    } catch (e) { return false; }
+  }
+  var intro = wantIntro(), introEnded = false, video = null;
+  function introFallback() { // could not play: become the normal mascot loader
+    if (!intro) return;
+    intro = false; introEnded = true;
+    el.classList.remove('is-intro'); el.innerHTML = L.html; arm(el);
+    clearTimeout(cap); cap = setTimeout(lift, 6000);
+  }
+  if (intro) {
+    el.classList.add('is-intro');
+    el.innerHTML = L.intro;
+    video = el.querySelector('video');
+    var playing = false;
+    video.addEventListener('playing', function () {
+      playing = true; video.classList.add('in');
+      try { localStorage.setItem(INTRO.key, String(Date.now())); } catch (e) {}
+    }, { once: true });
+    video.addEventListener('ended', function () { introEnded = true; });
+    video.addEventListener('error', introFallback);
+    var stall = 0;
+    video.addEventListener('waiting', function () { clearTimeout(stall); stall = setTimeout(function () { if (playing) skipIntro(); }, 2500); });
+    video.addEventListener('playing', function () { clearTimeout(stall); });
+    try { var pr = video.play(); if (pr && pr.catch) pr.catch(function () { setTimeout(function () { if (!playing) introFallback(); }, 400); }); } catch (e) {}
+    setTimeout(function () { if (!playing) introFallback(); }, 3000);
+    el.addEventListener('click', function () { if (playing) skipIntro(); });
+  }
+  function skipIntro() { // straight to the last frame (the logo); it flies as soon as the page is ready
+    if (!video || introEnded) return;
+    try { video.pause(); if (isFinite(video.duration)) video.currentTime = Math.max(0, video.duration - 0.04); } catch (e) {}
+    introEnded = true;
+  }
+  function flyOut() {
+    if (gone) return;
+    gone = true; state.reason = 'intro'; state.at = Date.now() - t0;
+    clearTimeout(cap);
+    var r = video.getBoundingClientRect(), mark = document.querySelector('.brand-mark svg'), m = mark && mark.getBoundingClientRect();
+    var ok = m && m.width > 4 && m.bottom > 0 && m.top < innerHeight && r.width > 0;
+    if (ok) {
+      var B = INTRO.box, fly = document.createElement('div'), clone = mark.cloneNode(true);
+      fly.id = 'luliy-intro-fly'; fly.setAttribute('aria-hidden', 'true');
+      fly.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px';
+      clone.removeAttribute('id');
+      clone.style.cssText = 'left:' + B[0] * r.width + 'px;top:' + B[1] * r.height + 'px;width:' + B[2] * r.width + 'px;height:' + B[2] * r.height + 'px';
+      fly.innerHTML = '<img src="' + INTRO.icon + '" alt="">';
+      fly.appendChild(clone);
+      root.appendChild(fly);
+      video.style.transition = 'none'; video.style.opacity = '0';
+      var s = m.width / (B[2] * r.width), tx = m.left - B[0] * r.width * s - r.left, ty = m.top - B[1] * r.height * s - r.top;
+      fly.getBoundingClientRect();
+      fly.classList.add('go');
+      fly.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+      setTimeout(function () { fly.classList.add('land'); setTimeout(function () { fly.remove(); }, 200); }, 1000);
+    }
+    el.classList.add('is-gone');
+    setTimeout(function () {
+      root.classList.remove('intro-pending'); state.active = false;
+      try { dispatchEvent(new CustomEvent('luliy:intro-complete')); } catch (e) {}
+    }, 950);
+    setTimeout(function () { el.remove(); style.remove(); }, 1100);
+  }
+
 
   var t0 = Date.now(), gone = false, finishing = false, fontsOk = !document.fonts, prep = null, prepDone = false;
   if (document.fonts) document.fonts.ready.then(function () { fontsOk = true; }, function () { fontsOk = true; });
@@ -248,10 +377,13 @@
   }
   function check() {
     if (gone) return;
-    if (fontsOk && ready()) { if (!finishing) { finishing = true; finish(el, function () { lift('ready'); }); } return; }
+    if (intro && introEnded && (fontsOk && ready())) { flyOut(); return; }
+    if (!intro && fontsOk && ready()) { if (!finishing) { finishing = true; finish(el, function () { lift('ready'); }); } return; }
     setTimeout(check, 80);
   }
-  var r0 = route(), cap = setTimeout(lift, r0 === 'books' || r0 === 'music' ? 8000 : 6000);
+  var r0 = route(), cap = intro
+    ? setTimeout(function () { skipIntro(); flyOut(); }, 20000) // the video is 10.5 s; never longer than 20 s
+    : setTimeout(lift, r0 === 'books' || r0 === 'music' ? 8000 : 6000);
   check();
 })();
 
@@ -1265,7 +1397,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 }
 </style>
 
-<link rel="stylesheet" href="/site-publish/home-fixes.css?v=97be726b6454" data-home-fixes></head>
+<link rel="stylesheet" href="/site-publish/home-fixes.css?v=3802d46c945b" data-home-fixes></head>
 <body>
 <svg id="luliy-brand-defs" aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden"><defs><linearGradient id="ll-g" gradientUnits="userSpaceOnUse" x1="8" y1="6" x2="52" y2="58"><stop offset="0" stop-color="#f6e9c6"/><stop offset=".45" stop-color="#e0c58d"/><stop offset=".8" stop-color="#cba15f"/><stop offset="1" stop-color="#b18a48"/></linearGradient><radialGradient id="ll-r" gradientUnits="userSpaceOnUse" cx="27" cy="14.79" r="14.5"><stop offset="0" stop-color="#f6dfa4" stop-opacity=".42"/><stop offset=".45" stop-color="#e0c58d" stop-opacity=".16"/><stop offset="1" stop-color="#e0c58d" stop-opacity="0"/></radialGradient><linearGradient id="ll-s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffaf0" stop-opacity="0"/><stop offset=".5" stop-color="#fffaf0" stop-opacity=".62"/><stop offset="1" stop-color="#fffaf0" stop-opacity="0"/></linearGradient><filter id="ll-glow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="1.3" result="b"/><feFlood flood-color="#f2d38f" flood-opacity=".55"/><feComposite in2="b" operator="in" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter><clipPath id="ll-clip"><path d="M45 58q-2-.3-4.3-1a24 24 0 0 0-12.6-1.2l-1 .2s1.5-.6 2.5-.8q5.8-1.4 11-.2c4 .9 5.7 1.1 7.2 1q1 0 0-.2-2 0-5.1-1a26 26 0 0 0-14.4-.5l-1.1.3-3.8 1.4a29 29 0 0 1 11.3-4.3h3.5c1.7.2 2.9.4 5 1l4.7 1.2h2.4a8 8 0 0 0 5.3-3l.4-.5-.4 1.6q-1 3-3.7 4.6c-1.8 1-4.5 1.6-7 1.3m-36.2-.2a24 24 0 0 1-4.8-1l.2-.2c1-.6 2.3-2.2 3.1-3.4 1.4-2.2 1.9-4.4 2-8q.3-4.6 1.7-8a24 24 0 0 1 5-7.4l.1.8c.3 1.5 1 3.9 1.3 4.8q.2.3.4 0l.7-.1-.3-1a24 24 0 0 1-1.3-5.6l.4.9a34 34 0 0 0 5 9.3q2 2.3 3.6 2 1.3-.5 2.4-2 1.6-2.4 2.7-6l.6-2 1-3.5c.2-1 .1-1.4-.6-2.5L30.7 23l-.2-.3h-2.2l-.4-.2-1 .5c-.9.5-.9.5-1.2.5l-.7-.2.4-.3 1.1-.7c1.2-.7 1.3-.7 2-.6h1.3c1.3 0 1.2 0 2.1 1.4l1.4 2.5q.3.4.1.8c0 .7-.5 3-1 4.4q0 .6-.3 1.3c-.7 2.6-2 5.8-3.2 7.5q-3.2 4.4-7.3.3l-1.3-1.7-.1.5-.2 1.6-.3 1.2A35 35 0 0 1 14.3 53c0 .1 1.8-.1 3-.4l2.9-1c3-1 4.2-1.3 6.7-1.9q8.3-1.9 15 1.1l1.4.8-.7-.1A20 20 0 0 0 31 51a62 62 0 0 0-8.6 3.3 37 37 0 0 1-6.9 2.8q-3.7.9-6.7.6M26 37.3c0-1-.8-3.4-1.8-5.7l-.8-2.2-.2-2q-.2-2.9-1.2-4.7c-.6-1.4-2-3-3.7-4q-1-.6.1-.2a11 11 0 0 1 3.8 2.7v-.3q0-1 1-2.3l.2-.4.2-.3v-1c0-1 0-1.3.4-1.8q.3-.5.2 0v1.3l.1-.2.4-.4 1.1-.8 1.3-1q0-.5.3 0 .6 1.1 2.2 1.3 1 0 .2-.1-.8-.3-1.5-1l-1-1.2 1 .3q2.4 1.1 4 .9a3 3 0 0 0 2.2-1.5q.1-.2 0 .4-.3 3-1.7 3.5l-.4.2q-.2 0-1 2.1c-.3 1-.3 1-.6 1l-.8-.2-.3-.1-.1.2q-.2.4-.6.4-.2 0-.3.2-.2.3-.5.2t-.7.5-1 .5q-.9 0-1.7-1.2t-1.2-.8q-.7.3-.8 1.3c-.1.6 0 .8.4 1.9q.8 1.4 1 2.6l.5 4.4.9 2.3.7 1.9.1-.2.9-1.5c.8-1 2-3 2.5-3.8l.4-1.2q0-.4-.5-.9-.7-.6-1-1.4l-.7-.8q-.9-.9-.3-.8c.9.1 1.1.3 2 1.5l.5.7c1 1 1.2 1.7.5 3.3l-2.2 3.6q-1.2 1.6-1.9 3.4zm.7-12.2q-.6-.3-.7-.7l1-.1q.2-.1.6.4l.3.3c0 .1-.8.2-1.2.1m-9.2-8.3h-1.7l.4-.4q1-1 1.7-1.1l1.5-.1h.9l.3-.1-.5.7q-1.1 1.3-2.6 1m4-.6.3-.9q.4-.7 1.4-1l.6-.3q.3 0 0 .3-.4.6-1.4 1.3l-.7.5zm3.7-1.8v-.5q.2-.8.7-.9l.4-.2q.5-.3.3.3-.1.6-.9 1l-.3.2h-.2m-7.5-.5-.2-.2-.1-.1v-.2q.4-.5.7 0 .2.2 0 .3-.4.4-.4.2m3.7-.2.9-1q.4-.4 1-.4.8 0 .7.2l-1 .9h-.7l-.6.2zm-1.8-.5v-1q.1-.8.8-1.1.6-.3.2.1l-.2.6-.4 1-.3.6q0 .4-.1-.2m-5.3.2.2-.3q.3-.6.7-.7l1-.2c.1 0-.3.8-.5.9q-.2.3-1 .3zm17.9 0H32c0-.2.6-.7.9-.8l.6-.1h.5l-.3.4c-.6.4-.8.5-1.5.5M21.3 13q-.3-.8.3-1.4.3-.4.3.2.1.5-.2.9l-.2.4q0 .3-.2-.1m7.8-.1-1.3-.6q-.6-.6-1.3-.4-.5.2-.4 0l.8-.3h1.4q1.4 0 1.8-.2h-.5l-2-.2q-.4 0-.1-.2a5 5 0 0 1 1.8-1q.7-.3 2.5 0a4 4 0 0 0 2 0c.2 0-1 1.4-1.7 2q-1.3 1-3 .9m-4.4-1.4-.5-.2-.5-.1.2-.1.1-.1q.4-.5 1-.6l1.1.2-.2.3q-.5.6-1.2.6m-5.3-1.1q0-.5.5-.8l.5.1c0 .2-.9.8-1 .7m4.4 0V10l-.3-.8c-.3-.7-.3-.9 0-1.5q.6-.9 1-1v.4l.3 1.2V9l-.2.4-.4.6q-.3.6-.4.4m-1.5 0q-.5-.4-.7-1.3l-.2-.7h.5l.7.3q.4 0 .7.8l.3.8zm4.6-.3v-1Q27 8 28 7.7q.3 0 0 .3l-.2.7c-.1.6-.1.6-.6 1zm8-.3v-.6q0-.6.7-.8.4-.3.3.1 0 .5-.6 1-.3.5-.4.3M30.7 9l-.8-.4c-.2-.2-.6-.9-.5-1l.9.3.3.3.4.5q.5.5-.3.3m2 0q-1.4-.7-1.5-1.2L31 6.6l1 .4q.6.6.8 1.3zm-6.6-1.7-.5-.2.4-.3.5-.3-.6.2-.4.1.5-.6q1.2-1 3.2-.2.6.3.2.4-.6 0-1.3.5-1 .7-2 .4"/></clipPath></defs></svg>
 <a href="#main" class="skip" id="skipLink">跳到正文</a>
@@ -1418,7 +1550,7 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script><script src="/reading-timeline.js?v=20261022-mobile" defer></script><script id="experience-layer-js" src="/assets/site/home/eda1d076c5f3.js"></script>
 
-<script src="/site-publish/home-fixes.js?v=fecb2ed2d2b7" async data-home-fixes></script><style id="directory-add-style">
+<script src="/site-publish/home-fixes.js?v=f22d6b7abef7" async data-home-fixes></script><style id="directory-add-style">
 /* directory-add v3 */
 #directory .directory-add-view{display:none;flex:1;min-height:0;overflow:auto}
 #directory.directory-add-mode .directory-main{display:none}
