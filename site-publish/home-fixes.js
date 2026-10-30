@@ -2809,6 +2809,24 @@
       col.append(head, text, media);
       const tags = tagsOf(item);
       if (tags.length) { const row = el('div', 'lj-tags'); tags.forEach(g => { const c = el('a', null, '#' + g); c.href = jl({ tag: g }); row.append(c); }); col.append(row); }
+      {
+        // block 34 (comments) loads after this block, so the API is checked a frame later, not now
+        const bar = el('div', 'lj-cbar'), btn = el('button', 'lj-cbtn', L('评论', 'Comments', 'コメント'));
+        btn.type = 'button'; btn.setAttribute('aria-expanded', 'false');
+        const box = el('div', 'lj-comments'); box.hidden = true; box.id = 'lj-c-' + item.id; btn.setAttribute('aria-controls', box.id);
+        const setOpen = open => {
+          btn.setAttribute('aria-expanded', String(open)); box.hidden = !open; btn.classList.toggle('is-open', open);
+          if (open) window.LuliyComments.fill(box, 'journal-' + item.id); else box.replaceChildren();
+        };
+        a._ljCloseComments = () => { if (!box.hidden) setOpen(false); };
+        btn.addEventListener('click', () => {
+          const open = box.hidden;
+          if (open) document.querySelectorAll('.lj-note').forEach(n => { if (n !== a && n._ljCloseComments) n._ljCloseComments(); });
+          setOpen(open);
+        });
+        bar.append(btn); bar.hidden = true; col.append(bar, box);
+        requestAnimationFrame(() => { if (window.LuliyComments) { bar.hidden = false; if (single) setOpen(true); } });   // permalink: thread already open
+      }
       a.append(avatar, col);
 
       const fill = frag => {
@@ -3145,9 +3163,15 @@
     window.addEventListener('hashchange', queue); queue();
     // keep the iframe's colours in step with the site's theme switch
     new MutationObserver(function () {
-      var f = document.querySelector('iframe.giscus-frame'); if (!f) return;
-      f.contentWindow.postMessage({ giscus: { setConfig: { theme: theme() } } }, ORIGIN);
+      document.querySelectorAll('iframe.giscus-frame').forEach(function (f) {
+        if (f.contentWindow) f.contentWindow.postMessage({ giscus: { setConfig: { theme: theme() } } }, ORIGIN);
+      });
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    // used by the journal (短札) cards: fill(box, term) loads one thread into box right away
+    window.LuliyComments = { fill: function (box, term) {
+      box.innerHTML = '<p class="lc-note" aria-live="polite">正在載入評論…</p><div class="lc-slot"></div>';
+      load(box, box.querySelector('.lc-slot'), term);
+    } };
   })();
 
 })();

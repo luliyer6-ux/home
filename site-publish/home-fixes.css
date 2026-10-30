@@ -1872,3 +1872,12 @@ body.lj-viewing { overflow: hidden; }
 .luliy-comments .lc-note[hidden] { display: none; }
 .luliy-comments .giscus, .luliy-comments .giscus-frame { width: 100%; }
 @media (max-width: 1000px) { .luliy-comments { grid-column: auto; margin-top: 40px; } }
+
+/* 34b. Journal (短札) comments: a small button under each note; one thread open at a time. */
+.lj-cbar { margin-top: 8px; }
+.lj-cbtn { appearance: none; background: none; border: 0; padding: 2px 0; font: inherit; font-size: 13px; color: var(--muted, #a3a3a6); cursor: pointer; }
+.lj-cbtn:hover, .lj-cbtn.is-open { color: var(--accent, #b89a6a); }
+.lj-cbtn:focus-visible { outline: 2px solid var(--accent, #b89a6a); outline-offset: 3px; border-radius: 4px; }
+.lj-comments { margin-top: 10px; padding-top: 12px; border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent); }
+.lj-comments[hidden] { display: none; }
+.lj-cbar[hidden] { display: none; }
