@@ -1822,7 +1822,7 @@ body.lj-viewing { overflow: hidden; }
 .lj-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 22px 16px 16px; border: 1px solid var(--line, #2e323d); border-radius: 14px; background: color-mix(in srgb, var(--text, #e8e3d9) 3%, transparent); }
 .lj-card-avatar { display: block; width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .35)); transition: transform .25s ease; }
 .lj-card-name { margin-top: 12px; font-size: 19px; letter-spacing: .06em; color: var(--text, #e8e3d9); }
-.lj-card-sub { margin-top: 4px; font-size: 13px; letter-spacing: .04em; color: var(--muted, #a3a3a6); }
+.lj-card-sub { margin-top: 6px; font-size: 13px; line-height: 1.6; letter-spacing: .04em; color: var(--muted, #a3a3a6); text-wrap: balance; }
 .lj-stats { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--line, #2e323d); }
 .lj-stats div { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .lj-stats dt { font-size: 12px; letter-spacing: .12em; color: var(--muted, #a3a3a6); }
@@ -1848,3 +1848,4 @@ body.lj-viewing { overflow: hidden; }
   .lj-tagbox .lj-side-title { display: none; }
 }
 @media (min-width: 1001px) and (max-height: 860px) { .lj-side { position: static; } }
+.lj-nowrap { white-space: nowrap; }

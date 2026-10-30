@@ -2920,7 +2920,7 @@
           ['Telegram', 'https://web.telegram.org/a/#-1002032433504', '<path d="M21.5 3.5 2.5 11l6 2.2 2.3 6.3 3.2-3.8 5 3.3 2.5-15.5Z"/><path d="m8.5 13.2 8-5.2"/>']].forEach(([name, url, d]) => {
           const a = el('a'); a.href = url; if (!url.startsWith('mailto:')) { a.target = '_blank'; a.rel = 'noopener noreferrer'; } a.setAttribute('aria-label', name === 'Email' ? 'me@luliy.me' : name); a.title = name === 'Email' ? 'me@luliy.me' : name; a.innerHTML = icon(d); social.append(a);
         });
-        card.append(av, el('strong', 'lj-card-name', 'Luliy'), el('span', 'lj-card-sub', L('我将无限进步!', 'I will keep improving!', '私は進歩し続ける!')), stats, social);
+        card.append(av, el('strong', 'lj-card-name', 'Luliy'), (() => { const sub = el('span', 'lj-card-sub ld-raw'); ['03于宁，', '高文大工，', '射手座，', 'INFJ+ADHD+AB'].forEach(t => sub.append(el('span', 'lj-nowrap', t))); return sub; })(), stats, social);
 
         const WEEKS = 16, now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7) - (WEEKS - 1) * 7);
