@@ -1669,8 +1669,9 @@ html.lm-bar-mode body.lm-player-visible .luliy-mascot-peek { bottom: calc(var(--
 @media (min-width: 1180px) and (pointer: fine) {
   html.luliy-mascot-on #main .reader-toc-toggle, html.luliy-mascot-on #main .reader-back-top { display: none !important; }
   /* the button column stays quietly visible, so the contents are always findable */
-  html.luliy-mascot-on .luliy-mascot .luliy-mascot-tools { opacity: .62; }
-  html.luliy-mascot-on .luliy-mascot:is(:hover, :focus-within) .luliy-mascot-tools { opacity: 1; }
+  /* Hidden until the pointer reaches her (or keyboard focus is inside); stays visible while the contents panel is open. */
+  html.luliy-mascot-on .luliy-mascot .luliy-mascot-tools { opacity: 0; }
+  html.luliy-mascot-on .luliy-mascot:is(:hover, :focus-within) .luliy-mascot-tools, html.luliy-toc-open .luliy-mascot .luliy-mascot-tools { opacity: 1; }
   .luliy-mascot-tools button[hidden] { display: none; }
   .luliy-mascot-tools button.is-active { background: rgba(226,194,126,.24); }
   /* the contents panel opens right above her instead of at the top-left */
