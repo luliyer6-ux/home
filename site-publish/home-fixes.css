@@ -1609,3 +1609,33 @@ html body #main .source-head a, html body #main .source-nav a, html body #main [
 html body .reader-heading-link { min-width: 24px; min-height: 24px; padding: 0 6px; }
 /* Header page-name button ("Articles"): 24px hit area without moving the layout. */
 html body #header .brand-group button.brand-page-name { padding-block: 4px; margin-block: -4px; top: 2px; }
+
+
+/* 27. Reading-page mascot (home-fixes.js block 27) */
+.luliy-mascot { position: fixed; left: 14px; bottom: 10px; width: 190px; z-index: 30; perspective: 700px; user-select: none; -webkit-user-select: none; }
+html.lm-bar-mode body.lm-player-visible .luliy-mascot { bottom: calc(var(--lm-bar-space, 0px) + 8px); }
+.luliy-mascot[hidden], .luliy-mascot-peek[hidden] { display: none !important; }
+.luliy-mascot-stage { position: relative; aspect-ratio: 1; cursor: pointer; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.luliy-mascot-stage::before { content: ""; position: absolute; inset: 24% 18% 10%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(226,194,126,.15), transparent 70%); animation: luliy-mascot-glow 5s ease-in-out infinite; }
+@keyframes luliy-mascot-glow { 0%,100% { opacity: .5; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.04); } }
+.luliy-mascot-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
+.luliy-mascot-anim img { opacity: 0; transition: opacity .25s; }
+.luliy-mascot.is-playing .luliy-mascot-anim img { opacity: 1; }
+.luliy-mascot.is-playing .luliy-mascot-rest { opacity: 0; transition: opacity .25s .1s; }
+.luliy-mascot-stage:focus-visible { outline: 2px solid var(--accent, #d4af37); outline-offset: 2px; border-radius: 12px; }
+.luliy-mascot-bubble { position: absolute; left: 8px; width: 230px; bottom: calc(100% - 14px); padding: 10px 14px; border-radius: 12px;
+  background: rgba(10,15,28,.94); border: 1px solid rgba(226,194,126,.34); color: #ece6d6; font-size: 13.5px; line-height: 1.6;
+  box-shadow: 0 8px 28px rgba(0,0,0,.45); opacity: 0; transform: translateY(6px); transition: opacity .35s, transform .35s; pointer-events: none; }
+.luliy-mascot-bubble.show { opacity: 1; transform: none; }
+.luliy-mascot-bubble::after { content: ""; position: absolute; left: 60px; bottom: -6px; width: 10px; height: 10px; background: inherit;
+  border-right: 1px solid rgba(226,194,126,.34); border-bottom: 1px solid rgba(226,194,126,.34); transform: rotate(45deg); }
+.luliy-mascot-tools { position: absolute; right: -18px; bottom: 30px; display: flex; flex-direction: column; gap: 6px; opacity: 0; transition: opacity .3s; }
+.luliy-mascot:hover .luliy-mascot-tools, .luliy-mascot:focus-within .luliy-mascot-tools { opacity: 1; }
+.luliy-mascot-tools button, .luliy-mascot-peek { border: 1px solid rgba(226,194,126,.34); background: rgba(10,15,28,.86); color: #e2c27e; cursor: pointer; }
+.luliy-mascot-tools button { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; padding: 0; }
+.luliy-mascot-tools button:hover { background: rgba(226,194,126,.16); }
+.luliy-mascot-tools svg { width: 14px; height: 14px; }
+.luliy-mascot-peek { position: fixed; left: 16px; bottom: 14px; z-index: 30; border-radius: 999px; padding: 6px 12px; font-size: 13px; line-height: 1.2; }
+html.lm-bar-mode body.lm-player-visible .luliy-mascot-peek { bottom: calc(var(--lm-bar-space, 0px) + 10px); }
+@media (prefers-reduced-motion: reduce) { .luliy-mascot-stage::before { animation: none; } .luliy-mascot-stage { transition: none; } }
