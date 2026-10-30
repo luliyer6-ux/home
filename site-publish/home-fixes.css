@@ -1532,25 +1532,59 @@ html body #recordsHome .lr-collection {
   border-top: none;
 }
 
-/* 24. Desktop article background (2026-10-29): full-viewport artwork layer behind
-   article text + TOC background option. Desktop article pages only; mobile is
-   untouched (the TOC section is hidden below 769px). */
+/* 24. Article reading page (2026-10-30 rework). See home-fixes.js section 24. */
+
+/* a) No footer on reading pages: hide the curtain and the space reserved for it. */
+html.luliy-reading #contact,
+html.luliy-reading .contact-curtain { display: none !important; }
+html.luliy-reading body .page-above,
+html.luliy-reading .page-above { margin-bottom: 0 !important; }
+
+/* c) TOC header: icon buttons; copy-link is hidden (the meta row already has 分享). */
+.source-toc .reader-tools [data-reader="share"] { display: none !important; }
+.source-toc > p .luliy-ico, .article-toc > p .luliy-ico,
+.reader-tools .luliy-ico { display: inline-grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid transparent; border-radius: 8px; background: none; color: var(--muted); font-size: 0; line-height: 0; cursor: pointer; transition: color .15s, border-color .15s, background-color .15s; }
+.luliy-ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.luliy-ico:hover, .luliy-ico:focus-visible, .luliy-ico[aria-expanded="true"] { color: var(--accent, #d4af37); border-color: var(--line); background: color-mix(in srgb, var(--accent, #d4af37) 8%, transparent); }
+.reader-toc-close.luliy-ico { width: 30px; height: 30px; padding: 0; font-size: 0; }
+.reader-tools { gap: 2px; }
+
+/* Background panel (collapsed until the background button is pressed). */
+.luliy-bg-panel { margin: 0 0 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.luliy-bg-panel[hidden] { display: none; }
+.luliy-bg-thumbs { display: flex; flex-wrap: wrap; gap: 8px; }
+.luliy-bg-thumbs button { position: relative; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--ink, #fff) 4%, transparent); color: var(--muted); cursor: pointer; transition: border-color .15s, transform .15s; }
+.luliy-bg-thumbs button:hover { border-color: var(--muted); transform: translateY(-1px); }
+.luliy-bg-thumbs button img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 18% 50%; }
+.luliy-bg-thumbs button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.luliy-bg-thumbs button[aria-checked="true"] { border-color: var(--accent, #d4af37); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #d4af37) 55%, transparent); color: var(--ink, #fff); }
+.luliy-bg-thumbs button.is-volatile { border-style: dashed; }
+.luliy-bg-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.luliy-bg-dim { display: inline-grid; place-items: center; color: var(--muted); }
+.luliy-bg-dim svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.luliy-bg-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent, #d4af37); }
+.luliy-bg-reset { width: 28px; height: 28px; }
+@media (max-width: 768px) {
+  .luliy-bg-toggle, .luliy-bg-panel { display: none !important; }
+}
+
+/* b) Desktop article artwork. */
 @media (min-width: 769px) {
   #luliy-article-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
   #luliy-article-bg img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity .35s ease; }
-  #luliy-article-bg .luliy-article-bg-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,var(--luliy-bg-scrim, .65)) 28%, rgba(0,0,0,var(--luliy-bg-scrim, .65)) 72%, rgba(0,0,0,0) 100%); }
-  #luliy-article-bg.luliy-article-bg-hide { display: none; }
+  /* Top gradient (header icons), soft shade pool behind the text column, faint overall veil.
+     --luliy-bg-scrim (slider, default .30) scales the pool and the veil. */
+  #luliy-article-bg .luliy-article-bg-scrim { position: absolute; inset: 0; background:
+    linear-gradient(to bottom, rgba(5,6,12,calc(.5 + var(--luliy-bg-scrim, .3) * .5)) 0, rgba(5,6,12,0) 170px),
+    radial-gradient(ellipse 38% 80% at 50% 48%, rgba(5,6,12,calc(var(--luliy-bg-scrim, .3) * 2.2)) 0%, rgba(5,6,12,calc(var(--luliy-bg-scrim, .3) * 1.5)) 55%, rgba(5,6,12,0) 100%),
+    rgba(5,6,12,calc(var(--luliy-bg-scrim, .3) * .6)); }
   body.luliy-article-bg-on .article-cover { display: none; }
-  .article-toc .luliy-toc-bg { margin: 0 0 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
-  .article-toc .luliy-toc-bg-title { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
-  .article-toc .luliy-toc-bg-options { display: flex; flex-wrap: wrap; gap: 6px; }
-  .article-toc .luliy-toc-bg-options button { font-size: 12px; line-height: 1.4; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
-  .article-toc .luliy-toc-bg-options button[aria-pressed="true"] { border-color: var(--accent, #d4af37); color: var(--text); }
-  .article-toc .luliy-toc-bg-scrim { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 10px; }
-  .article-toc .luliy-toc-bg-scrim input { flex: 1; min-width: 0; accent-color: var(--accent, #d4af37); }
-  .article-toc .luliy-toc-bg-foot { margin-top: 8px; }
-  .article-toc .luliy-toc-bg-reset { font-size: 12px; line-height: 1.4; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
-}
-@media (max-width: 768px) {
-  .article-toc .luliy-toc-bg { display: none !important; }
+
+  /* Legibility over bright artwork: header, floating buttons, progress rail, body text. */
+  body.luliy-article-bg-on #header a, body.luliy-article-bg-on #header button { text-shadow: 0 1px 3px rgba(0,0,0,.85); }
+  body.luliy-article-bg-on #header img, body.luliy-article-bg-on #header svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,.85)); }
+  body.luliy-article-bg-on .reader-float button { background: rgba(8,10,18,.58); border: 1px solid rgba(255,255,255,.2); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); color: #fff; }
+  body.luliy-article-bg-on .reading-timeline { padding: 12px 12px; margin: -12px -12px; border-radius: 16px; background: rgba(8,10,18,.42); }
+  body.luliy-article-bg-on :is(.article-body, #sourceArticleBody) { text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 0 14px rgba(0,0,0,.6); }
+  body.luliy-article-bg-on .source-end, body.luliy-article-bg-on .source-end * { text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 12px rgba(0,0,0,.85); }
 }

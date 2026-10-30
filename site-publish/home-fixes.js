@@ -1907,73 +1907,119 @@
     place();
   })();
 
-  /* 24. Desktop article-page background option in the article TOC (2026-10-29,
-     fixed 2026-10-30 for blog articles):
-     Desktop article pages only (min-width 769px). Blog articles (#/article/Pxx)
-     render via the source reader (.source-toc), while the renderArticle template
-     uses .article-toc; both layouts are targeted, study/book pages are not.
-     mobile TOC and layout are untouched. A fixed full-viewport artwork layer is
-     appended to .page-above with z-index -1, so it paints above .page-above's solid
-     background but below #main content (whose containers are transparent), and it
-     is hidden while the footer curtain is revealing (near page end),
-     except on short pages (page height within viewport + 80px), where it
-     would otherwise be hidden always (fixed 2026-10-30, P57). The article
-     TOC aside gets a "背景" section (after the label, before the chapter nav):
-     默认 = this article's cover image if present, else the first entry of
-     data/backgrounds.json, else none; 无背景; one button per backgrounds.json entry;
-     我的图片 = a device file picker (downscaled to a JPEG data URL, persisted in
-     localStorage when it fits, otherwise this visit only); a scrim-darkness slider
-     (center-weighted gradient, so side artwork stays vivid while the text column
-     stays readable); and a 恢复默认 button. Choice + scrim persist in localStorage.
-     When any background image is active, the .article-cover block is hidden (the
-     cover becomes the backdrop instead of a duplicate block); choosing 无背景
-     restores it. Idempotent: sync runs on every mutation and media change, and
-     injected nodes are removed when leaving article pages or desktop. */
+  /* 24. Article reading page: background artwork, no footer, and the TOC tools (2026-10-30 rework).
+     Reading pages are #/article/Pxx (source reader, .source-toc) and #/post/... (.article-toc).
+     a) html.luliy-reading (set from the hash) hides the footer curtain and the space reserved for
+        it (home-fixes.css), so an article ends at its own bottom and the artwork never has to hide.
+        The header "联系" button (data-go-contact) scrolls to that footer, so on reading pages it
+        opens the contact dialog instead.
+     b) Desktop only (min-width 769px): a fixed full-viewport artwork layer is appended to
+        .page-above with z-index -1 (above .page-above's background, below #main content). Choice
+        and shade live in localStorage. A soft shade pool behind the text column plus a top
+        gradient (home-fixes.css) keep text and the header icons readable over bright artwork.
+     c) The TOC header uses SVG icons (Aa, find, background, close); the copy-link icon is hidden
+        (the article meta row already has 分享). The background button opens a collapsed panel with
+        one thumbnail per choice (this article's own image if it has one, every entry of
+        data/backgrounds.json, none, my own picture), a shade slider and a reset. Opening it closes
+        the Aa panel and the other way round.
+     d) Reader width: the reader's default column (1600px) is migrated once to 820px; a width the
+        reader has chosen themselves is left alone.
+     Idempotent: apply() runs (at most once per frame) on changes inside #main, on hash changes and
+     on media changes; injected nodes are only touched when something changed. */
   (function () {
     var DESKTOP = window.matchMedia('(min-width: 769px)');
     var LS_CHOICE = 'luliy-article-bg-choice';
     var LS_SCRIM = 'luliy-article-bg-scrim';
     var LS_CUSTOM = 'luliy-article-bg-custom';
     var BG_ID = 'luliy-article-bg';
-    var SEC_CLASS = 'luliy-toc-bg';
-    var listCache = null, listLoading = false, sessionCustom = '';
+    var DEFAULT_SCRIM = 30;
+    var listCache = null, listLoading = false, sessionCustom = '', customVolatile = false;
+
+    var ICON = {
+      text: '<path d="M3.5 18 8 6.5 12.5 18M5.2 14h5.6"/><path d="m14.5 18 2.8-6.5 2.8 6.5M15.6 16h3.4"/>',
+      find: '<circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5"/>',
+      bg: '<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.5"/><path d="m4.5 17 4.2-4.2 3.3 3.3 2.7-2.7 4.8 4.8"/>',
+      close: '<path d="M6 6l12 12M18 6 6 18"/>',
+      none: '<circle cx="12" cy="12" r="7.5"/><path d="m6.7 17.3 10.6-10.6"/>',
+      plus: '<path d="M12 5v14M5 12h14"/>',
+      reset: '<path d="M5.5 12a6.5 6.5 0 1 0 2-4.7"/><path d="M5 4.5v3.8h3.8"/>',
+      dim: '<circle cx="12" cy="12" r="7.5"/><path d="M12 4.5a7.5 7.5 0 0 1 0 15z" fill="currentColor" stroke="none"/>'
+    };
+    function svg(name) {
+      return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ICON[name] + '</svg>';
+    }
 
     function main() { return document.getElementById('main'); }
     function above() { return document.querySelector('.page-above'); }
+    function isReadingHash() { return /^#\/(?:article|post)\//.test(location.hash || ''); }
     function toc() {
       var m = main(); if (!m) return null;
-      // Blog articles (#/article/Pxx) render via the source reader (.source-toc),
-      // not the renderArticle template (.article-toc); study/book pages are out
-      // of scope, so only these two article layouts are targeted.
+      // Blog articles (#/article/Pxx) render via the source reader (.source-toc), not the
+      // renderArticle template (.article-toc); study/book pages are out of scope.
       var hash = location.hash || '';
       if (hash.indexOf('#/article/') === 0) return m.querySelector('.source-toc');
       if (m.querySelector('.article-body')) return m.querySelector('.article-toc');
       return null;
     }
     function isActive() { return DESKTOP.matches && !!toc(); }
-    function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    function store(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
     function read(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
     function removeKey(k) { try { localStorage.removeItem(k); } catch (e) {} }
     function choice() { return read(LS_CHOICE) || 'default'; }
     function scrimVal() {
       var v = parseInt(read(LS_SCRIM), 10);
-      return isNaN(v) ? 65 : Math.max(0, Math.min(100, v));
+      return isNaN(v) ? DEFAULT_SCRIM : Math.max(0, Math.min(100, v));
     }
     function coverSrc() {
       var m = main();
       var img = m && m.querySelector('.article-cover img');
       if (img && img.getAttribute('src')) return img.getAttribute('src');
-      // Source-reader articles have no cover block; fall back to the first image
-      // in the article body (the article's hero image, when it has one).
+      // Source-reader articles have no cover block; use the first image in the article body.
       var body = m && (m.querySelector('#sourceArticleBody') || m.querySelector('.article-body'));
       var first = body && body.querySelector('img');
       return first && first.getAttribute('src') ? first.getAttribute('src') : '';
     }
+    function customSrc() { return read(LS_CUSTOM) || sessionCustom || ''; }
+
+    /* (d) one-time migration of the reader's default width */
+    (function migrateWidth() {
+      try {
+        if (localStorage.getItem('luliy-reader-width-v2')) return;
+        var raw = localStorage.getItem('luliy-reader-prefs');
+        var p = raw ? JSON.parse(raw) : {};
+        if (!p || typeof p !== 'object') p = {};
+        // The reader only honours a stored width when widthVersion is 2 (it resets anything else to 1600).
+        if (p.widthVersion !== 2 || p.width === undefined || p.width === 1600) {
+          p.width = 820; p.widthVersion = 2;
+          localStorage.setItem('luliy-reader-prefs', JSON.stringify(p));
+        }
+        localStorage.setItem('luliy-reader-width-v2', '1');
+      } catch (e) {}
+    })();
+
+    /* (a) reading class + contact button */
+    function syncReading() {
+      var on = isReadingHash();
+      if (document.documentElement.classList.contains('luliy-reading') !== on) {
+        document.documentElement.classList.toggle('luliy-reading', on);
+      }
+    }
+    window.addEventListener('click', function (e) {
+      if (!document.documentElement.classList.contains('luliy-reading')) return;
+      var go = e.target && e.target.closest && e.target.closest('[data-go-contact]');
+      if (!go) return;
+      var open = document.querySelector('[data-contact]');
+      if (!open) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      open.click();
+    }, true);
+
     function loadList(cb) {
       if (listCache) { cb(listCache); return; }
       if (listLoading) { setTimeout(function () { loadList(cb); }, 200); return; }
       listLoading = true;
-      fetch('data/backgrounds.json', { cache: 'no-store' }).then(function (r) {
+      // Absolute path: article addresses can be /article/Pxx, where a relative path breaks.
+      fetch('/data/backgrounds.json', { cache: 'no-cache' }).then(function (r) {
         return r.ok ? r.json() : [];
       }).then(function (j) {
         listCache = Array.isArray(j) ? j : [];
@@ -1988,7 +2034,7 @@
     function resolveSrc(list) {
       var c = choice();
       if (c === 'none') return '';
-      if (c === 'custom') return read(LS_CUSTOM) || sessionCustom || '';
+      if (c === 'custom') return customSrc();
       if (c && c !== 'default') {
         for (var i = 0; i < list.length; i++) {
           if (list[i] && list[i].id === c) return list[i].src || '';
@@ -2015,17 +2061,11 @@
       return el;
     }
     function removeLayer() { var el = layer(); if (el) el.remove(); }
-    function nearEnd() {
-      var a = above(); if (!a) return false;
-      var r = a.getBoundingClientRect();
-      // Short pages (e.g. P57, 199 chars): .page-above fits in the viewport,
-      // so its bottom is within 80px of the viewport bottom from the start and
-      // the layer would be hidden always. Never hide on such pages; the
-      // footer-curtain hide only applies when the page is actually tall.
-      if (r.height <= window.innerHeight + 80) return false;
-      return r.bottom - window.innerHeight < 80;
-    }
+
     function apply() {
+      syncReading();
+      var t0 = toc();
+      if (t0) iconify(t0);
       if (!isActive()) {
         removeLayer();
         document.body.classList.remove('luliy-article-bg-on');
@@ -2038,14 +2078,14 @@
           return;
         }
         var c = choice();
-        if (c === 'custom' && !read(LS_CUSTOM) && !sessionCustom) {
+        if (c === 'custom' && !customSrc()) {
           removeKey(LS_CHOICE);
           c = 'default';
         }
         var src = resolveSrc(list);
-        if (!src && c === 'custom') src = coverSrc() || (list.length && list[0] ? list[0].src || '' : '');
-        var el = ensureLayer();
-        var img = el.querySelector('img');
+        var el = src ? ensureLayer() : layer();
+        if (src && !el) return;
+        var img = el && el.querySelector('img');
         if (src) {
           if (img.getAttribute('src') !== src) {
             img.style.opacity = '0';
@@ -2053,121 +2093,189 @@
           }
           el.style.setProperty('--luliy-bg-scrim', (scrimVal() / 100).toFixed(2));
           document.body.classList.add('luliy-article-bg-on');
-          el.classList.toggle('luliy-article-bg-hide', nearEnd());
         } else {
+          // "无背景" (or nothing to show): take the artwork layer away entirely.
+          removeLayer();
           document.body.classList.remove('luliy-article-bg-on');
         }
         syncSection(list);
       });
     }
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+    /* (c) TOC header icons */
+    function setIcon(btn, name) {
+      if (btn.getAttribute('data-ico') === name) return;
+      btn.innerHTML = svg(name);
+      btn.setAttribute('data-ico', name);
+      btn.classList.add('luliy-ico');
+    }
+    function iconify(t) {
+      var i, list;
+      list = t.querySelectorAll('[data-reader="settings"], .reader-color-toggle');
+      for (i = 0; i < list.length; i++) setIcon(list[i], 'text');
+      list = t.querySelectorAll('[data-reader="find"]');
+      for (i = 0; i < list.length; i++) setIcon(list[i], 'find');
+      list = t.querySelectorAll('.reader-toc-close');
+      for (i = 0; i < list.length; i++) setIcon(list[i], 'close');
+    }
+    function closeAaPanels(t) {
+      var o = t.querySelectorAll('.reader-options, .reader-color-panel'), i;
+      for (i = 0; i < o.length; i++) o[i].hidden = true;
+      var b = t.querySelectorAll('[data-reader="settings"], .reader-color-toggle');
+      for (i = 0; i < b.length; i++) b[i].setAttribute('aria-expanded', 'false');
+    }
+    function setPanel(t, open) {
+      var panel = t.querySelector('.luliy-bg-panel'), btn = t.querySelector('.luliy-bg-toggle');
+      if (!panel || !btn) return;
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      if (open) closeAaPanels(t);
+    }
+    function handleFile(f) {
+      if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function () {
+        var im = new Image();
+        im.onload = function () {
+          var max = 1600, w = im.naturalWidth, h = im.naturalHeight;
+          var sc = Math.min(1, max / Math.max(w, h));
+          var cv = document.createElement('canvas');
+          cv.width = Math.max(1, Math.round(w * sc));
+          cv.height = Math.max(1, Math.round(h * sc));
+          cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+          var url = '';
+          try { url = cv.toDataURL('image/jpeg', 0.82); } catch (err) {}
+          if (!url) return;
+          sessionCustom = url;
+          customVolatile = !store(LS_CUSTOM, url); // too big for localStorage: valid for this visit only
+          store(LS_CHOICE, 'custom');
+          apply();
+        };
+        im.src = rd.result;
+      };
+      rd.readAsDataURL(f);
+    }
+    function ensureControls(t) {
+      var hdr = t.querySelector(':scope > p');
+      if (!hdr) return null;
+      var btn = hdr.querySelector('.luliy-bg-toggle');
+      var panel = t.querySelector('.luliy-bg-panel');
+      if (btn && panel) return { btn: btn, panel: panel };
+      if (btn) btn.remove();
+      if (panel) panel.remove();
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'luliy-bg-toggle luliy-ico';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', '文章背景');
+      btn.title = '文章背景';
+      btn.innerHTML = svg('bg');
+      var tools = hdr.querySelector('.reader-tools');
+      if (tools) tools.appendChild(btn);
+      else hdr.insertBefore(btn, hdr.querySelector('.reader-toc-close'));
+
+      panel = document.createElement('div');
+      panel.className = 'luliy-bg-panel';
+      panel.hidden = true;
+      panel.innerHTML = '<div class="luliy-bg-thumbs" role="radiogroup" aria-label="文章背景"></div>'
+        + '<div class="luliy-bg-row"><span class="luliy-bg-dim" aria-hidden="true">' + svg('dim') + '</span>'
+        + '<input type="range" min="0" max="100" step="1" aria-label="遮罩深浅" title="遮罩深浅">'
+        + '<button type="button" class="luliy-bg-reset luliy-ico" aria-label="恢复默认" title="恢复默认">' + svg('reset') + '</button></div>'
+        + '<input type="file" class="luliy-bg-file" accept="image/*" hidden>';
+      var anchor = t.querySelector('.reader-tool-panels') || hdr;
+      anchor.after(panel);
+
+      btn.addEventListener('click', function () { setPanel(t, panel.hidden); });
+      t.addEventListener('click', function (e) {
+        if (e.target.closest('[data-reader="settings"], .reader-color-toggle')) setPanel(t, false);
+        else if (e.target.closest('.reader-toc-close')) setPanel(t, false);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !panel.hidden && t.isConnected) setPanel(t, false);
+      });
+      var file = panel.querySelector('.luliy-bg-file');
+      file.addEventListener('change', function (e) {
+        var f = e.target.files && e.target.files[0];
+        e.target.value = '';
+        handleFile(f);
+      });
+      panel.querySelector('.luliy-bg-reset').addEventListener('click', function () {
+        removeKey(LS_CHOICE);
+        removeKey(LS_SCRIM);
+        apply();
+      });
+      panel.querySelector('input[type=range]').addEventListener('input', function (e) {
+        store(LS_SCRIM, String(e.target.value));
+        var el = layer();
+        if (el) el.style.setProperty('--luliy-bg-scrim', (e.target.value / 100).toFixed(2));
+      });
+      panel.querySelector('.luliy-bg-thumbs').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-bg]');
+        if (!b) return;
+        var id = b.getAttribute('data-bg');
+        if (id === 'custom' && (!customSrc() || choice() === 'custom')) { file.click(); return; }
+        store(LS_CHOICE, id);
+        apply();
+      });
+      return { btn: btn, panel: panel };
+    }
     function syncSection(list) {
       var t = toc(); if (!t) return;
-      var sec = t.querySelector('.' + SEC_CLASS);
-      var c = choice(), s = scrimVal();
-      if (!sec) {
-        sec = document.createElement('div');
-        sec.className = SEC_CLASS;
-        var label = t.querySelector('p');
-        if (label && label.nextSibling) t.insertBefore(sec, label.nextSibling);
-        else if (t.firstChild) t.insertBefore(sec, t.firstChild);
-        else t.appendChild(sec);
-        sec.innerHTML = '<p class="luliy-toc-bg-title">背景</p>'
-          + '<div class="luliy-toc-bg-options" role="group" aria-label="文章背景"></div>'
-          + '<label class="luliy-toc-bg-scrim">遮罩 <input type="range" min="0" max="100" step="1" aria-label="遮罩深浅"></label>'
-          + '<div class="luliy-toc-bg-foot"><button type="button" class="luliy-toc-bg-reset">恢复默认</button>'
-          + '<input type="file" class="luliy-toc-bg-file" accept="image/*" hidden></div>';
-        sec.querySelector('.luliy-toc-bg-reset').addEventListener('click', function () {
-          removeKey(LS_CHOICE);
-          apply();
-        });
-        sec.querySelector('.luliy-toc-bg-scrim input').addEventListener('input', function (e) {
-          store(LS_SCRIM, String(e.target.value));
-          var el = layer();
-          if (el) el.style.setProperty('--luliy-bg-scrim', (e.target.value / 100).toFixed(2));
-        });
-        sec.querySelector('.luliy-toc-bg-file').addEventListener('change', function (e) {
-          var f = e.target.files && e.target.files[0];
-          e.target.value = '';
-          if (!f) return;
-          var rd = new FileReader();
-          rd.onload = function () {
-            var im = new Image();
-            im.onload = function () {
-              var max = 1600, w = im.naturalWidth, h = im.naturalHeight;
-              var sc = Math.min(1, max / Math.max(w, h));
-              var cv = document.createElement('canvas');
-              cv.width = Math.max(1, Math.round(w * sc));
-              cv.height = Math.max(1, Math.round(h * sc));
-              var ctx = cv.getContext('2d');
-              ctx.drawImage(im, 0, 0, cv.width, cv.height);
-              var url = '';
-              try { url = cv.toDataURL('image/jpeg', 0.82); } catch (err) {}
-              if (url) {
-                sessionCustom = url;
-                store(LS_CUSTOM, url);
-                store(LS_CHOICE, 'custom');
-                apply();
-              }
-            };
-            im.src = rd.result;
-          };
-          rd.readAsDataURL(f);
-        });
-      }
-      var box = sec.querySelector('.luliy-toc-bg-options');
-      var opts = [{ id: 'default', name: '默认' }, { id: 'none', name: '无背景' }];
+      var ctl = ensureControls(t);
+      if (!ctl) return;
+      var cov = coverSrc(), custom = customSrc(), c = choice();
+      var items = [];
+      if (cov) items.push({ id: 'default', src: cov, name: '文章配图' });
       for (var i = 0; i < list.length; i++) {
-        if (list[i] && list[i].id) opts.push({ id: list[i].id, name: list[i].name || ('背景' + (i + 1)) });
+        if (list[i] && list[i].id && list[i].src) items.push({ id: list[i].id, src: list[i].src, name: list[i].name || ('背景' + (i + 1)) });
       }
-      opts.push({ id: 'custom', name: '我的图片' });
+      items.push({ id: 'none', ico: 'none', name: '无背景' });
+      items.push(custom ? { id: 'custom', src: custom, name: customVolatile ? '我的图片（仅本次访问有效，再点一次更换）' : '我的图片（再点一次更换）' }
+                        : { id: 'custom', ico: 'plus', name: '上传我的图片' });
+      // Which thumbnail is selected: 'default' means "automatic" = this article's image, else the first artwork.
+      var sel = c;
+      if (c === 'default' && !cov) sel = items[0] && items[0].id !== 'none' ? items[0].id : 'none';
+      if (c === 'custom' && !custom) sel = cov ? 'default' : (items[0] ? items[0].id : 'none');
+      // The thumbnails are rebuilt only when the set of choices changes. A selection change just
+      // flips aria-checked: replacing the clicked button would detach it mid-click, and the TOC's
+      // own "click outside closes the contents" handler would then close the whole panel.
       var html = '';
-      for (var j = 0; j < opts.length; j++) {
-        html += '<button type="button" data-bg="' + esc(opts[j].id) + '"' +
-          (c === opts[j].id ? ' aria-pressed="true"' : '') + '>' + esc(opts[j].name) + '</button>';
+      for (var j = 0; j < items.length; j++) {
+        var it = items[j];
+        html += '<button type="button" role="radio" data-bg="' + esc(it.id) + '" aria-checked="false"'
+          + ' aria-label="' + esc(it.name) + '" title="' + esc(it.name) + '"'
+          + (it.id === 'custom' && customVolatile ? ' class="is-volatile"' : '') + '>'
+          + (it.src ? '<img src="' + esc(it.src) + '" alt="" loading="lazy" decoding="async">' : svg(it.ico))
+          + '</button>';
       }
+      var box = ctl.panel.querySelector('.luliy-bg-thumbs');
       if (box.getAttribute('data-sig') !== html) {
         box.setAttribute('data-sig', html);
         box.innerHTML = html;
-        var btns = box.querySelectorAll('button');
-        for (var k = 0; k < btns.length; k++) {
-          (function (btn) {
-            btn.addEventListener('click', function () {
-              if (btn.getAttribute('data-bg') === 'custom') {
-                sec.querySelector('.luliy-toc-bg-file').click();
-                return;
-              }
-              store(LS_CHOICE, btn.getAttribute('data-bg'));
-              apply();
-            });
-          })(btns[k]);
-        }
-      } else {
-        var cur = box.querySelectorAll('button');
-        for (var m = 0; m < cur.length; m++) {
-          if (cur[m].getAttribute('data-bg') === c) cur[m].setAttribute('aria-pressed', 'true');
-          else cur[m].removeAttribute('aria-pressed');
-        }
       }
-      var range = sec.querySelector('.luliy-toc-bg-scrim input');
-      if (document.activeElement !== range) range.value = String(s);
+      var cur = box.querySelectorAll('button');
+      for (var k = 0; k < cur.length; k++) {
+        var on = String(cur[k].getAttribute('data-bg') === sel);
+        if (cur[k].getAttribute('aria-checked') !== on) cur[k].setAttribute('aria-checked', on);
+      }
+      var range = ctl.panel.querySelector('input[type=range]');
+      if (document.activeElement !== range && range.value !== String(scrimVal())) range.value = String(scrimVal());
     }
-    var ticking = false;
-    window.addEventListener('scroll', function () {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () {
-        ticking = false;
-        var el = layer();
-        if (el && document.body.classList.contains('luliy-article-bg-on')) {
-          el.classList.toggle('luliy-article-bg-hide', nearEnd());
-        }
-      });
-    }, { passive: true });
-    var mo = new MutationObserver(apply);
-    mo.observe(document.documentElement, { childList: true, subtree: true });
-    if (DESKTOP.addEventListener) DESKTOP.addEventListener('change', apply);
-    else if (DESKTOP.addListener) DESKTOP.addListener(apply);
+
+    // Coalesce DOM changes inside #main into at most one apply() per frame.
+    var pending = false;
+    function schedule() {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(function () { pending = false; apply(); });
+    }
+    var m0 = main();
+    new MutationObserver(schedule).observe(m0 || document.documentElement, { childList: true, subtree: true });
+    window.addEventListener('hashchange', function () { syncReading(); schedule(); });
+    if (DESKTOP.addEventListener) DESKTOP.addEventListener('change', schedule);
+    else if (DESKTOP.addListener) DESKTOP.addListener(schedule);
+    syncReading();
     apply();
   })();
 
