@@ -3088,4 +3088,66 @@
     }, true);
   })();
 
+  /* 34. Comments / 評論 (2026-10-30): Giscus (GitHub Discussions) under each blog article (#/article/Pxx).
+     Same service as hulatu.com. The route is a hash, so location.pathname is the same for every article; the thread is
+     therefore keyed by data-mapping="specific" + data-term="article-<id>" instead of by pathname.
+     INERT until CATEGORY_ID is filled in (Discussions must be enabled and the giscus app installed first), so it can
+     be deployed before the GitHub side is ready without showing visitors an error. */
+  (function luliyComments() {
+    var CFG = {
+      repo: 'luliyer6-ux/home',
+      repoId: 'R_kgDOUk8oUw',
+      category: 'Announcements',
+      categoryId: ''                       // <- fill in: DIC_... (see the setup steps)
+    };
+    if (!CFG.categoryId) return;
+    var ORIGIN = 'https://giscus.app', queued = 0;
+    function theme() { var t = document.documentElement.dataset.theme; return t === 'dark' ? 'dark' : 'light'; }
+    function lang() {
+      var l = ''; try { l = localStorage.getItem('luliy_lang') || ''; } catch (e) {}
+      if (/en/i.test(l)) return 'en'; if (/ja/i.test(l)) return 'ja'; if (/Hans|CN/i.test(l)) return 'zh-CN'; return 'zh-TW';
+    }
+    function load(sec, slot, term) {
+      if (slot.dataset.loaded) return; slot.dataset.loaded = '1';
+      var s = document.createElement('script');
+      s.src = ORIGIN + '/client.js'; s.async = true; s.crossOrigin = 'anonymous';
+      var a = { repo: CFG.repo, 'repo-id': CFG.repoId, category: CFG.category, 'category-id': CFG.categoryId,
+        mapping: 'specific', term: term, strict: '0', 'reactions-enabled': '1', 'emit-metadata': '0',
+        'input-position': 'bottom', theme: theme(), lang: lang(), loading: 'lazy' };
+      Object.keys(a).forEach(function (k) { s.setAttribute('data-' + k, a[k]); });
+      slot.appendChild(s);
+      var note = sec.querySelector('.lc-note'), t = setTimeout(function () {
+        if (!sec.querySelector('iframe.giscus-frame') && note) note.textContent = '載入有點慢；評論由 GitHub 提供，需要能訪問 github.com 與 giscus.app。';
+      }, 12000);
+      new MutationObserver(function (m, o) {
+        if (sec.querySelector('iframe.giscus-frame')) { clearTimeout(t); if (note) note.hidden = true; o.disconnect(); }
+      }).observe(slot, { childList: true, subtree: true });
+    }
+    function mount() {
+      queued = 0;
+      var m = /^#\/article\/([\w-]+)/.exec(location.hash || ''); if (!m) return;
+      var layout = document.querySelector('#main .source-layout'); if (!layout) return;
+      var term = 'article-' + m[1], old = layout.querySelector(':scope > .luliy-comments');
+      if (old) { if (old.dataset.term === term) return; old.remove(); }
+      var sec = document.createElement('section');
+      sec.className = 'luliy-comments'; sec.dataset.term = term; sec.setAttribute('aria-label', '評論');
+      sec.innerHTML = '<h2>評論</h2><p class="lc-note" aria-live="polite">正在載入評論…</p><div class="lc-slot"></div>';
+      layout.appendChild(sec);
+      var slot = sec.querySelector('.lc-slot');
+      if (!('IntersectionObserver' in window)) { load(sec, slot, term); return; }
+      var io = new IntersectionObserver(function (es) {
+        if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); load(sec, slot, term); }
+      }, { rootMargin: '400px 0px' });
+      io.observe(sec);
+    }
+    function queue() { if (!queued) { queued = 1; requestAnimationFrame(mount); } }
+    new MutationObserver(queue).observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('hashchange', queue); queue();
+    // keep the iframe's colours in step with the site's theme switch
+    new MutationObserver(function () {
+      var f = document.querySelector('iframe.giscus-frame'); if (!f) return;
+      f.contentWindow.postMessage({ giscus: { setConfig: { theme: theme() } } }, ORIGIN);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  })();
+
 })();

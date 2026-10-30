@@ -1864,3 +1864,11 @@ body.lj-viewing { overflow: hidden; }
 @media (min-width: 1180px) and (pointer: fine) {
   html.luliy-journal-shift #main .post-archive { position: relative; left: var(--lm-shift, 0px); }
 }
+
+/* 34. Comments / 評論 (2026-10-30): Giscus under blog articles; sits in the body column of .source-layout. */
+.luliy-comments { grid-column: 2; margin-top: 56px; padding-top: 22px; border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent); }
+.luliy-comments > h2 { margin: 0 0 14px; font: 600 15px/1.4 var(--font-ui); letter-spacing: .08em; }
+.luliy-comments .lc-note { margin: 0 0 12px; font-size: 13px; opacity: .6; }
+.luliy-comments .lc-note[hidden] { display: none; }
+.luliy-comments .giscus, .luliy-comments .giscus-frame { width: 100%; }
+@media (max-width: 1000px) { .luliy-comments { grid-column: auto; margin-top: 40px; } }
