@@ -17,7 +17,7 @@ def relay(u):
   if pattern.match(u):return pattern.sub(path,u,1)
  return u
 def absolute(u):return ORIGIN+u if u.startswith('/') else u
-RESERVED={'about','archive','book','gallery','favorites','chronicle','chronicle-data','timeline','stock','link','library'}
+RESERVED={'about','archive','book','gallery','favorites','chronicle','chronicle-data','timeline','stock','link','library','journal'}
 ALLOWED=set('a abbr b blockquote br code del details div em figcaption figure h1 h2 h3 h4 h5 h6 hr i img kbd li ol p pre s small span strong sub summary sup table tbody td th thead tr u ul'.split())
 DROP=set('script style iframe object embed svg form button canvas meta link input select textarea'.split());VOID={'br','hr','img'}
 class Node:

@@ -2639,4 +2639,303 @@
     else addEventListener('load', mount, { once: true });
   })();
 
+  /* 32. Journal / 短札 (2026-10-30): a third tab on the article page (文章 · 短札 · 編年史) that shows the Gmeek
+     Issues labelled `journal` as a quiet single-column timeline, X-style: avatar, time, text, images, no title.
+     The entries come from window.LuliyJournal (home-early.js splits them out of the article feed, which is why
+     文章 never lists them). Bodies are fetched lazily, sanitised, and images go into a grid with a viewer.
+     Other labels on the Issue become the tags in the side column. Permalink: #/posts?view=journal&note=P58. */
+  (() => {
+    const FEED = 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/postList.json';
+    const RAW = 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/';
+    const ORIGIN = 'https://blog.luliy.me/';
+    const PAGE = 8;
+    const main = document.getElementById('main');
+    if (!main) return;
+    const T = s => (typeof window.LuliyInterfaceText === 'function' ? window.LuliyInterfaceText(s) : s);
+    const trad = () => root.lang === 'zh-Hant';
+    const L = (zh, en, ja) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : trad() ? T(zh) : zh);
+    const jl = o => '#/posts?' + new URLSearchParams({ view: 'journal', ...o });
+    const isPin = l => /^pinned(?:-\d+)?$/i.test(l);
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+
+    /* ---- data: window.LuliyJournal from home-early.js; if that script is an older copy, read the feed here ---- */
+    let ownFetch = false;
+    const fromFeed = json => Object.keys(json || {}).filter(k => /^P\d+$/.test(k) && json[k] && typeof json[k] === 'object'
+      && (json[k].labels || []).some(l => String(l && l.name !== undefined ? l.name : l).trim().toLowerCase() === 'journal')).map(k => {
+      const it = json[k]; let bodyUrl = '';
+      try { const u = new URL(String(it.postUrl || ''), ORIGIN); const p = u.pathname.replace(/^\//, ''); if (u.origin === ORIGIN.slice(0, -1) && /^post\/[^?#]+\.html$/i.test(p)) bodyUrl = RAW + p; } catch (e) {}
+      const n = Number(it.createdAt);
+      return { id: k, title: String(it.postTitle || ''), date: String(it.createdDate || ''), ts: isFinite(n) && n > 0 ? (n > 1e12 ? n : n * 1000) : 0,
+        labels: (it.labels || []).map(l => String(l && l.name !== undefined ? l.name : l).trim()), bodyUrl, summary: String(it.postSummary || it.description || '').replace(/\s+/g, ' ').trim().slice(0, 160) };
+    }).sort((a, b) => (b.labels.some(isPin) - a.labels.some(isPin)) || (b.ts - a.ts) || String(b.date).localeCompare(String(a.date)));
+    const ensureFeed = () => {
+      if (window.LuliyJournal || ownFetch) return;
+      ownFetch = true;
+      setTimeout(() => {
+        if (window.LuliyJournal && window.LuliyJournal.items) return;
+        fetch(FEED, { cache: 'no-store' }).then(r => (r.ok ? r.json() : Promise.reject())).then(json => {
+          if (window.LuliyJournal && window.LuliyJournal.items) return;
+          window.LuliyJournal = { items: fromFeed(json), failed: false };
+          dispatchEvent(new CustomEvent('luliy-journal-feed'));
+        }).catch(() => { window.LuliyJournal = window.LuliyJournal || { items: [], failed: true }; window.LuliyJournal.failed = true; if (!window.LuliyJournal.items) window.LuliyJournal.items = []; dispatchEvent(new CustomEvent('luliy-journal-feed')); });
+      }, 1500);
+    };
+
+    /* ---- body: fetch the Gmeek page, keep #postBody, strip it down to a safe subset ---- */
+    const KEEP = new Set('A B BLOCKQUOTE BR CODE DEL DIV EM FIGCAPTION FIGURE H1 H2 H3 H4 H5 H6 HR I IMG LI OL P PRE S SMALL SPAN STRONG SUB SUP TABLE TBODY TD TH THEAD TR U UL'.split(' '));
+    const DROP = new Set('SCRIPT STYLE IFRAME OBJECT EMBED SVG FORM BUTTON CANVAS META LINK INPUT SELECT TEXTAREA'.split(' '));
+    const safeUrl = (v, base, mail) => { try { const u = new URL(v, base); return ['http:', 'https:'].includes(u.protocol) || (mail && u.protocol === 'mailto:') ? u.href : null; } catch (e) { return null; } };
+    const clean = (node, base) => {
+      if (node.nodeType === Node.TEXT_NODE) return document.createTextNode(node.nodeValue);
+      if (node.nodeType !== Node.ELEMENT_NODE || DROP.has(node.tagName)) return document.createDocumentFragment();
+      const kids = () => { const f = document.createDocumentFragment(); node.childNodes.forEach(c => f.append(clean(c, base))); return f; };
+      if (!KEEP.has(node.tagName)) return kids();
+      if (/^H[1-6]$/.test(node.tagName)) { const p = el('p', 'lj-h'); p.append(kids()); return p; }
+      const out = document.createElement(node.tagName.toLowerCase());
+      if (node.tagName === 'A') { const h = safeUrl(node.getAttribute('href'), base, true); if (h) { out.href = h; if (!h.startsWith('mailto:')) { out.target = '_blank'; out.rel = 'noopener noreferrer'; } } }
+      if (node.tagName === 'IMG') {
+        const s = safeUrl(node.getAttribute('src') || node.getAttribute('data-src'), base);
+        if (!s) return document.createDocumentFragment();
+        out.referrerPolicy = 'no-referrer'; out.src = s; out.alt = node.getAttribute('alt') || ''; out.loading = 'lazy'; out.decoding = 'async';
+      }
+      out.append(kids());
+      return out;
+    };
+    const bodies = new Map();
+    const loadBody = item => {
+      if (!item.bodyUrl) return Promise.reject(new Error('no body'));
+      if (!bodies.has(item.id)) {
+        const p = fetch(item.bodyUrl, { credentials: 'omit', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(12000) })
+          .then(r => (r.ok ? r.text() : Promise.reject(new Error('http'))))
+          .then(html => {
+            if (html.length > 1.5e6) throw new Error('large');
+            const src = new DOMParser().parseFromString(html, 'text/html').querySelector('#postBody');
+            if (!src) throw new Error('invalid');
+            const f = document.createDocumentFragment();
+            src.childNodes.forEach(c => f.append(clean(c, item.bodyUrl)));
+            return f;
+          });
+        p.catch(() => { if (bodies.get(item.id) === p) bodies.delete(item.id); });
+        bodies.set(item.id, p);
+      }
+      return bodies.get(item.id).then(f => f.cloneNode(true));
+    };
+
+    /* ---- time ---- */
+    const pad = n => String(n).padStart(2, '0');
+    const when = item => {
+      if (!item.ts) return { text: item.date, full: item.date };
+      const d = new Date(item.ts), s = (Date.now() - item.ts) / 1000;
+      const full = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      let text;
+      if (s < 60) text = L('刚刚', 'just now', 'たった今');
+      else if (s < 3600) { const n = Math.floor(s / 60); text = L(`${n} 分钟前`, `${n} min ago`, `${n}分前`); }
+      else if (s < 86400) { const n = Math.floor(s / 3600); text = L(`${n} 小时前`, `${n} h ago`, `${n}時間前`); }
+      else if (s < 604800) { const n = Math.floor(s / 86400); text = L(`${n} 天前`, `${n} d ago`, `${n}日前`); }
+      else if (d.getFullYear() === new Date().getFullYear()) text = L(`${d.getMonth() + 1}月${d.getDate()}日`, `${d.getMonth() + 1}/${d.getDate()}`, `${d.getMonth() + 1}月${d.getDate()}日`);
+      else text = L(`${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`, `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`);
+      return { text, full };
+    };
+
+    /* ---- image viewer ---- */
+    let viewer = null;
+    const openViewer = (src, alt, opener) => {
+      if (!viewer) {
+        viewer = el('dialog', 'lj-viewer');
+        viewer.setAttribute('aria-label', L('查看图片', 'Image viewer', '画像ビューア'));
+        const close = el('button', 'lj-viewer-close', '×'); close.type = 'button';
+        close.setAttribute('aria-label', L('关闭', 'Close', '閉じる'));
+        const img = el('img'); img.alt = '';
+        viewer.append(close, img);
+        close.addEventListener('click', () => viewer.close());
+        viewer.addEventListener('click', e => { if (e.target !== img) viewer.close(); });
+        viewer.addEventListener('close', () => { document.body.classList.remove('lj-viewing'); viewer.__opener?.focus?.(); });
+        document.body.append(viewer);
+      }
+      const img = viewer.querySelector('img'); img.src = src; img.alt = alt || '';
+      viewer.__opener = opener;
+      document.body.classList.add('lj-viewing');
+      if (typeof viewer.showModal === 'function') viewer.showModal(); else viewer.setAttribute('open', '');
+    };
+
+    /* ---- one note ---- */
+    const tagsOf = item => item.labels.filter(l => l.toLowerCase() !== 'journal' && !isPin(l));
+    const buildNote = (item, single) => {
+      const a = el('article', 'lj-note'); a.id = 'note-' + item.id; a.dataset.id = item.id; a.setAttribute('aria-busy', 'true');
+      const avatar = el('img', 'lj-avatar'); avatar.src = '/favicon.svg'; avatar.alt = ''; avatar.width = 40; avatar.height = 40; avatar.decoding = 'async';
+      const col = el('div', 'lj-col');
+      const head = el('header', 'lj-head');
+      head.append(el('strong', 'lj-name', 'Luliy'));
+      const t = when(item);
+      const link = el('a', 'lj-time'); link.href = jl({ note: item.id }); link.title = t.full;
+      const time = el('time', null, t.text); if (item.ts) time.dateTime = new Date(item.ts).toISOString();
+      link.append(time); head.append(el('span', 'lj-dot', '·'), link);
+      if (item.labels.some(isPin)) head.append(el('span', 'lj-pin', L('置顶', 'Pinned', '固定')));
+      const text = el('div', 'lj-text'); text.id = 'lj-text-' + item.id;
+      text.append(el('span', 'lj-skel'), el('span', 'lj-skel lj-skel-short'));
+      const media = el('div', 'lj-media'); media.hidden = true;
+      col.append(head, text, media);
+      const tags = tagsOf(item);
+      if (tags.length) { const row = el('div', 'lj-tags'); tags.forEach(g => { const c = el('a', null, '#' + g); c.href = jl({ tag: g }); row.append(c); }); col.append(row); }
+      a.append(avatar, col);
+
+      const fill = frag => {
+        text.replaceChildren();
+        const imgs = [...frag.querySelectorAll('img')];
+        imgs.forEach(img => {
+          const parent = img.parentElement;
+          img.remove();
+          if (parent && parent.tagName === 'A' && !parent.textContent.trim() && !parent.querySelector('img')) { const gp = parent.parentElement; parent.remove(); if (gp && gp.tagName === 'P' && !gp.textContent.trim() && !gp.children.length) gp.remove(); }
+          else if (parent && parent.tagName === 'P' && !parent.textContent.trim() && !parent.querySelector('img,br:not(:only-child)')) parent.remove();
+        });
+        frag.querySelectorAll('p').forEach(p => { if (!p.textContent.trim() && !p.children.length) p.remove(); });
+        if (trad()) { const w = document.createTreeWalker(frag, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { if (/[㐀-鿿]/.test(n.nodeValue)) n.nodeValue = T(n.nodeValue); } }
+        if (frag.textContent.trim() || frag.querySelector('pre,table')) text.append(frag); else text.hidden = !!imgs.length;
+        if (imgs.length) {
+          media.hidden = false; media.dataset.count = String(Math.min(imgs.length, 4));
+          imgs.forEach(img => { const b = el('button', 'lj-shot'); b.type = 'button'; b.setAttribute('aria-label', L('查看大图', 'View image', '画像を拡大') + (img.alt ? '：' + img.alt : '')); b.append(img); b.addEventListener('click', () => openViewer(img.src, img.alt, b)); media.append(b); });
+        }
+        a.setAttribute('aria-busy', 'false');
+        requestAnimationFrame(() => {
+          if (single || text.hidden || text.scrollHeight <= 212) return;
+          text.classList.add('is-clamped');
+          const more = el('button', 'lj-expand', L('展开', 'Show more', '続きを読む')); more.type = 'button';
+          more.setAttribute('aria-expanded', 'false'); more.setAttribute('aria-controls', text.id);
+          more.addEventListener('click', () => {
+            const open = text.classList.toggle('is-clamped') === false;
+            more.setAttribute('aria-expanded', String(open));
+            more.textContent = open ? L('收起', 'Show less', '閉じる') : L('展开', 'Show more', '続きを読む');
+          });
+          text.after(more);
+        });
+      };
+      const fail = () => {
+        text.replaceChildren();
+        text.append(el('p', null, item.summary || item.title || ''));
+        const retry = el('button', 'lj-retry', L('没能读到全文，点此重试', 'Could not load the full text — retry', '全文を読み込めません。再試行'));
+        retry.type = 'button';
+        retry.addEventListener('click', () => { retry.remove(); text.replaceChildren(el('span', 'lj-skel'), el('span', 'lj-skel lj-skel-short')); queue(item, fill, fail); });
+        text.after(retry); a.setAttribute('aria-busy', 'false');
+      };
+      queue(item, fill, fail);
+      return a;
+    };
+    /* at most three bodies in flight */
+    const waiting = []; let active = 0;
+    const queue = (item, ok, bad) => { waiting.push({ item, ok, bad }); pump(); };
+    const pump = () => {
+      while (active < 3 && waiting.length) {
+        const job = waiting.shift(); active++;
+        loadBody(job.item).then(job.ok, job.bad).catch(() => {}).finally(() => { active--; pump(); });
+      }
+    };
+
+    /* ---- the tab's content ---- */
+    let current = null;
+    const mount = (after, q) => {
+      current?.stop();
+      const wrap = el('section', 'luliy-journal'); wrap.setAttribute('aria-label', L('短札', 'Journal', '短札'));
+      after.after(wrap);
+      const st = { tag: q.get('tag') || '', note: q.get('note') || '', shown: PAGE };
+      const stop = () => { removeEventListener('luliy-journal-feed', draw); waiting.length = 0; };
+      current = { wrap, stop };
+      function draw() {
+        wrap.replaceChildren(); waiting.length = 0;
+        const J = window.LuliyJournal, items = J && J.items;
+        if (!items) {
+          ensureFeed();
+          const p = el('p', 'lj-empty', L('正在读取短札…', 'Loading…', '読み込み中…')); p.setAttribute('role', 'status'); wrap.append(p); return;
+        }
+        const feed = el('div', 'lj-feed'); feed.setAttribute('role', 'feed');
+        const side = el('aside', 'lj-side');
+        if (st.note) {
+          const item = items.find(i => i.id === st.note);
+          const back = el('a', 'lj-back', '← ' + L('全部短札', 'All notes', 'すべての短札')); back.href = jl({});
+          feed.append(back);
+          if (item) feed.append(buildNote(item, true)); else feed.append(el('p', 'lj-empty', L('没有找到这条短札。', 'That note was not found.', 'この短札は見つかりません。')));
+          wrap.append(feed); return;
+        }
+        const counts = new Map();
+        items.forEach(i => tagsOf(i).forEach(g => counts.set(g, (counts.get(g) || 0) + 1)));
+        const list = st.tag ? items.filter(i => i.labels.includes(st.tag)) : items;
+        if (!items.length) {
+          const box = el('div', 'lj-empty');
+          box.append(el('p', null, J.failed ? L('暂时读不到短札，请稍后刷新重试。', 'Journal is temporarily unavailable. Please retry.', '短札を読み込めません。後でもう一度お試しください。')
+            : L('还没有短札。', 'No notes yet.', 'まだ短札はありません。')));
+          if (!J.failed) box.append(el('p', 'lj-hint', L('在 Gmeek 新建一个 Issue，加上 journal 标签，发布后这里就会出现。标题随便写，不会显示。', 'Create a Gmeek Issue with the label “journal” and it will appear here. The title is not shown.', 'Gmeek で journal ラベルの Issue を作ると、ここに表示されます。タイトルは表示されません。')));
+          feed.append(box); wrap.append(feed); return;
+        }
+        if (!list.length) {
+          const box = el('div', 'lj-empty'); box.append(el('p', null, L('这个标签下还没有短札。', 'No notes under this tag yet.', 'このタグの短札はまだありません。')));
+          const a = el('a', 'lj-back', '← ' + L('全部短札', 'All notes', 'すべての短札')); a.href = jl({}); box.append(a); feed.append(box);
+        }
+        let more = null;
+        const add = () => {
+          const from = feed.querySelectorAll('.lj-note').length, to = Math.min(list.length, from + PAGE);
+          for (let i = from; i < to; i++) feed.insertBefore(buildNote(list[i], false), more);
+          if (more) { if (to >= list.length) more.remove(); else more.textContent = L('载入更多', 'Load more', 'さらに表示'); }
+          return to;
+        };
+        if (list.length > PAGE) { more = el('button', 'lj-more', L('载入更多', 'Load more', 'さらに表示')); more.type = 'button'; more.addEventListener('click', () => { const first = feed.querySelectorAll('.lj-note').length; add(); feed.querySelectorAll('.lj-note')[first]?.querySelector('a')?.focus?.({ preventScroll: true }); }); feed.append(more); }
+        add();
+        // side: tags + count
+        side.append(el('h2', 'lj-side-title', L('标签', 'Tags', 'タグ')));
+        const nav = el('nav', 'lj-tagnav'); nav.setAttribute('aria-label', L('短札标签', 'Journal tags', '短札のタグ'));
+        const all = el('a', null, L('全部', 'All', 'すべて')); all.href = jl({}); if (!st.tag) all.setAttribute('aria-current', 'page');
+        all.append(el('span', null, String(items.length))); nav.append(all);
+        [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-CN')).forEach(([g, n]) => {
+          const a = el('a', null, g); a.href = jl({ tag: g }); if (st.tag === g) a.setAttribute('aria-current', 'page'); a.append(el('span', null, String(n))); nav.append(a);
+        });
+        side.append(nav);
+        wrap.append(feed, side);
+      }
+      addEventListener('luliy-journal-feed', draw);
+      draw();
+    };
+
+    /* ---- tab + routing: runs after every render of #main ---- */
+    const routeOf = () => { try { const u = new URL(location.hash.slice(1) || '/', 'https://luliy.local'); return { path: u.pathname.replace(/\/+$/, '') || '/', q: u.searchParams }; } catch (e) { return { path: '/', q: new URLSearchParams() }; } };
+    let busy = false;
+    const sync = () => {
+      if (busy) return;
+      const r = routeOf();
+      if (current && !current.wrap.isConnected) { current.stop(); current = null; }
+      if (r.path !== '/posts') return;
+      const host = main.querySelector('.post-archive');
+      const modes = host && host.querySelector('.article-modes');
+      if (!modes) return;
+      busy = true;
+      try {
+        let tab = modes.querySelector('[data-journal-tab]');
+        if (!tab) {
+          const first = modes.querySelector('a');
+          if (!first) return;
+          tab = document.createElement('a'); tab.dataset.journalTab = '';
+          tab.href = (first.getAttribute('href') || '#/posts?view=archive').replace(/view=[a-z]+/, 'view=journal');
+          tab.textContent = L('短札', 'Journal', '短札');
+          first.after(tab);
+        }
+        const on = r.q.get('view') === 'journal';
+        if (on) {
+          modes.querySelectorAll('a').forEach(a => { if (a !== tab) a.removeAttribute('aria-current'); });
+          tab.setAttribute('aria-current', 'page');
+          if (!host.querySelector('.luliy-journal')) {
+            const bar = modes.closest('.article-browse-toolbar') || modes;
+            if (bar !== modes) [...bar.children].forEach(c => { if (c !== modes) c.remove(); });
+            let n = bar.nextElementSibling;
+            while (n) { const nx = n.nextElementSibling; n.remove(); n = nx; }
+            host.classList.add('luliy-journal-view');
+            mount(bar, r.q);
+          }
+        } else { host.classList.remove('luliy-journal-view'); }
+        // phones: the header copy of the tabs was made before this tab existed
+        const hdr = document.querySelector('#header .luliy-header-modes');
+        if (hdr && hdr.innerHTML !== modes.innerHTML) hdr.innerHTML = modes.innerHTML;
+      } finally { busy = false; }
+    };
+    new MutationObserver(sync).observe(main, { childList: true, subtree: true });
+    addEventListener('hashchange', () => queueMicrotask(sync));
+    sync();
+  })();
+
 })();

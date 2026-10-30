@@ -1734,3 +1734,81 @@ body.luliy-article-bg-on .luliy-mascot::before { content: ""; position: absolute
   html.luliy-mascot-on #main .source-toc .reader-tools { order: 9; display: flex; align-items: center; gap: 4px; padding: 8px 12px 10px; border-top: 1px solid rgba(255,255,255,.08); }
   html.luliy-mascot-on #main .source-toc .reader-tools button { border-radius: 8px; }
 }
+
+/* 32. Journal / 短札 tab (2026-10-30). Single-column timeline on the article page; markup is built by home-fixes.js
+   section 32. Colours come from the site's own variables so every theme follows. */
+.luliy-journal { display: grid; grid-template-columns: minmax(0, 640px) minmax(0, 1fr); gap: 0 64px; margin-top: 28px; align-items: start; }
+.luliy-journal .lj-feed { display: block; min-width: 0; }
+.lj-note { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 0 14px; padding: 20px 4px 22px; border-bottom: 1px solid var(--line, #2e323d); transition: background-color .25s ease; }
+.lj-note:first-child { padding-top: 6px; }
+@media (hover: hover) { .lj-note:hover { background: color-mix(in srgb, var(--text, #e8e3d9) 3%, transparent); } }
+.lj-note:target { background: color-mix(in srgb, var(--accent, #b89a6a) 8%, transparent); }
+.lj-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #111319; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #b89a6a) 45%, transparent); }
+.lj-col { min-width: 0; }
+.lj-head { display: flex; align-items: baseline; gap: 6px; font-size: 14px; line-height: 1.4; color: var(--muted, #a3a3a6); }
+.lj-name { color: var(--text, #e8e3d9); font-size: 15px; letter-spacing: .04em; }
+.lj-time { color: inherit; text-decoration: none; font-size: 13px; }
+.lj-time:hover, .lj-time:focus-visible { color: var(--accent, #b89a6a); text-decoration: underline; text-underline-offset: 3px; }
+.lj-pin { margin-left: auto; font-size: 12px; letter-spacing: .12em; color: var(--accent, #b89a6a); }
+.lj-text { position: relative; margin-top: 6px; font-size: 17px; line-height: 1.8; color: var(--text, #e8e3d9); overflow-wrap: anywhere; }
+.lj-text > :first-child { margin-top: 0; }
+.lj-text > :last-child { margin-bottom: 0; }
+.lj-text p, .lj-text ul, .lj-text ol, .lj-text blockquote, .lj-text pre { margin: 0 0 .5em; }
+.lj-text ul, .lj-text ol { padding-left: 1.3em; }
+.lj-text a { color: var(--accent, #b89a6a); text-underline-offset: 3px; }
+.lj-text blockquote { padding-left: 12px; border-left: 2px solid color-mix(in srgb, var(--accent, #b89a6a) 55%, transparent); color: var(--muted, #a3a3a6); }
+.lj-text code { font-size: .88em; padding: 1px 5px; border-radius: 4px; background: color-mix(in srgb, var(--text, #e8e3d9) 9%, transparent); }
+.lj-text pre { overflow-x: auto; padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--text, #e8e3d9) 8%, transparent); }
+.lj-text pre code { padding: 0; background: none; }
+.lj-text .lj-h { font-weight: 700; }
+.lj-text.is-clamped { max-height: 190px; overflow: hidden; -webkit-mask-image: linear-gradient(#000 62%, transparent); mask-image: linear-gradient(#000 62%, transparent); }
+.lj-expand, .lj-retry, .lj-more { appearance: none; background: none; border: 0; padding: 4px 0; margin-top: 4px; font: inherit; font-size: 14px; color: var(--accent, #b89a6a); cursor: pointer; text-underline-offset: 3px; }
+.lj-expand:hover, .lj-retry:hover, .lj-more:hover { text-decoration: underline; }
+.lj-expand:focus-visible, .lj-retry:focus-visible, .lj-more:focus-visible, .lj-shot:focus-visible, .lj-tags a:focus-visible, .lj-tagnav a:focus-visible, .lj-back:focus-visible { outline: 2px solid var(--accent, #b89a6a); outline-offset: 3px; border-radius: 4px; }
+.lj-more { display: block; margin: 18px auto 0; padding: 8px 18px; border: 1px solid var(--line, #2e323d); border-radius: 999px; }
+.lj-skel { display: block; height: 12px; margin: 10px 0; border-radius: 6px; background: color-mix(in srgb, var(--text, #e8e3d9) 10%, transparent); animation: lj-pulse 1.4s ease-in-out infinite; }
+.lj-skel-short { width: 55%; }
+@keyframes lj-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .lj-skel { animation: none; } .lj-note { transition: none; } }
+.lj-media { display: grid; gap: 4px; margin-top: 10px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line, #2e323d); }
+.lj-media[hidden] { display: none; }
+.lj-media[data-count="1"] { grid-template-columns: 1fr; }
+.lj-media:not([data-count="1"]) { grid-template-columns: 1fr 1fr; }
+.lj-shot { appearance: none; padding: 0; border: 0; background: #0b0c10; cursor: zoom-in; display: block; line-height: 0; }
+.lj-media[data-count="1"] .lj-shot img { width: 100%; max-height: 460px; object-fit: cover; }
+.lj-media:not([data-count="1"]) .lj-shot img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.lj-media[data-count="3"] .lj-shot:first-child { grid-row: span 2; }
+.lj-media[data-count="3"] .lj-shot:first-child img { height: 100%; aspect-ratio: auto; }
+.lj-tags { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-size: 13px; }
+.lj-tags a { color: var(--muted, #a3a3a6); text-decoration: none; }
+.lj-tags a:hover { color: var(--accent, #b89a6a); }
+.lj-back { display: inline-block; margin-bottom: 14px; color: var(--muted, #a3a3a6); font-size: 14px; text-decoration: none; }
+.lj-back:hover { color: var(--accent, #b89a6a); }
+.lj-empty { padding: 40px 4px; color: var(--muted, #a3a3a6); line-height: 1.8; }
+.lj-empty p { margin: 0 0 8px; }
+.lj-hint { font-size: 14px; }
+.lj-side { position: sticky; top: 96px; padding-top: 8px; }
+.lj-side-title { margin: 0 0 10px; font-size: 12px; font-weight: 400; letter-spacing: .18em; color: var(--muted, #a3a3a6); text-transform: uppercase; }
+.lj-tagnav { display: flex; flex-direction: column; max-width: 240px; }
+.lj-tagnav a { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; color: var(--muted, #a3a3a6); text-decoration: none; font-size: 15px; border-bottom: 1px solid color-mix(in srgb, var(--line, #2e323d) 60%, transparent); }
+.lj-tagnav a span { font-size: 12px; opacity: .8; }
+.lj-tagnav a:hover { color: var(--text, #e8e3d9); }
+.lj-tagnav a[aria-current] { color: var(--accent, #b89a6a); }
+.lj-viewer { max-width: 96vw; max-height: 96vh; padding: 0; border: 0; background: transparent; overflow: visible; }
+.lj-viewer::backdrop { background: rgba(5, 7, 12, .88); }
+.lj-viewer img { display: block; max-width: 94vw; max-height: 92vh; border-radius: 6px; }
+.lj-viewer-close { position: absolute; top: -14px; right: -14px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line, #2e323d); background: #14161d; color: #e8e3d9; font-size: 22px; line-height: 1; cursor: pointer; }
+body.lj-viewing { overflow: hidden; }
+@media (max-width: 1000px) {
+  .luliy-journal { grid-template-columns: minmax(0, 1fr); }
+  .lj-side { position: static; order: -1; padding: 0 0 6px; }
+  .lj-side-title { display: none; }
+  .lj-tagnav { flex-direction: row; max-width: none; overflow-x: auto; gap: 18px; scrollbar-width: none; }
+  .lj-tagnav a { border-bottom: 0; white-space: nowrap; gap: 6px; padding: 6px 0; }
+}
+@media (max-width: 768px) {
+  .luliy-journal { margin-top: 12px; }
+  .lj-note { grid-template-columns: 34px minmax(0, 1fr); gap: 0 10px; padding: 16px 0 18px; }
+  .lj-avatar { width: 34px; height: 34px; }
+  .lj-text { font-size: 16px; }
+}

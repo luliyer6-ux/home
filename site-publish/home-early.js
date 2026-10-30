@@ -20,11 +20,13 @@
 })();
 
 /* Dark palettes (墨綠 / 暖墨 / 夜藍 / 酒紅, chosen in the theme picker, home-fixes.js block 14): put the saved one on
-   <html data-palette> before the first paint. The colours only apply on top of the dark appearance (design-tokens.css). */
+   <html data-palette> before the first paint; no saved choice defaults to 夜藍 (midnight), 'dark' means base dark chosen.
+   The colours only apply on top of the dark appearance (design-tokens.css). */
 (function () {
   try {
     var p = localStorage.getItem('luliy-palette');
     if (/^(forest|espresso|midnight|oxblood)$/.test(p || '')) document.documentElement.dataset.palette = p;
+    else if (p !== 'dark') document.documentElement.dataset.palette = 'midnight';
   } catch (e) {}
 })();
 
@@ -113,8 +115,8 @@
 })();
 
 /* Phones: a short opening screen on the first visit of a session, in the colours of the chosen appearance.
-   The brand mark (the pensive-figure L) is drawn as a thin outline, breathing slowly, with lights travelling round
-   its four largest shapes (still with reduced motion). It lifts once the page has rendered: at least 0.7 s, at most 1.5 s after the document is parsed. */
+   The brand mark (the pensive-figure L) is drawn as a thin outline, breathing slowly, with a single gold light
+   drawing its four largest shapes in turn, a dim trail behind it (still with reduced motion). It lifts once the page has rendered: at least 0.7 s, at most 1.5 s after the document is parsed. */
 (function () {
   try {
     if (!matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) >= 600) return;
@@ -160,22 +162,29 @@
     'M19.4 10.4q0-.5.5-.8l.5.1c0 .2-.9.8-1 .7',
     'm17.6 13.9-.2-.2-.1-.1v-.2q.4-.5.7 0 .2.2 0 .3-.4.4-.4.2'];
   var paths = function (cls, n) { return shapes.slice(0, n).map(function (d, i) { return '<path class="' + cls + '" pathLength="1" d="' + d + '" style="--i:' + i + '"/>'; }).join(''); };
-  var css = '#luliy-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1)}' +
+  var css = '#luliy-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
     '#luliy-loader.is-done{opacity:0;pointer-events:none}' +
-    '#luliy-loader svg{width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round}' +
+    '#luliy-loader svg{width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round;transform:translateZ(0)}' +
     '#luliy-loader .o{stroke:' + C[1] + ';stroke-width:.55;animation:luliy-loader-breathe 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
-    '#luliy-loader .l{stroke:' + C[2] + ';stroke-width:.9;stroke-dasharray:.16 .84;stroke-dashoffset:1;animation:luliy-loader-run 1.9s linear infinite;animation-delay:calc(var(--i) * -.21s)}' +
-    '#luliy-loader .g{filter:drop-shadow(0 0 2.2px ' + C[2] + ')}' +
-    '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-run{to{stroke-dashoffset:0}}' +
-    '@media(prefers-reduced-motion:reduce){#luliy-loader .o{animation:none;opacity:1}#luliy-loader .l{display:none}}' +
-    'html.luliy-calm #luliy-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-loader .l{display:none}';
+    '#luliy-loader .l{stroke:' + C[2] + ';stroke-width:1;stroke-dasharray:1 1;stroke-dashoffset:1;animation:luliy-loader-draw 3.6s cubic-bezier(.65,0,.35,1) infinite;animation-delay:calc(var(--i) * -.45s)}' +
+    '#luliy-loader .t{stroke:' + C[2] + ';stroke-width:2.4;stroke-dasharray:1 1;stroke-dashoffset:1;animation:luliy-loader-draw-trail 3.6s cubic-bezier(.65,0,.35,1) infinite;animation-delay:calc(var(--i) * -.45s + .28s)}' +
+    '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-draw{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:1}55%{stroke-dashoffset:0;opacity:1}75%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}@keyframes luliy-loader-draw-trail{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:.3}55%{stroke-dashoffset:0;opacity:.3}75%{stroke-dashoffset:0;opacity:.3}100%{stroke-dashoffset:0;opacity:0}}' +
+    '@media(prefers-reduced-motion:reduce){#luliy-loader .o{animation:none;opacity:1}#luliy-loader .l,#luliy-loader .t{display:none}}' +
+    'html.luliy-calm #luliy-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-loader .l,html.luliy-calm #luliy-loader .t{display:none}';
+    if (a === 'light') css = '#luliy-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
+      '#luliy-loader.is-done{opacity:0;pointer-events:none}' +
+      '#luliy-loader img{width:120px;height:120px;object-fit:contain;animation:luliy-loader-breathe-img 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
+      '@keyframes luliy-loader-breathe-img{from{opacity:.55;transform:scale(.96)}to{opacity:1;transform:scale(1)}}' +
+      '@media(prefers-reduced-motion:reduce){#luliy-loader img{animation:none;opacity:1;transform:none}}' +
+      'html.luliy-calm #luliy-loader img{animation:none;opacity:1;transform:none}';
   var style = document.createElement('style');
   style.textContent = css;
   (document.head || document.documentElement).appendChild(style);
   var el = document.createElement('div');
   el.id = 'luliy-loader';
   el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + '<g class="g">' + paths('l', 4) + '</g></svg>';
+  el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + paths('t', 4) + paths('l', 4) + '</svg>';
+  if (a === 'light') el.innerHTML = '<img src="/assets/site/%5BIT-XIAOBIN%5D-1792981037054.png" alt="" aria-hidden="true">';
   document.documentElement.appendChild(el);
   var shown = Date.now(), parsed = 0, gone = false;
   function done() {
@@ -262,7 +271,6 @@
   sync();
   addEventListener('hashchange', sync);
 })();
-
 /* Room gate (2026-10-30). Registered here, before the router's own hashchange listener, so that
    home-fixes.js (section 21) can hold a Study (#/books) or Records (#/music) navigation until its
    loader has painted. Until home-fixes.js has loaded, nothing is held. */
@@ -272,3 +280,81 @@
     if (typeof gate === 'function') gate(e);
   });
 })();
+
+/* Journal split (2026-10-30). Gmeek Issues carrying the label `journal` are short notes (短札), not articles.
+   This wraps fetch() for the Gmeek feed (postList.json) before the router's first request: the journal
+   entries are taken out of the copy the article list, archive, home page and prev/next links see, and are
+   kept on window.LuliyJournal for the 短札 tab (home-fixes.js section 32). The last good list is cached in
+   localStorage so the tab still opens offline. Nothing is removed from the blog itself. */
+(function () {
+  var FEED = /\/luliy6\/luliy6\.github\.io\/main\/docs\/postList\.json(?:[?#]|$)/;
+  var KEY = 'luliy-journal-feed-v1';
+  var RAW = 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/';
+  var ORIGIN = 'https://blog.luliy.me/';
+  var J = window.LuliyJournal = { items: null, failed: false };
+  var orig = window.fetch;
+  if (typeof orig !== 'function') return;
+  function publish(items, failed) {
+    J.items = items; J.failed = !!failed;
+    try { dispatchEvent(new CustomEvent('luliy-journal-feed')); } catch (e) {}
+  }
+  function names(item) {
+    var l = item && item.labels;
+    return Array.isArray(l) ? l.map(function (x) { return String(x && x.name !== undefined ? x.name : x).trim(); }) : [];
+  }
+  function stamp(item) {
+    var n = Number(item.createdAt);
+    if (isFinite(n) && n > 0) return n > 1e12 ? n : n * 1000;
+    return 0;
+  }
+  function convert(key, item) {
+    var labels = names(item), url = '', body = '';
+    try {
+      var u = new URL(String(item.postUrl || ''), ORIGIN);
+      if (u.origin === ORIGIN.slice(0, -1)) {
+        url = u.href;
+        var path = u.pathname.replace(/^\//, '');
+        if (/^post\/[^?#]+\.html$/i.test(path)) body = RAW + path;
+      }
+    } catch (e) {}
+    return {
+      id: key, title: String(item.postTitle || ''), date: String(item.createdDate || ''), ts: stamp(item),
+      labels: labels, url: url, bodyUrl: body, summary: String(item.postSummary || item.description || '').replace(/\s+/g, ' ').trim().slice(0, 160)
+    };
+  }
+  function pinned(it) { return it.labels.some(function (l) { return /^pinned(?:-\d+)?$/i.test(l); }); }
+  function sorted(list) {
+    return list.sort(function (a, b) {
+      return (pinned(b) - pinned(a)) || ((b.ts || 0) - (a.ts || 0)) || String(b.date).localeCompare(String(a.date)) || (Number(b.id.slice(1)) - Number(a.id.slice(1)));
+    });
+  }
+  function fallback() {
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    publish(Array.isArray(cached) ? cached : [], true);
+  }
+  window.fetch = function (input) {
+    var url = '';
+    try { url = typeof input === 'string' ? input : (input && input.url) || String(input); } catch (e) {}
+    var pending = orig.apply(this, arguments);
+    if (!FEED.test(url)) return pending;
+    return pending.then(function (res) {
+      if (!res.ok) { fallback(); return res; }
+      return res.clone().json().then(function (json) {
+        if (!json || typeof json !== 'object') { fallback(); return res; }
+        var rest = {}, journal = [];
+        Object.keys(json).forEach(function (key) {
+          var item = json[key];
+          if (/^P\d+$/.test(key) && item && typeof item === 'object' && names(item).some(function (l) { return l.toLowerCase() === 'journal'; })) journal.push(convert(key, item));
+          else rest[key] = item;
+        });
+        sorted(journal);
+        try { localStorage.setItem(KEY, JSON.stringify(journal)); } catch (e) {}
+        publish(journal, false);
+        if (!journal.length) return res;
+        return new Response(JSON.stringify(rest), { status: 200, headers: { 'content-type': 'application/json' } });
+      }, function () { fallback(); return res; });
+    }, function (error) { fallback(); throw error; });
+  };
+})();
+
