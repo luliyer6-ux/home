@@ -1929,6 +1929,10 @@
         .page-above with z-index -1 (above .page-above's background, below #main content). Choice
         and shade live in localStorage. A soft shade pool behind the text column plus a top
         gradient (home-fixes.css) keep text and the header icons readable over bright artwork.
+        DEFAULT = NO BACKGROUND (2026-10-30 evening): with nothing stored the reading page is plain;
+        the artwork only appears after the reader picks one in the TOC background panel. The panel's
+        reset button returns to the plain page. To go back to "artwork by default", set
+        DEFAULT_CHOICE below to 'default'.
      c) The TOC header uses SVG icons (Aa, find, background, close); the copy-link icon is hidden
         (the article meta row already has 分享). The background button opens a collapsed panel with
         one thumbnail per choice (this article's own image if it has one, every entry of
@@ -1977,7 +1981,10 @@
     function store(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
     function read(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
     function removeKey(k) { try { localStorage.removeItem(k); } catch (e) {} }
-    function choice() { return read(LS_CHOICE) || 'default'; }
+    // Nothing stored = no background. 'default' is now only ever an explicit pick of the
+    // "文章配图" thumbnail (this article's own image); visitors who chose something keep it.
+    var DEFAULT_CHOICE = 'none';
+    function choice() { return read(LS_CHOICE) || DEFAULT_CHOICE; }
     var SCRIM_MIN = 15; // floor: a bright custom image can never be left unshaded under the text
     function scrimVal() {
       var v = parseInt(read(LS_SCRIM), 10);
@@ -2093,7 +2100,7 @@
         var c = choice();
         if (c === 'custom' && !customSrc()) {
           removeKey(LS_CHOICE);
-          c = 'default';
+          c = choice();
         }
         var src = resolveSrc(list);
         var el = src ? ensureLayer() : layer();
@@ -2251,10 +2258,11 @@
       items.push({ id: 'none', ico: 'none', name: '无背景' });
       items.push(custom ? { id: 'custom', src: custom, name: customVolatile ? '我的图片（仅本次访问有效，再点一次更换）' : '我的图片（再点一次更换）' }
                         : { id: 'custom', ico: 'plus', name: '上传我的图片' });
-      // Which thumbnail is selected: 'default' means "automatic" = this article's image, else the first artwork.
+      // Which thumbnail is selected. Nothing stored = 'none' (无背景). An explicit 'default' pick means this
+      // article's image; on an article without one the first artwork is shown, so that one is marked.
       var sel = c;
       if (c === 'default' && !cov) sel = items[0] && items[0].id !== 'none' ? items[0].id : 'none';
-      if (c === 'custom' && !custom) sel = cov ? 'default' : (items[0] ? items[0].id : 'none');
+      if (c === 'custom' && !custom) sel = 'none';
       // The thumbnails are rebuilt only when the set of choices changes. A selection change just
       // flips aria-pressed: replacing the clicked button would detach it mid-click, and the TOC's
       // own "click outside closes the contents" handler would then close the whole panel.
