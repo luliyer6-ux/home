@@ -219,7 +219,8 @@
     if (!main || !main.firstElementChild) return false;
     switch (route()) {
       case 'books': { var s = document.getElementById('studyRoom'); return !!s && (s.classList.contains('is-revealing') || s.classList.contains('has-fallback')); }
-      case 'music': return !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount.has-fallback, #recordMount .has-fallback');
+      // the Records page holds the cover (data-records-gate) until tracks, cover and duration are in as well
+      case 'music': return !el.dataset.recordsGate && !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount.has-fallback, #recordMount .has-fallback');
       case 'home':
         if (!prep && typeof window.LuliyHomepagePrepare === 'function') {
           prep = Promise.resolve().then(window.LuliyHomepagePrepare).then(function () { prepDone = true; }, function () { prepDone = true; });
@@ -1327,7 +1328,7 @@ html body :is(button,a,input,select,summary):not(.lr-record):not(.signature):not
 <script src="/assets/site/home/d295dfad1d46.js"></script>
 <script src="/assets/site/home/71ef4ea092f2.js"></script>
 <script src="/assets/site/home/79bacafa9deb.js"></script>
-<script data-three-loader>(()=>{const src='/assets/site/home/0964a24fd186.js';const phone=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600;if(!phone){document.write('<script src="'+src+'"><\/script>');return;}let pending=null;const load=window.LuliyThreeReady=()=>window.LuliyLoadThree?Promise.resolve():pending||(pending=new Promise((ok,fail)=>{const s=document.createElement('script');s.src=src;s.onload=()=>ok();s.onerror=()=>{pending=null;s.remove();fail(Error('Three.js unavailable'));};document.head.append(s);}));const quiet=()=>load().catch(()=>{});const soon=()=>{if(/^#\/(books|music|study|records?)\b/.test(location.hash))quiet();};addEventListener('hashchange',soon);soon();const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;addEventListener('load',()=>setTimeout(()=>window.requestIdleCallback?requestIdleCallback(quiet,{timeout:4000}):quiet(),2500),{once:true});})();</script><script src="/assets/site/home/09de6486823b.js"></script>
+<script data-three-loader>(()=>{const src='/assets/site/home/0964a24fd186.js';const phone=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600;if(!phone){document.write('<script src="'+src+'"><\/script>');return;}let pending=null;const load=window.LuliyThreeReady=()=>window.LuliyLoadThree?Promise.resolve():pending||(pending=new Promise((ok,fail)=>{const s=document.createElement('script');s.src=src;s.onload=()=>ok();s.onerror=()=>{pending=null;s.remove();fail(Error('Three.js unavailable'));};document.head.append(s);}));const quiet=()=>load().catch(()=>{});const soon=()=>{if(/^#\/(books|music|study|records?)\b/.test(location.hash))quiet();};addEventListener('hashchange',soon);soon();const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;addEventListener('load',()=>setTimeout(()=>window.requestIdleCallback?requestIdleCallback(quiet,{timeout:4000}):quiet(),2500),{once:true});})();</script><script src="/assets/site/home/a833946e3e12.js"></script>
 <script src="/assets/site/home-cc-ae82632f186c.js"></script>
 <script src="/assets/site/home/1decb7dd1fbc.js"></script>
 
@@ -1417,7 +1418,7 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script><script src="/reading-timeline.js?v=20261022-mobile" defer></script><script id="experience-layer-js" src="/assets/site/home/eda1d076c5f3.js"></script>
 
-<script src="/site-publish/home-fixes.js?v=30d2971e62b4" async data-home-fixes></script><style id="directory-add-style">
+<script src="/site-publish/home-fixes.js?v=fecb2ed2d2b7" async data-home-fixes></script><style id="directory-add-style">
 /* directory-add v3 */
 #directory .directory-add-view{display:none;flex:1;min-height:0;overflow:auto}
 #directory.directory-add-mode .directory-main{display:none}

@@ -217,7 +217,8 @@
     if (!main || !main.firstElementChild) return false;
     switch (route()) {
       case 'books': { var s = document.getElementById('studyRoom'); return !!s && (s.classList.contains('is-revealing') || s.classList.contains('has-fallback')); }
-      case 'music': return !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount.has-fallback, #recordMount .has-fallback');
+      // the Records page holds the cover (data-records-gate) until tracks, cover and duration are in as well
+      case 'music': return !el.dataset.recordsGate && !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount.has-fallback, #recordMount .has-fallback');
       case 'home':
         if (!prep && typeof window.LuliyHomepagePrepare === 'function') {
           prep = Promise.resolve().then(window.LuliyHomepagePrepare).then(function () { prepDone = true; }, function () { prepDone = true; });

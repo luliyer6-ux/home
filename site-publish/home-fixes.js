@@ -1755,6 +1755,8 @@
     // reach the screen before lifting the loader.
     const ready = () => {
       if (roomOf(location.hash) === 'music') {
+        const cover = document.getElementById('luliy-room-loader');
+        if (cover && cover.dataset.recordsGate) return false; // Records page still holding it (tracks / cover / duration)
         return !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount .has-fallback, #recordMount.has-fallback');
       }
       const host = document.getElementById('studyRoom');
@@ -1811,6 +1813,9 @@
     };
     // A direct visit is already covered by the site loader (home-early.js), which waits for the same room signals.
     if (isRoom() && !(window.LuliySiteLoader && window.LuliySiteLoader.active)) show();
+    addEventListener('luliy:records-gate', () => {
+      if (loader && !done && ready()) { if (mainObs) { mainObs.disconnect(); mainObs = null; } requestAnimationFrame(() => requestAnimationFrame(finish)); }
+    });
 
     // forceContextLoss() from the scenes being torn down: run it once the room is showing and the
     // browser is idle. The scenes have already disposed their buffers and textures and removed their
