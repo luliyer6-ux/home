@@ -2279,4 +2279,22 @@
     apply();
   })();
 
+
+  /* 25. Reading tab title (2026-10-30): on article pages (#/article/..., #/post/...) the browser tab
+     shows only the article name. The router sets "<name> · Luliy Articles"; this strips the suffix
+     whenever the title changes. Other pages keep their titles. The standalone pages in
+     /articles/Pxx/ get the same title from site-publish/generate.py. */
+  (() => {
+    const SUFFIX = ' \u00b7 Luliy Articles';
+    const fix = () => {
+      if (!/^#\/(?:article|post)\//.test(location.hash || '')) return;
+      const t = document.title;
+      if (t.length > SUFFIX.length && t.endsWith(SUFFIX)) document.title = t.slice(0, -SUFFIX.length);
+    };
+    const el = document.querySelector('title');
+    if (el) new MutationObserver(fix).observe(el, { childList: true, characterData: true, subtree: true });
+    addEventListener('hashchange', fix);
+    fix();
+  })();
+
 })();
