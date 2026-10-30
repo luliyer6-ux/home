@@ -2762,7 +2762,7 @@
     const tagsOf = item => item.labels.filter(l => l.toLowerCase() !== 'journal' && !isPin(l));
     const buildNote = (item, single) => {
       const a = el('article', 'lj-note'); a.id = 'note-' + item.id; a.dataset.id = item.id; a.setAttribute('aria-busy', 'true');
-      const avatar = el('a', 'lj-avatar-link'); avatar.href = '#/about'; avatar.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); avatar.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-avatar'); im.src = '/assets/avatar/luliy.webp?v=4'; im.alt = ''; im.width = 40; im.height = 40; im.decoding = 'async'; avatar.append(im); }
+      const avatar = el('a', 'lj-avatar-link'); avatar.href = '#/about'; avatar.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); avatar.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-avatar'); im.src = '/assets/avatar/luliy.webp?v=5'; im.alt = ''; im.width = 40; im.height = 40; im.decoding = 'async'; avatar.append(im); }
       const col = el('div', 'lj-col');
       const head = el('header', 'lj-head');
       head.append(el('strong', 'lj-name', 'Luliy'));
@@ -2909,7 +2909,7 @@
 
         /* side: profile card, activity grid, search, tags */
         const card = el('div', 'lj-card');
-        const av = el('a', 'lj-card-avatar-link'); av.href = '#/about'; av.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); av.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-card-avatar'); im.src = '/assets/avatar/luliy.webp?v=4'; im.alt = ''; im.width = 84; im.height = 84; im.decoding = 'async'; av.append(im); }
+        const av = el('a', 'lj-card-avatar-link'); av.href = '#/about'; av.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); av.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-card-avatar'); im.src = '/assets/avatar/luliy.webp?v=5'; im.alt = ''; im.width = 84; im.height = 84; im.decoding = 'async'; av.append(im); }
         const stats = el('dl', 'lj-stats');
         [[L('短札', 'Notes', '短札'), items.length], [L('标签', 'Tags', 'タグ'), counts.size], [L('天', 'Days', '日'), days.size]].forEach(([k, v]) => { const d = el('div'); d.append(el('dt', null, k), el('dd', null, String(v))); stats.append(d); });
         const social = el('div', 'lj-social');

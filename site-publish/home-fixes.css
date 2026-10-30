@@ -1743,7 +1743,7 @@ body.luliy-article-bg-on .luliy-mascot::before { content: ""; position: absolute
 .lj-note:first-child { padding-top: 6px; }
 @media (hover: hover) { .lj-note:hover { background: color-mix(in srgb, var(--text, #e8e3d9) 3%, transparent); } }
 .lj-note:target { background: color-mix(in srgb, var(--accent, #b89a6a) 8%, transparent); }
-.lj-avatar { display: block; width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .35)); transition: transform .25s ease; }
+.lj-avatar { display: block; width: 40px; height: 40px; object-fit: cover; border-radius: 8px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--text, #e8e3d9) 14%, transparent); transition: transform .25s ease; }
 .lj-avatar-link { align-self: start; display: block; width: 40px; height: 40px; border-radius: 8px; }
 .lj-avatar-link:hover .lj-avatar, .lj-card-avatar-link:hover .lj-card-avatar { transform: scale(1.06); }
 .lj-card-avatar-link { display: block; width: 84px; height: 84px; border-radius: 10px; }
@@ -1820,7 +1820,7 @@ body.lj-viewing { overflow: hidden; }
 /* 32b. Journal side column: profile card, activity grid, search (2026-10-30). */
 .lj-side { display: flex; flex-direction: column; gap: 26px; max-width: 260px; }
 .lj-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 22px 16px 16px; border: 1px solid var(--line, #2e323d); border-radius: 14px; background: color-mix(in srgb, var(--text, #e8e3d9) 3%, transparent); }
-.lj-card-avatar { display: block; width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .35)); transition: transform .25s ease; }
+.lj-card-avatar { display: block; width: 84px; height: 84px; object-fit: cover; border-radius: 12px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--text, #e8e3d9) 14%, transparent), 0 6px 16px rgba(0, 0, 0, .3); transition: transform .25s ease; }
 .lj-card-name { margin-top: 12px; font-size: 19px; letter-spacing: .06em; color: var(--text, #e8e3d9); }
 .lj-card-sub { margin-top: 6px; font-size: 13px; line-height: 1.6; letter-spacing: .04em; color: var(--muted, #a3a3a6); text-wrap: balance; }
 .lj-stats { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--line, #2e323d); }
