@@ -2395,6 +2395,8 @@
     const read = () => { try { return localStorage.getItem(KEY) === '1'; } catch (e) { return false; } };
     const write = v => { try { v ? localStorage.setItem(KEY, '1') : localStorage.removeItem(KEY); } catch (e) {} };
     const reading = () => /^#\/(?:article|post)\//.test(location.hash || '');
+    // The journal (短札) tab also gets her; there she has no contents button (nothing to list), only ↑ and hide.
+    const journal = () => /^#\/posts\?(?:[^#]*&)?view=journal(?:&|$)/.test(location.hash || '');
 
     const box = document.createElement('div');
     box.className = 'luliy-mascot';
@@ -2514,7 +2516,14 @@
     function warm() { (window.requestIdleCallback || (f => setTimeout(f, 1200)))(() => loadAtlas()); }
 
     /* ---------- words ---------- */
-    const lines = [
+    const journalLines = [
+      '随手记一笔也好。',
+      '短短几句，也是今天的痕迹。',
+      '右边那些小方格，亮着的就是你写过的日子。',
+      '不用写得很完整，先记下来。',
+      '今天也有在进步吗？哪怕一点点也好。'
+    ];
+    const readingLines = [
       '慢慢读，不着急。',
       '若不知走哪，请注重脚下。',
       '点我旁边的目录按钮，可以换背景、调字体。',
@@ -2522,15 +2531,16 @@
       '喜欢哪一节，可以点标题旁的链接分享。',
       '今天也有在进步吗？哪怕一点点也好。'
     ];
-    let timer = 0, li = -1;
+    let timer = 0, li = -1, lines = readingLines;
     function say(text, ms) {
       bubble.textContent = T(text);
       bubble.classList.add('show');
       clearTimeout(timer);
       timer = setTimeout(() => bubble.classList.remove('show'), ms || 4200);
     }
-    function talk() { li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; say(lines[li]); }
+    function talk() { lines = journal() ? journalLines : readingLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; say(lines[li]); }
     function greet() {
+      if (journal()) { say('今天有什么想记下来的吗？'); return; }
       const h = new Date().getHours();
       say(h < 6 ? '这么晚还在读，记得早点休息。' : h < 11 ? '早安，今天读点什么？' : h < 14 ? '午安，读完记得歇一会儿。' : h < 18 ? '下午好，配一杯茶刚好。' : '晚上好，适合安静地读点东西。');
     }
@@ -2606,16 +2616,30 @@
     /* Show only where there is room: a reading page, a wide screen, and a left margin beside the article.
        She shrinks to fit the margin (190px down to 130px) instead of vanishing on narrower windows. */
     function room() {
-      const a = document.querySelector('#sourceArticleBody, #main .article-body');
+      const j = journal(), a = document.querySelector(j ? '#main .post-archive' : '#sourceArticleBody, #main .article-body');
       if (!a) return 0;
-      const w = Math.min(190, Math.floor(a.getBoundingClientRect().left - 40)); // 14px edge + her tool buttons (18px) + a little air
-      return w >= 130 ? w : 0;
+      const r = a.getBoundingClientRect();
+      if (!j) {
+        const w = Math.min(190, Math.floor(r.left - 40)); // 14px edge + her tool buttons (18px) + a little air
+        return w >= 130 ? w : 0;
+      }
+      // Journal: if the left margin is too thin, nudge the whole page to the right (never closer than 20px to the
+      // right edge) so she still fits, as small as 100px.
+      const cur = parseFloat(root.style.getPropertyValue('--lm-shift')) || 0, natural = r.left - cur;
+      const rightRoom = document.documentElement.clientWidth - natural - r.width;
+      const shift = Math.max(0, Math.min(140 - natural, rightRoom - 20));
+      const w = Math.min(190, Math.floor(natural + shift - 40));
+      if (w < 100) return 0;
+      root.style.setProperty('--lm-shift', shift + 'px');
+      return w;
     }
     let lastHash = '', greeted = false, frame = 0;
     function sync() {
       frame = 0;
-      const fit = reading() && WIDE.matches ? room() : 0, on = fit > 0;
+      const fit = (reading() || journal()) && WIDE.matches ? room() : 0, on = fit > 0;
       if (on) root.style.setProperty('--lm-w', fit + 'px'); else root.style.removeProperty('--lm-w');
+      if (!on || !journal()) root.style.removeProperty('--lm-shift');
+      root.classList.toggle('luliy-journal-shift', on && journal() && parseFloat(root.style.getPropertyValue('--lm-shift')) > 0);
       const hidden = read();
       const wasHidden = box.hidden;
       box.hidden = !on || hidden;
@@ -2625,8 +2649,9 @@
       if (wasHidden) warm();
       reflect();
       decoratePanel();
-      if (location.hash !== lastHash) {
-        lastHash = location.hash;
+      const key = journal() ? '#posts-journal' : location.hash; // tag filters inside the journal do not replay her opening
+      if (key !== lastHash) {
+        lastHash = key;
         setTimeout(() => { playIntro(); if (!greeted) { greeted = true; greet(); } }, 900);
       }
     }

@@ -1857,3 +1857,9 @@ body.lj-viewing { overflow: hidden; }
 }
 @keyframes luliy-slide-next { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
 @keyframes luliy-slide-prev { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+
+/* 33b. Journal with the mascot: when the left margin is too thin for her, the page shifts right a little (value set by
+   home-fixes.js section 27, never closer than 20px to the right edge). */
+@media (min-width: 1180px) and (pointer: fine) {
+  html.luliy-journal-shift #main .post-archive { position: relative; left: var(--lm-shift, 0px); }
+}
