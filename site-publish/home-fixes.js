@@ -1711,6 +1711,9 @@
             '@keyframes luliy-loader-breathe-img{from{opacity:.55;transform:scale(.96)}to{opacity:1;transform:scale(1)}}' +
             '@media(prefers-reduced-motion:reduce){#luliy-room-loader img{animation:none;opacity:1;transform:none}}' +
             'html.luliy-calm #luliy-room-loader img{animation:none;opacity:1;transform:none}';
+        // The same loader as the site-wide one (home-early.js): outline, gold rising, no ring.
+        var look = window.LuliyLoaderLook && window.LuliyLoaderLook();
+        if (look) css = look.css;
         var style = document.createElement('style');
         style.textContent = css;
         (document.head || document.documentElement).appendChild(style);
@@ -1719,6 +1722,7 @@
         el.setAttribute('aria-hidden', 'true');
         el.innerHTML = '<div class="lrl-mark"><i class="lrl-ring"></i><svg viewBox="0 0 60 60">' + paths('o') + paths('t', 4) + paths('l', 4) + '</svg></div>';
         if (a === 'light') el.innerHTML = '<img src="/assets/site/%5BIT-XIAOBIN%5D-1792981037054.png" alt="" aria-hidden="true">';
+        if (look) el.innerHTML = look.html;
         document.documentElement.appendChild(el);
       return el;
     }
@@ -1736,7 +1740,8 @@
       const el = loader;
       loader = null;
       const wait = Math.max(0, 700 - (Date.now() - t0));
-      setTimeout(() => { el.classList.add('is-done'); setTimeout(() => el.remove(), 500); }, wait);
+      const lift = () => { el.classList.add('is-done'); setTimeout(() => el.remove(), 500); };
+      setTimeout(() => (window.LuliyLoaderFinish ? window.LuliyLoaderFinish(el, lift) : lift()), wait);
     };
     const cancel = () => {
       clearTimeout(cap);
