@@ -1966,9 +1966,10 @@
     function read(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
     function removeKey(k) { try { localStorage.removeItem(k); } catch (e) {} }
     function choice() { return read(LS_CHOICE) || 'default'; }
+    var SCRIM_MIN = 15; // floor: a bright custom image can never be left unshaded under the text
     function scrimVal() {
       var v = parseInt(read(LS_SCRIM), 10);
-      return isNaN(v) ? DEFAULT_SCRIM : Math.max(0, Math.min(100, v));
+      return isNaN(v) ? DEFAULT_SCRIM : Math.max(SCRIM_MIN, Math.min(100, v));
     }
     function coverSrc() {
       var m = main();
@@ -2125,12 +2126,17 @@
       var b = t.querySelectorAll('[data-reader="settings"], .reader-color-toggle');
       for (i = 0; i < b.length; i++) b[i].setAttribute('aria-expanded', 'false');
     }
+    var kbd = false; // true when the last click on the toggle came from the keyboard (detail === 0)
     function setPanel(t, open) {
       var panel = t.querySelector('.luliy-bg-panel'), btn = t.querySelector('.luliy-bg-toggle');
       if (!panel || !btn) return;
       panel.hidden = !open;
       btn.setAttribute('aria-expanded', String(open));
-      if (open) closeAaPanels(t);
+      if (open) {
+        closeAaPanels(t);
+        // Opened with the keyboard: move focus to the first choice so Tab/arrow keys continue inside the panel.
+        if (kbd) { var first = panel.querySelector('button'); if (first) first.focus({ preventScroll: true }); }
+      }
     }
     function handleFile(f) {
       if (!f) return;
@@ -2178,21 +2184,21 @@
       panel = document.createElement('div');
       panel.className = 'luliy-bg-panel';
       panel.hidden = true;
-      panel.innerHTML = '<div class="luliy-bg-thumbs" role="radiogroup" aria-label="文章背景"></div>'
+      panel.innerHTML = '<div class="luliy-bg-thumbs" role="group" aria-label="文章背景"></div>'
         + '<div class="luliy-bg-row"><span class="luliy-bg-dim" aria-hidden="true">' + svg('dim') + '</span>'
-        + '<input type="range" min="0" max="100" step="1" aria-label="遮罩深浅" title="遮罩深浅">'
+        + '<input type="range" min="15" max="100" step="1" aria-label="遮罩深浅" title="遮罩深浅">'
         + '<button type="button" class="luliy-bg-reset luliy-ico" aria-label="恢复默认" title="恢复默认">' + svg('reset') + '</button></div>'
         + '<input type="file" class="luliy-bg-file" accept="image/*" hidden>';
       var anchor = t.querySelector('.reader-tool-panels') || hdr;
       anchor.after(panel);
 
-      btn.addEventListener('click', function () { setPanel(t, panel.hidden); });
+      btn.addEventListener('click', function (e) { kbd = e.detail === 0; setPanel(t, panel.hidden); kbd = false; });
       t.addEventListener('click', function (e) {
         if (e.target.closest('[data-reader="settings"], .reader-color-toggle')) setPanel(t, false);
         else if (e.target.closest('.reader-toc-close')) setPanel(t, false);
       });
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && !panel.hidden && t.isConnected) setPanel(t, false);
+        if (e.key === 'Escape' && !panel.hidden && t.isConnected) { var hadFocus = panel.contains(document.activeElement); setPanel(t, false); if (hadFocus) btn.focus(); }
       });
       var file = panel.querySelector('.luliy-bg-file');
       file.addEventListener('change', function (e) {
@@ -2238,12 +2244,12 @@
       if (c === 'default' && !cov) sel = items[0] && items[0].id !== 'none' ? items[0].id : 'none';
       if (c === 'custom' && !custom) sel = cov ? 'default' : (items[0] ? items[0].id : 'none');
       // The thumbnails are rebuilt only when the set of choices changes. A selection change just
-      // flips aria-checked: replacing the clicked button would detach it mid-click, and the TOC's
+      // flips aria-pressed: replacing the clicked button would detach it mid-click, and the TOC's
       // own "click outside closes the contents" handler would then close the whole panel.
       var html = '';
       for (var j = 0; j < items.length; j++) {
         var it = items[j];
-        html += '<button type="button" role="radio" data-bg="' + esc(it.id) + '" aria-checked="false"'
+        html += '<button type="button" data-bg="' + esc(it.id) + '" aria-pressed="false"'
           + ' aria-label="' + esc(it.name) + '" title="' + esc(it.name) + '"'
           + (it.id === 'custom' && customVolatile ? ' class="is-volatile"' : '') + '>'
           + (it.src ? '<img src="' + esc(it.src) + '" alt="" loading="lazy" decoding="async">' : svg(it.ico))
@@ -2257,7 +2263,7 @@
       var cur = box.querySelectorAll('button');
       for (var k = 0; k < cur.length; k++) {
         var on = String(cur[k].getAttribute('data-bg') === sel);
-        if (cur[k].getAttribute('aria-checked') !== on) cur[k].setAttribute('aria-checked', on);
+        if (cur[k].getAttribute('aria-pressed') !== on) cur[k].setAttribute('aria-pressed', on);
       }
       var range = ctl.panel.querySelector('input[type=range]');
       if (document.activeElement !== range && range.value !== String(scrimVal())) range.value = String(scrimVal());
@@ -2295,6 +2301,74 @@
     if (el) new MutationObserver(fix).observe(el, { childList: true, characterData: true, subtree: true });
     addEventListener('hashchange', fix);
     fix();
+  })();
+
+  /* 26. Accessibility + language follow-up (2026-10-30)
+     a) one skip link only (the app also injects a button; the real <a href="#main"> stays);
+     b) section-link buttons (⌁) are mouse/touch helpers, not Tab stops;
+     c) the article body follows the site's own 繁體/简体 switch (window.LuliyInterfaceText) and
+        every part of the page carries an accurate lang attribute. Code, <kbd> etc. stay untouched. */
+  (() => {
+    const root = document.documentElement;
+    const SKIP = 'pre,code,kbd,samp,script,style,.reader-heading-link';
+    const orig = new WeakMap();           // text node -> original text
+    const HAN = /[㐀-鿿]/, KANA = /[぀-ヿ]/, LATIN = /[A-Za-z]/;
+    let queued = false;
+
+    const bodies = () => document.querySelectorAll('#sourceArticleBody:not([data-loading="true"]), #main .article-body');
+
+    function guessLang(el) {
+      const t = (el.textContent || '').slice(0, 4000);
+      if (KANA.test(t)) return 'ja';
+      if (HAN.test(t)) return 'zh';
+      return LATIN.test(t) ? 'en' : '';
+    }
+
+    function syncBody(el) {
+      const kind = guessLang(el);
+      const trad = root.lang === 'zh-Hant';
+      let lang = '';
+      if (kind === 'zh') {
+        // Only convert when the interface itself is Chinese; Japanese pages never come here.
+        lang = trad ? 'zh-Hant' : 'zh-Hans';
+        const conv = window.LuliyInterfaceText;
+        const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+          acceptNode: n => n.parentElement && n.parentElement.closest(SKIP) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+        });
+        let n;
+        while ((n = w.nextNode())) {
+          const v = n.nodeValue;
+          if (!HAN.test(v) && !orig.has(n)) continue;
+          if (!orig.has(n)) orig.set(n, v);
+          const o = orig.get(n);
+          if (orig.get(n) !== undefined && n.__luliyOut === v) { /* ours, fall through to recompute */ }
+          const want = trad && typeof conv === 'function' ? conv(o) : o;
+          if (v !== want) { n.nodeValue = want; }
+          n.__luliyOut = want;
+        }
+      } else if (kind) lang = kind;
+      if (lang && el.getAttribute('lang') !== lang) el.setAttribute('lang', lang);
+      if (!lang && el.hasAttribute('lang')) el.removeAttribute('lang');
+    }
+
+    function run() {
+      queued = false;
+      // (a) duplicate skip control
+      document.querySelectorAll('.finish-skip').forEach(b => b.remove());
+      // (b) heading link buttons: not tab stops
+      document.querySelectorAll('.reader-heading-link:not([tabindex])').forEach(b => b.setAttribute('tabindex', '-1'));
+      // (c) body language + script
+      bodies().forEach(syncBody);
+    }
+    const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(run); } };
+
+    const main = document.querySelector('#main') || document.body;
+    new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
+    new MutationObserver(schedule).observe(root, { attributes: true, attributeFilter: ['lang'] });
+    addEventListener('hashchange', schedule);
+    // The skip button is injected by the app on load; remove it as soon as it appears.
+    new MutationObserver(schedule).observe(document.body, { childList: true });
+    run();
   })();
 
 })();

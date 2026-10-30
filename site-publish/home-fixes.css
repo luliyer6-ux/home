@@ -1560,7 +1560,7 @@ html.luliy-reading .page-above { margin-bottom: 0 !important; }
 .luliy-bg-thumbs button:hover { border-color: var(--muted); transform: translateY(-1px); }
 .luliy-bg-thumbs button img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 18% 50%; }
 .luliy-bg-thumbs button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
-.luliy-bg-thumbs button[aria-checked="true"] { border-color: var(--accent, #d4af37); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #d4af37) 55%, transparent); color: var(--ink, #fff); }
+.luliy-bg-thumbs button[aria-pressed="true"] { border-color: var(--accent, #d4af37); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #d4af37) 55%, transparent); color: var(--ink, #fff); }
 .luliy-bg-thumbs button.is-volatile { border-style: dashed; }
 .luliy-bg-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
 .luliy-bg-dim { display: inline-grid; place-items: center; color: var(--muted); }
@@ -1590,3 +1590,22 @@ html.luliy-reading .page-above { margin-bottom: 0 !important; }
   body.luliy-article-bg-on :is(.article-body, #sourceArticleBody) { text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 0 14px rgba(0,0,0,.6); }
   body.luliy-article-bg-on .source-end, body.luliy-article-bg-on .source-end * { text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 12px rgba(0,0,0,.85); }
 }
+
+
+/* 26. Accessibility follow-up (2026-10-30) */
+/* Bottom links on reading pages: readable over any artwork, and real touch targets. */
+html body .source-end a {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; font-size: 14px;
+  color: #f2efe6; border-radius: 8px;
+}
+body.luliy-article-bg-on .source-end a { background: rgba(8, 10, 14, .62); }
+html body .source-end a:hover, html body .source-end a:focus-visible { color: #fff; text-decoration: underline; }
+/* Other small text links/buttons in the reading chrome: at least 24px tall. */
+html body .source-top a, html body .source-top button, html body .article-top a,
+html body #main .source-head a, html body #main .source-nav a, html body #main [data-refresh] {
+  min-height: 24px; display: inline-flex; align-items: center;
+}
+/* Section-link glyph: a 24px+ hit area without moving the heading text. */
+html body .reader-heading-link { min-width: 24px; min-height: 24px; padding: 0 6px; }
+/* Header page-name button ("Articles"): 24px hit area without moving the layout. */
+html body #header .brand-group button.brand-page-name { padding-block: 4px; margin-block: -4px; top: 2px; }
