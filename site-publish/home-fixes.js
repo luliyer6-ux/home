@@ -3007,4 +3007,40 @@
     sync();
   })();
 
+  /* 33. Phones: swipe left / right to switch the tabs in the header (2026-10-30). When the header carries tabs
+     (.luliy-header-modes, e.g. 文章 · 短札 · 編年史), a quick horizontal swipe moves to the next / previous tab.
+     It stays out of the way of anything that scrolls sideways itself (tag row, code blocks, tables), of dialogs
+     and the filter sheet, and ignores slow or mostly vertical drags, so normal scrolling is unaffected. */
+  (() => {
+    const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
+    let start = null;
+    const scrollsSideways = el => {
+      for (let n = el; n && n !== document.body && n.nodeType === 1; n = n.parentElement) {
+        if (n.scrollWidth > n.clientWidth + 2) { const o = getComputedStyle(n).overflowX; if (o === 'auto' || o === 'scroll') return true; }
+        if (n.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName) || n.matches?.('dialog[open], .lj-viewer, [data-luliy-sheet], [role=dialog]')) return true;
+      }
+      return false;
+    };
+    document.addEventListener('touchstart', e => {
+      start = null;
+      if (!mobile.matches || e.touches.length !== 1) return;
+      if (!document.querySelector('#header .luliy-header-modes') || document.body.classList.contains('luliy-sheet-open') || document.body.classList.contains('lj-viewing')) return;
+      if (scrollsSideways(e.target)) return;
+      const t = e.touches[0];
+      start = { x: t.clientX, y: t.clientY, t: performance.now() };
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const s = start; start = null;
+      if (!s || !mobile.matches) return;
+      const t = e.changedTouches[0], dx = t.clientX - s.x, dy = t.clientY - s.y;
+      if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8 || performance.now() - s.t > 700) return;
+      if (String(getSelection() || '').length) return;
+      const tabs = [...document.querySelectorAll('#header .luliy-header-modes a')];
+      const at = tabs.findIndex(a => a.hasAttribute('aria-current'));
+      const next = tabs[at + (dx < 0 ? 1 : -1)];
+      if (at < 0 || !next) return;
+      location.hash = next.getAttribute('href');
+    }, { passive: true });
+  })();
+
 })();
