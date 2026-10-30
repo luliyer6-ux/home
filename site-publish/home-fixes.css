@@ -1743,7 +1743,11 @@ body.luliy-article-bg-on .luliy-mascot::before { content: ""; position: absolute
 .lj-note:first-child { padding-top: 6px; }
 @media (hover: hover) { .lj-note:hover { background: color-mix(in srgb, var(--text, #e8e3d9) 3%, transparent); } }
 .lj-note:target { background: color-mix(in srgb, var(--accent, #b89a6a) 8%, transparent); }
-.lj-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #e9ece6; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #b89a6a) 45%, transparent); }
+.lj-avatar { display: block; width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .35)); transition: transform .25s ease; }
+.lj-avatar-link { align-self: start; display: block; width: 40px; height: 40px; border-radius: 8px; }
+.lj-avatar-link:hover .lj-avatar, .lj-card-avatar-link:hover .lj-card-avatar { transform: scale(1.06); }
+.lj-card-avatar-link { display: block; width: 84px; height: 84px; border-radius: 10px; }
+.lj-avatar-link:focus-visible, .lj-card-avatar-link:focus-visible { outline: 2px solid var(--accent, #b89a6a); outline-offset: 3px; }
 .lj-col { min-width: 0; }
 .lj-head { display: flex; align-items: baseline; gap: 6px; font-size: 14px; line-height: 1.4; color: var(--muted, #a3a3a6); }
 .lj-name { color: var(--text, #e8e3d9); font-size: 15px; letter-spacing: .04em; }
@@ -1769,7 +1773,7 @@ body.luliy-article-bg-on .luliy-mascot::before { content: ""; position: absolute
 .lj-skel { display: block; height: 12px; margin: 10px 0; border-radius: 6px; background: color-mix(in srgb, var(--text, #e8e3d9) 10%, transparent); animation: lj-pulse 1.4s ease-in-out infinite; }
 .lj-skel-short { width: 55%; }
 @keyframes lj-pulse { 50% { opacity: .45; } }
-@media (prefers-reduced-motion: reduce) { .lj-skel { animation: none; } .lj-note { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .lj-skel { animation: none; } .lj-note, .lj-avatar, .lj-card-avatar { transition: none; } }
 .lj-media { display: grid; gap: 4px; margin-top: 10px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line, #2e323d); }
 .lj-media[hidden] { display: none; }
 .lj-media[data-count="1"] { grid-template-columns: 1fr; }
@@ -1809,14 +1813,14 @@ body.lj-viewing { overflow: hidden; }
 @media (max-width: 768px) {
   .luliy-journal { margin-top: 12px; }
   .lj-note { grid-template-columns: 34px minmax(0, 1fr); gap: 0 10px; padding: 16px 0 18px; }
-  .lj-avatar { width: 34px; height: 34px; }
+  .lj-avatar, .lj-avatar-link { width: 34px; height: 34px; }
   .lj-text { font-size: 16px; }
 }
 
 /* 32b. Journal side column: profile card, activity grid, search (2026-10-30). */
 .lj-side { display: flex; flex-direction: column; gap: 26px; max-width: 260px; }
 .lj-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 22px 16px 16px; border: 1px solid var(--line, #2e323d); border-radius: 14px; background: color-mix(in srgb, var(--text, #e8e3d9) 3%, transparent); }
-.lj-card-avatar { width: 72px; height: 72px; border-radius: 50%; background: #e9ece6; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #b89a6a) 55%, transparent), 0 6px 18px rgba(0, 0, 0, .28); }
+.lj-card-avatar { display: block; width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .35)); transition: transform .25s ease; }
 .lj-card-name { margin-top: 12px; font-size: 19px; letter-spacing: .06em; color: var(--text, #e8e3d9); }
 .lj-card-sub { margin-top: 4px; font-size: 13px; letter-spacing: .04em; color: var(--muted, #a3a3a6); }
 .lj-stats { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--line, #2e323d); }
