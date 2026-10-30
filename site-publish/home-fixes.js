@@ -2914,10 +2914,11 @@
         [[L('短札', 'Notes', '短札'), items.length], [L('标签', 'Tags', 'タグ'), counts.size], [L('天', 'Days', '日'), days.size]].forEach(([k, v]) => { const d = el('div'); d.append(el('dt', null, k), el('dd', null, String(v))); stats.append(d); });
         const social = el('div', 'lj-social');
         const icon = d => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
-        [['GitHub', 'https://github.com/luliy6', '<path d="M9 19c-4 1.5-4-2-6-2.5m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/>'],
+        [['Email', 'mailto:me@luliy.me', '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'],
+          ['GitHub', 'https://github.com/luliy6', '<path d="M9 19c-4 1.5-4-2-6-2.5m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/>'],
           ['Bilibili', 'https://space.bilibili.com/450483800', '<rect x="3" y="7" width="18" height="12" rx="3"/><path d="m8 3 3 4m5-4-3 4M8.5 12v1.5m7-1.5v1.5"/>'],
           ['Telegram', 'https://web.telegram.org/a/#-1002032433504', '<path d="M21.5 3.5 2.5 11l6 2.2 2.3 6.3 3.2-3.8 5 3.3 2.5-15.5Z"/><path d="m8.5 13.2 8-5.2"/>']].forEach(([name, url, d]) => {
-          const a = el('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.setAttribute('aria-label', name); a.title = name; a.innerHTML = icon(d); social.append(a);
+          const a = el('a'); a.href = url; if (!url.startsWith('mailto:')) { a.target = '_blank'; a.rel = 'noopener noreferrer'; } a.setAttribute('aria-label', name === 'Email' ? 'me@luliy.me' : name); a.title = name === 'Email' ? 'me@luliy.me' : name; a.innerHTML = icon(d); social.append(a);
         });
         card.append(av, el('strong', 'lj-card-name', 'Luliy'), el('span', 'lj-card-sub', L('我将无限进步!', 'I will keep improving!', '私は進歩し続ける!')), stats, social);
 
