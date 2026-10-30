@@ -121,8 +121,7 @@
    (a canvas drawn from JS would freeze exactly then). Her still sitting pose shows at once (21 KB, shared with the
    page mascot); the moving sheet starts once it has downloaded (~460 KB, hashed name, cached for a year).
    When the page is ready the cover fades on whatever frame she is on: nobody waits for the loop to end.
-   Particles (2026-10-30): a field of tiny gold specks and a few four-point stars drifts up-left around her, like the
-   sparkles in the opening video (LuliyParticles, CSS only, transform/opacity).
+   Particles: removed from the loaders (felt heavy); LuliyParticles stays for the page mascot (home-fixes.js).
    Opening (2026-10-30): on a first visit (then not again for 7 days; ?intro=1 forces it, ?intro=0 skips it) the loader
    plays the opening video instead: the logo grows into the mascot and back (10.5 s, 60 fps, silent, ~300 KB). Its black
    is dropped with screen blending, so she floats on the loader's dark background (dark in every theme). At the end the
@@ -205,10 +204,9 @@
       '@keyframes luliy-loader-y{to{transform:translateY(-' + FH * ROWS + 'px)}}@keyframes luliy-loader-x{to{transform:translateX(-' + FW * COLS + 'px)}}' +
       '@media(prefers-reduced-motion:reduce){' + K + '.lrl-sprite{display:none}' + K + '.lrl-rest{opacity:1!important}}' +
       'html.luliy-calm ' + K + '.lrl-sprite{display:none}html.luliy-calm ' + K + '.lrl-rest{opacity:1!important}';
-    var pf = particles('#luliy-room-loader', Math.min(460, innerWidth * .95), 380, 26, a === 'light', 3);
     var bgDark = a === 'light' ? sky(['#1f1f38', '#18182d', '#111222', '#0c0d1b']) : C[0];
     var mask = 'linear-gradient(to right,transparent,#000 7%,#000 93%,transparent),linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent)';
-    css += pf.css + K + '.lrl-m{z-index:1}' +
+    css += K + '.lrl-m{z-index:1}' +
       // the opening video
       '#luliy-room-loader.is-intro{--vs:min(440px,78vw,58vh);background:' + bgDark + '}' +
       K + '.lri-v{position:relative;z-index:1;width:var(--vs);height:var(--vs);mix-blend-mode:screen;opacity:0;transition:opacity .45s ease-out;-webkit-mask-image:' + mask + ';-webkit-mask-composite:source-in;mask-image:' + mask + ';mask-composite:intersect}' +
@@ -220,10 +218,8 @@
       '#luliy-intro-fly :is(.ll-hl,.ll-sh,.ll-sp,.ll-dt){display:none}' +
       '#luliy-intro-fly.go{transition:transform .95s cubic-bezier(.55,0,.25,1)}#luliy-intro-fly.go img{opacity:0;transition:opacity .2s linear .55s}#luliy-intro-fly.go svg{opacity:1;transition:opacity .2s linear .55s}' +
       '#luliy-intro-fly.land{opacity:0;transition:opacity .12s linear}';
-    var html = pf.html + '<div class="lrl-m"><img class="lrl-rest" src="' + REST + '" alt="" width="' + FW + '" height="' + FH + '"><div class="lrl-sprite"><div class="lrl-row"><img class="lrl-sheet" alt=""></div></div></div>';
-    var ipf = particles('#luliy-room-loader', Math.min(760, innerWidth), Math.min(600, innerHeight * .8), 30, false, 11);
-    css += ipf.css;
-    var intro = ipf.html + '<video class="lri-v" muted playsinline autoplay preload="auto" disablepictureinpicture aria-hidden="true">' +
+    var html = '<div class="lrl-m"><img class="lrl-rest" src="' + REST + '" alt="" width="' + FW + '" height="' + FH + '"><div class="lrl-sprite"><div class="lrl-row"><img class="lrl-sheet" alt=""></div></div></div>';
+    var intro = '<video class="lri-v" muted playsinline autoplay preload="auto" disablepictureinpicture aria-hidden="true">' +
       '<source src="' + INTRO.mp4 + '" type="video/mp4"><source src="' + INTRO.webm + '" type="video/webm"></video>' +
       '<button type="button" class="lri-skip">' + (/^en/i.test(root.lang) ? 'Skip' : '跳過') + '</button>';
     return { css: css, html: html, intro: intro };
