@@ -3098,7 +3098,7 @@
       repo: 'luliyer6-ux/home',
       repoId: 'R_kgDOUk8oUw',
       category: 'Announcements',
-      categoryId: ''                       // <- fill in: DIC_... (see the setup steps)
+      categoryId: 'DIC_kwDOUk8oU84DJ_op'                     // <- fill in: DIC_... (see the setup steps)
     };
     if (!CFG.categoryId) return;
     var ORIGIN = 'https://giscus.app', queued = 0;
