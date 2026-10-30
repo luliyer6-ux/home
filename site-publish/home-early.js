@@ -282,7 +282,7 @@
       playing = true; video.classList.add('in');
       try { localStorage.setItem(INTRO.key, String(Date.now())); } catch (e) {}
     }, { once: true });
-    video.addEventListener('ended', function () { introEnded = true; });
+    video.addEventListener('ended', function () { introEnded = true; introEndedAt = introEndedAt || Date.now(); });
     video.addEventListener('error', introFallback);
     var stall = 0;
     video.addEventListener('waiting', function () { clearTimeout(stall); stall = setTimeout(function () { if (playing) skipIntro(); }, 2500); });
@@ -294,7 +294,7 @@
   function skipIntro() { // straight to the last frame (the logo); it flies as soon as the page is ready
     if (!video || introEnded) return;
     try { video.pause(); if (isFinite(video.duration)) video.currentTime = Math.max(0, video.duration - 0.04); } catch (e) {}
-    introEnded = true;
+    introEnded = true; introEndedAt = introEndedAt || Date.now();
   }
   function flyOut() {
     if (gone) return;
@@ -327,6 +327,7 @@
   }
 
 
+  var homeAt = 0, introEndedAt = 0;
   var t0 = Date.now(), gone = false, finishing = false, fontsOk = !document.fonts, prep = null, prepDone = false;
   if (document.fonts) document.fonts.ready.then(function () { fontsOk = true; }, function () { fontsOk = true; });
   function route() {
@@ -345,10 +346,16 @@
       // the Records page holds the cover (data-records-gate) until tracks, cover and duration are in as well
       case 'music': return !el.dataset.recordsGate && !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount.has-fallback, #recordMount .has-fallback');
       case 'home':
+        // The homepage's 3D study (and all its cover textures) sits further down the page, out of the first view.
+        // Start preparing it now, but hold the cover for it only briefly: 0.8 s after the opening video ends,
+        // 1.2 s after the page itself is rendered otherwise. It finishes in the background.
         if (!prep && typeof window.LuliyHomepagePrepare === 'function') {
           prep = Promise.resolve().then(window.LuliyHomepagePrepare).then(function () { prepDone = true; }, function () { prepDone = true; });
         }
-        return prepDone;
+        if (prepDone) return true;
+        if (main.querySelector('[data-loading="true"]')) return false;
+        if (!homeAt) homeAt = Date.now();
+        return intro ? (introEndedAt && Date.now() - introEndedAt > 800) : Date.now() - homeAt > 1200;
       case 'article': { var b = document.getElementById('sourceArticleBody'); return !!b && b.dataset.loading !== 'true'; }
       default: return !main.querySelector('[data-loading="true"], [aria-busy="true"]');
     }
