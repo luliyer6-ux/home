@@ -2855,8 +2855,9 @@
           if (item) feed.append(buildNote(item, true)); else feed.append(el('p', 'lj-empty', L('没有找到这条短札。', 'That note was not found.', 'この短札は見つかりません。')));
           wrap.append(feed); return;
         }
-        const counts = new Map();
-        items.forEach(i => tagsOf(i).forEach(g => counts.set(g, (counts.get(g) || 0) + 1)));
+        const counts = new Map(), days = new Set();
+        const dayKey = i => { if (i.ts) { const d = new Date(i.ts); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; } return i.date; };
+        items.forEach(i => { tagsOf(i).forEach(g => counts.set(g, (counts.get(g) || 0) + 1)); if (dayKey(i)) days.add(dayKey(i)); });
         const list = st.tag ? items.filter(i => i.labels.includes(st.tag)) : items;
         if (!items.length) {
           const box = el('div', 'lj-empty');
@@ -2865,28 +2866,92 @@
           if (!J.failed) box.append(el('p', 'lj-hint', L('在 Gmeek 新建一个 Issue，加上 journal 标签，发布后这里就会出现。标题随便写，不会显示。', 'Create a Gmeek Issue with the label “journal” and it will appear here. The title is not shown.', 'Gmeek で journal ラベルの Issue を作ると、ここに表示されます。タイトルは表示されません。')));
           feed.append(box); wrap.append(feed); return;
         }
-        if (!list.length) {
-          const box = el('div', 'lj-empty'); box.append(el('p', null, L('这个标签下还没有短札。', 'No notes under this tag yet.', 'このタグの短札はまだありません。')));
-          const a = el('a', 'lj-back', '← ' + L('全部短札', 'All notes', 'すべての短札')); a.href = jl({}); box.append(a); feed.append(box);
-        }
-        let more = null;
-        const add = () => {
-          const from = feed.querySelectorAll('.lj-note').length, to = Math.min(list.length, from + PAGE);
-          for (let i = from; i < to; i++) feed.insertBefore(buildNote(list[i], false), more);
-          if (more) { if (to >= list.length) more.remove(); else more.textContent = L('载入更多', 'Load more', 'さらに表示'); }
-          return to;
+
+        /* feed: paginated list, or the search results */
+        let query = '', seq = 0;
+        const fillFeed = (found) => {
+          waiting.length = 0; feed.replaceChildren();
+          const rows = found || list;
+          if (found) {
+            const s = el('p', 'lj-result', found.length ? L(`找到 ${found.length} 条`, `${found.length} found`, `${found.length} 件見つかりました`) : L('没有找到相关的短札。', 'Nothing found.', '見つかりませんでした。'));
+            s.setAttribute('role', 'status'); feed.append(s);
+          } else if (!rows.length) {
+            const box = el('div', 'lj-empty'); box.append(el('p', null, L('这个标签下还没有短札。', 'No notes under this tag yet.', 'このタグの短札はまだありません。')));
+            const a = el('a', 'lj-back', '← ' + L('全部短札', 'All notes', 'すべての短札')); a.href = jl({}); box.append(a); feed.append(box);
+          }
+          let more = null, shown = 0;
+          const add = () => {
+            const to = found ? rows.length : Math.min(rows.length, shown + PAGE);
+            for (let i = shown; i < to; i++) feed.insertBefore(buildNote(rows[i], false), more);
+            shown = to;
+            if (more && shown >= rows.length) { more.remove(); more = null; }
+          };
+          if (!found && rows.length > PAGE) {
+            more = el('button', 'lj-more', L('载入更多', 'Load more', 'さらに表示')); more.type = 'button';
+            more.addEventListener('click', () => { const first = shown; add(); feed.querySelectorAll('.lj-note')[first]?.querySelector('a')?.focus?.({ preventScroll: true }); });
+            feed.append(more);
+          }
+          add();
         };
-        if (list.length > PAGE) { more = el('button', 'lj-more', L('载入更多', 'Load more', 'さらに表示')); more.type = 'button'; more.addEventListener('click', () => { const first = feed.querySelectorAll('.lj-note').length; add(); feed.querySelectorAll('.lj-note')[first]?.querySelector('a')?.focus?.({ preventScroll: true }); }); feed.append(more); }
-        add();
-        // side: tags + count
-        side.append(el('h2', 'lj-side-title', L('标签', 'Tags', 'タグ')));
+        const plain = item => new Promise(res => queue(item, f => res(f.textContent || ''), () => res('')));
+        const runSearch = async value => {
+          const q = value.trim(), mine = ++seq; query = q;
+          if (!q) { fillFeed(); return; }
+          const texts = await Promise.all(list.map(plain));
+          if (mine !== seq) return;
+          const needles = [...new Set([q, T(q)])].map(s => s.toLowerCase());
+          fillFeed(list.filter((item, i) => {
+            const hay = [item.title, item.summary, item.labels.join(' '), texts[i]].join('\n').toLowerCase();
+            const hayT = trad() ? T(hay) : hay;
+            return needles.some(n => hay.includes(n) || hayT.includes(n));
+          }));
+        };
+
+        /* side: profile card, activity grid, search, tags */
+        const card = el('div', 'lj-card');
+        const av = el('img', 'lj-card-avatar'); av.src = '/favicon.svg'; av.alt = ''; av.width = 72; av.height = 72; av.decoding = 'async';
+        const stats = el('dl', 'lj-stats');
+        [[L('短札', 'Notes', '短札'), items.length], [L('标签', 'Tags', 'タグ'), counts.size], [L('天', 'Days', '日'), days.size]].forEach(([k, v]) => { const d = el('div'); d.append(el('dt', null, k), el('dd', null, String(v))); stats.append(d); });
+        const social = el('div', 'lj-social');
+        const icon = d => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+        [['GitHub', 'https://github.com/luliy6', '<path d="M9 19c-4 1.5-4-2-6-2.5m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/>'],
+          ['Bilibili', 'https://space.bilibili.com/450483800', '<rect x="3" y="7" width="18" height="12" rx="3"/><path d="m8 3 3 4m5-4-3 4M8.5 12v1.5m7-1.5v1.5"/>'],
+          ['Telegram', 'https://web.telegram.org/a/#-1002032433504', '<path d="M21.5 3.5 2.5 11l6 2.2 2.3 6.3 3.2-3.8 5 3.3 2.5-15.5Z"/><path d="m8.5 13.2 8-5.2"/>']].forEach(([name, url, d]) => {
+          const a = el('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.setAttribute('aria-label', name); a.title = name; a.innerHTML = icon(d); social.append(a);
+        });
+        card.append(av, el('strong', 'lj-card-name', 'Luliy'), el('span', 'lj-card-sub', L('我将无限进步!', 'I will keep improving!', '私は進歩し続ける!')), stats, social);
+
+        const WEEKS = 16, now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7) - (WEEKS - 1) * 7);
+        const byDay = new Map(); items.forEach(i => { const k = dayKey(i); if (k) byDay.set(k, (byDay.get(k) || 0) + 1); });
+        const heat = el('div', 'lj-heat'); let recent = 0;
+        const grid = el('div', 'lj-heat-grid'); grid.setAttribute('aria-hidden', 'true');
+        for (let w = 0; w < WEEKS; w++) for (let d = 0; d < 7; d++) {
+          const day = new Date(start.getFullYear(), start.getMonth(), start.getDate() + w * 7 + d), cell = el('i');
+          if (day > today) cell.className = 'is-future';
+          else { const k = `${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}`, n = byDay.get(k) || 0; recent += n; cell.dataset.l = String(Math.min(n, 3)); cell.title = n ? `${k} · ${n}` : k; }
+          grid.append(cell);
+        }
+        heat.append(el('h2', 'lj-side-title', L(`最近 ${WEEKS} 周`, `Last ${WEEKS} weeks`, `直近 ${WEEKS} 週間`)), grid);
+        heat.setAttribute('role', 'img'); heat.setAttribute('aria-label', L(`最近 ${WEEKS} 周共 ${recent} 条短札`, `${recent} notes in the last ${WEEKS} weeks`, `直近 ${WEEKS} 週間で ${recent} 件`));
+
+        const searchWrap = el('div', 'lj-search');
+        const input = el('input'); input.type = 'search'; input.placeholder = L('搜索短札', 'Search notes', '短札を検索'); input.setAttribute('aria-label', L('搜索短札', 'Search notes', '短札を検索')); input.autocomplete = 'off'; input.enterKeyHint = 'search';
+        let timer = 0; input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(() => runSearch(input.value), 250); });
+        input.addEventListener('keydown', e => { if (e.key === 'Escape' && input.value) { input.value = ''; runSearch(''); e.stopPropagation(); } });
+        searchWrap.append(input);
+
+        const tagsBox = el('div', 'lj-tagbox');
+        tagsBox.append(el('h2', 'lj-side-title', L('标签', 'Tags', 'タグ')));
         const nav = el('nav', 'lj-tagnav'); nav.setAttribute('aria-label', L('短札标签', 'Journal tags', '短札のタグ'));
         const all = el('a', null, L('全部', 'All', 'すべて')); all.href = jl({}); if (!st.tag) all.setAttribute('aria-current', 'page');
         all.append(el('span', null, String(items.length))); nav.append(all);
         [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-CN')).forEach(([g, n]) => {
           const a = el('a', null, g); a.href = jl({ tag: g }); if (st.tag === g) a.setAttribute('aria-current', 'page'); a.append(el('span', null, String(n))); nav.append(a);
         });
-        side.append(nav);
+        tagsBox.append(nav);
+        side.append(card, heat, searchWrap, tagsBox);
+        fillFeed();
         wrap.append(feed, side);
       }
       addEventListener('luliy-journal-feed', draw);
