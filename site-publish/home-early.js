@@ -116,10 +116,13 @@
 
 /* Site loader (2026-10-30). Every full page load, every device, every page of the site. It replaces the opening
    (prologue + eye, intro/intro.js, no longer loaded; its files stay in /intro) and the old phones-only first-visit screen.
-   The pensive-figure L starts as a thin white outline; gold rises from the bottom and fills it, holds, fades, and starts again
-   (no ring, no breathing). Only transform and opacity animate, so it keeps moving while the page is busy underneath.
-   When the page is ready the gold is brought up to full quickly (<= 0.45 s) and then the cover fades, so every load ends on a full logo.
-   window.LuliyLoaderLook() / LuliyLoaderFinish() let the Study / Records switch (home-fixes.js section 21) use the very same loader.
+   The mascot (看板娘) plays her loop in the middle: sitting, turning to the front, reaching out, settling back (5 s).
+   It is a CSS sprite stepped with transform, which the browser keeps running while the page is busy underneath
+   (a canvas drawn from JS would freeze exactly then). Her still sitting pose shows at once (21 KB, shared with the
+   page mascot); the moving sheet starts once it has downloaded (~460 KB, hashed name, cached for a year).
+   When the page is ready the cover fades on whatever frame she is on: nobody waits for the loop to end.
+   window.LuliyLoaderLook() / LuliyLoaderArm() / LuliyLoaderFinish() let the Study / Records switch (home-fixes.js
+   section 21) use the very same loader.
    It lifts only when the page below is really ready, so nobody sees a half-built page or a stutter:
      #/books   the study room is revealing (or fell back)      #/music   the turntable has drawn its first frame
      home      the homepage 3D study is prepared                 #/article the text is in
@@ -129,7 +132,12 @@
    the opening (homepage handwriting, fade-ins) now waits for this instead. ?loader=0 skips it. */
 (function () {
   var root = document.documentElement;
-  var CYCLE = 3.6, FULL = 0.64, FADE = 0.8; // seconds per loop; fraction where the logo is full; where the gold starts to fade
+  // sprite: 76 frames of 240 x 196 in a 19 x 4 sheet, 15 frames a second
+  var SHEET = '/assets/mascot/loader-4d243acdf8.webp', REST = '/assets/mascot/luliy-rest.webp?v=2';
+  var FW = 240, FH = 196, COLS = 19, ROWS = 4, NFR = 76, FPS = 15;
+  function still() {
+    try { return matchMedia('(prefers-reduced-motion: reduce)').matches || root.classList.contains('luliy-calm') || root.classList.contains('luliy-save-data'); } catch (e) { return false; }
+  }
 
   // Colours follow the chosen appearance, so this is computed whenever a loader is built.
   function look() {
@@ -146,69 +154,38 @@
       dark: [P ? sky(P) : '#111110', 'rgba(242,237,228,.36)', '#d8b878']
     }[a] || null;
     if (!C) C = ['#111110', 'rgba(242,237,228,.36)', '#d8b878'];
-    var shapes = ['M8.8 57.8a24 24 0 0 1-4.8-1l.2-.2c1-.6 2.3-2.2 3.1-3.4 1.4-2.2 1.9-4.4 2-8q.3-4.6 1.7-8a24 24 0 0 1 5-7.4l.1.8c.3 1.5 1 3.9 1.3 4.8q.2.3.4 0l.7-.1-.3-1a24 24 0 0 1-1.3-5.6l.4.9a34 34 0 0 0 5 9.3q2 2.3 3.6 2 1.3-.5 2.4-2 1.6-2.4 2.7-6l.6-2 1-3.5c.2-1 .1-1.4-.6-2.5l-1.2-1.8-.2-.3h-2.2l-.4-.2-1 .5c-.9.5-.9.5-1.2.5l-.7-.2.4-.3 1.1-.7c1.2-.7 1.3-.7 2-.6h1.3c1.3 0 1.2 0 2.1 1.4l1.4 2.5q.3.4.1.8c0 .7-.5 3-1 4.4q0 .6-.3 1.3c-.7 2.6-2 5.8-3.2 7.5q-3.2 4.4-7.3.3l-1.3-1.7-.1.5-.2 1.6-.3 1.2A35 35 0 0 1 14.3 53c0 .1 1.8-.1 3-.4l2.9-1c3-1 4.2-1.3 6.7-1.9q8.3-1.9 15 1.1l1.4.8-.7-.1A20 20 0 0 0 31 51a62 62 0 0 0-8.6 3.3 37 37 0 0 1-6.9 2.8q-3.7.9-6.7.6',
-      'M26 37.3c0-1-.9-3.4-2-5.7l-.7-2.2-.2-2q-.2-2.9-1.2-4.7c-.6-1.4-2-3-3.7-4q-1-.6.1-.2a11 11 0 0 1 3.8 2.7v-.3q0-1 1-2.3l.2-.4.2-.3v-1c0-1 0-1.3.4-1.8q.3-.5.2 0v1.3l.1-.2.4-.4 1.1-.8 1.3-1q0-.5.3 0 .6 1.1 2.2 1.3 1 0 .2-.1-.8-.3-1.5-1l-1-1.2 1 .3q2.4 1.1 4 .9a3 3 0 0 0 2.2-1.5q.1-.2 0 .4-.3 3-1.7 3.5l-.4.2q-.2 0-1 2.1c-.3 1-.3 1-.6 1l-.8-.2-.3-.1-.1.2q-.2.4-.6.4-.2 0-.3.2-.2.3-.5.2t-.7.5-1 .5q-.9 0-1.7-1.2t-1.2-.8q-.7.3-.8 1.3c-.1.6 0 .8.4 1.9q.8 1.4 1 2.6l.5 4.4.9 2.3.7 1.9.1-.2.9-1.5c.8-1 2-3 2.5-3.8l.4-1.2q0-.4-.5-.9-.7-.6-1-1.4l-.7-.8q-.9-.9-.3-.8c.9.1 1.1.3 2 1.5l.5.7c1 1 1.2 1.7.5 3.3l-2.2 3.6q-1.2 1.6-1.9 3.4z',
-      'M45 58q-2-.3-4.3-1a24 24 0 0 0-12.6-1.2l-1 .2s1.5-.6 2.5-.8q5.8-1.4 11-.2c4 .9 5.7 1.1 7.2 1q1 0 0-.2-2 0-5.1-1a26 26 0 0 0-14.4-.5l-1.1.3-3.8 1.4a29 29 0 0 1 11.3-4.3h3.5c1.7.2 2.9.4 5 1l4.7 1.2h2.4a8 8 0 0 0 5.3-3l.4-.5-.4 1.6q-1 3-3.7 4.6c-1.8 1-4.5 1.6-7 1.3',
-      'm29.1 12.9-1.3-.6q-.6-.6-1.3-.4-.5.2-.4 0l.8-.3h1.4q1.4 0 1.8-.2h-.5l-2-.2q-.4 0-.1-.2a5 5 0 0 1 1.8-1q.7-.3 2.5 0a4 4 0 0 0 2 0c.2 0-1 1.4-1.7 2q-1.3 1-3 .9',
-      'M17.5 16.8h-1.8l.4-.4q1-1 1.7-1.1l1.5-.1h.9l.3-.1-.5.7q-1.1 1.3-2.6 1',
-      'm26.1 7.3-.5-.2.4-.3.5-.3-.6.2-.4.1.5-.6q1.2-1 3.2-.2.6.3.2.4-.6 0-1.3.5-1 .7-2 .4',
-      'M23.8 10.4V10l-.3-.8c-.3-.7-.3-.9 0-1.5q.6-.9 1-1v.4l.3 1.2V9l-.2.4-.4.6q-.3.6-.4.4',
-      'm21.4 16.2.3-.9q.4-.7 1.4-1l.6-.3q.3 0 0 .3-.4.6-1.4 1.3l-.7.5z',
-      'm32.8 9-.2-.1q-1.1-.7-1.4-1.2L31 6.6l1 .4q.6.6.8 1.3z',
-      'M22.3 10.3c-.3 0-.6-.7-.7-1.2l-.2-.7h.5l.7.3q.4 0 .7.8l.3.8z',
-      'm21.3 13.7.9-1q.4-.4 1-.4.8 0 .7.2l-1 .9h-.7l-.6.2z',
-      'M19.5 13.2v-1q.1-.8.8-1.1.6-.3.2.1l-.2.6-.4 1-.3.6q0 .4-.1-.2',
-      'M26.9 10.1v-1Q27 8 28 7.7q.3 0 0 .3l-.2.7c-.1.6-.1.6-.6 1z',
-      'm30.7 9-.8-.4c-.2-.2-.6-.9-.5-1l.9.3.3.3.4.5q.5.5-.3.3',
-      'm24.7 11.5-.5-.2-.5-.1.2-.1.1-.1q.4-.5 1-.6l1.1.2-.2.3q-.5.6-1.2.6',
-      'M25.1 14.4v-.5q.2-.8.7-.9l.4-.2q.5-.3.3.3-.1.6-.9 1l-.3.2z',
-      'm14.2 13.4.2-.3q.3-.6.7-.7l1-.2c.1 0-.3.8-.5.9q-.2.3-1 .3z',
-      'M32.1 13.4h-.2c0-.2.6-.7.9-.8l.6-.1h.5l-.3.4c-.6.4-.8.5-1.5.5',
-      'M26.6 25.1q-.6-.3-.7-.7l1-.1q.2-.1.6.4l.3.3c0 .1-.8.2-1.2.1',
-      'M21.3 13q-.3-.8.3-1.4.3-.4.3.2.1.5-.2.9l-.2.4q0 .3-.2-.1',
-      'M35 9.8v-.6q0-.6.6-.8.4-.3.3.1 0 .5-.6 1-.3.5-.4.3',
-      'M19.4 10.4q0-.5.5-.8l.5.1c0 .2-.9.8-1 .7',
-      'm17.6 13.9-.2-.2-.1-.1v-.2q.4-.5.7 0 .2.2 0 .3-.4.4-.4.2'];
-    var light = a === 'light';
-    var line = light ? 'rgba(20,20,19,.45)' : 'rgba(255,255,255,.55)', gold = light ? '#a67c45' : '#e0bd73', gold2 = light ? '#c9a468' : '#f3dca0';
-    var paths = function () { return shapes.map(function (d) { return '<path d="' + d + '"/>'; }).join(''); };
     var K = '#luliy-room-loader ';
     var css = '#luliy-room-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
       '#luliy-room-loader.is-done{opacity:0;pointer-events:none}' +
-      K + '.lrl-mark{--s:104px;position:relative;width:var(--s);height:var(--s)}' +
-      K + '.lrl-mark svg{position:absolute;left:0;bottom:0;width:var(--s);height:var(--s);overflow:visible;stroke-linejoin:round;stroke-linecap:round}' +
-      K + '.lrl-line{fill:none;stroke:' + line + ';stroke-width:.6}' +
-      // the rising window is 1.4x the logo tall: its soft top edge sits above the logo once the logo is full
-      K + '.lrl-rise{position:absolute;left:-4px;right:-4px;bottom:0;height:calc(var(--s)*1.4);overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%);mask-image:linear-gradient(to bottom,transparent 0,#000 30%);will-change:transform,opacity;animation:luliy-loader-rise ' + CYCLE + 's cubic-bezier(.35,.12,.6,.88) infinite}' +
-      K + '.lrl-rise-in{position:absolute;left:4px;bottom:0;width:var(--s);height:var(--s);will-change:transform;animation:luliy-loader-rise-in ' + CYCLE + 's cubic-bezier(.35,.12,.6,.88) infinite}' +
-      K + '.lrl-rise-in svg{fill:' + gold + ';stroke:' + gold2 + ';stroke-width:.35}' +
-      '@keyframes luliy-loader-rise{0%{transform:translateY(calc(var(--s)*1.4));opacity:1}' + (FULL * 100) + '%{transform:translateY(0);opacity:1}' + (FADE * 100) + '%{transform:translateY(0);opacity:1}94%{transform:translateY(0);opacity:0}100%{transform:translateY(calc(var(--s)*1.4));opacity:0}}' +
-      '@keyframes luliy-loader-rise-in{0%{transform:translateY(calc(var(--s)*-1.4))}' + (FULL * 100) + '%{transform:translateY(0)}94%{transform:translateY(0)}100%{transform:translateY(calc(var(--s)*-1.4))}}' +
-      // reduced motion / calm mode: a still logo, already gold
-      '@media(prefers-reduced-motion:reduce){' + K + '.lrl-rise,' + K + '.lrl-rise-in{animation:none;transform:none;opacity:1}}' +
-      'html.luliy-calm ' + K + '.lrl-rise,html.luliy-calm ' + K + '.lrl-rise-in{animation:none;transform:none;opacity:1}';
-    var svg = '<svg viewBox="0 0 60 60">' + paths() + '</svg>';
-    var html = '<div class="lrl-mark"><svg class="lrl-line" viewBox="0 0 60 60">' + paths() + '</svg><div class="lrl-rise"><div class="lrl-rise-in">' + svg + '</div></div></div>';
+      K + '.lrl-m{position:relative;width:' + FW + 'px;height:' + FH + 'px}' +
+      K + '.lrl-rest{position:absolute;inset:0;width:100%;height:100%}' +
+      K + '.lrl-sprite{position:absolute;inset:0;overflow:hidden;opacity:0}' +
+      K + '.lrl-row{position:absolute;left:0;top:0;width:' + FW * COLS + 'px;height:' + FH * ROWS + 'px}' +
+      K + '.lrl-sheet{display:block;width:100%;height:100%;max-width:none}' +
+      '#luliy-room-loader.is-playing .lrl-rest{opacity:0}#luliy-room-loader.is-playing .lrl-sprite{opacity:1}' +
+      '#luliy-room-loader.is-playing .lrl-row{will-change:transform;animation:luliy-loader-y ' + (NFR / FPS) + 's steps(' + ROWS + ',end) infinite}' +
+      '#luliy-room-loader.is-playing .lrl-sheet{will-change:transform;animation:luliy-loader-x ' + (COLS / FPS) + 's steps(' + COLS + ',end) infinite}' +
+      '@keyframes luliy-loader-y{to{transform:translateY(-' + FH * ROWS + 'px)}}@keyframes luliy-loader-x{to{transform:translateX(-' + FW * COLS + 'px)}}' +
+      '@media(prefers-reduced-motion:reduce){' + K + '.lrl-sprite{display:none}' + K + '.lrl-rest{opacity:1!important}}' +
+      'html.luliy-calm ' + K + '.lrl-sprite{display:none}html.luliy-calm ' + K + '.lrl-rest{opacity:1!important}';
+    var html = '<div class="lrl-m"><img class="lrl-rest" src="' + REST + '" alt="" width="' + FW + '" height="' + FH + '"><div class="lrl-sprite"><div class="lrl-row"><img class="lrl-sheet" alt=""></div></div></div>';
     return { css: css, html: html };
   }
 
-  // Bring the gold to full quickly, then call done(). Mid-rise: speed the rise up (<= 0.45 s). Already full: a short hold.
-  // Already fading out: nothing to finish, the cover fades straight away. Reduced motion (no animation): done at once.
-  function finish(el, done) {
-    var as = [];
-    try { as = el.getAnimations({ subtree: true }).filter(function (x) { return x.effect && x.playState !== 'finished'; }); } catch (e) {}
-    if (!as.length) { done(); return; }
-    var t = (as[0].currentTime % (CYCLE * 1000)) / 1000;
-    if (t >= CYCLE * FADE) { done(); return; }
-    if (t >= CYCLE * FULL) { setTimeout(done, 220); return; }
-    var left = CYCLE * FULL - t, ms = Math.min(450, Math.max(160, left * 1000));
-    as.forEach(function (x) { x.playbackRate = (left * 1000) / ms; });
-    setTimeout(function () {
-      as.forEach(function (x) { x.pause(); x.currentTime = CYCLE * FULL * 1000; });
-      setTimeout(done, 180);
-    }, ms + 30);
+  // Start her moving once the sheet is decoded (the still pose covers the wait). Not with reduced motion / calm / save-data.
+  function arm(el) {
+    if (still()) return;
+    var img = el.querySelector('.lrl-sheet');
+    if (!img) return;
+    img.decoding = 'async';
+    img.src = SHEET;
+    var go = function () { if (el.isConnected) el.classList.add('is-playing'); };
+    if (img.decode) img.decode().then(go, function () {}); else img.onload = go;
   }
+  // Ready: fade on the current frame, no waiting for the loop.
+  function finish(el, done) { done(); }
   window.LuliyLoaderLook = look;
+  window.LuliyLoaderArm = arm;
   window.LuliyLoaderFinish = finish;
 
   try { if (new URLSearchParams(location.search).get('loader') === '0') return; } catch (e) {}
@@ -221,6 +198,7 @@
   el.setAttribute('aria-hidden', 'true');
   el.innerHTML = L.html;
   root.appendChild(el);
+  arm(el);
   root.classList.add('intro-pending');
   var state = window.LuliySiteLoader = { active: true };
 

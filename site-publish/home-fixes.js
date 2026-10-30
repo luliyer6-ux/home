@@ -1724,6 +1724,7 @@
         if (a === 'light') el.innerHTML = '<img src="/assets/site/%5BIT-XIAOBIN%5D-1792981037054.png" alt="" aria-hidden="true">';
         if (look) el.innerHTML = look.html;
         document.documentElement.appendChild(el);
+        if (look && window.LuliyLoaderArm) window.LuliyLoaderArm(el);
       return el;
     }
     let loader = null, done = false, t0 = 0, cap = 0, hostObs = null, mainObs = null;
@@ -2392,8 +2393,8 @@
   (() => {
     const root = document.documentElement;
     const BASE = '/assets/mascot/';
-    const REST = BASE + 'luliy-rest.webp?v=2', FRONT = BASE + 'luliy-front.webp', TURN = BASE + 'luliy-turn.webp', ATLAS = BASE + 'luliy-atlas.webp';
-    const FW = 320, FH = 262, COLS = 10, NF = 70, FPS = 15, F_FRONT = 22, F_TURN = 45;
+    const REST = BASE + 'luliy-rest.webp?v=2', FRONT = BASE + 'luliy-front.webp', TURN = BASE + 'luliy-turn.webp', ATLAS = BASE + 'luliy-atlas-v2.webp';
+    const FW = 320, FH = 262, COLS = 10, NF = 76, FPS = 15, F_FRONT = 22, F_TURN = 45; // v2: 76 frames, the last 5 move her back to rest
     const KEY = 'luliy-mascot-hidden';
     const WIDE = matchMedia('(min-width: 1180px) and (pointer: fine)');
     const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches || root.classList.contains('luliy-save-data');
@@ -2457,7 +2458,10 @@
     // The clip does not end on the resting pose and is still moving in its last frames. Instead of stopping on the
     // last frame and then dissolving (which read as a hitch), the opening clip slows down over its final frames
     // and, from BLEND_FROM on, fades into the resting frame while it is still moving: one continuous settle.
-    const BLEND_FROM = NF - 11;
+    // v2 (2026-10-30): the atlas now ends with 5 interpolated frames that move her back to the resting pose (plus one
+    // in-between at the old jump after frame 58), so the clip loops by motion; BLEND_FROM now only marks those last
+    // frames, where a hover waits for her to finish settling. blend() is kept but no longer called.
+    const BLEND_FROM = NF - 6;
     const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
     function blend(p) {
       const k = smooth((p - BLEND_FROM) / (NF - 1 - BLEND_FROM)), i = Math.max(0, Math.min(NF - 1, Math.round(p)));
@@ -2475,7 +2479,7 @@
         if (mode === 'hover') v *= Math.max(.35, Math.min(1, Math.abs(dist) / 4)); // ease into the held frame
         if (mode === 'intro') v *= Math.max(.45, Math.min(1, Math.abs(dist) / 12)); // ease out of the clip
         pos += Math.sign(dist) * Math.min(Math.abs(dist), v * dt);
-        if (mode === 'intro' && pos > BLEND_FROM) blend(pos); else draw(pos);
+        draw(pos); // v2 atlas: the clip itself moves back to rest (interpolated frames), no dissolve needed
       }
       if (Math.abs(target - pos) <= 1e-3) {
         if (mode === 'intro') { pos = 0; target = 0; mode = 'idle'; drawn = -1; draw(0); retarget(); return; }
