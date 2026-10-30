@@ -1,4 +1,4 @@
-/* LULIY early routing, inlined at the very top of <head> by optimize-home.py (runs before intro.js and the router).
+/* LULIY early routing, inlined at the very top of <head> by optimize-home.py (runs before the router).
    Phones open on the article list: a bare https://luliy.me/ becomes #/posts, and the prologue is skipped on phones.
    The full home stays one tap away (directory -> 首頁) and is kept for ?home, ?intro=1 and every deep link. */
 (function () {
@@ -114,17 +114,20 @@
   };
 })();
 
-/* Phones: a short opening screen on the first visit of a session, in the colours of the chosen appearance.
-   The brand mark (the pensive-figure L) is drawn as a thin outline, breathing slowly, with a single gold light
-   drawing its four largest shapes in turn, a dim trail behind it (still with reduced motion). It lifts once the page has rendered: at least 0.7 s, at most 1.5 s after the document is parsed. */
+/* Site loader (2026-10-30). Every full page load, every device, every page of the site. It replaces the opening
+   (prologue + eye, intro/intro.js, no longer loaded; its files stay in /intro) and the old phones-only first-visit screen.
+   It looks like the Study / Records loader (home-fixes.js section 21): the pensive-figure L in outline, breathing,
+   with a thin turning ring. Only transform and opacity animate, so it keeps moving while the page is busy underneath.
+   It lifts only when the page below is really ready, so nobody sees a half-built page or a stutter:
+     #/books   the study room is revealing (or fell back)      #/music   the turntable has drawn its first frame
+     home      the homepage 3D study is prepared                 #/article the text is in
+     elsewhere #main is rendered and nothing in it is still data-loading / aria-busy
+   and the web fonts are ready. Shown at least 0.7 s (no flash), at most 8 s on the rooms and 6 s elsewhere.
+   While it is up <html> has intro-pending, and lifting fires luliy:intro-complete: the code that used to wait for
+   the opening (homepage handwriting, fade-ins) now waits for this instead. ?loader=0 skips it. */
 (function () {
-  try {
-    if (!matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) >= 600) return;
-    var q = new URLSearchParams(location.search);
-    if (q.get('intro') === '1' || q.get('intro') === 'eye') return;
-    if (sessionStorage.getItem('luliy-loader-seen')) return;
-    sessionStorage.setItem('luliy-loader-seen', '1');
-  } catch (e) { return; }
+  try { if (new URLSearchParams(location.search).get('loader') === '0') return; } catch (e) {}
+  var root = document.documentElement;
   var a = 'dark';
   try { a = localStorage.getItem('luliy-appearance') || (localStorage.getItem('luliy-paper-ink') === 'light' ? 'cc' : 'dark'); } catch (e) {}
   var sky = function (c) { return 'linear-gradient(189deg,' + c[0] + ' .55%,' + c[1] + ' 30.38%,' + c[2] + ' 65.19%,' + c[3] + ' 100%)'; };
@@ -162,45 +165,84 @@
     'M19.4 10.4q0-.5.5-.8l.5.1c0 .2-.9.8-1 .7',
     'm17.6 13.9-.2-.2-.1-.1v-.2q.4-.5.7 0 .2.2 0 .3-.4.4-.4.2'];
   var paths = function (cls, n) { return shapes.slice(0, n).map(function (d, i) { return '<path class="' + cls + '" pathLength="1" d="' + d + '" style="--i:' + i + '"/>'; }).join(''); };
-  var css = '#luliy-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
-    '#luliy-loader.is-done{opacity:0;pointer-events:none}' +
-    '#luliy-loader svg{width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round;transform:translateZ(0)}' +
-    '#luliy-loader .o{stroke:' + C[1] + ';stroke-width:.55;animation:luliy-loader-breathe 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
-    '#luliy-loader .l{stroke:' + C[2] + ';stroke-width:1;stroke-dasharray:1 1;stroke-dashoffset:1;animation:luliy-loader-draw 3.6s cubic-bezier(.65,0,.35,1) infinite;animation-delay:calc(var(--i) * -.45s)}' +
-    '#luliy-loader .t{stroke:' + C[2] + ';stroke-width:2.4;stroke-dasharray:1 1;stroke-dashoffset:1;animation:luliy-loader-draw-trail 3.6s cubic-bezier(.65,0,.35,1) infinite;animation-delay:calc(var(--i) * -.45s + .28s)}' +
-    '@keyframes luliy-loader-breathe{from{opacity:.55}to{opacity:1}}@keyframes luliy-loader-draw{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:1}55%{stroke-dashoffset:0;opacity:1}75%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}@keyframes luliy-loader-draw-trail{0%{stroke-dashoffset:1;opacity:0}8%{stroke-dashoffset:1;opacity:.3}55%{stroke-dashoffset:0;opacity:.3}75%{stroke-dashoffset:0;opacity:.3}100%{stroke-dashoffset:0;opacity:0}}' +
-    '@media(prefers-reduced-motion:reduce){#luliy-loader .o{animation:none;opacity:1}#luliy-loader .l,#luliy-loader .t{display:none}}' +
-    'html.luliy-calm #luliy-loader .o{animation:none;opacity:1}html.luliy-calm #luliy-loader .l,html.luliy-calm #luliy-loader .t{display:none}';
-    if (a === 'light') css = '#luliy-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
-      '#luliy-loader.is-done{opacity:0;pointer-events:none}' +
-      '#luliy-loader img{width:120px;height:120px;object-fit:contain;animation:luliy-loader-breathe-img 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
-      '@keyframes luliy-loader-breathe-img{from{opacity:.55;transform:scale(.96)}to{opacity:1;transform:scale(1)}}' +
-      '@media(prefers-reduced-motion:reduce){#luliy-loader img{animation:none;opacity:1;transform:none}}' +
-      'html.luliy-calm #luliy-loader img{animation:none;opacity:1;transform:none}';
+  var base = '#luliy-room-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:' + C[0] + ';transition:opacity 450ms cubic-bezier(.22,.61,.36,1);will-change:opacity;transform:translateZ(0)}' +
+    '#luliy-room-loader.is-done{opacity:0;pointer-events:none}';
+  var css = base +
+    '#luliy-room-loader .lrl-mark{position:relative;width:88px;height:88px;will-change:transform,opacity;animation:luliy-loader-breathe 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
+    '#luliy-room-loader svg{display:block;width:88px;height:88px;overflow:visible;fill:none;stroke-linejoin:round;stroke-linecap:round}' +
+    '#luliy-room-loader .o{stroke:' + C[1] + ';stroke-width:.55}' +
+    '#luliy-room-loader .l{stroke:' + C[2] + ';stroke-width:1}' +
+    '#luliy-room-loader .t{stroke:' + C[2] + ';stroke-width:2.4;opacity:.3}' +
+    '#luliy-room-loader .lrl-ring{position:absolute;inset:-22px;border-radius:50%;border:1px solid transparent;border-top-color:' + C[2] + ';border-right-color:' + C[1] + ';opacity:.7;will-change:transform;animation:luliy-loader-spin 1.6s linear infinite}' +
+    '@keyframes luliy-loader-breathe{from{opacity:.6;transform:scale(.97)}to{opacity:1;transform:scale(1)}}@keyframes luliy-loader-spin{to{transform:rotate(360deg)}}' +
+    '@media(prefers-reduced-motion:reduce){#luliy-room-loader .lrl-mark,#luliy-room-loader .lrl-ring{animation:none}#luliy-room-loader .lrl-ring{display:none}}' +
+    'html.luliy-calm #luliy-room-loader .lrl-mark,html.luliy-calm #luliy-room-loader .lrl-ring{animation:none}html.luliy-calm #luliy-room-loader .lrl-ring{display:none}';
+  if (a === 'light') css = base +
+    '#luliy-room-loader img{width:120px;height:120px;object-fit:contain;will-change:transform,opacity;animation:luliy-loader-breathe-img 2.4s cubic-bezier(.65,0,.35,1) infinite alternate}' +
+    '@keyframes luliy-loader-breathe-img{from{opacity:.55;transform:scale(.96)}to{opacity:1;transform:scale(1)}}' +
+    '@media(prefers-reduced-motion:reduce){#luliy-room-loader img{animation:none;opacity:1;transform:none}}' +
+    'html.luliy-calm #luliy-room-loader img{animation:none;opacity:1;transform:none}';
   var style = document.createElement('style');
   style.textContent = css;
-  (document.head || document.documentElement).appendChild(style);
+  (document.head || root).appendChild(style);
   var el = document.createElement('div');
-  el.id = 'luliy-loader';
+  el.id = 'luliy-room-loader';
   el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = '<svg viewBox="0 0 60 60">' + paths('o') + paths('t', 4) + paths('l', 4) + '</svg>';
-  if (a === 'light') el.innerHTML = '<img src="/assets/site/%5BIT-XIAOBIN%5D-1792981037054.png" alt="" aria-hidden="true">';
-  document.documentElement.appendChild(el);
-  var shown = Date.now(), parsed = 0, gone = false;
-  function done() {
+  el.innerHTML = a === 'light'
+    ? '<img src="/assets/site/%5BIT-XIAOBIN%5D-1792981037054.png" alt="" aria-hidden="true">'
+    : '<div class="lrl-mark"><i class="lrl-ring"></i><svg viewBox="0 0 60 60">' + paths('o') + paths('t', 4) + paths('l', 4) + '</svg></div>';
+  root.appendChild(el);
+  root.classList.add('intro-pending');
+  var state = window.LuliySiteLoader = { active: true };
+
+  var t0 = Date.now(), gone = false, fontsOk = !document.fonts, prep = null, prepDone = false;
+  if (document.fonts) document.fonts.ready.then(function () { fontsOk = true; }, function () { fontsOk = true; });
+  function route() {
+    var h = location.hash || '';
+    if (/^#\/books(?=$|[/?])/.test(h)) return 'books';
+    if (/^#\/music(?=$|[/?])/.test(h)) return 'music';
+    if (!h || /^#\/?(?:\?|$)/.test(h)) return 'home';
+    if (/^#\/article\//.test(h)) return 'article';
+    return 'page';
+  }
+  function ready() {
+    var main = document.getElementById('main');
+    if (!main || !main.firstElementChild) return false;
+    switch (route()) {
+      case 'books': { var s = document.getElementById('studyRoom'); return !!s && (s.classList.contains('is-revealing') || s.classList.contains('has-fallback')); }
+      case 'music': return !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount.has-fallback, #recordMount .has-fallback');
+      case 'home':
+        if (!prep && typeof window.LuliyHomepagePrepare === 'function') {
+          prep = Promise.resolve().then(window.LuliyHomepagePrepare).then(function () { prepDone = true; }, function () { prepDone = true; });
+        }
+        return prepDone;
+      case 'article': { var b = document.getElementById('sourceArticleBody'); return !!b && b.dataset.loading !== 'true'; }
+      default: return !main.querySelector('[data-loading="true"], [aria-busy="true"]');
+    }
+  }
+  function lift(why) {
     if (gone) return;
     gone = true;
-    el.classList.add('is-done');
-    setTimeout(function () { el.remove(); style.remove(); }, 500);
+    state.reason = why || 'cap'; state.at = Date.now() - t0;
+    clearTimeout(cap);
+    setTimeout(function () {
+      // two frames, so the page's first finished frame is on screen before the cover fades
+      requestAnimationFrame(function () { requestAnimationFrame(function () {
+        el.classList.add('is-done');
+        root.classList.remove('intro-pending');
+        state.active = false;
+        try { dispatchEvent(new CustomEvent('luliy:intro-complete')); } catch (e) {}
+        setTimeout(function () { el.remove(); style.remove(); }, 500);
+      }); });
+    }, Math.max(0, 700 - (Date.now() - t0)));
   }
   function check() {
     if (gone) return;
-    var main = document.getElementById('main'), now = Date.now();
-    if ((main && main.firstElementChild && now - shown >= 700) || (parsed && now - parsed >= 1500)) { done(); return; }
+    if (fontsOk && ready()) { lift('ready'); return; }
     setTimeout(check, 80);
   }
-  document.addEventListener('DOMContentLoaded', function () { parsed = Date.now(); check(); });
-  setTimeout(done, 6000); // never stay up, whatever happens
+  var r0 = route(), cap = setTimeout(lift, r0 === 'books' || r0 === 'music' ? 8000 : 6000);
+  check();
 })();
 
 /* Mainland China: raw.githubusercontent.com (article list, article bodies, about page, photos) is often blocked there,

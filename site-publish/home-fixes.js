@@ -1803,7 +1803,8 @@
         }
       }));
     };
-    if (isRoom()) show();
+    // A direct visit is already covered by the site loader (home-early.js), which waits for the same room signals.
+    if (isRoom() && !(window.LuliySiteLoader && window.LuliySiteLoader.active)) show();
 
     // forceContextLoss() from the scenes being torn down: run it once the room is showing and the
     // browser is idle. The scenes have already disposed their buffers and textures and removed their
