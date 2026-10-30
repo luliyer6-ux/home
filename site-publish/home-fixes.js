@@ -2762,7 +2762,7 @@
     const tagsOf = item => item.labels.filter(l => l.toLowerCase() !== 'journal' && !isPin(l));
     const buildNote = (item, single) => {
       const a = el('article', 'lj-note'); a.id = 'note-' + item.id; a.dataset.id = item.id; a.setAttribute('aria-busy', 'true');
-      const avatar = el('img', 'lj-avatar'); avatar.src = '/assets/avatar/luliy.webp?v=2'; avatar.alt = ''; avatar.width = 40; avatar.height = 40; avatar.decoding = 'async';
+      const avatar = el('img', 'lj-avatar'); avatar.src = '/assets/avatar/luliy.webp?v=3'; avatar.alt = ''; avatar.width = 40; avatar.height = 40; avatar.decoding = 'async';
       const col = el('div', 'lj-col');
       const head = el('header', 'lj-head');
       head.append(el('strong', 'lj-name', 'Luliy'));
@@ -2909,7 +2909,7 @@
 
         /* side: profile card, activity grid, search, tags */
         const card = el('div', 'lj-card');
-        const av = el('img', 'lj-card-avatar'); av.src = '/assets/avatar/luliy.webp?v=2'; av.alt = ''; av.width = 72; av.height = 72; av.decoding = 'async';
+        const av = el('img', 'lj-card-avatar'); av.src = '/assets/avatar/luliy.webp?v=3'; av.alt = ''; av.width = 72; av.height = 72; av.decoding = 'async';
         const stats = el('dl', 'lj-stats');
         [[L('短札', 'Notes', '短札'), items.length], [L('标签', 'Tags', 'タグ'), counts.size], [L('天', 'Days', '日'), days.size]].forEach(([k, v]) => { const d = el('div'); d.append(el('dt', null, k), el('dd', null, String(v))); stats.append(d); });
         const social = el('div', 'lj-social');
