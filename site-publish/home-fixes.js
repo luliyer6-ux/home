@@ -2372,13 +2372,22 @@
   })();
 
   /* 27. Reading-page mascot (2026-10-30): the gold leaf-hair figure from the Luliy logo animation, cut out of the
-     background (assets/mascot/). Reading pages only (#/article/, #/post/), desktop only, and only when the
-     left margin beside the article is wide enough. She plays the animation once when an article opens, then
-     rests on the logo pose; hover or click replays it and she says a line. Hidden choice is remembered.
-     Reduced motion / Save-Data: the still image only. Revert = delete this block and its CSS. */
+     background (assets/mascot/). Reading pages only (#/article/, #/post/), desktop only, and only when the left
+     margin beside the article is wide enough.
+     She is drawn on a canvas from a 70-frame sheet (15 fps) and driven like a scrubber:
+       - when an article opens she plays the whole clip once, then rests on the logo pose;
+       - hovering the contents button turns her to the front and she holds there (and keeps holding while the
+         contents panel is open); hovering the back-to-top button turns her to the far pose and holds;
+         leaving a button winds her back to the resting pose;
+       - hovering her or clicking her replays the clip and she says a line.
+     Reduced motion / Save-Data: no sheet is fetched; three still poses cross-fade instead.
+     Her button column also carries the article's contents + back-to-top buttons (the article's own two floating
+     buttons are hidden by CSS while she is on screen). Revert = delete this block and its CSS. */
   (() => {
     const root = document.documentElement;
-    const REST = '/assets/mascot/luliy-rest.webp', ANIM = '/assets/mascot/luliy-anim.webp', DURATION = 4650;
+    const BASE = '/assets/mascot/';
+    const REST = BASE + 'luliy-rest.webp?v=2', FRONT = BASE + 'luliy-front.webp', TURN = BASE + 'luliy-turn.webp', ATLAS = BASE + 'luliy-atlas.webp';
+    const FW = 320, FH = 262, COLS = 10, NF = 70, FPS = 15, F_FRONT = 22, F_TURN = 45;
     const KEY = 'luliy-mascot-hidden';
     const WIDE = matchMedia('(min-width: 1180px) and (pointer: fine)');
     const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches || root.classList.contains('luliy-save-data');
@@ -2398,31 +2407,110 @@
         '<button type="button" data-m="hide" aria-label="收起看板娘" title="收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
       '</div>' +
       '<div class="luliy-mascot-stage" role="button" tabindex="0" aria-label="看板娘，点一下和她说话">' +
-        '<img class="luliy-mascot-rest" src="' + REST + '" alt="" decoding="async" width="320" height="320"><span class="luliy-mascot-anim"></span>' +
+        '<img class="luliy-mascot-rest" src="' + REST + '" alt="" decoding="async" width="' + FW + '" height="' + FH + '">' +
+        '<canvas class="luliy-mascot-canvas" width="' + FW + '" height="' + FH + '" aria-hidden="true"></canvas>' +
       '</div>';
     const peek = document.createElement('button');
     peek.type = 'button';
     peek.className = 'luliy-mascot-peek';
     peek.hidden = true;
     peek.textContent = '召唤看板娘';
-    const stage = box.querySelector('.luliy-mascot-stage'), bubble = box.querySelector('.luliy-mascot-bubble'), slot = box.querySelector('.luliy-mascot-anim');
+    const stage = box.querySelector('.luliy-mascot-stage'), bubble = box.querySelector('.luliy-mascot-bubble');
+    const canvas = box.querySelector('canvas'), ctx = canvas.getContext('2d');
+    const tocBtn = box.querySelector('[data-m="toc"]'), topBtn = box.querySelector('[data-m="top"]');
 
-    /* Animation: a fresh <img> restarts the play-once WebP. Fetched only when first needed. */
-    let busy = false;
-    function play() {
-      if (busy || still() || box.hidden) return;
-      busy = true;
-      const img = new Image();
-      img.alt = ''; img.decoding = 'async';
-      img.onload = () => {
-        slot.replaceChildren(img);
-        requestAnimationFrame(() => box.classList.add('is-playing'));
-        setTimeout(() => { box.classList.remove('is-playing'); setTimeout(() => { slot.replaceChildren(); busy = false; }, 300); }, DURATION);
-      };
-      img.onerror = () => { busy = false; };
-      img.src = ANIM;
+    /* ---------- the scrubber ---------- */
+    let atlas = null, loading = false, pos = 0, target = 0, spd = 1, mode = 'idle', raf = 0, lastT = 0, fade = 0, drawn = -1;
+    let hoverToc = false, hoverTop = false, tocOpen = false, stillsReady = false;
+
+    function draw(i) {
+      i = Math.max(0, Math.min(NF - 1, Math.round(i)));
+      if (i === drawn || !atlas) return;
+      drawn = i;
+      ctx.clearRect(0, 0, FW, FH);
+      ctx.drawImage(atlas, (i % COLS) * FW, ((i / COLS) | 0) * FH, FW, FH, 0, 0, FW, FH);
     }
+    function loadAtlas() {
+      if (atlas || loading || still()) return;
+      loading = true;
+      const im = new Image();
+      im.decoding = 'async';
+      im.onload = () => {
+        (im.decode ? im.decode() : Promise.resolve()).catch(() => {}).then(() => {
+          atlas = im; drawn = -1; draw(pos);
+          requestAnimationFrame(() => box.classList.add('has-canvas')); // hide the still only after the canvas shows the same frame
+          retarget();
+        });
+      };
+      im.onerror = () => { loading = false; };
+      im.src = ATLAS;
+    }
+    function kick() { if (!raf && atlas) { lastT = performance.now(); raf = requestAnimationFrame(tick); } }
+    function tick(now) {
+      raf = 0;
+      const dt = Math.min(.05, (now - lastT) / 1000); lastT = now;
+      if (mode === 'wrap') { // end of the full clip: dissolve from its last frame into the resting frame
+        fade += dt / .35;
+        const k = Math.min(1, fade);
+        ctx.clearRect(0, 0, FW, FH);
+        ctx.globalAlpha = 1; ctx.drawImage(atlas, ((NF - 1) % COLS) * FW, (((NF - 1) / COLS) | 0) * FH, FW, FH, 0, 0, FW, FH);
+        ctx.globalAlpha = k; ctx.drawImage(atlas, 0, 0, FW, FH, 0, 0, FW, FH);
+        ctx.globalAlpha = 1; drawn = -1;
+        if (k >= 1) { pos = 0; target = 0; mode = 'idle'; draw(0); retarget(); return; }
+        raf = requestAnimationFrame(tick); return;
+      }
+      const dist = target - pos;
+      if (Math.abs(dist) > 1e-3) {
+        let v = FPS * spd;
+        if (mode === 'hover') v *= Math.max(.35, Math.min(1, Math.abs(dist) / 4)); // ease into the held frame
+        pos += Math.sign(dist) * Math.min(Math.abs(dist), v * dt);
+        draw(pos);
+      }
+      if (Math.abs(target - pos) <= 1e-3) {
+        pos = target; draw(pos);
+        if (mode === 'intro') { mode = 'wrap'; fade = 0; raf = requestAnimationFrame(tick); }
+        else if (pos === 0) mode = 'idle';
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    function wanted() { return hoverTop ? F_TURN : (hoverToc || tocOpen) ? F_FRONT : 0; }
+    function ensureStills() {
+      if (stillsReady) return;
+      stillsReady = true;
+      [['front', FRONT], ['turn', TURN]].forEach(([name, src]) => {
+        const im = new Image();
+        im.className = 'luliy-mascot-pose'; im.dataset.pose = name; im.alt = ''; im.decoding = 'async'; im.src = src;
+        stage.appendChild(im);
+      });
+    }
+    function retarget() {
+      if (box.hidden) return;
+      const f = wanted();
+      if (still()) { ensureStills(); stage.dataset.pose = f === F_FRONT ? 'front' : f === F_TURN ? 'turn' : 'rest'; return; }
+      if (!atlas) { if (f) loadAtlas(); return; }
+      if (mode === 'wrap') return;                       // finishes by itself, then calls retarget() again
+      if (mode === 'intro' && f === 0) return;           // nobody is hovering: let the opening clip finish
+      if (f === target && mode !== 'idle') return;
+      mode = 'hover'; target = f; spd = f >= pos ? 1.7 : 2.0;
+      kick();
+    }
+    function playIntro() {
+      if (box.hidden || still()) return;
+      if (!atlas) { loadAtlas(); return; }
+      if (mode !== 'idle' || pos !== 0 || wanted() !== 0) return;
+      mode = 'intro'; target = NF - 1; spd = 1;
+      kick();
+    }
+    function reset() {
+      cancelAnimationFrame(raf); raf = 0; pos = 0; target = 0; mode = 'idle'; hoverToc = hoverTop = false;
+      if (atlas) { drawn = -1; draw(0); }
+      stage.dataset.pose = 'rest';
+    }
+    // The sheet is fetched when she first appears (after the page is idle); it is never fetched in still mode.
+    function warm() { (window.requestIdleCallback || (f => setTimeout(f, 1200)))(() => loadAtlas()); }
 
+    /* ---------- words ---------- */
     const lines = [
       '慢慢读，不着急。',
       '若不知走哪，请注重脚下。',
@@ -2453,21 +2541,37 @@
       stage.style.transform = 'rotateY(' + (dx * 9).toFixed(2) + 'deg) rotateX(' + (-dy * 5).toFixed(2) + 'deg)';
     }, { passive: true });
 
-    stage.addEventListener('mouseenter', play);
-    stage.addEventListener('click', () => { play(); talk(); });
-    stage.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); talk(); } });
-    /* Contents + back-to-top live here on wide screens (the article's own two floating buttons are hidden by CSS
-       while she is on screen). The contents button drives the article's real toggle, so its panel, scroll-spy
-       and Esc/close behaviour stay exactly as they were. */
-    const tocBtn = box.querySelector('[data-m="toc"]');
+    stage.addEventListener('mouseenter', playIntro);
+    stage.addEventListener('click', () => { playIntro(); talk(); });
+    stage.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playIntro(); talk(); } });
+
+    /* ---------- contents + back-to-top ----------
+       The contents button drives the article's real toggle, so its panel, scroll-spy and Esc/close behaviour stay
+       exactly as they were. */
     const realToggle = () => document.querySelector('#main .reader-toc-toggle');
-    let tocOpen = false;
     function reflect() {
       const t = realToggle();
       tocBtn.hidden = !t || t.hidden;
+      const was = tocOpen;
       tocOpen = !!t && t.getAttribute('aria-expanded') === 'true';
       tocBtn.setAttribute('aria-expanded', String(tocOpen));
       tocBtn.classList.toggle('is-active', tocOpen);
+      root.classList.toggle('luliy-toc-open', tocOpen && !box.hidden);
+      if (was !== tocOpen) retarget();
+    }
+    /* A small count beside the panel title, e.g. "6 节". */
+    function decoratePanel() {
+      const title = document.querySelector('#readerToc > p > span:first-child');
+      if (!title) return;
+      // count the sections at the top level only (the lowest heading number present), not every sub-heading
+      const items = [...document.querySelectorAll('#readerToc .reader-toc-item')];
+      const lv = it => +((/level-h(\d)/.exec(it.className) || [])[1] || 9);
+      const top = items.length ? Math.min(...items.map(lv)) : 0;
+      const n = items.filter(it => lv(it) === top).length;
+      let chip = title.querySelector('.luliy-toc-count');
+      if (!chip) { chip = document.createElement('span'); chip.className = 'luliy-toc-count'; title.appendChild(chip); }
+      const txt = !n ? '' : /^zh/.test(root.lang) ? T(n + ' 节') : String(n);
+      if (chip.textContent !== txt) chip.textContent = txt;
     }
     tocBtn.addEventListener('click', e => {
       e.stopPropagation(); // the article closes its contents on any click outside the panel and its own button
@@ -2475,9 +2579,16 @@
       if (t) t.click();
       requestAnimationFrame(reflect);
     });
-    box.querySelector('[data-m="top"]').addEventListener('click', () => {
-      scrollTo({ top: 0, behavior: still() ? 'auto' : 'smooth' });
-    });
+    topBtn.addEventListener('click', () => { scrollTo({ top: 0, behavior: still() ? 'auto' : 'smooth' }); });
+    // Hover or keyboard focus on a button sets her pose (mouse-click focus does not count).
+    function bindPose(btn, set) {
+      btn.addEventListener('pointerenter', () => { set(true); retarget(); });
+      btn.addEventListener('pointerleave', () => { set(false); retarget(); });
+      btn.addEventListener('focus', () => { if (btn.matches(':focus-visible')) { set(true); retarget(); } });
+      btn.addEventListener('blur', () => { set(false); retarget(); });
+    }
+    bindPose(tocBtn, v => { hoverToc = v; });
+    bindPose(topBtn, v => { hoverTop = v; });
     // The article's close button and Esc return focus to its own (now hidden) toggle; hand it to ours instead.
     const refocus = () => requestAnimationFrame(() => {
       const was = tocOpen; reflect();
@@ -2485,8 +2596,9 @@
     });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && tocOpen) refocus(); });
     document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.reader-toc-close')) refocus(); else requestAnimationFrame(reflect); }, true);
+
     box.querySelector('[data-m="hide"]').addEventListener('click', () => { write(true); sync(); peek.focus(); });
-    peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { play(); say('我回来了。', 2400); }, 350); });
+    peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { playIntro(); say('我回来了。', 2400); }, 350); });
 
     /* Show only where there is room: a reading page, a wide screen, and a left margin beside the article. */
     function room() {
@@ -2498,14 +2610,17 @@
       frame = 0;
       const on = reading() && WIDE.matches && room();
       const hidden = read();
+      const wasHidden = box.hidden;
       box.hidden = !on || hidden;
       peek.hidden = !on || !hidden;
       root.classList.toggle('luliy-mascot-on', !box.hidden); // CSS hides the article's own floating buttons while she carries them
-      if (box.hidden) { bubble.classList.remove('show'); return; }
+      if (box.hidden) { bubble.classList.remove('show'); root.classList.remove('luliy-toc-open'); if (!wasHidden) reset(); return; }
+      if (wasHidden) warm();
       reflect();
+      decoratePanel();
       if (location.hash !== lastHash) {
         lastHash = location.hash;
-        setTimeout(() => { play(); if (!greeted) { greeted = true; greet(); } }, 900);
+        setTimeout(() => { playIntro(); if (!greeted) { greeted = true; greet(); } }, 900);
       }
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
@@ -2515,6 +2630,7 @@
       addEventListener('hashchange', schedule);
       addEventListener('resize', schedule, { passive: true });
       if (WIDE.addEventListener) WIDE.addEventListener('change', schedule);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
       const main = document.querySelector('#main');
       if (main) new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
       schedule();

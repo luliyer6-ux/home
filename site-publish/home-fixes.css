@@ -1615,22 +1615,28 @@ html body #header .brand-group button.brand-page-name { padding-block: 4px; marg
 .luliy-mascot { position: fixed; left: 14px; bottom: 10px; width: 190px; z-index: 30; perspective: 700px; user-select: none; -webkit-user-select: none; }
 html.lm-bar-mode body.lm-player-visible .luliy-mascot { bottom: calc(var(--lm-bar-space, 0px) + 8px); }
 .luliy-mascot[hidden], .luliy-mascot-peek[hidden] { display: none !important; }
-.luliy-mascot-stage { position: relative; aspect-ratio: 1; cursor: pointer; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
-.luliy-mascot-stage::before { content: ""; position: absolute; inset: 24% 18% 10%; border-radius: 50%; pointer-events: none;
+.luliy-mascot-stage { position: relative; aspect-ratio: 320 / 262; cursor: pointer; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.luliy-mascot-stage::before { content: ""; position: absolute; inset: 14% 18% 4%; border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle, rgba(226,194,126,.15), transparent 70%); animation: luliy-mascot-glow 5s ease-in-out infinite; }
 @keyframes luliy-mascot-glow { 0%,100% { opacity: .5; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.04); } }
-.luliy-mascot-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
-.luliy-mascot-anim img { opacity: 0; transition: opacity .25s; }
-.luliy-mascot.is-playing .luliy-mascot-anim img { opacity: 1; }
-.luliy-mascot.is-playing .luliy-mascot-rest { opacity: 0; transition: opacity .25s .1s; }
+.luliy-mascot-stage :is(img, canvas) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
+/* canvas mode: once the sheet is decoded the canvas draws everything and the still underneath is hidden */
+.luliy-mascot-canvas { opacity: 0; }
+.luliy-mascot.has-canvas .luliy-mascot-canvas { opacity: 1; }
+.luliy-mascot.has-canvas .luliy-mascot-rest { opacity: 0; }
+/* still mode (reduced motion / Save-Data): three poses cross-fade */
+.luliy-mascot-pose { opacity: 0; transition: opacity .28s ease; }
+.luliy-mascot-rest { transition: opacity .28s ease; }
+.luliy-mascot-stage[data-pose="front"] .luliy-mascot-rest, .luliy-mascot-stage[data-pose="turn"] .luliy-mascot-rest { opacity: 0; }
+.luliy-mascot-stage[data-pose="front"] .luliy-mascot-pose[data-pose="front"], .luliy-mascot-stage[data-pose="turn"] .luliy-mascot-pose[data-pose="turn"] { opacity: 1; }
 .luliy-mascot-stage:focus-visible { outline: 2px solid var(--accent, #d4af37); outline-offset: 2px; border-radius: 12px; }
-.luliy-mascot-bubble { position: absolute; left: 8px; width: 230px; bottom: calc(100% - 14px); padding: 10px 14px; border-radius: 12px;
+.luliy-mascot-bubble { position: absolute; left: 8px; width: 230px; bottom: calc(100% + 2px); padding: 10px 14px; border-radius: 12px;
   background: rgba(10,15,28,.94); border: 1px solid rgba(226,194,126,.34); color: #ece6d6; font-size: 13.5px; line-height: 1.6;
   box-shadow: 0 8px 28px rgba(0,0,0,.45); opacity: 0; transform: translateY(6px); transition: opacity .35s, transform .35s; pointer-events: none; }
 .luliy-mascot-bubble.show { opacity: 1; transform: none; }
 .luliy-mascot-bubble::after { content: ""; position: absolute; left: 60px; bottom: -6px; width: 10px; height: 10px; background: inherit;
   border-right: 1px solid rgba(226,194,126,.34); border-bottom: 1px solid rgba(226,194,126,.34); transform: rotate(45deg); }
-.luliy-mascot-tools { position: absolute; right: -18px; bottom: 30px; display: flex; flex-direction: column; gap: 6px; opacity: 0; transition: opacity .3s; }
+.luliy-mascot-tools { position: absolute; right: -18px; bottom: 24px; display: flex; flex-direction: column; gap: 6px; opacity: 0; transition: opacity .3s; }
 .luliy-mascot:hover .luliy-mascot-tools, .luliy-mascot:focus-within .luliy-mascot-tools { opacity: 1; }
 .luliy-mascot-tools button, .luliy-mascot-peek { border: 1px solid rgba(226,194,126,.34); background: rgba(10,15,28,.86); color: #e2c27e; cursor: pointer; }
 .luliy-mascot-tools button { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; padding: 0; }
@@ -1668,11 +1674,63 @@ html.lm-bar-mode body.lm-player-visible .luliy-mascot-peek { bottom: calc(var(--
   .luliy-mascot-tools button[hidden] { display: none; }
   .luliy-mascot-tools button.is-active { background: rgba(226,194,126,.24); }
   /* the contents panel opens right above her instead of at the top-left */
-  html.luliy-mascot-on #main :is(.source-toc, .article-toc) { left: 14px !important; top: auto !important; bottom: 256px !important;
-    max-height: min(55dvh, calc(100dvh - 330px)) !important; transform-origin: bottom left; }
-  html.lm-bar-mode.luliy-mascot-on body.lm-player-visible #main :is(.source-toc, .article-toc) { bottom: calc(var(--lm-bar-space, 0px) + 256px) !important; }
+  html.luliy-mascot-on #main :is(.source-toc, .article-toc) { left: 14px !important; top: auto !important; bottom: 188px !important;
+    max-height: min(62dvh, calc(100dvh - 260px)) !important; transform-origin: 90px 100%; }
+  html.lm-bar-mode.luliy-mascot-on body.lm-player-visible #main :is(.source-toc, .article-toc) { bottom: calc(var(--lm-bar-space, 0px) + 188px) !important; }
+  html.luliy-toc-open .luliy-mascot-bubble { opacity: 0 !important; }
 }
 
 /* 30. Behind her the artwork is pressed down a little, so she reads as a figure and not as a sticker on a busy picture. */
 body.luliy-article-bg-on .luliy-mascot::before { content: ""; position: absolute; inset: -16% -34% -10% -34%; z-index: -1; pointer-events: none;
   background: radial-gradient(closest-side, rgba(5,8,18,.76) 0%, rgba(5,8,18,.56) 52%, rgba(5,8,18,0) 100%); }
+
+
+/* 31. Contents panel, redesigned (desktop, with the mascot): a larger version of her speech bubble.
+   Header = title + count; middle = a timeline of sections (a gold dot marks where you are); footer = the tools. */
+@media (min-width: 1180px) and (pointer: fine) {
+  html.luliy-mascot-on #main .source-toc {
+    --tc-bg: rgba(10,15,28,.95); --tc-line: rgba(226,194,126,.34); --tc-gold: #e2c27e; --tc-ink: #ece6d6; --tc-mute: rgba(236,230,214,.64);
+    width: 312px !important; padding: 0 !important; overflow: visible !important;
+    display: flex !important; flex-direction: column;
+    background: var(--tc-bg) !important; border: 1px solid var(--tc-line) !important; border-radius: 16px !important;
+    box-shadow: 0 18px 50px rgba(0,0,0,.55) !important; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    transform: translateY(10px) scale(.97); transition: opacity .22s ease, transform .26s cubic-bezier(.2,.8,.2,1), visibility .22s;
+  }
+  html.luliy-mascot-on #main .source-toc.is-open { transform: none; }
+  /* the tail points down at her */
+  html.luliy-mascot-on #main .source-toc::after { content: ""; position: absolute; left: 84px; bottom: -7px; width: 12px; height: 12px;
+    background: var(--tc-bg); border-right: 1px solid var(--tc-line); border-bottom: 1px solid var(--tc-line); transform: rotate(45deg); }
+  /* the old header row dissolves: title on top, tools at the bottom, close in the corner */
+  html.luliy-mascot-on #main .source-toc > p { display: contents; border: 0; }
+  html.luliy-mascot-on #main .source-toc > p > span:first-child { order: 0; display: flex; align-items: baseline; gap: 10px;
+    padding: 16px 52px 10px 20px; font-size: 14px; letter-spacing: .14em; color: var(--tc-ink); }
+  .luliy-toc-count { font-size: 11.5px; letter-spacing: .06em; color: var(--tc-mute); opacity: .8; font-weight: 400; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-close { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; }
+  /* list */
+  html.luliy-mascot-on #main .source-toc nav { order: 5; flex: 1 1 auto; min-height: 90px; max-height: none !important; overflow: auto;
+    padding: 4px 12px 10px 18px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.16) transparent;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 calc(100% - 20px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 calc(100% - 20px), transparent 100%); }
+  html.luliy-mascot-on #main .source-toc .reader-toc-tree, html.luliy-mascot-on #main .source-toc .reader-toc-tree ul { list-style: none; margin: 0; padding: 0; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-tree { position: relative; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-tree::before { content: ""; position: absolute; left: 5px; top: 14px; bottom: 14px; width: 1px; background: rgba(255,255,255,.14); }
+  html.luliy-mascot-on #main .source-toc .reader-toc-row { position: relative; display: flex; align-items: flex-start; padding-left: 20px; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-row::before { content: ""; position: absolute; left: 0; top: 13px; width: 11px; height: 11px; box-sizing: border-box;
+    border-radius: 50%; background: var(--tc-bg); border: 1.5px solid rgba(255,255,255,.32); transition: background .2s, border-color .2s, box-shadow .2s; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-row:has(.level-h3, .level-h4, .level-h5, .level-h6)::before { left: 2.5px; top: 15px; width: 6px; height: 6px; border-width: 1px; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-row:has(.current)::before { background: var(--tc-gold); border-color: var(--tc-gold); box-shadow: 0 0 0 4px rgba(226,194,126,.18); }
+  html.luliy-mascot-on #main .source-toc .reader-toc-item { flex: 1 1 auto; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+    padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; text-align: left; font-size: 13.5px; line-height: 1.55; color: var(--tc-mute); transition: color .18s, background .18s; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-item:hover { color: var(--tc-ink); background: rgba(255,255,255,.05); }
+  html.luliy-mascot-on #main .source-toc .reader-toc-item.current { color: var(--tc-gold); background: transparent; font-weight: 500; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-item.level-h3, html.luliy-mascot-on #main .source-toc .reader-toc-item.level-h4,
+  html.luliy-mascot-on #main .source-toc .reader-toc-item.level-h5, html.luliy-mascot-on #main .source-toc .reader-toc-item.level-h6 { padding-left: 16px; font-size: 12.5px; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-fold { order: 3; margin-left: auto; flex: none; align-self: flex-start; margin-top: 4px; }
+  html.luliy-mascot-on #main .source-toc .reader-toc-empty { display: block; padding: 8px 4px; font-size: 13px; color: var(--tc-mute); }
+  /* the panels the tools open sit just above the tools */
+  html.luliy-mascot-on #main .source-toc .reader-tool-panels, html.luliy-mascot-on #main .source-toc .luliy-bg-panel { order: 8; margin: 0 14px 8px; }
+  html.luliy-mascot-on #main .source-toc .luliy-bg-panel { padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); border-bottom: 0 !important; margin-bottom: 0; }
+  /* tools: one quiet row at the bottom */
+  html.luliy-mascot-on #main .source-toc .reader-tools { order: 9; display: flex; align-items: center; gap: 4px; padding: 8px 12px 10px; border-top: 1px solid rgba(255,255,255,.08); }
+  html.luliy-mascot-on #main .source-toc .reader-tools button { border-radius: 8px; }
+}
