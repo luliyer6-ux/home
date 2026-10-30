@@ -3039,8 +3039,24 @@
       const at = tabs.findIndex(a => a.hasAttribute('aria-current'));
       const next = tabs[at + (dx < 0 ? 1 : -1)];
       if (at < 0 || !next) return;
+      slide(dx < 0 ? 'next' : 'prev');
       location.hash = next.getAttribute('href');
     }, { passive: true });
+    // the new tab's content slides in a little from the side it came from (CSS: html[data-lj-slide])
+    let slideTimer = 0;
+    function slide(dir) {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      root.dataset.ljSlide = dir;
+      clearTimeout(slideTimer);
+      slideTimer = setTimeout(() => { delete root.dataset.ljSlide; }, 600);
+    }
+    addEventListener('animationend', e => { if (/^luliy-slide-/.test(e.animationName)) delete root.dataset.ljSlide; }, true);
+    document.addEventListener('click', e => {
+      const a = e.target.closest && e.target.closest('#header .luliy-header-modes a');
+      if (!a || !mobile.matches) return;
+      const tabs = [...a.parentElement.querySelectorAll('a')], at = tabs.findIndex(x => x.hasAttribute('aria-current')), to = tabs.indexOf(a);
+      if (at >= 0 && to >= 0 && at !== to) slide(to > at ? 'next' : 'prev');
+    }, true);
   })();
 
 })();

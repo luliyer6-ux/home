@@ -1849,3 +1849,11 @@ body.lj-viewing { overflow: hidden; }
 }
 @media (min-width: 1001px) and (max-height: 860px) { .lj-side { position: static; } }
 .lj-nowrap { white-space: nowrap; }
+
+/* 33. Phones: a switched header tab slides its content in a little from the side it came from (2026-10-30). */
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+  html[data-lj-slide=next] #main .post-archive { animation: luliy-slide-next .26s cubic-bezier(.22, .8, .3, 1) both; }
+  html[data-lj-slide=prev] #main .post-archive { animation: luliy-slide-prev .26s cubic-bezier(.22, .8, .3, 1) both; }
+}
+@keyframes luliy-slide-next { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes luliy-slide-prev { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
