@@ -2393,7 +2393,8 @@
     box.innerHTML =
       '<div class="luliy-mascot-bubble" role="status" aria-live="polite"></div>' +
       '<div class="luliy-mascot-tools">' +
-        '<button type="button" data-m="talk" aria-label="说句话" title="说句话"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></button>' +
+        '<button type="button" data-m="toc" aria-label="文章目录" aria-expanded="false" title="目录"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>' +
+        '<button type="button" data-m="top" aria-label="回到顶部" title="回到顶部"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>' +
         '<button type="button" data-m="hide" aria-label="收起看板娘" title="收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
       '</div>' +
       '<div class="luliy-mascot-stage" role="button" tabindex="0" aria-label="看板娘，点一下和她说话">' +
@@ -2425,7 +2426,7 @@
     const lines = [
       '慢慢读，不着急。',
       '若不知走哪，请注重脚下。',
-      '右边的目录可以换背景，也能调遮罩深浅。',
+      '点我旁边的目录按钮，可以换背景、调字体。',
       '读累了就休息一下，眼睛也需要留白。',
       '喜欢哪一节，可以点标题旁的链接分享。',
       '今天也有在进步吗？哪怕一点点也好。'
@@ -2455,7 +2456,35 @@
     stage.addEventListener('mouseenter', play);
     stage.addEventListener('click', () => { play(); talk(); });
     stage.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); talk(); } });
-    box.querySelector('[data-m="talk"]').addEventListener('click', talk);
+    /* Contents + back-to-top live here on wide screens (the article's own two floating buttons are hidden by CSS
+       while she is on screen). The contents button drives the article's real toggle, so its panel, scroll-spy
+       and Esc/close behaviour stay exactly as they were. */
+    const tocBtn = box.querySelector('[data-m="toc"]');
+    const realToggle = () => document.querySelector('#main .reader-toc-toggle');
+    let tocOpen = false;
+    function reflect() {
+      const t = realToggle();
+      tocBtn.hidden = !t || t.hidden;
+      tocOpen = !!t && t.getAttribute('aria-expanded') === 'true';
+      tocBtn.setAttribute('aria-expanded', String(tocOpen));
+      tocBtn.classList.toggle('is-active', tocOpen);
+    }
+    tocBtn.addEventListener('click', e => {
+      e.stopPropagation(); // the article closes its contents on any click outside the panel and its own button
+      const t = realToggle();
+      if (t) t.click();
+      requestAnimationFrame(reflect);
+    });
+    box.querySelector('[data-m="top"]').addEventListener('click', () => {
+      scrollTo({ top: 0, behavior: still() ? 'auto' : 'smooth' });
+    });
+    // The article's close button and Esc return focus to its own (now hidden) toggle; hand it to ours instead.
+    const refocus = () => requestAnimationFrame(() => {
+      const was = tocOpen; reflect();
+      if (was && !tocOpen && !box.hidden && (document.activeElement === document.body || !document.activeElement)) tocBtn.focus({ preventScroll: true });
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && tocOpen) refocus(); });
+    document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.reader-toc-close')) refocus(); else requestAnimationFrame(reflect); }, true);
     box.querySelector('[data-m="hide"]').addEventListener('click', () => { write(true); sync(); peek.focus(); });
     peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { play(); say('我回来了。', 2400); }, 350); });
 
@@ -2471,7 +2500,9 @@
       const hidden = read();
       box.hidden = !on || hidden;
       peek.hidden = !on || !hidden;
+      root.classList.toggle('luliy-mascot-on', !box.hidden); // CSS hides the article's own floating buttons while she carries them
       if (box.hidden) { bubble.classList.remove('show'); return; }
+      reflect();
       if (location.hash !== lastHash) {
         lastHash = location.hash;
         setTimeout(() => { play(); if (!greeted) { greeted = true; greet(); } }, 900);
