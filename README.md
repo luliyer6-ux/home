@@ -1,6 +1,6 @@
 # LULIY 网站搭建、构建与维护指南
 
-核对日期：2026-10-24。本文依据本地源码说明、`luliyer6-ux/home` 仓库现状、Cloudflare Pages 实际部署与线上检查整理。上一版（2026-10-19）的内容全部保留并补充；2026-10-24 新增：唱片与作品列表改为数据文件驱动，不再需要本机 `build-preview.py` 才能改列表（见 7.4 节）。
+核对日期：2026-10-30。本文依据本地源码说明、`luliyer6-ux/home` 仓库现状、Cloudflare Pages 实际部署与线上检查整理。上一版（2026-10-19）的内容全部保留并补充；2026-10-24 新增：唱片与作品列表改为数据文件驱动，不再需要本机 `build-preview.py` 才能改列表（见 7.4 节）；2026-10-30 新增：站内加载页、首次访问开场视频、看板娘、评论区、短札、文章页背景等**直接在仓库里维护**的功能（见第 15 节）。
 
 ---
 
@@ -17,6 +17,9 @@
 | 回退 | Git 回退提交，或在 Pages 部署历史里把旧部署设为正式 | 第 9 节 |
 | 网盘出问题 | 查 Worker、会话、回调来源；与静态站无关 | 第 8、11 节 |
 | 换电脑 | 带走源工程和**原始 HTML 快照**，修改快照路径 | 第 3、12 节 |
+| 看开场视频 / 加载页 | 打开 `https://luliy.me/?intro=1`；`?loader=0` 跳过加载页（调试用） | 第 15.1 节 |
+| 评论区没出现 | 检查 Giscus 配置与 Discussions 是否开启 | 第 15.3 节 |
+| 文章页想默认带背景 | 改 `home-fixes.js` 第 24 段的 `DEFAULT_CHOICE` | 第 15.5 节 |
 
 **三条铁律**
 
@@ -675,6 +678,9 @@ python site-publish/generate.py preview
 | `/assets/site/*` | 缓存一年，内容不变（immutable） | 文件名就是内容哈希 |
 | `/feed.xml`、`/site-publish/article.css`、`/404.html` | 缓存 5 分钟 | 偶尔更新 |
 | `/favicon.ico` | 缓存 7 天 | 很少更新 |
+| `/site-publish/home-fixes.js`、`home-fixes.css` | 缓存一年，内容不变（immutable） | 首页引用时带 `?v=<内容哈希>`，内容变哈希就变（2026-10-30 起） |
+| `/assets/mascot/loader-*`、`intro-*` | 缓存一年，内容不变 | 文件名含内容哈希 |
+| `/assets/mascot/luliy-*`、`/backgrounds/*` | 缓存 7 天 | 文件名不含哈希；**替换同名文件后，老访客最长 7 天看到旧图**，要立刻生效就换文件名或加 `?v=` |
 | `/mirror/*` | 缓存 5 分钟，`noindex`，`nosniff` | 备份副本不进搜索结果（`robots.txt` 也写了 `Disallow: /mirror/`） |
 | 其他（含 `index.html`） | Pages 默认：每次向服务器确认 | 保证改动立即可见 |
 
@@ -778,7 +784,10 @@ python site-publish/generate.py preview
 | 字体变了、图片缺失 | HTML 引用的指纹文件是否存在；`assets/` 是否完整上传；字体是否真的加载成功 |
 | `assets/site/home/*.js` 返回 404 | `optimize-home.py` 生成的文件没有一起提交 |
 | 某个旧地址变成 404 | 是否需要在 `_redirects` 里加改写规则 |
-| 改了开场看不到效果 | 7 天内不会再显示开场；用 `?intro=1` |
+| 改了开场看不到效果 | 开场视频 7 天内只播一次；用 `?intro=1` 强制播放（见 15.1） |
+| 本地起静态服务器时控制台一堆 `/gh/...` 404 | 正常：`/gh/` 是 Cloudflare Pages Function（9.4），本地 `python -m http.server` 没有它；线上不受影响 |
+| 文章页没有背景图 | 2026-10-30 起默认无背景；在文章目录里点背景按钮选择。你的浏览器若存过选择会一直保留，点“恢复默认”清除（见 15.5） |
+| 首页加载页停很久 | 加载页有超时上限（路由 6–8 秒、开场 20 秒）；检查 `cloud.luliy.me` 与 GitHub 图片是否可达（见 15.1） |
 | 运行优化脚本时提示 `patch skipped` | 源工程里对应的代码变了，需要更新脚本里的 `PATCHES` |
 | DOCX、PDF 等阅读组件加载失败 | `assets/drive` 是否漏传；请求是否返回 404 或 HTML 错误页 |
 | 原博客已更新，独立文章还是旧的 | Actions 是否运行成功；对应的 Pages 部署是否完成 |
@@ -799,6 +808,8 @@ python site-publish/generate.py preview
 5. **`works/jingzhong/_worker.js`**：Pages 只执行站点根目录的 `_worker.js`，子目录里的这个文件只是公开的静态文件，不会运行（已检查，文件里没有密钥）。如果静钟的 Telegram 备份依赖它，要实测一次备份；不能用的话，就单独部署成 Pages 项目或 Worker。
 6. **CET4、Letter、408 托管在 42web.io 免费主机上**：这类主机可能插广告或停用，建议迁到 GitHub Pages 或 Cloudflare Pages。
 7. **文案待你决定**：“Latter”（是否应为 Letter）、文章中的“走途無路”、“Blog A/B”的命名、开场角落的“2400K”。
+9. **仓库里的旧文件可清理**（2026-10-30 检查，均未被任何页面引用，不影响线上，删除前请先确认本机源工程不再需要）：`assets/site/home/` 下 8 个旧首页脚本包（`01ba057abd99`、`02bdb8d54d7f`、`09de6486823b`、`17c044e22e77`、`2a14b559993a`、`c64da15467a6`、`c926aeb04988`、`f4817c517de1`，合计约 1.1 MB）、`assets/mascot/luliy-atlas.webp`（旧版图集，约 1 MB，已被 `luliy-atlas-v2.webp` 取代）、`intro/` 目录（旧开场，约 6 MB，已不使用）。
+10. **本地改动与本机源工程不同步**：第 15 节列出的文件是直接在仓库里改的；下次在本机重新生成 `index.html` 之前，先把这些文件同步回源工程，否则会被覆盖。
 8. **授权管理**：临时授权给工具或他人的 GitHub 权限，用完后到 GitHub **Settings → Applications** 撤销。
 
 ---
@@ -815,3 +826,63 @@ python site-publish/generate.py preview
 - [Cloudflare Workers 定价](https://developers.cloudflare.com/workers/platform/pricing/)与 [D1 定价](https://developers.cloudflare.com/d1/platform/pricing/)：核对当前后台额度。
 
 网站说明的入口在主站页尾的“網站說明”（`#/colophon`），该页面保留了既有的图像来源和月面资料署名。本站展示文章、字体或音频，不改变原作者和素材的权利归属。
+
+---
+
+## 15. 2026-10-30 起直接在仓库里维护的功能
+
+这些功能的代码**直接放在仓库里**，不经过第 4 节的本机构建。改它们就是改下面列出的文件；如果之后要在本机重新生成 `index.html`，请先把这些文件同步回源工程（见 13 节第 10 条）。
+
+涉及的文件：
+
+| 文件 | 作用 |
+|---|---|
+| `site-publish/home-early.js` | 内联在首页 `<head>` 最前面：加载页、开场视频、书房/唱片的导航拦截、`/gh/` 改写 |
+| `site-publish/home-fixes.js` | 首页加载后追加的各项修补与功能，按编号分段（见下表） |
+| `site-publish/home-fixes.css` | 上面对应的样式 |
+| `assets/mascot/` | 看板娘图集、加载页序列帧、开场视频 |
+| `assets/site/home/a833946e3e12.js` | 唱片页脚本包（已改为共用站内加载页） |
+| `data/backgrounds.json`、`backgrounds/` | 文章页可选的背景图 |
+
+**发布约定**：改完 `home-fixes.js` / `home-fixes.css` 后，必须同步更新 `index.html` 里对应的 `?v=` 哈希（取文件内容 SHA-256 的前 12 位），否则访客会继续用旧缓存（这两个文件缓存一年，见 9.1）。命令：
+
+```bash
+sha256sum site-publish/home-fixes.js | cut -c1-12   # 把结果写进 index.html 里 home-fixes.js?v=
+sha256sum site-publish/home-fixes.css | cut -c1-12  # 同理，home-fixes.css?v=
+```
+
+### 15.1 站内加载页与首次访问开场
+
+- **加载页**（`home-early.js`）：进入首页、书房（`#/books`）、唱片（`#/music`）、文章时，先盖一层加载页，等该页资源准备好再放行，避免页面卡顿。样式是看板娘的循环动作（CSS 序列帧，主线程忙时也不会卡住）；系统开启“减少动态效果”、省流量模式时只显示静止姿势。
+- **放行条件**：书房等 3D 场景就绪或降级；唱片页等封面墙就绪；首页最多多等 0.8 秒（开场后）/1.2 秒；文章等正文载入。兜底上限：路由 6–8 秒，开场 20 秒。
+- **开场视频**：第一次访问播放 `assets/mascot/intro-*.mp4/.webm`（静音，logo → 看板娘 → logo），结束后图标飞入页首 logo。记录键 `luliy_intro_seen_v2`（localStorage），7 天内不再播。`?intro=1` 强制播放，可点“跳过”。
+- **调试**：`?loader=0` 完全跳过加载页；`window.LuliySiteLoader` 可查看当前状态。
+- **换视频/序列帧**：生成新文件并用**新文件名**（含哈希），再改 `home-early.js` 里的 `INTRO` 和样式里的序列帧路径；同名替换会被缓存一年卡住。
+
+### 15.2 看板娘（`home-fixes.js` 第 27 段）
+
+- 只在桌面端、文章阅读页（`#/article/`、`#/post/`）且左侧留白足够时出现；点击或悬停会播放动作并说一句话。台词在同一段里的 `readingLines`（阅读页）和 `journalLines`（短札页）。
+- 图集 `assets/mascot/luliy-atlas-v2.webp`（76 帧，每帧 320×262，10 列，15 帧/秒）。只有她在动的时候才有金色粒子；加载页里已不用粒子。
+- 目录按钮和回到顶部按钮并入她旁边那一列；删除这一段及对应 CSS 即可整体移除她。
+
+### 15.3 评论区（Giscus，`home-fixes.js` 第 34 段）
+
+- 文章页底部和短札的每条记录都有评论，数据存在本仓库的 GitHub Discussions（分类 Announcements）；评论者用 GitHub 账号登录。
+- 配置在第 34 段开头的 `CFG`：仓库 `luliyer6-ux/home`、`repoId`、`categoryId`。讨论按术语对应：文章 `article-<编号>`，短札 `journal-<编号>`。
+- 前提：仓库已开启 Discussions，且安装了 giscus GitHub App。评论框滚动到附近才加载；主题跟随站点深浅色，语言跟随界面语言。
+- 管理评论：在仓库的 Discussions 页删除或锁定；测试评论也在那里删。
+
+### 15.4 短札（`home-fixes.js` 第 32 段）
+
+- `#/posts?view=journal`：数据来自博客的 Gmeek 文章列表（`postList.json`），`home-early.js` 在路由请求前把短札条目从文章列表里拆出来，放在 `window.LuliyJournal`，所以文章列表、归档、首页不会出现短札（博客本身不删任何内容）；最后一次成功的列表缓存在 localStorage，离线也能打开。页内带日历方格和每条记录的评论按钮，同一时间只展开一个评论串。
+
+### 15.5 文章阅读页背景（`home-fixes.js` 第 24 段）
+
+- 仅桌面端（宽度 ≥ 769px）。**默认无背景**（2026-10-30）：没存过选择时只显示深色星空底。
+- 阅读页的目录里有背景按钮：可选“文章配图”、`data/backgrounds.json` 里的每张图、“无背景”、“我的图片”（自己上传，存在浏览器里），并可调遮罩深浅；“恢复默认”回到无背景。选择存在 localStorage（`luliy-article-bg-choice`、`luliy-article-bg-scrim`、`luliy-article-bg-custom`），已选过的访客保持原样。
+- 想改回“默认带背景”：把该段里的 `DEFAULT_CHOICE` 从 `'none'` 改成 `'default'`（文章配图），并更新 `index.html` 里的 `?v=`。
+- 加新背景：图片放进 `backgrounds/`，在 `data/backgrounds.json` 里加 `{"id": "...", "name": "...", "src": "/backgrounds/....webp"}`。图片建议先转 WebP；这个目录缓存 7 天，换图请换文件名。
+
+### 15.6 性能基线（2026-10-30，本地无压缩测量）
+
+首页首次加载约 5 MB 原始大小（传输时压缩后约 3.5 MB）、约 40–50 个请求；最大的几项是 Three.js 主包（0.6 MB）、CSS（0.3 MB）、首屏图和字体。改动前后可用同样方法对比：Chromium 打开 `/?loader=0`，统计同源响应体积。`assets/site/` 下的指纹文件和上面几类哈希文件都是长缓存，回访几乎不重复下载。
