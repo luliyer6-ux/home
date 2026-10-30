@@ -1534,6 +1534,9 @@ html body #recordsHome .lr-collection {
 
 /* 24. Article reading page (2026-10-30 rework). See home-fixes.js section 24. */
 
+/* The reading-progress rail is removed on the main site (belt and braces: reading-timeline.js also no longer creates it). */
+html body .reading-timeline { display: none !important; }
+
 /* a) No footer on reading pages: hide the curtain and the space reserved for it. */
 html.luliy-reading #contact,
 html.luliy-reading .contact-curtain { display: none !important; }
@@ -1584,7 +1587,6 @@ html.luliy-reading .page-above { margin-bottom: 0 !important; }
   body.luliy-article-bg-on #header a, body.luliy-article-bg-on #header button { text-shadow: 0 1px 3px rgba(0,0,0,.85); }
   body.luliy-article-bg-on #header img, body.luliy-article-bg-on #header svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,.85)); }
   body.luliy-article-bg-on .reader-float button { background: rgba(8,10,18,.58); border: 1px solid rgba(255,255,255,.2); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); color: #fff; }
-  body.luliy-article-bg-on .reading-timeline { padding: 12px 12px; margin: -12px -12px; border-radius: 16px; background: rgba(8,10,18,.42); }
   body.luliy-article-bg-on :is(.article-body, #sourceArticleBody) { text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 0 14px rgba(0,0,0,.6); }
   body.luliy-article-bg-on .source-end, body.luliy-article-bg-on .source-end * { text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 12px rgba(0,0,0,.85); }
 }
