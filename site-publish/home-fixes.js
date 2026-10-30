@@ -2446,30 +2446,33 @@
       im.src = ATLAS;
     }
     function kick() { if (!raf && atlas) { lastT = performance.now(); raf = requestAnimationFrame(tick); } }
+    // The clip does not end on the resting pose and is still moving in its last frames. Instead of stopping on the
+    // last frame and then dissolving (which read as a hitch), the opening clip slows down over its final frames
+    // and, from BLEND_FROM on, fades into the resting frame while it is still moving: one continuous settle.
+    const BLEND_FROM = NF - 11;
+    const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+    function blend(p) {
+      const k = smooth((p - BLEND_FROM) / (NF - 1 - BLEND_FROM)), i = Math.max(0, Math.min(NF - 1, Math.round(p)));
+      ctx.clearRect(0, 0, FW, FH);
+      if (k < 1) { ctx.globalAlpha = 1 - k; ctx.drawImage(atlas, (i % COLS) * FW, ((i / COLS) | 0) * FH, FW, FH, 0, 0, FW, FH); }
+      ctx.globalAlpha = k; ctx.drawImage(atlas, 0, 0, FW, FH, 0, 0, FW, FH);
+      ctx.globalAlpha = 1; drawn = -1;
+    }
     function tick(now) {
       raf = 0;
       const dt = Math.min(.05, (now - lastT) / 1000); lastT = now;
-      if (mode === 'wrap') { // end of the full clip: dissolve from its last frame into the resting frame
-        fade += dt / .35;
-        const k = Math.min(1, fade);
-        ctx.clearRect(0, 0, FW, FH);
-        ctx.globalAlpha = 1; ctx.drawImage(atlas, ((NF - 1) % COLS) * FW, (((NF - 1) / COLS) | 0) * FH, FW, FH, 0, 0, FW, FH);
-        ctx.globalAlpha = k; ctx.drawImage(atlas, 0, 0, FW, FH, 0, 0, FW, FH);
-        ctx.globalAlpha = 1; drawn = -1;
-        if (k >= 1) { pos = 0; target = 0; mode = 'idle'; draw(0); retarget(); return; }
-        raf = requestAnimationFrame(tick); return;
-      }
       const dist = target - pos;
       if (Math.abs(dist) > 1e-3) {
         let v = FPS * spd;
         if (mode === 'hover') v *= Math.max(.35, Math.min(1, Math.abs(dist) / 4)); // ease into the held frame
+        if (mode === 'intro') v *= Math.max(.45, Math.min(1, Math.abs(dist) / 12)); // ease out of the clip
         pos += Math.sign(dist) * Math.min(Math.abs(dist), v * dt);
-        draw(pos);
+        if (mode === 'intro' && pos > BLEND_FROM) blend(pos); else draw(pos);
       }
       if (Math.abs(target - pos) <= 1e-3) {
+        if (mode === 'intro') { pos = 0; target = 0; mode = 'idle'; drawn = -1; draw(0); retarget(); return; }
         pos = target; draw(pos);
-        if (mode === 'intro') { mode = 'wrap'; fade = 0; raf = requestAnimationFrame(tick); }
-        else if (pos === 0) mode = 'idle';
+        if (pos === 0) mode = 'idle';
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -2489,7 +2492,7 @@
       const f = wanted();
       if (still()) { ensureStills(); stage.dataset.pose = f === F_FRONT ? 'front' : f === F_TURN ? 'turn' : 'rest'; return; }
       if (!atlas) { if (f) loadAtlas(); return; }
-      if (mode === 'wrap') return;                       // finishes by itself, then calls retarget() again
+      if (mode === 'intro' && pos > BLEND_FROM) return;  // already settling into rest: finishes by itself, then calls retarget()
       if (mode === 'intro' && f === 0) return;           // nobody is hovering: let the opening clip finish
       if (f === target && mode !== 'idle') return;
       mode = 'hover'; target = f; spd = f >= pos ? 1.7 : 2.0;
