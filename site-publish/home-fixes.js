@@ -2603,15 +2603,19 @@
     box.querySelector('[data-m="hide"]').addEventListener('click', () => { write(true); sync(); peek.focus(); });
     peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { playIntro(); say('我回来了。', 2400); }, 350); });
 
-    /* Show only where there is room: a reading page, a wide screen, and a left margin beside the article. */
+    /* Show only where there is room: a reading page, a wide screen, and a left margin beside the article.
+       She shrinks to fit the margin (190px down to 130px) instead of vanishing on narrower windows. */
     function room() {
       const a = document.querySelector('#sourceArticleBody, #main .article-body');
-      return !!a && a.getBoundingClientRect().left >= 240;
+      if (!a) return 0;
+      const w = Math.min(190, Math.floor(a.getBoundingClientRect().left - 40)); // 14px edge + her tool buttons (18px) + a little air
+      return w >= 130 ? w : 0;
     }
     let lastHash = '', greeted = false, frame = 0;
     function sync() {
       frame = 0;
-      const on = reading() && WIDE.matches && room();
+      const fit = reading() && WIDE.matches ? room() : 0, on = fit > 0;
+      if (on) root.style.setProperty('--lm-w', fit + 'px'); else root.style.removeProperty('--lm-w');
       const hidden = read();
       const wasHidden = box.hidden;
       box.hidden = !on || hidden;

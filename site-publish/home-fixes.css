@@ -1612,7 +1612,7 @@ html body #header .brand-group button.brand-page-name { padding-block: 4px; marg
 
 
 /* 27. Reading-page mascot (home-fixes.js block 27) */
-.luliy-mascot { position: fixed; left: 14px; bottom: 10px; width: 190px; z-index: 30; perspective: 700px; user-select: none; -webkit-user-select: none; }
+.luliy-mascot { position: fixed; left: 14px; bottom: 10px; width: var(--lm-w, 190px); z-index: 30; perspective: 700px; user-select: none; -webkit-user-select: none; }
 html.lm-bar-mode body.lm-player-visible .luliy-mascot { bottom: calc(var(--lm-bar-space, 0px) + 8px); }
 .luliy-mascot[hidden], .luliy-mascot-peek[hidden] { display: none !important; }
 .luliy-mascot-stage { position: relative; aspect-ratio: 320 / 262; cursor: pointer; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
@@ -1674,9 +1674,9 @@ html.lm-bar-mode body.lm-player-visible .luliy-mascot-peek { bottom: calc(var(--
   .luliy-mascot-tools button[hidden] { display: none; }
   .luliy-mascot-tools button.is-active { background: rgba(226,194,126,.24); }
   /* the contents panel opens right above her instead of at the top-left */
-  html.luliy-mascot-on #main :is(.source-toc, .article-toc) { left: 14px !important; top: auto !important; bottom: 188px !important;
+  html.luliy-mascot-on #main :is(.source-toc, .article-toc) { left: 14px !important; top: auto !important; bottom: calc(var(--lm-w, 190px) * .8188 + 33px) !important;
     max-height: min(62dvh, calc(100dvh - 260px)) !important; transform-origin: 90px 100%; }
-  html.lm-bar-mode.luliy-mascot-on body.lm-player-visible #main :is(.source-toc, .article-toc) { bottom: calc(var(--lm-bar-space, 0px) + 188px) !important; }
+  html.lm-bar-mode.luliy-mascot-on body.lm-player-visible #main :is(.source-toc, .article-toc) { bottom: calc(var(--lm-bar-space, 0px) + var(--lm-w, 190px) * .8188 + 33px) !important; }
   html.luliy-toc-open .luliy-mascot-bubble { opacity: 0 !important; }
 }
 
