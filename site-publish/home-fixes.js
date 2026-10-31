@@ -3716,7 +3716,8 @@
 
 
   /* 37. Article styles by label (2026-11-01): 隨筆 musings · 成長 growth (also 成长 / 成長) · 學習 study · AI ai.
-     Blog articles (#/article/Pxx) only; `weekly` wins (section 36), then ai > study > growth > musings. Loon stays.
+     Blog articles (#/article/Pxx) only; `weekly` wins (section 36), then ai > study > doc > guidebook > growth > musings.
+     Loon stays. doc / guidebook only get their class here; section 38 builds them.
      html.ls-on plus ls-musings / ls-growth / ls-study / ls-ai (home-fixes.css 37). Labels come from the feed
      (cached in localStorage luliy-label-map-v1) or, before it arrives, from the category line on the page.
      a) Every style: its own head (eyebrow, meta line with date, reading time and 分享) instead of the orange row;
@@ -3738,7 +3739,7 @@
     const L = (zh, en, ja, hant) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : root.lang === 'zh-Hant' ? (hant || T(zh)) : zh);
     const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
     const STYLES = [
-      ['ai', /^ai$/i], ['study', /^study$/i], ['growth', /^(growth|成长|成長)$/i], ['musings', /^(musings|隨筆|随笔)$/i]
+      ['ai', /^ai$/i], ['study', /^study$/i], ['doc', /^doc$/i], ['guide', /^guidebook$/i], ['growth', /^(growth|成长|成長)$/i], ['musings', /^(musings|隨筆|随笔)$/i]
     ];
     let map = {};
     try { map = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
@@ -3919,9 +3920,12 @@
       study: () => [L('有不懂的地方，点我。', 'Stuck? Click me.', 'わからない所は私を押して。'), L('划线的是重点哦。', 'The marked lines are the key points.', '線のところが要点だよ。')],
       ai: () => [L('黄色的地方可以直接填。', 'Fill in the yellow boxes.', '黄色の所に書き込めるよ。'), L('填好再复制，贴过去就能用。', 'Fill, copy, paste.', '書いてコピーして貼るだけ。')]
     };
+    LINES.doc = () => [L('按 / 可以搜索这篇。', 'Press / to search this page.', '/ でこのページを検索。'), L('按 ? 看快捷键。', 'Press ? for shortcuts.', '? でショートカット。')];
+    LINES.guide = () => [L('一步一步来。', 'One step at a time.', '一歩ずつね。'), L('做完一步就按 x。', 'Press x when a step is done.', '終わったら x を押してね。')];
     window.LuliyLoonLines = () => (root.classList.contains('ls-on') && LINES[state.style] ? LINES[state.style]() : null);
     window.LuliyLoonClick = () => {
       if (!root.classList.contains('ls-on')) return null;
+      if ((state.style === 'doc' || state.style === 'guide') && typeof window.LuliyManualClick === 'function') return window.LuliyManualClick();
       if (state.style === 'study' && state.keys.length) { const i = state.ki % state.keys.length; state.ki++; return [L('要点 ', 'Point ', '要点 ') + (i + 1) + ' / ' + state.keys.length, state.keys[i]]; }
       if (state.style === 'ai' && state.prompts.length) return [L('这篇有 ' + state.prompts.length + ' 个提示词：', state.prompts.length + ' prompts here:', 'プロンプトは ' + state.prompts.length + ' つ：')].concat(state.prompts.slice(0, 3).map((p, i) => '#' + (i + 1) + ' ' + p));
       if ((state.style === 'musings' || state.style === 'growth') && state.quote) return ['「' + state.quote.slice(0, 40) + (state.quote.length > 40 ? '…' : '') + '」', L('这句我很喜欢。', 'I like this line.', 'この一文が好き。')];
@@ -3933,6 +3937,7 @@
       const body = main.querySelector('.source-body'); if (!body) return;
       if (body.getBoundingClientRect().bottom > innerHeight + 40) return;
       state.ended = true;
+      if (state.style === 'doc' || state.style === 'guide') return;
       const t = { musings: L('读完了，晚安。', 'The end. Good night.', '読み終わり。おやすみ。'), growth: L('下次再见。', 'See you next time.', 'またね。'), study: L('读完了！要不要复习一下要点？', 'Done! Review the key points?', '読了！要点を復習する？', '讀完了！要不要複習一下要點？'), ai: L('去试试看吧。', 'Go try it.', '試してみて。') }[state.style];
       if (t && window.LuliyLoonSay) window.LuliyLoonSay(t, 4200);
     }
@@ -3945,7 +3950,7 @@
       const shell = m && main.querySelector('.source-reading');
       if (shell) loadMap();
       const style = shell && !root.classList.contains('lk-weekly') ? styleOf(m[1], shell) : '';
-      ['musings', 'growth', 'study', 'ai'].forEach(s => root.classList.toggle('ls-' + s, s === style));
+      ['musings', 'growth', 'study', 'ai', 'doc', 'guide'].forEach(s => root.classList.toggle('ls-' + s, s === style));
       root.classList.toggle('ls-on', !!style);
       if (!style) { if (state.id) { state = { id: '', style: '', quote: '', keys: [], ki: 0, prompts: [], ended: false }; clearTimeout(quoteT); } return; }
       loadMap();
@@ -3955,6 +3960,7 @@
         if (style === 'musings' || style === 'growth') quoteT = setTimeout(() => { if (state.id === m[1] && state.quote && window.LuliyLoonSay) window.LuliyLoonSay(['「' + state.quote.slice(0, 40) + (state.quote.length > 40 ? '…' : '') + '」', L('这句我很喜欢。', 'I like this line.', 'この一文が好き。')], 5600); }, 9000);
       }
       state.style = style;
+      if (style === 'doc' || style === 'guide') return;   // section 38 builds these
       head(shell, style); readingTime(shell);
       const body = shell.querySelector('.source-body');
       if (!body || !body.textContent.trim()) return;
@@ -3971,6 +3977,331 @@
     addEventListener('scroll', onEnd, { passive: true });
     let rt = 0;
     addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { const b = main.querySelector('.source-body'); if (b && root.classList.contains('ls-study')) sidenotes(b); }, 200); });
+    schedule();
+  })();
+
+
+  /* 38. 工程手冊: Guidebook (教程) and Doc (說明書) (2026-11-01). html.ls-guide / html.ls-doc are set by section 37
+     (a Doc label wins over Guidebook). Both: mono head, code blocks with a language tab and copy, `EOF`, a contents
+     column fixed to the right of the text (or a ☰ button and bottom sheet when there is no room), keyboard keys
+     (j / k sections, gg / G, ? help, Esc). Loon stays (section 37 lines; LuliyManualClick answers a click).
+     a) Guidebook: the top heading level becomes STEP 01, 02 … on a rail (headings like 簡介 / 前言 / 目錄 / FAQ /
+        參考 / 附錄 / 總結 / 細節 are not steps); a mission card (time, steps, the first list before step 1);
+        「標記完成」 per step (x), kept in localStorage luliy-guide-done-<Pxx>; the contents show ✓ and progress.
+     b) Doc: a DOC(7) header line, headings numbered 1 / 1.1 (unless they already carry a number), a # link per
+        heading that copies the section link, and a filter in the contents (/): only matching sections stay,
+        matches are marked; simplified and traditional characters match each other. */
+  (() => {
+    const main = document.getElementById('main');
+    if (!main) return;
+    const T = s => (typeof window.LuliyInterfaceText === 'function' ? window.LuliyInterfaceText(s) : s);
+    const L = (zh, en, ja, hant) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : root.lang === 'zh-Hant' ? (hant || T(zh)) : zh);
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const pad = n => String(n).padStart(2, '0');
+    const smooth = () => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+    const NUMRE = /^\s*(\d+(\.\d+)*[.、)）]?|[一二三四五六七八九十]+[、.．])\s*/;
+    const SKIP = /^(\d+\.?\s*)?(简介|簡介|介绍|介紹|前言|序言?|目录|目錄|faq|常见问题|常見問題|参考|參考|附录|附錄|总结|總結|小结|小結|细节|細節|写在最后|寫在最後)/i;
+    const norm = s => { const t = T(String(s)); return (t.length === s.length ? t : String(s)).toLowerCase(); };
+    const kind = () => (root.classList.contains('ls-doc') ? 'doc' : root.classList.contains('ls-guide') ? 'guide' : '');
+    const bare = t => t.replace(/^[^\p{L}\p{N}]+/u, '');   // leading emoji / symbols
+    const headText = h => { const c = h.cloneNode(true); c.querySelectorAll('button, .lg-anc, .lg-num, .lg-sl').forEach(x => x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+
+    let S = null;   // state of the article on screen
+    let toc = null, fab = null, help = null;
+    function chrome() {
+      if (toc) return;
+      toc = el('nav', 'lg-toc'); toc.setAttribute('aria-label', 'Contents');
+      fab = el('button', 'lg-fab', '☰'); fab.type = 'button'; fab.setAttribute('aria-label', 'Contents');
+      help = el('div', 'lg-help'); help.setAttribute('role', 'dialog'); help.setAttribute('aria-modal', 'true');
+      document.body.append(toc, fab, help);
+      fab.addEventListener('click', e => { e.stopPropagation(); toc.classList.toggle('lg-sheet'); });
+      document.addEventListener('click', e => { if (toc.classList.contains('lg-sheet') && (e.target.closest('.lg-toc a') || !e.target.closest('.lg-toc, .lg-fab'))) toc.classList.remove('lg-sheet'); });
+      help.addEventListener('click', e => { if (e.target === help) help.classList.remove('open'); });
+      toc.addEventListener('click', e => {
+        const a = e.target.closest('a[data-t]'); if (!a) return;
+        e.preventDefault(); const h = document.getElementById(a.dataset.t); if (h) h.scrollIntoView({ behavior: smooth(), block: 'start' });
+      });
+    }
+    function helpText() {
+      help.innerHTML = '';
+      const box = el('div'); box.append(el('h3', '', 'KEYBOARD'));
+      [['j', L('下一节', 'Next section', '次の節')], ['k', L('上一节', 'Previous section', '前の節')]]
+        .concat(S.kind === 'guide' ? [['x', L('勾选当前这一步', 'Mark this step done', 'この手順を完了')]] : [['/', L('搜索本文', 'Search this page', 'このページを検索')]])
+        .concat([['g g', L('到顶部', 'Top', '先頭へ')], ['G', L('到底部', 'Bottom', '末尾へ')], ['?', L('开关这个说明', 'Toggle this help', 'このヘルプ')], ['Esc', L('关闭', 'Close', '閉じる')]])
+        .forEach(([k, t]) => { const r = el('div'); r.append(el('kbd', '', k), document.createTextNode(t)); box.append(r); });
+      help.append(box);
+    }
+
+    /* ---- shared pieces ---- */
+    function codeBlocks(body) {
+      body.querySelectorAll('pre').forEach(pre => {
+        if (pre.closest('.lg-cb, .ls-pc, .mermaid')) return;
+        const code = pre.querySelector('code') || pre;
+        const lang = ((code.className.match(/language-([\w+-]+)/) || [])[1] || pre.getAttribute('lang') || 'code').toLowerCase();
+        const box = el('div', 'lg-cb'), hd = el('div', 'lg-cbh'), cp = el('button', '', 'copy'); cp.type = 'button';
+        hd.append(el('span', '', lang), cp); pre.before(box); box.append(hd, pre);
+        cp.addEventListener('click', () => {
+          const t = code.textContent, ok = () => { cp.textContent = 'copied ✓'; setTimeout(() => { cp.textContent = 'copy'; }, 1400); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, () => {}); else ok();
+        });
+      });
+    }
+    function head(shell, k, steps, secs) {
+      const h1 = shell.querySelector(':scope > h1'), meta = shell.querySelector('.source-meta');
+      let box = shell.querySelector(':scope > .lg-head');
+      if (!box) { box = el('div', 'lg-head'); h1.before(box); }
+      box.innerHTML = '';
+      if (k === 'doc') { const m = el('div', 'lg-man'); m.append(el('span', '', 'DOC(7)'), el('span', '', 'LULIY MANUAL'), el('span', '', 'DOC(7)')); box.append(m); }
+      else box.append(el('p', 'lg-kick', 'GUIDEBOOK · ' + L('教程', 'Guide', 'ガイド')));
+      let chips = shell.querySelector(':scope > .lg-chips');
+      if (!chips) { chips = el('div', 'lg-chips'); h1.after(chips); }
+      chips.innerHTML = '';
+      const time = meta && meta.querySelector('time'), d = time ? time.textContent.trim() : '';
+      if (d) chips.append(el('span', '', k === 'doc' ? 'rev ' + d.replace(/-/g, '.') : d));
+      const rt = meta && meta.querySelector('#sourceReadingTime'), mm = rt && rt.textContent.match(/(\d+)\s*(?:分|min)/i);
+      S.min = mm ? +mm[1] : Math.max(1, Math.round(shell.querySelector('.source-body').textContent.replace(/\s+/g, '').length / 400));
+      chips.append(el('span', '', L('约 ' + S.min + ' 分钟', S.min + ' min', '約 ' + S.min + ' 分')));
+      const c = el('span'); c.append(el('b', '', String(k === 'doc' ? secs : steps)), document.createTextNode(k === 'doc' ? L(' 节', ' sections', ' 節', ' 節') : L(' 步', ' steps', ' 手順')));
+      chips.append(c);
+      if (k === 'guide') { const dn = el('span', 'lg-dn'); chips.append(dn); }
+      const share = meta && meta.querySelector('.source-share');
+      if (share) { const b = el('button', 'lg-share', L('分享', 'Share', '共有')); b.type = 'button'; b.addEventListener('click', () => share.click()); chips.append(b); }
+      const help2 = el('button', 'lg-share', '?'); help2.type = 'button'; help2.setAttribute('aria-label', L('键盘快捷键', 'Keyboard shortcuts', 'キーボード')); help2.addEventListener('click', () => { helpText(); help.classList.add('open'); });
+      chips.append(help2);
+    }
+    function eof(c) { if (!c.querySelector(':scope > .lg-eof')) c.append(el('p', 'lg-eof', 'EOF')); }
+    const content = body => (body.firstElementChild && body.firstElementChild.matches('.markdown-body') ? body.firstElementChild : body);
+    // Heading levels that structure the article: a level used only once (the article's own title repeated as # …) is skipped.
+    function levels(root2, direct) {
+      const q = n => (direct ? root2.querySelectorAll(':scope > h' + n) : root2.querySelectorAll('h' + n)).length;
+      const used = [1, 2, 3, 4].filter(n => q(n) > 0);
+      while (used.length > 1 && q(used[0]) < 2) used.shift();
+      return used.slice(0, 2);
+    }
+
+    /* ---- a) Guidebook ---- */
+    function buildGuide(shell, body, id) {
+      const c = content(body);
+      const lv = levels(c, true)[0];
+      const TOP = lv ? 'H' + lv : '';
+      const kids = [...c.childNodes];
+      const frag = document.createDocumentFragment();
+      let cur = el('div', 'lg-plain'); frag.append(cur);
+      const steps = [];
+      kids.forEach(n => {
+        if (n.nodeType === 1 && n.tagName === TOP) {
+          if (SKIP.test(headText(n))) { cur = el('div', 'lg-plain'); frag.append(cur); cur.append(n); return; }
+          cur = el('section', 'lg-step'); steps.push(cur); frag.append(cur); cur.append(n); n.classList.add('lg-sh'); return;
+        }
+        cur.append(n);
+      });
+      c.append(frag);
+      [...c.querySelectorAll(':scope > .lg-plain')].forEach(p => { if (!p.childNodes.length) p.remove(); });
+      steps.forEach((s, i) => {
+        const h = s.querySelector('.lg-sh');
+        h.prepend(el('span', 'lg-sl', 'STEP ' + pad(i + 1)));
+        if (!h.id) h.id = 'lg-step-' + (i + 1);
+        const node = el('span', 'lg-node', String(i + 1)); node.setAttribute('aria-hidden', 'true'); s.prepend(node);
+        const bar = el('div', 'lg-donebar'), b = el('button'); b.type = 'button'; bar.append(b); s.append(bar);
+        b.addEventListener('click', () => toggleDone(i));
+      });
+      // mission card: time, steps, the first list before step 1
+      const firstStep = steps[0];
+      let need = null;
+      // 「開始前需要」: the first list before step 1 that follows a heading or line about what you need (not the article's own 目錄)
+      const NEED = /准备|準備|需要|前提|要求|工具|环境|環境|prereq|before you start|you need/i;
+      for (const n of [...c.children]) {
+        if (n === firstStep) break;
+        for (const l of n.matches('ul, ol') ? [n] : [...n.querySelectorAll(':scope > ul, :scope > ol')]) {
+          const prev = l.previousElementSibling; if (prev && NEED.test(prev.textContent) && !/目录|目錄/.test(prev.textContent)) { need = l; break; }
+        }
+        if (need) break;
+      }
+      if (steps.length) {
+        const card = el('div', 'lg-mission');
+        const cell = (k2, v, cls) => { const d = el('div'); d.append(el('small', '', k2)); const x = el(cls === 'p' ? 'p' : 'strong', '', v); d.append(x); card.append(d); };
+        cell(L('预计时间', 'Time', '目安'), '≈ ' + Math.max(5, S.min * 3) + ' min');
+        cell(L('步骤', 'Steps', '手順'), String(steps.length));
+        if (need) cell(L('开始前需要', 'Before you start', '始める前に'), [...need.querySelectorAll(':scope > li')].map(li => li.textContent.trim()).filter(Boolean).slice(0, 4).join('；'), 'p');
+        c.prepend(card);
+      }
+      S.steps = steps; S.heads = steps.map(s => s.querySelector('.lg-sh'));
+      S.sub = steps.map(s => (lv && lv < 6 ? [...s.querySelectorAll('h' + (lv + 1))] : []));
+      try { S.done = new Set(JSON.parse(localStorage.getItem('luliy-guide-done-' + id) || '[]')); } catch (e) { S.done = new Set(); }
+      eof(c);
+      return steps.length;
+    }
+    function toggleDone(i) {
+      if (!S || S.kind !== 'guide' || !S.steps[i]) return;
+      const n = i + 1; S.done.has(n) ? S.done.delete(n) : S.done.add(n);
+      try { localStorage.setItem('luliy-guide-done-' + S.id, JSON.stringify([...S.done])); } catch (e) {}
+      paintDone();
+      if (S.done.has(n) && S.done.size === S.steps.length && window.LuliyLoonSay) window.LuliyLoonSay(L('全部完成，辛苦了。', 'All done. Well done.', '全部できた。おつかれさま。'), 4600);
+    }
+    function paintDone() {
+      S.steps.forEach((s, i) => {
+        const d = S.done.has(i + 1); s.classList.toggle('lg-done', d);
+        const b = s.querySelector('.lg-donebar button'); b.innerHTML = '';
+        b.append(document.createTextNode(d ? L('☑ 已完成 ', '☑ Done ', '☑ 完了 ') : L('☐ 标记完成 ', '☐ Mark done ', '☐ 完了にする ')), el('kbd', '', 'x'));
+        b.setAttribute('aria-pressed', String(d));
+      });
+      const dn = document.querySelector('#main .lg-chips .lg-dn');
+      if (dn) dn.textContent = L('已完成 ', 'Done ', '完了 ') + S.done.size + ' / ' + S.steps.length;
+      buildToc();
+    }
+
+    /* ---- b) Doc ---- */
+    function buildDoc(shell, body) {
+      const c = content(body);
+      const lvls = levels(body, false);
+      const hs = !lvls.length ? [] : [...body.querySelectorAll(lvls.map(n => 'h' + n).join(','))].filter(h => headText(h) && !/^(footnotes|脚注|腳註)$/i.test(headText(h)));
+      let a = 0, b = 0;
+      hs.forEach((h, i) => {
+        const lv = lvls.indexOf(+h.tagName[1]); if (lv === 0) { a++; b = 0; } else b++;
+        const num = lv === 0 ? String(a || 0) : (a || 0) + '.' + b;
+        if (!h.id) h.id = 'lg-sec-' + i;
+        h.dataset.lgNum = num; h.dataset.lgLv = String(lv);
+        h.dataset.lgOwn = NUMRE.test(bare(headText(h))) ? '1' : '';
+        if (!h.dataset.lgOwn) h.prepend(el('span', 'lg-num', num));
+        const anc = el('a', 'lg-anc', '#'); anc.href = '#' + h.id; anc.setAttribute('aria-label', L('复制本节链接', 'Copy link to this section', 'この節のリンクをコピー'));
+        anc.addEventListener('click', e => {
+          e.preventDefault();
+          const own = h.querySelector('.reader-heading-link');   // the reader's own 複製本節連結
+          if (own) own.click();
+          anc.textContent = '✓'; setTimeout(() => { anc.textContent = '#'; }, 1200);
+        });
+        h.prepend(anc);
+      });
+      // blocks for the filter: a heading and what follows it until the next listed heading
+      const set = new Set(hs);
+      const blocks = []; let cur = null;
+      [...c.children].forEach(n => { if (set.has(n)) { cur = { h: n, els: [] }; blocks.push(cur); } else if (cur && !n.matches('.lg-eof')) cur.els.push(n); });
+      S.heads = hs; S.blocks = blocks; S.top = hs.filter(h => h.dataset.lgLv === '0').length;
+      eof(c);
+      return S.top;
+    }
+    // Matches are painted with the CSS Custom Highlight API: the text nodes are never split (the site's 繁簡 converter
+    // watches them and would write the text again). Without the API the filter still works, just without the paint.
+    const HL = typeof Highlight === 'function' && window.CSS && CSS.highlights;
+    function unmark() { if (HL) CSS.highlights.delete('lg-hit'); }
+    function filter(q) {
+      if (!S || S.kind !== 'doc') return;
+      unmark(); q = norm(q.trim()); let hits = 0; const ranges = [];
+      S.blocks.forEach(bk => {
+        const ok = !q || norm(bk.h.textContent + ' ' + bk.els.map(e => e.textContent).join(' ')).includes(q);
+        [bk.h, ...bk.els].forEach(e => e.classList.toggle('lg-gone', !ok));
+        const a = toc.querySelector('a[data-t="' + bk.h.id + '"]'); if (a) a.parentElement.hidden = !ok;
+        if (!ok || !q) return; hits++;
+        [bk.h, ...bk.els].forEach(e => {
+          const w = document.createTreeWalker(e, NodeFilter.SHOW_TEXT), ns = []; let n;
+          while ((n = w.nextNode())) if (!n.parentNode.closest('.lg-anc, .lg-num, button') && norm(n.data).includes(q)) ns.push(n);
+          ns.forEach(n => { const t = norm(n.data); let i = t.indexOf(q); while (i >= 0 && ranges.length < 400) { const r = document.createRange(); r.setStart(n, i); r.setEnd(n, i + q.length); ranges.push(r); i = t.indexOf(q, i + q.length); } });
+        });
+      });
+      if (HL && ranges.length) CSS.highlights.set('lg-hit', new Highlight(...ranges));
+      const f = toc.querySelector('.lg-foot');
+      if (f) f.textContent = q ? (hits ? L(hits + ' 节符合', hits + ' sections match', hits + ' 節が一致') : L('没有符合的内容', 'No match', '一致なし')) : L(S.heads.length + ' 个标题 · 按 ? 看快捷键', S.heads.length + ' headings · ? for keys', '見出し ' + S.heads.length + ' · ? でキー');
+    }
+
+    /* ---- contents column ---- */
+    function buildToc() {
+      chrome(); toc.innerHTML = '';
+      toc.append(el('h4', '', S.kind === 'guide' ? 'STEPS' : 'ON THIS PAGE'));
+      if (S.kind === 'doc') {
+        const lab = el('label', 'lg-find'), inp = el('input'); inp.type = 'search'; inp.placeholder = L('搜索本文', 'Search this page', 'このページを検索'); inp.setAttribute('aria-label', inp.placeholder);
+        lab.append(inp, el('kbd', '', '/')); toc.append(lab);
+        inp.addEventListener('input', () => filter(inp.value));
+        inp.addEventListener('keydown', e => { if (e.key === 'Escape') { inp.value = ''; filter(''); inp.blur(); } });
+      }
+      const ol = el('ol');
+      const item = (h, cls, num, mark) => {
+        const li = el('li'), a = el('a', cls); a.href = '#' + h.id; a.dataset.t = h.id;
+        if (mark != null) a.append(el('span', 'lg-ck', mark));
+        if (num) a.append(el('span', 'lg-n', num));
+        a.append(el('span', 'lg-tt', S.kind === 'guide' && cls !== 'lg-l2' ? headText(h).replace(/^STEP \d+\s*/, '').replace(NUMRE, '') : headText(h).replace(/^STEP \d+\s*/, '')));
+        li.append(a); ol.append(li); return a;
+      };
+      if (S.kind === 'guide') S.steps.forEach((s, i) => { const d = S.done.has(i + 1); const a = item(S.heads[i], d ? 'lg-dn' : '', pad(i + 1), d ? '✓' : '○'); void a; (S.sub[i] || []).forEach(x => { if (!x.id) x.id = 'lg-s' + i + '-' + Math.random().toString(36).slice(2, 6); item(x, 'lg-l2'); }); });
+      else S.heads.forEach(h => item(h, h.dataset.lgLv === '1' ? 'lg-l2' : '', h.dataset.lgOwn ? '' : h.dataset.lgNum));
+      toc.append(ol);
+      toc.append(el('div', 'lg-foot'));
+      if (S.kind === 'guide') { toc.querySelector('.lg-foot').textContent = S.done.size + ' / ' + S.steps.length + L(' 步完成', ' steps done', ' 手順完了'); const bar = el('div', 'lg-bar'), i2 = el('i'); i2.style.width = (S.steps.length ? S.done.size / S.steps.length * 100 : 0) + '%'; bar.append(i2); toc.append(bar); }
+      else filter(toc.querySelector('input').value || '');
+      place(); spy();
+    }
+    function place() {
+      if (!toc || !S) return;
+      const b = main.querySelector('.source-body'); if (!b) return;
+      const left = b.getBoundingClientRect().right + 44, room = innerWidth - left - 20;
+      const side = room >= 210 && matchMedia('(min-width: 1180px)').matches;
+      toc.classList.toggle('lg-side', side); root.classList.toggle('lg-has-side', side);
+      if (side) { toc.style.left = left + 'px'; toc.style.width = Math.min(260, room) + 'px'; toc.classList.remove('lg-sheet'); }
+      else { toc.style.left = ''; toc.style.width = ''; }
+    }
+    function current() { let c = 0; (S && S.heads || []).forEach((h, i) => { if (h.offsetParent && h.getBoundingClientRect().top < 150) c = i; }); return c; }
+    function spy() {
+      if (!S || !toc) return;
+      const h = S.heads[current()]; toc.querySelectorAll('a.lg-on').forEach(a => a.classList.remove('lg-on'));
+      if (!h) return; const a = toc.querySelector('a[data-t="' + h.id + '"]'); if (a) { a.classList.add('lg-on'); if (toc.classList.contains('lg-side')) { const r = a.getBoundingClientRect(), t = toc.getBoundingClientRect(); if (r.top < t.top + 60 || r.bottom > t.bottom - 40) a.scrollIntoView({ block: 'nearest' }); } }
+    }
+    function jump(d) {
+      const hs = (S.heads || []).filter(h => h.offsetParent); if (!hs.length) return;
+      const y = 150; let i;
+      if (d > 0) { i = hs.findIndex(h => h.getBoundingClientRect().top > y + 4); if (i < 0) i = hs.length - 1; }
+      else { i = 0; for (let j = hs.length - 1; j >= 0; j--) if (hs[j].getBoundingClientRect().top < y - 4) { i = j; break; } if (hs[i].getBoundingClientRect().top > y - 40 && i > 0) i--; }
+      hs[i].scrollIntoView({ behavior: smooth(), block: 'start' });
+    }
+    let lastG = 0;
+    addEventListener('keydown', e => {
+      if (!S || !kind()) return;
+      if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const k = e.key;
+      if (k === '?') { helpText(); help.classList.toggle('open'); e.preventDefault(); return; }
+      if (k === 'Escape') { help.classList.remove('open'); toc.classList.remove('lg-sheet'); return; }
+      if (help.classList.contains('open')) return;
+      if (k === 'j') jump(1); else if (k === 'k') jump(-1);
+      else if (k === 'G') scrollTo({ top: document.documentElement.scrollHeight, behavior: smooth() });
+      else if (k === 'g') { const n = Date.now(); if (n - lastG < 500) scrollTo({ top: 0, behavior: smooth() }); lastG = n; }
+      else if (k === '/' && S.kind === 'doc') { const i = toc.querySelector('input'); if (i) { e.preventDefault(); if (!toc.classList.contains('lg-side')) toc.classList.add('lg-sheet'); i.focus(); } }
+      else if (k === 'x' && S.kind === 'guide') toggleDone(current());
+    });
+    window.LuliyManualClick = () => {
+      if (!S) return null;
+      const i = current(), h = S.heads[i]; if (!h) return null;
+      const t = headText(h).replace(/^STEP \d+\s*/, '');
+      return S.kind === 'guide' ? [L('你在第 ' + (i + 1) + ' 步：', 'Step ' + (i + 1) + ':', '手順 ' + (i + 1) + '：') + t, L('做完了按 x。', 'Press x when done.', '終わったら x。')]
+        : [L('这里是第 ' + h.dataset.lgNum + ' 节。', 'Section ' + h.dataset.lgNum + '.', '第 ' + h.dataset.lgNum + ' 節。'), L('按 / 可以搜索。', 'Press / to search.', '/ で検索。')];
+    };
+
+    /* ---- apply ---- */
+    let frame = 0;
+    function apply() {
+      frame = 0;
+      const k = kind(), m = /^#\/article\/(P\d+)(?:[?#/]|$)/.exec(location.hash || '');
+      const shell = k && m && main.querySelector('.source-reading'), body = shell && shell.querySelector('.source-body');
+      if (!k || !body || !body.textContent.trim() || !shell.querySelector(':scope > h1')) {
+        if (!k && S) { S = null; unmark(); if (toc) { toc.innerHTML = ''; toc.classList.remove('lg-sheet', 'lg-side'); help.classList.remove('open'); } root.classList.remove('lg-has-side'); }
+        return;
+      }
+      const sig = () => k + ':' + m[1] + ':' + body.childElementCount + ':' + body.textContent.length;
+      if (body.dataset.lgDone === sig()) { place(); return; }
+      if (body.querySelector('.lg-eof') && S && S.id === m[1] && S.kind === k) { body.dataset.lgDone = sig(); place(); return; }   // already built; only text changed (marks)
+      S = { id: m[1], kind: k, heads: [], steps: [], sub: [], done: new Set(), blocks: [], min: 1 };
+      head(shell, k, 0, 0);                 // reading time first (S.min)
+      codeBlocks(body);
+      const n = k === 'guide' ? buildGuide(shell, body, m[1]) : buildDoc(shell, body);
+      head(shell, k, n, n);
+      body.dataset.lgDone = sig();
+      if (k === 'guide') paintDone(); else buildToc();
+      try { if (!sessionStorage.getItem('luliy-manual-keys')) { sessionStorage.setItem('luliy-manual-keys', '1'); setTimeout(() => { if (window.LuliyLoonSay) window.LuliyLoonSay(L('按 ? 看快捷键。', 'Press ? for keyboard shortcuts.', '? でショートカット。'), 4200); }, 2500); } } catch (e) {}
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(apply); };
+    new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
+    new MutationObserver(schedule).observe(root, { attributes: true, attributeFilter: ['class'] });
+    addEventListener('hashchange', schedule);
+    addEventListener('scroll', () => { if (S) spy(); }, { passive: true });
+    addEventListener('resize', () => { if (S) { place(); spy(); } });
     schedule();
   })();
 
