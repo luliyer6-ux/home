@@ -2711,7 +2711,7 @@
     ];
     const chronicle = () => /^#\/posts\?(?:[^#]*&)?view=chronicle(?:&|$)/.test(location.hash || '');
     const works = () => /^#\/projects(?:[/?]|$)/.test(location.hash || '');
-    function nextLine() { lines = journal() ? journalLines : reading() ? readingLines : chronicle() ? chronicleLines : works() ? worksLines : postsLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; return lines[li]; }
+    function nextLine() { const own = reading() && typeof window.LuliyLoonLines === 'function' ? window.LuliyLoonLines() : null; lines = own && own.length ? own : journal() ? journalLines : reading() ? readingLines : chronicle() ? chronicleLines : works() ? worksLines : postsLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; return lines[li]; }
     function nextQuote() { qi = (qi + 1) % QUOTES.length; return QUOTES[qi]; }
     const readTime = text => Math.max(3400, (Array.isArray(text) ? text.join('') : text).length * 240 + 1800); // long lines stay up longer
     function setFace(st) { if (st) box.dataset.face = st; else delete box.dataset.face; }
@@ -2764,7 +2764,8 @@
         closeEyes(() => { talking = speakHold = false; retarget(); });
       }, ms);
     }
-    function talk() { respond(nextLine()); }
+    // Article styles (section 37) may answer a click with their own words: window.LuliyLoonClick() returns a line or null.
+    function talk() { const own = typeof window.LuliyLoonClick === 'function' ? window.LuliyLoonClick() : null; respond(own || nextLine()); }
     // Contents open and she already faces you: hovering her opens her eyes (no words); leaving closes them.
     function gaze(on) {
       if (on) { if (talking || eyesUp || mode === 'intro' || !atFront()) return; gazing = true; openEyes(() => {}); return; }
@@ -2774,6 +2775,8 @@
     }
     // Things she says on her own never cut into an answer.
     function sayAuto(text, ms) { if (!talking) say(text, ms); }
+    // For section 37: say something on her own (never over an answer, never while she dances, only when she is out).
+    window.LuliyLoonSay = (text, ms) => { if (!box.hidden && mode !== 'intro') { sayAuto(text, ms || readTime(text)); return true; } return false; };
     // Background hint: reading pages only, for someone who has never picked a background (luliy-article-bg-choice,
     // section 24); once per browsing session, twice in all (localStorage luliy-loon-bg-hint). About 6 s after she
     // appears; waits while she talks or dances (gives up after ~20 s). Her button column lights up meanwhile.
@@ -2785,7 +2788,7 @@
       if (n >= 2 || ss.get('luliy-loon-bg-hinted')) return;
       let tries = 0;
       const tryNow = () => {
-        if (box.hidden || !reading() || !document.querySelector('#main .luliy-bg-toggle')) return;
+        if (box.hidden || !reading() || !document.querySelector('#main .luliy-bg-toggle') || root.classList.contains('ls-on')) return;
         if (talking || mode === 'intro' || bubble.classList.contains('show')) { if (++tries < 10) hintT = setTimeout(tryNow, 1500); return; }
         ss.set('luliy-loon-bg-hinted');
         try { localStorage.setItem('luliy-loon-bg-hint', String(n + 1)); } catch (e) {}
@@ -3708,6 +3711,266 @@
     addEventListener('scroll', () => { if (root.classList.contains('lk-weekly')) progress(); }, { passive: true });
     addEventListener('resize', progress);
     new MutationObserver(schedule).observe(root, { attributes: true, attributeFilter: ['lang'] });
+    schedule();
+  })();
+
+
+  /* 37. Article styles by label (2026-11-01): 隨筆 musings · 成長 growth (also 成长 / 成長) · 學習 study · AI ai.
+     Blog articles (#/article/Pxx) only; `weekly` wins (section 36), then ai > study > growth > musings. Loon stays.
+     html.ls-on plus ls-musings / ls-growth / ls-study / ls-ai (home-fixes.css 37). Labels come from the feed
+     (cached in localStorage luliy-label-map-v1) or, before it arrives, from the category line on the page.
+     a) Every style: its own head (eyebrow, meta line with date, reading time and 分享) instead of the orange row;
+        no article artwork (and no background hint from Loon).
+     b) 隨筆 / 成長 (夜讀手稿): stars dimmed, centred title with a gold hand-drawn line, short one-paragraph quotes in
+        gold, --- as a small gold leaf, a signature at the end. 成長 adds the season in gold script and the week.
+        Loon quotes the first gold line after ~9 s and says goodnight at the end.
+     c) 學習 (夜間筆記本): squared paper behind the text, **bold** as a gold marker, GitHub alerts as 筆記 / 例子 /
+        重點 / 注意 boxes, footnotes in the right margin when there is room, and 本篇要點 (the bold lines) with a
+        flash-card review. Clicking Loon goes through the points one by one.
+     d) AI (提示詞工作台): mono headings; code blocks that are prompts (language prompt, or text with {{name}})
+        become cards: {{name}} becomes a field, 複製提示詞 copies the filled text. Loon answers a copy. */
+  (() => {
+    const main = document.getElementById('main');
+    if (!main) return;
+    const FEED = 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/postList.json';
+    const KEY = 'luliy-label-map-v1';
+    const T = s => (typeof window.LuliyInterfaceText === 'function' ? window.LuliyInterfaceText(s) : s);
+    const L = (zh, en, ja, hant) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : root.lang === 'zh-Hant' ? (hant || T(zh)) : zh);
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const STYLES = [
+      ['ai', /^ai$/i], ['study', /^study$/i], ['growth', /^(growth|成长|成長)$/i], ['musings', /^(musings|隨筆|随笔)$/i]
+    ];
+    let map = {};
+    try { map = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+    let fetched = false;
+    function loadMap() {
+      if (fetched || typeof fetch !== 'function') return;
+      fetched = true;
+      fetch(FEED).then(r => (r.ok ? r.json() : null)).then(json => {
+        if (!json || typeof json !== 'object') return;
+        const m = {};
+        Object.keys(json).forEach(k => { if (/^P\d+$/.test(k) && json[k] && typeof json[k] === 'object') m[k] = (json[k].labels || []).map(l => String(l && l.name !== undefined ? l.name : l).trim()); });
+        map = m;
+        try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {}
+        schedule();
+      }).catch(() => {});
+    }
+    function styleOf(id, shell) {
+      let labels = map[id];
+      if (!labels) { const c = shell.querySelector('.source-category'); labels = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()) : []; }
+      if (labels.some(l => /^weekly$|周[记記]|週記/i.test(l))) return '';
+      for (const [name, re] of STYLES) if (labels.some(l => re.test(l))) return name;
+      return '';
+    }
+
+    const leafSvg = () => '<svg viewBox="0 0 46 20" aria-hidden="true" focusable="false"><path d="M4 10C14 2 24 2 34 10 24 18 14 18 4 10Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 10H42" stroke="currentColor"/><circle cx="42" cy="10" r="1.4" fill="currentColor"/></svg>';
+    const lineSvg = '<svg viewBox="0 0 220 16" aria-hidden="true" focusable="false"><defs><linearGradient id="lsLineG" x1="0" x2="1"><stop offset="0" stop-color="#b18a48" stop-opacity="0"/><stop offset=".2" stop-color="#e0c58d"/><stop offset=".6" stop-color="#f6e9c6"/><stop offset="1" stop-color="#cba15f" stop-opacity=".2"/></linearGradient></defs><path d="M6 10C50 4 92 13 130 8S190 5 214 9" fill="none" stroke="url(#lsLineG)" stroke-width="2.4" stroke-linecap="round"/></svg>';
+    const SEASON = m => (m >= 3 && m <= 5 ? 'Spring' : m >= 6 && m <= 8 ? 'Summer' : m >= 9 && m <= 11 ? 'Autumn' : 'Winter');
+    function weekOf(d) { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y) / 864e5 + 1) / 7); }
+    const content = body => (body.firstElementChild && body.firstElementChild.matches('.markdown-body') ? body.firstElementChild : body);
+
+    let state = { id: '', style: '', quote: '', keys: [], ki: 0, prompts: [], ended: false };
+    function head(shell, style) {
+      const h1 = shell.querySelector(':scope > h1'), meta = shell.querySelector('.source-meta');
+      if (!h1 || shell.querySelector(':scope > .ls-head')) return;
+      const box = el('div', 'ls-head');
+      const time = meta && meta.querySelector('time'), dstr = time ? time.textContent.trim() : '', date = new Date(dstr.replace(/-/g, '/'));
+      const EYE = { musings: [L('随 笔', 'Musings', '随 筆'), 'MUSINGS'], growth: [L('成 长', 'Growth', '成 長'), 'GROWTH'], study: ['STUDY', L('学习笔记', 'Study notes', '学習ノート')], ai: ['AI', 'PROMPT'] }[style];
+      if (style === 'growth' && !isNaN(date)) box.append(el('div', 'ls-script', SEASON(date.getMonth() + 1)));
+      box.append(el('div', 'ls-eyebrow', EYE[0] + ' · ' + EYE[1]));
+      h1.before(box);
+      const after = el('div', 'ls-meta');
+      if (style === 'musings' || style === 'growth') { const u = el('span', 'ls-uline'); u.innerHTML = lineSvg; h1.after(u); u.after(after); } else h1.after(after);
+      const parts = [];
+      if (style === 'growth' && !isNaN(date)) parts.push(L('第 ' + weekOf(date) + ' 周', 'Week ' + weekOf(date), '第 ' + weekOf(date) + ' 週', '第 ' + weekOf(date) + ' 週'));
+      if (dstr) parts.push(dstr.replace(/-/g, ' · '));
+      parts.forEach(p => after.append(el('span', '', p)));
+      after.append(el('span', 'ls-rt'));
+      if (style === 'ai') after.append(el('span', 'ls-pn'));
+      const share = meta && meta.querySelector('.source-share');
+      if (share) { const b = el('button', 'ls-share', L('分享', 'Share', '共有')); b.type = 'button'; b.addEventListener('click', () => share.click()); after.append(b); }
+    }
+    function readingTime(shell) {
+      const rt = shell.querySelector('#sourceReadingTime'), m = rt && rt.textContent.match(/(\d+)\s*(?:分|min)/i), s = shell.querySelector('.ls-rt');
+      if (s) s.textContent = m ? L('约 ' + m[1] + ' 分钟', m[1] + ' min', '約 ' + m[1] + ' 分') : '';
+    }
+
+    function manuscript(shell, body, style) {
+      const c = content(body);
+      body.querySelectorAll('blockquote').forEach(q => {
+        if (q.closest('.markdown-alert') || q.parentElement.closest('blockquote')) return;
+        const ps = q.querySelectorAll(':scope > p'), t = q.textContent.trim();
+        if (q.children.length === ps.length && ps.length === 1 && t.length && t.length <= 90) q.classList.add('ls-gq');
+      });
+      body.querySelectorAll('hr').forEach(hr => { if (hr.nextElementSibling && hr.nextElementSibling.classList.contains('ls-leaf')) return; const s = el('span', 'ls-leaf'); s.innerHTML = leafSvg(); hr.after(s); });
+      if (!c.querySelector(':scope > .ls-sign')) c.append(el('p', 'ls-sign', style === 'growth' ? 'to be continued' : '— Luliy'));
+      const q = body.querySelector('.ls-gq');
+      state.quote = q ? q.textContent.trim() : '';
+    }
+    function notebook(shell, body) {
+      const c = content(body);
+      // GitHub alerts (> [!NOTE] …). The site strips their classes, so they arrive as <div><p>Note</p><p>…</p></div>;
+      // a blockquote that still starts with [!NOTE] counts too.
+      const KINDS = { note: 'note', tip: 'tip', important: 'important', warning: 'warning', caution: 'caution' };
+      const NAMES = { note: L('笔记', 'Note', 'メモ'), tip: L('例子', 'Example', '例'), important: L('重点', 'Key idea', '要点'), warning: L('注意', 'Watch out', '注意'), caution: L('注意', 'Watch out', '注意') };
+      body.querySelectorAll('div, blockquote').forEach(a => {
+        if (a.classList.contains('ls-box') || a.closest('.ls-keys, .ls-box')) return;
+        const p = a.firstElementChild; if (!p || p.tagName !== 'P') return;
+        const t = p.textContent.trim(), m1 = /^(note|tip|important|warning|caution)$/i.exec(t), m2 = /^\[!(note|tip|important|warning|caution)\]\s*/i.exec(t);
+        const k = m1 ? KINDS[m1[1].toLowerCase()] : m2 ? KINDS[m2[1].toLowerCase()] : '';
+        if (!k || (m1 && a.children.length < 2)) return;
+        a.classList.add('ls-box', 'ls-' + k);
+        const title = el('p', 'ls-box-title', NAMES[k]);
+        if (m1) p.replaceWith(title);
+        else { p.innerHTML = p.innerHTML.replace(/^\s*\[![a-z]+\]\s*(<br\s*\/?>)?\s*/i, ''); if (!p.textContent.trim()) p.remove(); a.prepend(title); }
+      });
+      // key points from bold text
+      const seen = new Set(), keys = [];
+      body.querySelectorAll('strong, b').forEach(s => { if (s.closest('.ls-keys, .markdown-alert-title, table')) return; const t = s.textContent.replace(/\s+/g, ' ').trim(); if (t.length >= 2 && t.length <= 80 && !seen.has(t)) { seen.add(t); keys.push(t); } });
+      state.keys = keys.slice(0, 8); state.ki = 0;
+      let box = c.querySelector(':scope > .ls-keys');
+      if (state.keys.length >= 2 && !box) {
+        box = el('section', 'ls-keys'); box.setAttribute('aria-label', L('本篇要点', 'Key points', 'この記事の要点'));
+        box.append(el('h3', '', L('本篇要点', 'Key points', 'この記事の要点')));
+        const ol = el('ol'); state.keys.forEach(k => ol.append(el('li', '', k))); box.append(ol);
+        const go = el('button', 'ls-go', L('开始复习', 'Review', '復習する', '開始複習')); go.type = 'button';
+        const fc = el('div', 'ls-fc'); fc.hidden = true; fc.setAttribute('aria-live', 'polite');
+        box.append(go, fc);
+        let deck = [], i = 0, again = [];
+        const show = () => {
+          fc.hidden = false; fc.innerHTML = '';
+          if (i >= deck.length) {
+            fc.append(el('p', '', again.length ? L('复习完了，还有 ' + again.length + ' 张想再看。', 'Done. ' + again.length + ' to see again.', '終わり。もう一度：' + again.length + ' 枚', '複習完了，還有 ' + again.length + ' 張想再看。') : L('全部都记得，真棒。', 'You remembered them all.', '全部覚えていました。')));
+            if (again.length) { const b = el('button', '', L('再看一次', 'Again', 'もう一度')); b.type = 'button'; b.onclick = () => { deck = again; again = []; i = 0; show(); }; const r = el('div', 'ls-row'); r.append(b); fc.append(r); }
+            return;
+          }
+          fc.append(el('small', '', L('抽认卡 ', 'Card ', 'カード ') + (i + 1) + ' / ' + deck.length), el('p', 'ls-q', deck[i]));
+          const r = el('div', 'ls-row'), ok = el('button', '', L('记得', 'Got it', '覚えた')), no = el('button', '', L('再看一次', 'Again', 'もう一度'));
+          ok.type = no.type = 'button'; ok.onclick = () => { i++; show(); }; no.onclick = () => { again.push(deck[i]); i++; show(); };
+          r.append(ok, no); fc.append(r); ok.focus({ preventScroll: true });
+        };
+        go.onclick = () => { deck = state.keys.slice(); i = 0; again = []; show(); };
+        const end = footnoteHead(c) || c.querySelector(':scope > section[data-footnotes], :scope > .footnotes');
+        if (end) end.before(box); else c.append(box);
+      }
+      sidenotes(body);
+    }
+    // GitHub footnotes arrive as <h2>Footnotes</h2><ol>…</ol> with links pointing at the blog; refs are <sup><a …#user-content-fn-N>.
+    function footnoteHead(c) { return [...c.querySelectorAll(':scope > h2, :scope > h3')].find(h => { const x = h.cloneNode(true); x.querySelectorAll('button').forEach(b => b.remove()); return /^(footnotes|脚注|腳註|注释|註釋)$/i.test(x.textContent.trim()); }) || null; }
+    function sidenotes(body) {
+      const c = content(body);
+      body.querySelectorAll('.ls-sn').forEach(n => n.remove());
+      const fh = footnoteHead(c), list = fh && fh.nextElementSibling && fh.nextElementSibling.tagName === 'OL' ? fh.nextElementSibling : c.querySelector('section[data-footnotes] ol, .footnotes ol');
+      const refs = [...body.querySelectorAll('sup > a[href*="#user-content-fn-"], a[data-footnote-ref]')].filter(a => !/fnref/.test(a.getAttribute('href') || ''));
+      const room = innerWidth - body.getBoundingClientRect().right;
+      const on = !!(list && refs.length && room >= 270 && matchMedia('(pointer: fine)').matches);
+      body.classList.toggle('ls-has-sn', on);
+      [fh, list].forEach(n => { if (n) n.classList.toggle('ls-fn-hidden', on); });
+      if (!on) return;
+      const items = [...list.children];
+      const top0 = body.getBoundingClientRect().top;
+      let last = -1e9;
+      refs.forEach(a => {
+        const num = ((a.getAttribute('href') || '').match(/user-content-fn-(\d+)/) || [])[1], li = num ? items[+num - 1] : null;
+        if (!li) return;
+        const n = el('aside', 'ls-sn'), clone = li.cloneNode(true);
+        clone.querySelectorAll('a').forEach(x => { if (/fnref|↩/.test((x.getAttribute('href') || '') + x.textContent)) x.remove(); });
+        n.append(el('b', '', num)); n.append(document.createTextNode(' ' + clone.textContent.replace(/\s+/g, ' ').trim()));
+        let y = a.getBoundingClientRect().top - top0 - 4; if (y < last + 8) y = last + 8;
+        n.style.top = y + 'px'; body.append(n); last = y + n.offsetHeight;
+      });
+    }
+    function workbench(shell, body) {
+      const pres = [...body.querySelectorAll('pre')].filter(p => !p.closest('.ls-pc') && (/prompt/i.test((p.getAttribute('lang') || '') + ' ' + p.className + ' ' + ((p.querySelector('code') || {}).className || '') + ' ' + (p.parentElement.className || '')) || /\{\{[^{}\n]{1,30}\}\}/.test(p.textContent)));
+      const done = [...body.querySelectorAll('.ls-pc')];
+      pres.forEach(pre => {
+        const host = pre.parentElement.matches('.highlight, .snippet-clipboard-content, .reader-code, [class*="code-"]') && pre.parentElement !== body ? pre.parentElement : pre;
+        const n = done.length + 1;
+        let title = '', h = host; while ((h = h.previousElementSibling)) { if (/^H[1-4]$/.test(h.tagName)) { title = h.textContent.replace(/[⌁¶#]/g, '').trim(); break; } }
+        const card = el('div', 'ls-pc'); card.dataset.name = title || L('提示词 ', 'Prompt ', 'プロンプト ') + n;
+        const hd = el('header'); hd.append(el('b', '', '#' + n + ' ' + card.dataset.name)); card.append(hd);
+        const pt = el('div', 'ls-pt'), raw = pre.textContent.replace(/\n$/, ''); let fields = 0;
+        raw.split(/(\{\{[^{}\n]{1,30}\}\})/).forEach(part => {
+          const m = part.match(/^\{\{([^{}\n]{1,30})\}\}$/);
+          if (m) { const i = el('input'); i.type = 'text'; i.placeholder = m[1].trim(); i.setAttribute('aria-label', m[1].trim()); i.size = Math.max(4, m[1].trim().length * 2); i.addEventListener('input', () => { i.size = Math.max(4, (i.value || i.placeholder).length * 2); }); pt.append(i); fields++; }
+          else pt.append(document.createTextNode(part));
+        });
+        card.append(pt);
+        const ft = el('footer'); ft.append(el('span', '', fields ? L('可填 ' + fields + ' 处', fields + ' to fill', '入力欄 ' + fields) : L('直接复制', 'Copy as is', 'そのままコピー')));
+        const cp = el('button', '', L('复制提示词', 'Copy prompt', 'コピー', '複製提示詞')); cp.type = 'button';
+        cp.addEventListener('click', () => {
+          const text = [...pt.childNodes].map(x => (x.nodeType === 3 ? x.data : x.value ? x.value : '{{' + x.placeholder + '}}')).join('');
+          const ok = () => { cp.textContent = L('已复制 ✓', 'Copied ✓', 'コピー済み ✓', '已複製 ✓'); setTimeout(() => { cp.textContent = L('复制提示词', 'Copy prompt', 'コピー', '複製提示詞'); }, 1600); if (window.LuliyLoonSay) window.LuliyLoonSay(L('已复制，去试试吧。', 'Copied. Go try it.', 'コピーしたよ。試してみて。', '已複製，去試試吧。'), 3400); };
+          const fb = () => { const a = el('textarea'); a.value = text; a.style.cssText = 'position:fixed;opacity:0'; document.body.append(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} a.remove(); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fb); else fb();
+        });
+        ft.append(cp); card.append(ft);
+        host.replaceWith(card); done.push(card);
+      });
+      state.prompts = [...body.querySelectorAll('.ls-pc')].map(c => c.dataset.name);
+      const pn = shell.querySelector('.ls-meta .ls-pn');
+      if (pn) pn.textContent = state.prompts.length ? L(state.prompts.length + ' 个提示词', state.prompts.length + ' prompts', 'プロンプト ' + state.prompts.length) : '';
+    }
+
+    /* ---- Loon ---- */
+    const LINES = {
+      musings: () => [L('晚上好，适合慢慢读。', 'Good evening. Read slowly.', 'こんばんは。ゆっくり読もう。'), L('读慢一点也没关系。', 'No need to hurry.', '急がなくていいよ。')],
+      growth: () => [L('又长大了一点。', 'A little more grown.', 'また少し成長したね。'), L('把这些留给一年后的自己。', 'Kept for you, a year from now.', '一年後の自分へ。')],
+      study: () => [L('有不懂的地方，点我。', 'Stuck? Click me.', 'わからない所は私を押して。'), L('划线的是重点哦。', 'The marked lines are the key points.', '線のところが要点だよ。')],
+      ai: () => [L('黄色的地方可以直接填。', 'Fill in the yellow boxes.', '黄色の所に書き込めるよ。'), L('填好再复制，贴过去就能用。', 'Fill, copy, paste.', '書いてコピーして貼るだけ。')]
+    };
+    window.LuliyLoonLines = () => (root.classList.contains('ls-on') && LINES[state.style] ? LINES[state.style]() : null);
+    window.LuliyLoonClick = () => {
+      if (!root.classList.contains('ls-on')) return null;
+      if (state.style === 'study' && state.keys.length) { const i = state.ki % state.keys.length; state.ki++; return [L('要点 ', 'Point ', '要点 ') + (i + 1) + ' / ' + state.keys.length, state.keys[i]]; }
+      if (state.style === 'ai' && state.prompts.length) return [L('这篇有 ' + state.prompts.length + ' 个提示词：', state.prompts.length + ' prompts here:', 'プロンプトは ' + state.prompts.length + ' つ：')].concat(state.prompts.slice(0, 3).map((p, i) => '#' + (i + 1) + ' ' + p));
+      if ((state.style === 'musings' || state.style === 'growth') && state.quote) return ['「' + state.quote.slice(0, 40) + (state.quote.length > 40 ? '…' : '') + '」', L('这句我很喜欢。', 'I like this line.', 'この一文が好き。')];
+      return null;
+    };
+    let quoteT = 0;
+    function onEnd() {
+      if (state.ended || !root.classList.contains('ls-on')) return;
+      const body = main.querySelector('.source-body'); if (!body) return;
+      if (body.getBoundingClientRect().bottom > innerHeight + 40) return;
+      state.ended = true;
+      const t = { musings: L('读完了，晚安。', 'The end. Good night.', '読み終わり。おやすみ。'), growth: L('下次再见。', 'See you next time.', 'またね。'), study: L('读完了！要不要复习一下要点？', 'Done! Review the key points?', '読了！要点を復習する？', '讀完了！要不要複習一下要點？'), ai: L('去试试看吧。', 'Go try it.', '試してみて。') }[state.style];
+      if (t && window.LuliyLoonSay) window.LuliyLoonSay(t, 4200);
+    }
+
+    /* ---- apply ---- */
+    let frame = 0;
+    function apply() {
+      frame = 0;
+      const m = /^#\/article\/(P\d+)(?:[?#/]|$)/.exec(location.hash || '');
+      const shell = m && main.querySelector('.source-reading');
+      if (shell) loadMap();
+      const style = shell && !root.classList.contains('lk-weekly') ? styleOf(m[1], shell) : '';
+      ['musings', 'growth', 'study', 'ai'].forEach(s => root.classList.toggle('ls-' + s, s === style));
+      root.classList.toggle('ls-on', !!style);
+      if (!style) { if (state.id) { state = { id: '', style: '', quote: '', keys: [], ki: 0, prompts: [], ended: false }; clearTimeout(quoteT); } return; }
+      loadMap();
+      if (state.id !== m[1]) {
+        state = { id: m[1], style, quote: '', keys: [], ki: 0, prompts: [], ended: false };
+        clearTimeout(quoteT);
+        if (style === 'musings' || style === 'growth') quoteT = setTimeout(() => { if (state.id === m[1] && state.quote && window.LuliyLoonSay) window.LuliyLoonSay(['「' + state.quote.slice(0, 40) + (state.quote.length > 40 ? '…' : '') + '」', L('这句我很喜欢。', 'I like this line.', 'この一文が好き。')], 5600); }, 9000);
+      }
+      state.style = style;
+      head(shell, style); readingTime(shell);
+      const body = shell.querySelector('.source-body');
+      if (!body || !body.textContent.trim()) return;
+      const sig = style + ':' + body.childElementCount + ':' + body.textContent.length;
+      if (body.dataset.lsDone === sig) return;
+      if (style === 'musings' || style === 'growth') manuscript(shell, body, style);
+      else if (style === 'study') notebook(shell, body);
+      else if (style === 'ai') workbench(shell, body);
+      body.dataset.lsDone = style + ':' + body.childElementCount + ':' + body.textContent.length;
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(apply); };
+    new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
+    addEventListener('hashchange', schedule);
+    addEventListener('scroll', onEnd, { passive: true });
+    let rt = 0;
+    addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { const b = main.querySelector('.source-body'); if (b && root.classList.contains('ls-study')) sidenotes(b); }, 200); });
     schedule();
   })();
 
