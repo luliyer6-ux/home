@@ -233,7 +233,11 @@
     img.decoding = 'async';
     img.src = SHEET;
     var go = function () { if (el.isConnected) el.classList.add('is-playing'); };
-    if (img.decode) img.decode().then(go, function () {}); else img.onload = go;
+    // Normal path: start once the sheet is decoded. If decode() rejects (some WebViews do) fall back to the
+    // load event, and a last check after 4 s, so the loader can never stay on the still pose for good.
+    var late = function () { if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true }); };
+    if (img.decode) img.decode().then(go, late); else img.onload = go;
+    setTimeout(late, 4000);
   }
   // Ready: fade on the current frame, no waiting for the loop.
   function finish(el, done) { done(); }

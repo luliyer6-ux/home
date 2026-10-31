@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant" data-theme="dark">
-<head><script data-home-early>/* LULIY early routing, inlined at the very top of <head> by optimize-home.py (runs before the router).
+<head><link rel="preload" as="image" type="image/webp" href="/assets/mascot/loader-4d243acdf8.webp" fetchpriority="high" media="(prefers-reduced-motion: no-preference)"><script data-home-early>/* LULIY early routing, inlined at the very top of <head> by optimize-home.py (runs before the router).
    Phones open on the article list: a bare https://luliy.me/ becomes #/posts, and the prologue is skipped on phones.
    The full home stays one tap away (directory -> 首頁) and is kept for ?home, ?intro=1 and every deep link. */
 (function () {
@@ -235,7 +235,11 @@
     img.decoding = 'async';
     img.src = SHEET;
     var go = function () { if (el.isConnected) el.classList.add('is-playing'); };
-    if (img.decode) img.decode().then(go, function () {}); else img.onload = go;
+    // Normal path: start once the sheet is decoded. If decode() rejects (some WebViews do) fall back to the
+    // load event, and a last check after 4 s, so the loader can never stay on the still pose for good.
+    var late = function () { if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true }); };
+    if (img.decode) img.decode().then(go, late); else img.onload = go;
+    setTimeout(late, 4000);
   }
   // Ready: fade on the current frame, no waiting for the loop.
   function finish(el, done) { done(); }
