@@ -2391,22 +2391,30 @@
     run();
   })();
 
-  /* 27. Reading-page mascot (2026-10-30): the gold leaf-hair figure from the Luliy logo animation, cut out of the
-     background (assets/mascot/). Reading pages only (#/article/, #/post/), desktop only, and only when the left
-     margin beside the article is wide enough.
-     She is drawn on a canvas from a 70-frame sheet (15 fps) and driven like a scrubber:
-       - when an article opens she plays the whole clip once, then rests on the logo pose;
-       - hovering the contents button turns her to the front and she holds there (and keeps holding while the
-         contents panel is open); hovering the back-to-top button turns her to the far pose and holds;
-         leaving a button winds her back to the resting pose;
-       - hovering her or clicking her replays the clip and she says a line.
-     Reduced motion / Save-Data: no sheet is fetched; three still poses cross-fade instead.
+  /* 27. Loon, the site mascot (2026-10-30, reworked 2026-10-31): the gold leaf-hair figure from the Luliy logo animation.
+     Full spec: README section 15.2 (and the project doc claude/loon-mascot-spec.md).
+     Where: desktop only (>= 1180px, mouse); article reading pages, the 文章 / 短札 / 編年史 tabs and the works page
+     (#/projects); only when the left margin is wide enough (reading 130-190px, lists 110-190px). She never pushes the page.
+     She is drawn on a canvas from a 76-frame sheet (15 fps) and driven like a scrubber:
+       - her dance (the whole clip) plays once per browsing session, on the first page she appears on; it is never
+         interrupted - clicking her mid-dance only gets a "Let me dance!";
+       - things she says on her own (greeting, "What's up?" on hover, "我回来了。") never turn her and never interrupt her;
+       - clicking her: she turns to you, her face fades in, she opens her eyes, answers, blinks while talking, then closes
+         her eyes and turns back; a long press (0.6 s) gets a quote instead; clicking while she talks = next line;
+       - contents button hovered / contents open: she faces you with her eyes closed; hovering her then opens them;
+       - back-to-top hovered: she turns to the far pose.
+     Reduced motion / Save-Data: no sheet is fetched; still poses cross-fade, no dance, no blinking.
      Her button column also carries the article's contents + back-to-top buttons (the article's own two floating
-     buttons are hidden by CSS while she is on screen). Revert = delete this block and its CSS. */
+     buttons are hidden by CSS while she is on screen). Collapsed, she is a small "Loon" tab on the left edge.
+     Revert = delete this block and its CSS (27, 27b, 27c). */
   (() => {
     const root = document.documentElement;
     const BASE = '/assets/mascot/';
     const REST = BASE + 'luliy-rest.webp?v=2', FRONT = BASE + 'luliy-front.webp', TURN = BASE + 'luliy-turn.webp', ATLAS = BASE + 'luliy-atlas-v2.webp';
+    // Her talking face (2026-10-31): brows, nose, mouth and eyes in three states (closed / half / open). Only the face
+    // area, drawn to sit exactly on frame F_FRONT (= luliy-front.webp). After she has turned to you the features fade in
+    // with her eyes closed, then she opens them (closed -> half -> open); she blinks now and then while talking.
+    const FACE = { c: BASE + 'luliy-face-closed-66dd0eb793.webp', h: BASE + 'luliy-face-half-7d622c4b81.webp', o: BASE + 'luliy-face-open-36fa744b9f.webp' }; // eyes closed / half / open
     const FW = 320, FH = 262, COLS = 10, NF = 76, FPS = 15, F_FRONT = 22, F_TURN = 45; // v2: 76 frames, the last 5 move her back to rest
     const KEY = 'luliy-mascot-hidden';
     const WIDE = matchMedia('(min-width: 1180px) and (pointer: fine)');
@@ -2417,6 +2425,9 @@
     const reading = () => /^#\/(?:article|post)\//.test(location.hash || '');
     // The journal (短札) tab also gets her; there she has no contents button (nothing to list), only ↑ and hide.
     const journal = () => /^#\/posts\?(?:[^#]*&)?view=journal(?:&|$)/.test(location.hash || '');
+    // 文章 / 短札 / 編年史 tabs and the works page.
+    const listPage = () => /^#\/(?:posts|projects)(?:[/?]|$)/.test(location.hash || '');
+    const ss = { get: k => { try { return sessionStorage.getItem(k); } catch (e) { return null; } }, set: k => { try { sessionStorage.setItem(k, '1'); } catch (e) {} } };
 
     const box = document.createElement('div');
     box.className = 'luliy-mascot';
@@ -2426,17 +2437,19 @@
       '<div class="luliy-mascot-tools">' +
         '<button type="button" data-m="toc" aria-label="文章目录" aria-expanded="false" title="目录"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>' +
         '<button type="button" data-m="top" aria-label="回到顶部" title="回到顶部"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>' +
-        '<button type="button" data-m="hide" aria-label="收起看板娘" title="收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
+        '<button type="button" data-m="hide" aria-label="收起 Loon" title="收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
       '</div>' +
-      '<div class="luliy-mascot-stage" role="button" tabindex="0" aria-label="看板娘，点一下和她说话">' +
+      '<div class="luliy-mascot-stage" role="button" tabindex="0" aria-label="Loon：点一下和她说话，长按听她说一句话">' +
         '<img class="luliy-mascot-rest" src="' + REST + '" alt="" decoding="async" width="' + FW + '" height="' + FH + '">' +
         '<canvas class="luliy-mascot-canvas" width="' + FW + '" height="' + FH + '" aria-hidden="true"></canvas>' +
+        ['c', 'h', 'o'].map(k => '<img class="luliy-mascot-face" data-f="' + k + '" src="' + FACE[k] + '" alt="" decoding="async" aria-hidden="true">').join('') +
       '</div>';
     const peek = document.createElement('button');
     peek.type = 'button';
     peek.className = 'luliy-mascot-peek';
     peek.hidden = true;
-    peek.textContent = '召唤看板娘';
+    peek.innerHTML = '<img src="' + REST + '" alt="" aria-hidden="true" decoding="async"><span>Loon</span>';
+    peek.setAttribute('aria-label', '召唤 Loon');
     const stage = box.querySelector('.luliy-mascot-stage'), bubble = box.querySelector('.luliy-mascot-bubble');
     // Gold particles around her (LuliyParticles, home-early.js), shown only while she moves or talks (2026-10-30).
     if (window.LuliyParticles) {
@@ -2456,6 +2469,8 @@
     /* ---------- the scrubber ---------- */
     let atlas = null, loading = false, pos = 0, target = 0, spd = 1, mode = 'idle', raf = 0, lastT = 0, fade = 0, drawn = -1;
     let hoverToc = false, hoverTop = false, tocOpen = false, stillsReady = false;
+    let speakHold = false, talking = false, eyesUp = false, flowT = 0, blinkT = 0, eyeT = [];
+    let hoverMe = false, gazing = false, closingFace = false, whatT = 0, lastWhat = 0, wantDance = false, dancedMem = false; // click-to-talk: turn to you, open eyes, then speak
 
     function draw(i) {
       i = Math.max(0, Math.min(NF - 1, Math.round(i)));
@@ -2474,6 +2489,7 @@
           atlas = im; drawn = -1; draw(pos);
           requestAnimationFrame(() => box.classList.add('has-canvas')); // hide the still only after the canvas shows the same frame
           retarget();
+          if (wantDance) { wantDance = false; playIntro(); }
         });
       };
       im.onerror = () => { loading = false; };
@@ -2509,13 +2525,14 @@
       if (Math.abs(target - pos) <= 1e-3) {
         if (mode === 'intro') { pos = 0; target = 0; mode = 'idle'; drawn = -1; draw(0); retarget(); if (!raf) moving(false); return; }
         pos = target; draw(pos);
+        if (pos === F_FRONT && hoverMe && tocOpen && !talking && !eyesUp) gaze(true);
         if (pos === 0) mode = 'idle';
         moving(false);
         return;
       }
       raf = requestAnimationFrame(tick);
     }
-    function wanted() { return hoverTop ? F_TURN : (hoverToc || tocOpen) ? F_FRONT : 0; }
+    function wanted() { return speakHold ? F_FRONT : hoverTop ? F_TURN : (hoverToc || tocOpen) ? F_FRONT : 0; }
     function ensureStills() {
       if (stillsReady) return;
       stillsReady = true;
@@ -2528,10 +2545,14 @@
     function retarget() {
       if (box.hidden) return;
       const f = wanted();
+      // The face only fits frame F_FRONT: close her eyes before she turns away.
+      if (box.dataset.face && f !== F_FRONT && !talking) {
+        if (!closingFace) { closingFace = true; gazing = false; closeEyes(() => { closingFace = false; retarget(); }); }
+        return;
+      }
       if (still()) { ensureStills(); stage.dataset.pose = f === F_FRONT ? 'front' : f === F_TURN ? 'turn' : 'rest'; return; }
       if (!atlas) { if (f) loadAtlas(); return; }
-      if (mode === 'intro' && pos > BLEND_FROM) return;  // already settling into rest: finishes by itself, then calls retarget()
-      if (mode === 'intro' && f === 0) return;           // nobody is hovering: let the opening clip finish
+      if (mode === 'intro') return;                      // she finishes her dance; its end calls retarget()
       if (f === target && mode !== 'idle') return;
       mode = 'hover'; target = f; spd = f >= pos ? 1.7 : 2.0;
       kick();
@@ -2545,6 +2566,8 @@
     }
     function reset() {
       cancelAnimationFrame(raf); raf = 0; pos = 0; target = 0; mode = 'idle'; hoverToc = hoverTop = false;
+      clearTimeout(flowT); clearTimeout(whatT); talking = speakHold = false; clearEye(); setFace('');
+      hoverMe = gazing = closingFace = wantDance = false;
       if (atlas) { drawn = -1; draw(0); }
       stage.dataset.pose = 'rest';
     }
@@ -2568,17 +2591,106 @@
       '今天也有在进步吗？哪怕一点点也好。'
     ];
     let timer = 0, li = -1, lines = readingLines;
+    // One sentence per line; a long sentence breaks at its comma; a tail of 1-3 characters joins the line above.
+    // Each line wraps with text-wrap: balance (home-fixes.css 27c), so no line ends with a lone character.
+    function lines4(text) {
+      const out = [];
+      (text.match(/[^。！？；!?;]+[。！？；!?;]*/g) || [text]).forEach(p => {
+        if (p.length > 15 && /[，,]/.test(p)) out.push(...p.match(/[^，,]+[，,]?/g)); else out.push(p);
+      });
+      const merged = [];
+      out.forEach(p => { if (merged.length && p.replace(/[，。！？；、,.!?;\s]/g, '').length <= 3) merged[merged.length - 1] += p; else merged.push(p); });
+      return merged;
+    }
+    const escH = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     function say(text, ms) {
-      bubble.textContent = T(text);
+      const ls = Array.isArray(text) ? text.map(T) : lines4(T(text));
+      bubble.innerHTML = ls.map(l => '<span class="lm-l">' + escH(l) + '</span>').join('');
       bubble.classList.add('show'); moving(true);
       clearTimeout(timer);
       timer = setTimeout(() => { bubble.classList.remove('show'); moving(false); }, ms || 4200);
     }
-    function talk() { lines = journal() ? journalLines : readingLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; say(lines[li]); }
+    // Long press: one of these, no attribution. Written as lines so they break where the sense breaks.
+    const QUOTES = [
+      ['世界上只有一种英雄主义，', '就是在认清生活的真相之后', '依然热爱生活。'],
+      ['已有的事，后必再有；', '已行的事，后必再行。']
+    ];
+    let qi = -1;
+    const generalLines = ['若不知走哪，请注重脚下。', '今天也有在进步吗？哪怕一点点也好。'];
+    function nextLine() { lines = journal() ? journalLines : reading() ? readingLines : generalLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; return lines[li]; }
+    function nextQuote() { qi = (qi + 1) % QUOTES.length; return QUOTES[qi]; }
+    const readTime = text => Math.max(3400, (Array.isArray(text) ? text.join('') : text).length * 240 + 1800); // long lines stay up longer
+    function setFace(st) { if (st) box.dataset.face = st; else delete box.dataset.face; }
+    function clearEye() { eyeT.forEach(clearTimeout); eyeT = []; clearTimeout(blinkT); }
+    function seq(steps) { let t = 0; steps.forEach(([d, st]) => { t += d; eyeT.push(setTimeout(() => setFace(st), t)); }); return t; }
+    // Features fade in with eyes closed, then the lids lift: closed -> half -> open.
+    function openEyes(done) {
+      clearEye();
+      if (still()) { setFace('o'); eyeT.push(setTimeout(() => { eyesUp = true; done(); }, 260)); return; }
+      const t = seq([[0, 'c'], [230, 'h'], [80, 'o']]);
+      eyeT.push(setTimeout(() => { eyesUp = true; blinkLoop(); done(); }, t + 140));
+    }
+    function closeEyes(done) {
+      clearEye(); eyesUp = false;
+      if (still()) { setFace(''); eyeT.push(setTimeout(done, 260)); return; }
+      const t = seq([[0, 'h'], [80, 'c'], [160, '']]);
+      eyeT.push(setTimeout(done, t + 240));
+    }
+    // A natural blink every 2.6–4.8 s while she is looking at you.
+    function blinkLoop() {
+      blinkT = setTimeout(() => {
+        if (!eyesUp) return;
+        seq([[0, 'h'], [50, 'c'], [80, 'h'], [50, 'o']]);
+        blinkLoop();
+      }, 2600 + Math.random() * 2200);
+    }
+    const atFront = () => still() || (!!atlas && mode !== 'intro' && Math.abs(pos - F_FRONT) < 1e-3);
+    // Only when you click / long-press her: she turns to face you, opens her eyes, then answers; when the bubble
+    // goes she closes her eyes and turns back. Things she says on her own (greeting, tips) never turn her.
+    function respond(text) {
+      if (box.hidden) return;
+      if (mode === 'intro') { say('Let me dance!', 2200); return; }   // she does not stop dancing for you
+      if (eyesUp) { clearTimeout(flowT); talking = speakHold = true; gazing = false; answer(text); return; } // already looking at you: answer at once
+      clearTimeout(flowT); talking = true; speakHold = true;
+      if (!still() && !atlas) loadAtlas();
+      retarget();
+      const wait = () => {
+        if (!talking) return;
+        if (atFront()) { flowT = setTimeout(() => openEyes(() => answer(text)), still() ? 300 : 120); }
+        else flowT = setTimeout(wait, 50);
+      };
+      wait();
+    }
+    function answer(text) {
+      const ms = readTime(text);
+      say(text, ms);
+      clearTimeout(flowT);
+      flowT = setTimeout(() => {
+        if (hoverMe && tocOpen) { talking = speakHold = false; gazing = true; return; } // still looking at you
+        closeEyes(() => { talking = speakHold = false; retarget(); });
+      }, ms);
+    }
+    function talk() { respond(nextLine()); }
+    // Contents open and she already faces you: hovering her opens her eyes (no words); leaving closes them.
+    function gaze(on) {
+      if (on) { if (talking || eyesUp || mode === 'intro' || !atFront()) return; gazing = true; openEyes(() => {}); return; }
+      if (!gazing) return;
+      gazing = false;
+      if (!talking) closeEyes(() => retarget());
+    }
+    // Things she says on her own never cut into an answer.
+    function sayAuto(text, ms) { if (!talking) say(text, ms); }
+    // The dance plays once per browsing session.
+    const DANCED = 'luliy-loon-danced';
+    function dance() {
+      if (still() || dancedMem || ss.get(DANCED)) return;
+      dancedMem = true; ss.set(DANCED);
+      if (atlas) playIntro(); else { wantDance = true; loadAtlas(); }
+    }
     function greet() {
-      if (journal()) { say('今天有什么想记下来的吗？'); return; }
+      if (journal()) { sayAuto('今天有什么想记下来的吗？'); return; }
       const h = new Date().getHours();
-      say(h < 6 ? '这么晚还在读，记得早点休息。' : h < 11 ? '早安，今天读点什么？' : h < 14 ? '午安，读完记得歇一会儿。' : h < 18 ? '下午好，配一杯茶刚好。' : '晚上好，适合安静地读点东西。');
+      sayAuto(h < 6 ? '这么晚还在读，记得早点休息。' : h < 11 ? '早安，今天读点什么？' : h < 14 ? '午安，读完记得歇一会儿。' : h < 18 ? '下午好，配一杯茶刚好。' : '晚上好，适合安静地读点东西。');
     }
 
     /* Lean gently toward the cursor. */
@@ -2590,9 +2702,33 @@
       stage.style.transform = 'rotateY(' + (dx * 9).toFixed(2) + 'deg) rotateX(' + (-dy * 5).toFixed(2) + 'deg)';
     }, { passive: true });
 
-    stage.addEventListener('mouseenter', playIntro);
-    stage.addEventListener('click', () => { playIntro(); talk(); });
-    stage.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playIntro(); talk(); } });
+    // Click: an everyday line. Long press (0.6 s): a quote. Keyboard: Enter / Space, Shift+Enter for a quote.
+    let pressT = 0, longFired = false;
+    const endPress = () => { clearTimeout(pressT); box.classList.remove('lm-press'); };
+    stage.addEventListener('pointerenter', e => {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      hoverMe = true;
+      if (tocOpen) { gaze(true); return; }
+      clearTimeout(whatT);
+      whatT = setTimeout(() => {   // rests on her for 0.4 s; once per 30 s; never while she talks or dances
+        if (!hoverMe || tocOpen || talking || mode === 'intro' || bubble.classList.contains('show') || Date.now() - lastWhat < 30000) return;
+        lastWhat = Date.now(); say("What's up?", 2200);
+      }, 400);
+    });
+    stage.addEventListener('pointerleave', () => { hoverMe = false; clearTimeout(whatT); gaze(false); });
+    stage.addEventListener('pointerdown', e => {
+      clearTimeout(whatT);
+      if (e.button !== 0) return;
+      longFired = false; box.classList.add('lm-press'); clearTimeout(pressT);
+      pressT = setTimeout(() => { longFired = true; box.classList.remove('lm-press'); respond(nextQuote()); }, 600);
+    });
+    stage.addEventListener('pointerup', endPress);
+    stage.addEventListener('pointerleave', endPress);
+    stage.addEventListener('pointercancel', endPress);
+    stage.addEventListener('contextmenu', e => { if (longFired) e.preventDefault(); });
+    // stopPropagation: the article closes its contents on any click outside them; talking to her should not.
+    stage.addEventListener('click', e => { e.stopPropagation(); if (longFired) { longFired = false; return; } talk(); });
+    stage.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); respond(e.shiftKey ? nextQuote() : nextLine()); } });
 
     /* ---------- contents + back-to-top ----------
        The contents button drives the article's real toggle, so its panel, scroll-spy and Esc/close behaviour stay
@@ -2647,35 +2783,21 @@
     document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.reader-toc-close')) refocus(); else requestAnimationFrame(reflect); }, true);
 
     box.querySelector('[data-m="hide"]').addEventListener('click', () => { write(true); sync(); peek.focus(); });
-    peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { playIntro(); say('我回来了。', 2400); }, 350); });
+    peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { if (atlas) playIntro(); else { wantDance = true; loadAtlas(); } sayAuto('我回来了。', 2400); }, 350); });
 
-    /* Show only where there is room: a reading page, a wide screen, and a left margin beside the article.
-       She shrinks to fit the margin (190px down to 130px) instead of vanishing on narrower windows. */
+    /* Show only where there is room: a wide screen and a left margin beside the content. She shrinks to fit the margin
+       (190px down to 130px on reading pages, 110px on the lists and works page) and never pushes the page aside. */
     function room() {
-      const j = journal(), a = document.querySelector(j ? '#main .post-archive' : '#sourceArticleBody, #main .article-body');
+      const a = reading() ? document.querySelector('#sourceArticleBody, #main .article-body') : listPage() ? document.querySelector('#main > .shell.subpage') : null;
       if (!a) return 0;
-      const r = a.getBoundingClientRect();
-      if (!j) {
-        const w = Math.min(190, Math.floor(r.left - 40)); // 14px edge + her tool buttons (18px) + a little air
-        return w >= 130 ? w : 0;
-      }
-      // Journal: if the left margin is too thin, nudge the whole page to the right (never closer than 20px to the
-      // right edge) so she still fits, as small as 100px.
-      const cur = parseFloat(root.style.getPropertyValue('--lm-shift')) || 0, natural = r.left - cur;
-      const rightRoom = document.documentElement.clientWidth - natural - r.width;
-      const shift = Math.max(0, Math.min(140 - natural, rightRoom - 20));
-      const w = Math.min(190, Math.floor(natural + shift - 40));
-      if (w < 100) return 0;
-      root.style.setProperty('--lm-shift', shift + 'px');
-      return w;
+      const w = Math.min(190, Math.floor(a.getBoundingClientRect().left - 40)); // 14px edge + her tool buttons + a little air
+      return w >= (reading() ? 130 : 110) ? w : 0;
     }
     let lastHash = '', greeted = false, frame = 0;
     function sync() {
       frame = 0;
-      const fit = (reading() || journal()) && WIDE.matches ? room() : 0, on = fit > 0;
+      const fit = (reading() || listPage()) && WIDE.matches ? room() : 0, on = fit > 0;
       if (on) root.style.setProperty('--lm-w', fit + 'px'); else root.style.removeProperty('--lm-w');
-      if (!on || !journal()) root.style.removeProperty('--lm-shift');
-      root.classList.toggle('luliy-journal-shift', on && journal() && parseFloat(root.style.getPropertyValue('--lm-shift')) > 0);
       const hidden = read();
       const wasHidden = box.hidden;
       box.hidden = !on || hidden;
@@ -2688,7 +2810,7 @@
       const key = journal() ? '#posts-journal' : location.hash; // tag filters inside the journal do not replay her opening
       if (key !== lastHash) {
         lastHash = key;
-        setTimeout(() => { playIntro(); if (!greeted) { greeted = true; greet(); } }, 900);
+        setTimeout(() => { dance(); if (!greeted && !ss.get('luliy-loon-greeted')) { greeted = true; ss.set('luliy-loon-greeted'); greet(); } }, 900);
       }
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };

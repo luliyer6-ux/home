@@ -1859,12 +1859,6 @@ body.lj-viewing { overflow: hidden; }
 @keyframes luliy-slide-next { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
 @keyframes luliy-slide-prev { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
 
-/* 33b. Journal with the mascot: when the left margin is too thin for her, the page shifts right a little (value set by
-   home-fixes.js section 27, never closer than 20px to the right edge). */
-@media (min-width: 1180px) and (pointer: fine) {
-  html.luliy-journal-shift #main .post-archive { position: relative; left: var(--lm-shift, 0px); }
-}
-
 /* 34. Comments / 評論 (2026-10-30): Giscus under blog articles; sits in the body column of .source-layout. */
 .luliy-comments { grid-column: 2; margin-top: 56px; padding-top: 22px; border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent); }
 .luliy-comments > h2 { margin: 0 0 14px; font: 600 15px/1.4 var(--font-ui); letter-spacing: .08em; }
@@ -1887,3 +1881,24 @@ body.lj-viewing { overflow: hidden; }
 .luliy-mascot.lm-moving .lpf { opacity: 1; }
 .luliy-mascot:not(.lm-moving) .lpf > * { animation-play-state: paused; }
 .luliy-mascot-stage :is(img, canvas) { z-index: 1; }
+
+/* 27c. Talking face (2026-10-31): three stacked face layers (eyes closed / half / open) over frame F_FRONT. The closed
+   layer fades (features appear and leave softly); half and open switch instantly, which reads as the lids moving. */
+.luliy-mascot-stage .luliy-mascot-face { opacity: 0; transition: opacity .2s ease; filter: none; pointer-events: none; }
+.luliy-mascot-stage .luliy-mascot-face:is([data-f="h"], [data-f="o"]) { transition: none; }
+.luliy-mascot[data-face="c"] .luliy-mascot-face[data-f="c"],
+.luliy-mascot[data-face="h"] .luliy-mascot-face:is([data-f="c"], [data-f="h"]),
+.luliy-mascot[data-face="o"] .luliy-mascot-face { opacity: 1; }
+.luliy-mascot.lm-press .luliy-mascot-stage :is(img, canvas) { filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)) brightness(1.12); transition: filter .6s ease; }
+.luliy-mascot.lm-press .luliy-mascot-stage .luliy-mascot-face { filter: brightness(1.12); }
+/* Bubble: one sentence per line, balanced wrapping, width follows the text. */
+.luliy-mascot-bubble { width: max-content; max-width: 260px; }
+.luliy-mascot-bubble .lm-l { display: block; text-wrap: balance; }
+/* 27d. Collapsed Loon (2026-10-31): a small tab stuck to the left edge, her resting pose + her name. */
+.luliy-mascot-peek { left: 0; bottom: 26px; display: flex; align-items: center; gap: 6px; padding: 4px 14px 4px 8px;
+  border-left: 0; border-radius: 0 999px 999px 0; transform: translateX(-4px); transition: transform .25s ease, background-color .25s ease;
+  font-family: inherit; font-size: 13px; letter-spacing: .12em; }
+.luliy-mascot-peek img { display: block; width: 36px; height: auto; }
+.luliy-mascot-peek:is(:hover, :focus-visible) { transform: none; background: rgba(16,22,38,.94); }
+html.lm-bar-mode body.lm-player-visible .luliy-mascot-peek { bottom: calc(var(--lm-bar-space, 0px) + 12px); }
+@media (prefers-reduced-motion: reduce) { .luliy-mascot-peek { transition: none; } }
