@@ -1902,7 +1902,7 @@ body.lj-viewing { overflow: hidden; }
 .luliy-mascot-peek .lm-oon { display: block; width: 0; margin: 0 0 3px; overflow: hidden; transition: width .3s ease, margin-left .3s ease; }
 .luliy-mascot-peek .lm-oon img { display: block; width: 55px; height: 21px; max-width: none; }
 .luliy-mascot-peek:is(:hover, :focus-visible) { transform: none; background: rgba(16,22,38,.94); }
-.luliy-mascot-peek:is(:hover, :focus-visible) .lm-oon { width: 55px; margin-left: -15px; }
+.luliy-mascot-peek:is(:hover, :focus-visible) .lm-oon { width: 55px; margin-left: -3px; }
 html.lm-bar-mode body.lm-player-visible .luliy-mascot-peek { bottom: calc(var(--lm-bar-space, 0px) + 12px); }
 @media (prefers-reduced-motion: reduce) { .luliy-mascot-peek, .luliy-mascot-peek .lm-oon { transition: none; } }
 /* 27e. Background hint (2026-10-31): her button column shows while she points at it. */
