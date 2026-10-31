@@ -2446,13 +2446,85 @@
         '<canvas class="luliy-mascot-canvas" width="' + FW + '" height="' + FH + '" aria-hidden="true"></canvas>' +
         ['c', 'h', 'o'].map(k => '<img class="luliy-mascot-face" data-f="' + k + '" src="' + FACE[k] + '" alt="" decoding="async" aria-hidden="true">').join('') +
       '</div>';
+    /* Collapsed (2026-10-31): a small tab on the left edge; normally only her resting pose, which reads as an "L".
+       Hover / keyboard focus opens a hub: the hand-drawn gold "oon" is written behind her ("Loon") and a faint arc of four
+       doors appears above her: 书房 / 作品 / 文章 / 唱片. She never moves. Pointing at a door erases what is behind her
+       and writes the English word instead (Library / Lineup / Literature / LP: her "L" is the first letter of all four).
+       The doors are real links (#/books, #/projects, #/posts, #/music). Clicking her still summons her.
+       Geometry: her centre sits at GEO.cx / GEO.cy from the hub's bottom-left corner (see home-fixes.css 27d);
+       the words are hand-drawn images (assets/mascot/luliy-w-*.webp), fetched only once the tab is first shown. */
     const peek = document.createElement('button');
     peek.type = 'button';
     peek.className = 'luliy-mascot-peek';
-    peek.hidden = true;
-    // Only her resting pose (it reads as the "L"); the hand-drawn "oon" slides out on hover / keyboard focus (2026-10-31).
-    peek.innerHTML = '<img src="' + REST + '" alt="" aria-hidden="true" decoding="async"><span class="lm-oon" aria-hidden="true"><img src="' + BASE + 'luliy-oon-da99ae1525.webp" alt="" width="55" height="21" decoding="async"></span>';
+    peek.innerHTML = '<img class="lm-fig" src="' + REST + '" alt="" aria-hidden="true" decoding="async"><span class="lm-w" aria-hidden="true"></span>';
     peek.setAttribute('aria-label', '召唤 Loon');
+    const GEO = { cx: 30, cy: 23, R: 118, r: 96, H: 34 };
+    const LOON = { k: 'loon', img: 'luliy-w-loon-c23fa1905b.webp', w: 54.5 };
+    const DOORS = [
+      { k: 'library', href: '#/books', a: -90, zh: '书房', en: 'Library', ja: '書斎', img: 'luliy-w-library-f46ea56a07.webp', w: 75 },
+      { k: 'lineup', href: '#/projects', a: -67, zh: '作品', en: 'Lineup', ja: '作品', img: 'luliy-w-lineup-f3828f53d5.webp', w: 67.3 },
+      { k: 'literature', href: '#/posts', a: -44, zh: '文章', en: 'Literature', ja: '記事', img: 'luliy-w-literature-8563077ddb.webp', w: 100.5 },
+      { k: 'lp', href: '#/music', a: -21, zh: '唱片', en: 'LP', ja: 'レコード', img: 'luliy-w-lp-e15fde3d3e.webp', w: 20.8 }
+    ];
+    const hub = document.createElement('div');
+    hub.className = 'luliy-mascot-hub';
+    hub.hidden = true;
+    {
+      const rad = d => d * Math.PI / 180, pt = (r, a) => (GEO.cx + r * Math.cos(rad(a))).toFixed(1) + ' ' + (-GEO.cy + r * Math.sin(rad(a))).toFixed(1);
+      hub.innerHTML = '<span class="lm-zone"></span>' +
+        '<svg class="lm-arc" viewBox="0 -200 200 200" aria-hidden="true" focusable="false"><path pathLength="1" d="M ' + pt(GEO.r, -100) + ' A ' + GEO.r + ' ' + GEO.r + ' 0 0 1 ' + pt(GEO.r, -27) + '"/></svg>';
+      hub.appendChild(peek);
+      DOORS.forEach(d => {
+        const a = document.createElement('a');
+        a.className = 'lm-it'; a.href = d.href; a.dataset.k = d.k;
+        a.style.left = (GEO.cx + GEO.R * Math.cos(rad(d.a))).toFixed(1) + 'px';
+        a.style.bottom = (GEO.cy - GEO.R * Math.sin(rad(d.a))).toFixed(1) + 'px';
+        d.el = a; hub.appendChild(a);
+      });
+    }
+    const hubW = peek.querySelector('.lm-w');
+    let hubImgs = null, hubCur = null, hubCloseT = 0;
+    const hubLoad = () => {
+      if (hubImgs) return;
+      hubImgs = {};
+      [LOON].concat(DOORS).forEach(d => {
+        const im = new Image(); im.className = 'lm-wd'; im.alt = ''; im.decoding = 'async'; im.draggable = false;
+        im.width = d.w; im.height = GEO.H; im.style.width = d.w + 'px'; im.style.height = GEO.H + 'px';
+        im.src = BASE + d.img; hubImgs[d.k] = im; hubW.appendChild(im);
+      });
+    };
+    const hubLabels = () => {
+      const hant = root.lang === 'zh-Hant', en = /^en/.test(root.lang), ja = /^ja/.test(root.lang);
+      DOORS.forEach(d => { d.el.textContent = en ? d.en : ja ? d.ja : hant ? T(d.zh) : d.zh; });
+    };
+    const hubShow = key => {
+      if (hubCur === key) return;
+      hubCur = key;
+      const d = key === 'loon' ? LOON : DOORS.find(x => x.k === key);
+      for (const k in hubImgs || {}) hubImgs[k].classList.toggle('on', k === key);
+      DOORS.forEach(x => x.el.classList.toggle('on', x.k === key));
+      hubW.style.width = d ? d.w + 'px' : '0px';
+    };
+    const hubOpen = () => {
+      clearTimeout(hubCloseT);
+      if (!hub.classList.contains('lm-open')) { hubLoad(); hubLabels(); hub.classList.add('lm-open'); }
+      hubShow('loon');
+    };
+    const hubClose = () => { clearTimeout(hubCloseT); hub.classList.remove('lm-open'); hubShow(null); };
+    peek.addEventListener('pointerenter', hubOpen);
+    peek.addEventListener('focus', () => { if (peek.matches(':focus-visible')) hubOpen(); });
+    hub.addEventListener('pointerenter', () => clearTimeout(hubCloseT));
+    hub.addEventListener('pointerleave', () => { clearTimeout(hubCloseT); hubCloseT = setTimeout(hubClose, 300); });
+    hub.addEventListener('focusout', e => { if (!hub.contains(e.relatedTarget)) hubClose(); });
+    DOORS.forEach(d => {
+      d.el.addEventListener('pointerenter', () => hubShow(d.k));
+      d.el.addEventListener('focus', () => hubShow(d.k));
+      d.el.addEventListener('click', hubClose);
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape' || !hub.classList.contains('lm-open')) return;
+      hubClose(); if (hub.contains(document.activeElement)) document.activeElement.blur();
+    });
     const stage = box.querySelector('.luliy-mascot-stage'), bubble = box.querySelector('.luliy-mascot-bubble');
     // Gold particles around her (LuliyParticles, home-early.js), shown only while she moves or talks (2026-10-30).
     if (window.LuliyParticles) {
@@ -2838,7 +2910,8 @@
       const hidden = read();
       const wasHidden = box.hidden;
       box.hidden = !on || hidden;
-      peek.hidden = !on || !hidden;
+      hub.hidden = !on || !hidden;
+      if (hub.hidden) hubClose(); else if (!hubImgs) setTimeout(hubLoad, 1500);
       root.classList.toggle('luliy-mascot-on', !box.hidden); // CSS hides the article's own floating buttons while she carries them
       if (box.hidden) { bubble.classList.remove('show'); root.classList.remove('luliy-toc-open'); if (!wasHidden) reset(); return; }
       if (wasHidden) warm();
@@ -2854,7 +2927,7 @@
     const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
 
     function mount() {
-      document.body.append(box, peek);
+      document.body.append(box, hub);
       addEventListener('hashchange', schedule);
       addEventListener('resize', schedule, { passive: true });
       if (WIDE.addEventListener) WIDE.addEventListener('change', schedule);
