@@ -1894,24 +1894,33 @@ body.lj-viewing { overflow: hidden; }
 /* Bubble: one sentence per line, balanced wrapping, width follows the text. */
 .luliy-mascot-bubble { width: max-content; max-width: 260px; }
 .luliy-mascot-bubble .lm-l { display: block; text-wrap: balance; }
-/* 27d. Collapsed Loon (2026-10-31): a small tab stuck to the left edge, her resting pose + her name. */
-.luliy-mascot-peek { left: 0; bottom: 26px; display: flex; align-items: center; gap: 6px; padding: 4px 14px 4px 8px;
-  border-left: 0; border-radius: 0 999px 999px 0; transform: translateX(-4px); transition: transform .25s ease, background-color .25s ease;
-  font-family: inherit; font-size: 13px; letter-spacing: .12em; }
-.luliy-mascot-peek img { display: block; width: 36px; height: auto; }
+/* 27d. Collapsed Loon (2026-10-31): a small tab stuck to the left edge. Normally only her resting pose (it reads as an
+   "L"); on hover / keyboard focus the hand-drawn gold "oon" slides out from her foot so the tab reads "Loon". */
+.luliy-mascot-peek { left: 0; bottom: 26px; display: flex; align-items: flex-end; gap: 0; padding: 4px 12px 4px 8px;
+  border-left: 0; border-radius: 0 999px 999px 0; transform: translateX(-4px); transition: transform .25s ease, background-color .25s ease; }
+.luliy-mascot-peek > img { display: block; width: 44px; height: auto; }
+.luliy-mascot-peek .lm-oon { display: block; width: 0; margin: 0 0 3px; overflow: hidden; transition: width .3s ease, margin-left .3s ease; }
+.luliy-mascot-peek .lm-oon img { display: block; width: 55px; height: 21px; max-width: none; }
 .luliy-mascot-peek:is(:hover, :focus-visible) { transform: none; background: rgba(16,22,38,.94); }
+.luliy-mascot-peek:is(:hover, :focus-visible) .lm-oon { width: 55px; margin-left: -15px; }
 html.lm-bar-mode body.lm-player-visible .luliy-mascot-peek { bottom: calc(var(--lm-bar-space, 0px) + 12px); }
-@media (prefers-reduced-motion: reduce) { .luliy-mascot-peek { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .luliy-mascot-peek, .luliy-mascot-peek .lm-oon { transition: none; } }
 /* 27e. Background hint (2026-10-31): her button column shows while she points at it. */
 @media (min-width: 769px) { html.luliy-mascot-on .luliy-mascot.lm-hint .luliy-mascot-tools { opacity: 1; } }
-/* 35. 文章 / 短札 / 編年史 tabs (2026-10-31): reserved scrollbar space, new content fades in, the journal list waits for
-   its first bodies (home-fixes.js 32 / 35). */
+/* 35. 文章 / 短札 / 編年史 tabs (2026-10-31): nothing moves or blinks when switching (home-fixes.js 32 / 35).
+   a) Reserved scrollbar space, so a short tab never shifts sideways.
+   b) 編年史 builds its tabs without the toolbar wrapper the other two use; give them the toolbar's exact box, so the
+      three tabs stay at the same place and the content below starts at the same height on all three.
+   c) No fade: the new tab is drawn at once. In 短札 only the note texts wait (≤ 0.3 s) for their first bodies, so the
+      grey placeholders are not seen being replaced; avatar, time and comment bar show immediately. */
 html:has(#main .post-archive) { scrollbar-gutter: stable; }
-@keyframes luliy-tab-in { from { opacity: 0; } to { opacity: 1; } }
-html.luliy-tab-switch #main .post-archive > :not(.article-browse-toolbar, .article-modes) { animation: luliy-tab-in .18s ease both; }
-.luliy-journal .lj-feed { transition: opacity .18s ease; }
-.luliy-journal .lj-feed.lj-settling { opacity: 0; }
-@media (prefers-reduced-motion: reduce) {
-  html.luliy-tab-switch #main .post-archive > * { animation: none; }
-  .luliy-journal .lj-feed { transition: none; }
+#main .post-archive > .article-modes { padding: 0 0 18px; margin: 0 0 30px; gap: clamp(24px, 4vw, 64px); align-items: flex-start; }
+@media (min-width: 601px) {
+  #main .post-archive > .article-modes, #main .article-browse-toolbar { min-height: 63px; box-sizing: border-box; }
 }
+@media (max-width: 600px) {
+  #main .post-archive > .article-modes { padding-bottom: 14px; margin-bottom: 24px; gap: 22px; }
+  #main .post-archive > .article-modes a { font-size: 18px; }
+  #main .post-archive > .article-modes a[aria-current]:after { bottom: -15px; }
+}
+.luliy-journal .lj-feed.lj-settling .lj-note[aria-busy="true"] :is(.lj-text, .lj-media) { visibility: hidden; }

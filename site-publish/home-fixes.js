@@ -2450,7 +2450,8 @@
     peek.type = 'button';
     peek.className = 'luliy-mascot-peek';
     peek.hidden = true;
-    peek.innerHTML = '<img src="' + REST + '" alt="" aria-hidden="true" decoding="async"><span>Loon</span>';
+    // Only her resting pose (it reads as the "L"); the hand-drawn "oon" slides out on hover / keyboard focus (2026-10-31).
+    peek.innerHTML = '<img src="' + REST + '" alt="" aria-hidden="true" decoding="async"><span class="lm-oon" aria-hidden="true"><img src="' + BASE + 'luliy-oon-da99ae1525.webp" alt="" width="55" height="21" decoding="async"></span>';
     peek.setAttribute('aria-label', '召唤 Loon');
     const stage = box.querySelector('.luliy-mascot-stage'), bubble = box.querySelector('.luliy-mascot-bubble');
     // Gold particles around her (LuliyParticles, home-early.js), shown only while she moves or talks (2026-10-30).
@@ -3138,11 +3139,11 @@
             feed.append(more);
           }
           add();
-          // The bodies arrive a moment after the notes: keep the list invisible until the first ones are filled
-          // (at most 0.7 s), so the text settling in is not seen as a jump (2026-10-31).
+          // The bodies arrive a moment after the notes: only the note texts stay hidden until the first ones are filled
+          // (at most 0.3 s; home-fixes.css 35), the rest of each note shows at once (2026-10-31).
           feed.classList.add('lj-settling');
           const reveal = () => feed.classList.remove('lj-settling');
-          const capR = setTimeout(reveal, 700);
+          const capR = setTimeout(reveal, 300);
           const check = () => { if (!feed.isConnected) return; if (!feed.querySelector('.lj-note[aria-busy="true"]')) { clearTimeout(capR); requestAnimationFrame(reveal); } else setTimeout(check, 60); };
           check();
         };
@@ -3383,13 +3384,13 @@
         300 ms (at most 1.5 s), then released once. The router swaps the content before this listener runs (it reacts
         to popstate), so a ResizeObserver keeps the last two heights: if the height changed just now, the one before
         that is the old tab's.
-     b) The new tab's content fades in (0.18 s, home-fixes.css 35); the toolbar with the tabs does not move.
-     c) home-fixes.css 35 also keeps the scrollbar space reserved on these pages, so a short tab never shifts sideways. */
+     b) No fade (removed 2026-10-31: it left a blank moment). home-fixes.css 35 keeps the scrollbar space reserved and
+        gives 編年史's tabs the same box as the other two, so the tabs never move. */
   (() => {
     const main = document.getElementById('main');
     if (!main || !window.ResizeObserver) return;
     const tabs = h => /^#\/posts(?:\?|$)/.test(h || '');
-    let prev = location.hash, lastH = 0, prevH = 0, lastAt = 0, quietT = 0, capT = 0, fadeT = 0, mo = null;
+    let prev = location.hash, lastH = 0, prevH = 0, lastAt = 0, quietT = 0, capT = 0, mo = null;
     new ResizeObserver(() => {
       if (main.style.minHeight) return;
       const h = main.offsetHeight;
@@ -3402,8 +3403,6 @@
       const hold = performance.now() - lastAt < 250 && prevH ? prevH : lastH;   // the height of the tab we just left
       release();
       if (hold) main.style.minHeight = hold + 'px';
-      root.classList.add('luliy-tab-switch');
-      clearTimeout(fadeT); fadeT = setTimeout(() => root.classList.remove('luliy-tab-switch'), 450);
       const settle = () => { clearTimeout(quietT); quietT = setTimeout(release, 300); };
       mo = new MutationObserver(settle);
       mo.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-busy', 'hidden', 'class'] });
