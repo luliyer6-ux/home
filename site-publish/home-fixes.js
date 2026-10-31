@@ -2483,7 +2483,7 @@
       });
     }
     const hubW = peek.querySelector('.lm-w');
-    let hubImgs = null, hubCur = null, hubCloseT = 0;
+    let hubImgs = null, hubCur = null, hubCloseT = 0, canHost = false;
     const hubLoad = () => {
       if (hubImgs) return;
       hubImgs = {};
@@ -2892,7 +2892,7 @@
     document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.reader-toc-close')) refocus(); else requestAnimationFrame(reflect); }, true);
 
     box.querySelector('[data-m="hide"]').addEventListener('click', () => { write(true); sync(); peek.focus(); });
-    peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { if (atlas) playIntro(); else { wantDance = true; loadAtlas(); } }, 350); });
+    peek.addEventListener('click', () => { if (!canHost) return; write(false); sync(); setTimeout(() => { if (atlas) playIntro(); else { wantDance = true; loadAtlas(); } }, 350); });
 
     /* Show only where there is room: a wide screen and a left margin beside the content. She shrinks to fit the margin
        (190px down to 130px on reading pages, 110px on the lists and works page) and never pushes the page aside. */
@@ -2902,15 +2902,23 @@
       const w = Math.min(190, Math.floor(a.getBoundingClientRect().left - 40)); // 14px edge + her tool buttons + a little air
       return w >= (reading() ? 130 : 110) ? w : 0;
     }
-    let lastHash = '', greeted = false, frame = 0;
+    let lastHash = '', greeted = false, frame = 0, frameT = 0;
     function sync() {
-      frame = 0;
+      cancelAnimationFrame(frame); clearTimeout(frameT); frame = 0;
       const fit = (reading() || listPage()) && WIDE.matches ? room() : 0, on = fit > 0;
       if (on) root.style.setProperty('--lm-w', fit + 'px'); else root.style.removeProperty('--lm-w');
       const hidden = read();
       const wasHidden = box.hidden;
       box.hidden = !on || hidden;
-      hub.hidden = !on || !hidden;
+      // The tab is on every page of the site (2026-10-31): wherever she is not on screen, on a wide screen with a mouse, it
+      // is there as the way to 书房 / 作品 / 文章 / 唱片. Where she can live (and was collapsed) clicking it also summons her;
+      // on the other pages (home, about, study, records ...) it is navigation only.
+      canHost = on;
+      root.classList.toggle('lm-hub-up', /^#\/books(?:[/?]|$)/.test(location.hash || '')); // the study room has its own 书房 button in this corner
+      hub.hidden = !WIDE.matches || !box.hidden;
+      peek.setAttribute('aria-label', on ? '召唤 Loon' : 'Loon');
+      const here = (location.hash || '#/').split('?')[0].split('/')[1] || '';
+      DOORS.forEach(d => { if (d.href.split('/')[1] === here) d.el.setAttribute('aria-current', 'page'); else d.el.removeAttribute('aria-current'); });
       if (hub.hidden) hubClose(); else if (!hubImgs) setTimeout(hubLoad, 1500);
       root.classList.toggle('luliy-mascot-on', !box.hidden); // CSS hides the article's own floating buttons while she carries them
       if (box.hidden) { bubble.classList.remove('show'); root.classList.remove('luliy-toc-open'); if (!wasHidden) reset(); return; }
@@ -2924,7 +2932,8 @@
         if (reading()) bgHint();
       }
     }
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
+    // rAF can be starved for seconds while a heavy page (3D study / records) is loading: a timer backs it up.
+    const schedule = () => { if (!frame) { frame = requestAnimationFrame(sync); frameT = setTimeout(sync, 300); } };
 
     function mount() {
       document.body.append(box, hub);

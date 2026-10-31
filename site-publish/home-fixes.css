@@ -1900,6 +1900,8 @@ body.lj-viewing { overflow: hidden; }
    centre is at (30px, 23px) from it (GEO in the script): 8px padding + 44px picture, 1px border + 4px padding + 36px / 2. */
 .luliy-mascot-hub { --lm-ease: cubic-bezier(.22,.61,.36,1); position: fixed; left: 0; bottom: 26px; width: 0; height: 0; z-index: 30; pointer-events: none; }
 html.lm-bar-mode body.lm-player-visible .luliy-mascot-hub { bottom: calc(var(--lm-bar-space, 0px) + 12px); }
+html.lm-hub-up .luliy-mascot-hub { bottom: 84px; } /* study page: lifted above the room's own 书房 button (bottom 26px, 40px high) */
+html.lm-hub-up.lm-bar-mode body.lm-player-visible .luliy-mascot-hub { bottom: calc(var(--lm-bar-space, 0px) + 84px); }
 .luliy-mascot-peek { position: absolute; left: 0; bottom: 0; pointer-events: auto; display: flex; align-items: flex-end; padding: 4px 12px 4px 8px;
   border: 1px solid rgba(226,194,126,.34); border-left: 0; border-radius: 0 999px 999px 0; background: rgba(10,15,28,.86); color: #e2c27e; cursor: pointer;
   transform: translateX(-4px); transition: transform .3s var(--lm-ease), background-color .3s var(--lm-ease); }
