@@ -125,13 +125,15 @@
    Opening (2026-10-30): on a first visit (then not again for 7 days; ?intro=1 forces it, ?intro=0 skips it) the loader
    plays the opening video instead: the logo grows into the mascot and back (10.5 s, 60 fps, silent, ~300 KB). Its black
    is dropped with screen blending, so she floats on the loader's dark background (dark in every theme). At the end the
-   logo flies into the header logo (.brand-mark) while the background fades; tap anywhere or 跳過 to skip. If the video
+   logo flies into the header logo (.brand-mark) while the background fades. No skip button (2026-10-31); tapping the
+   picture still skips. The flight starts 0.3 s before the video's slow last frames, with no extra wait. If the video
    cannot play within 3 s (or on Android WeChat), the normal mascot loader is used instead.
    window.LuliyLoaderLook() / LuliyLoaderArm() / LuliyLoaderFinish() let the Study / Records switch (home-fixes.js
    section 21) use the very same loader.
    It lifts only when the page below is really ready, so nobody sees a half-built page or a stutter:
      #/books   the study room is revealing (or fell back)      #/music   the turntable has drawn its first frame
-     home      the homepage 3D study is prepared                 #/article the text is in
+     home      the page is rendered (the 3D study further down keeps preparing in the background)
+     #/article the text is in
      elsewhere #main is rendered and nothing in it is still data-loading / aria-busy
    and the web fonts are ready. Shown at least 0.7 s (no flash), at most 8 s on the rooms and 6 s elsewhere.
    While it is up <html> has intro-pending, and lifting fires luliy:intro-complete: the code that used to wait for
@@ -211,8 +213,7 @@
       '#luliy-room-loader.is-intro{--vs:min(440px,78vw,58vh);background:' + bgDark + '}' +
       K + '.lri-v{position:relative;z-index:1;width:var(--vs);height:var(--vs);mix-blend-mode:screen;opacity:0;transition:opacity .45s ease-out;-webkit-mask-image:' + mask + ';-webkit-mask-composite:source-in;mask-image:' + mask + ';mask-composite:intersect}' +
       K + '.lri-v.in{opacity:1}' +
-      K + '.lri-skip{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right));top:max(20px,env(safe-area-inset-top));padding:7px 16px;border-radius:99px;border:1px solid rgba(240,214,143,.45);background:rgba(10,10,20,.35);color:#f0d68f;font:13px/1.2 system-ui,sans-serif;letter-spacing:.1em;cursor:pointer;transition:opacity .3s}' +
-      '#luliy-room-loader.is-gone{opacity:0;pointer-events:none;transition:opacity .62s cubic-bezier(.4,0,.2,1) .32s}#luliy-room-loader.is-gone .lri-skip{opacity:0}' +
+      '#luliy-room-loader.is-gone{opacity:0;pointer-events:none;transition:opacity .62s cubic-bezier(.4,0,.2,1) .32s}' +
       '#luliy-intro-fly{position:fixed;z-index:2147483001;transform-origin:0 0;pointer-events:none;will-change:transform}' +
       '#luliy-intro-fly img{position:absolute;inset:0;width:100%;height:100%}#luliy-intro-fly svg{position:absolute;opacity:0}' +
       '#luliy-intro-fly :is(.ll-hl,.ll-sh,.ll-sp,.ll-dt){display:none}' +
@@ -220,8 +221,7 @@
       '#luliy-intro-fly.land{opacity:0;transition:opacity .12s linear}';
     var html = '<div class="lrl-m"><img class="lrl-rest" src="' + REST + '" alt="" width="' + FW + '" height="' + FH + '"><div class="lrl-sprite"><div class="lrl-row"><img class="lrl-sheet" alt=""></div></div></div>';
     var intro = '<video class="lri-v" muted playsinline autoplay preload="auto" disablepictureinpicture aria-hidden="true">' +
-      '<source src="' + INTRO.mp4 + '" type="video/mp4"><source src="' + INTRO.webm + '" type="video/webm"></video>' +
-      '<button type="button" class="lri-skip">' + (/^en/i.test(root.lang) ? 'Skip' : '跳過') + '</button>';
+      '<source src="' + INTRO.mp4 + '" type="video/mp4"><source src="' + INTRO.webm + '" type="video/webm"></video>';
     return { css: css, html: html, intro: intro };
   }
 
@@ -282,8 +282,16 @@
     el.innerHTML = L.intro;
     video = el.querySelector('video');
     var playing = false;
+    // The last ~0.6 s of the clip barely moves: count it as ended 0.3 s early, so the logo flies without a pause.
+    var LEAD = 0.3;
+    var watchEnd = function () {
+      if (introEnded) return;
+      var d = video.duration;
+      if (isFinite(d) && d > 1 && video.currentTime >= d - LEAD) { introEnded = true; introEndedAt = introEndedAt || Date.now(); return; }
+      requestAnimationFrame(watchEnd);
+    };
     video.addEventListener('playing', function () {
-      playing = true; video.classList.add('in');
+      playing = true; video.classList.add('in'); requestAnimationFrame(watchEnd);
       try { localStorage.setItem(INTRO.key, String(Date.now())); } catch (e) {}
     }, { once: true });
     video.addEventListener('ended', function () { introEnded = true; introEndedAt = introEndedAt || Date.now(); });
@@ -351,7 +359,7 @@
       case 'music': return !el.dataset.recordsGate && !!main.querySelector('#recordMount.lr-webgl-ready, #recordMount .lr-webgl-ready, #recordMount.has-fallback, #recordMount .has-fallback');
       case 'home':
         // The homepage's 3D study (and all its cover textures) sits further down the page, out of the first view.
-        // Start preparing it now, but hold the cover for it only briefly: 0.8 s after the opening video ends,
+        // Start preparing it now, but do not hold the cover for it: none at all after the opening video,
         // 1.2 s after the page itself is rendered otherwise. It finishes in the background.
         if (!prep && typeof window.LuliyHomepagePrepare === 'function') {
           prep = Promise.resolve().then(window.LuliyHomepagePrepare).then(function () { prepDone = true; }, function () { prepDone = true; });
@@ -359,7 +367,7 @@
         if (prepDone) return true;
         if (main.querySelector('[data-loading="true"]')) return false;
         if (!homeAt) homeAt = Date.now();
-        return intro ? (introEndedAt && Date.now() - introEndedAt > 800) : Date.now() - homeAt > 1200;
+        return intro ? !!introEndedAt : Date.now() - homeAt > 1200;
       case 'article': { var b = document.getElementById('sourceArticleBody'); return !!b && b.dataset.loading !== 'true'; }
       default: return !main.querySelector('[data-loading="true"], [aria-busy="true"]');
     }

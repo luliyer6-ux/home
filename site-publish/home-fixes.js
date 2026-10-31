@@ -2398,7 +2398,9 @@
      She is drawn on a canvas from a 76-frame sheet (15 fps) and driven like a scrubber:
        - her dance (the whole clip) plays once per browsing session, on the first page she appears on; it is never
          interrupted - clicking her mid-dance only gets a "Let me dance!";
-       - things she says on her own (greeting, "What's up?" on hover, "我回来了。") never turn her and never interrupt her;
+       - things she says on her own (greeting, the background hint) never turn her and never interrupt her;
+       - background hint (2026-10-31): on a reading page, to someone who has never picked an article background, she says
+         once per browsing session where the background button is, and lights up her button column; twice in all;
        - clicking her: she turns to you, her face fades in, she opens her eyes, answers, blinks while talking, then closes
          her eyes and turns back; a long press (0.6 s) gets a quote instead; clicking while she talks = next line;
        - contents button hovered / contents open: she faces you with her eyes closed; hovering her then opens them;
@@ -2470,7 +2472,7 @@
     let atlas = null, loading = false, pos = 0, target = 0, spd = 1, mode = 'idle', raf = 0, lastT = 0, fade = 0, drawn = -1;
     let hoverToc = false, hoverTop = false, tocOpen = false, stillsReady = false;
     let speakHold = false, talking = false, eyesUp = false, flowT = 0, blinkT = 0, eyeT = [];
-    let hoverMe = false, gazing = false, closingFace = false, whatT = 0, lastWhat = 0, wantDance = false, dancedMem = false; // click-to-talk: turn to you, open eyes, then speak
+    let hoverMe = false, gazing = false, closingFace = false, hintT = 0, wantDance = false, dancedMem = false; // click-to-talk: turn to you, open eyes, then speak
 
     function draw(i) {
       i = Math.max(0, Math.min(NF - 1, Math.round(i)));
@@ -2566,7 +2568,7 @@
     }
     function reset() {
       cancelAnimationFrame(raf); raf = 0; pos = 0; target = 0; mode = 'idle'; hoverToc = hoverTop = false;
-      clearTimeout(flowT); clearTimeout(whatT); talking = speakHold = false; clearEye(); setFace('');
+      clearTimeout(flowT); clearTimeout(hintT); box.classList.remove('lm-hint'); talking = speakHold = false; clearEye(); setFace('');
       hoverMe = gazing = closingFace = wantDance = false;
       if (atlas) { drawn = -1; draw(0); }
       stage.dataset.pose = 'rest';
@@ -2616,8 +2618,27 @@
       ['已有的事，后必再有；', '已行的事，后必再行。']
     ];
     let qi = -1;
-    const generalLines = ['若不知走哪，请注重脚下。', '今天也有在进步吗？哪怕一点点也好。'];
-    function nextLine() { lines = journal() ? journalLines : reading() ? readingLines : generalLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; return lines[li]; }
+    // 文章 list, 編年史 and the works page have their own lines (2026-10-31).
+    const postsLines = [
+      '挑一篇，慢慢读。',
+      '不知道读哪篇？从最近的开始吧。',
+      '每一篇，都是走过的一段路。',
+      '若不知走哪，请注重脚下。'
+    ];
+    const chronicleLines = [
+      '这里记着读过的书、看过的影片。',
+      '换个年份看看，那时在想什么？',
+      '一年一年翻过去，就是成长的样子。'
+    ];
+    const worksLines = [
+      '这些都是亲手做出来的。',
+      '点开一个，看看它能做什么。',
+      '每个作品，都是一次尝试。',
+      '今天也有在进步吗？哪怕一点点也好。'
+    ];
+    const chronicle = () => /^#\/posts\?(?:[^#]*&)?view=chronicle(?:&|$)/.test(location.hash || '');
+    const works = () => /^#\/projects(?:[/?]|$)/.test(location.hash || '');
+    function nextLine() { lines = journal() ? journalLines : reading() ? readingLines : chronicle() ? chronicleLines : works() ? worksLines : postsLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; return lines[li]; }
     function nextQuote() { qi = (qi + 1) % QUOTES.length; return QUOTES[qi]; }
     const readTime = text => Math.max(3400, (Array.isArray(text) ? text.join('') : text).length * 240 + 1800); // long lines stay up longer
     function setFace(st) { if (st) box.dataset.face = st; else delete box.dataset.face; }
@@ -2680,6 +2701,27 @@
     }
     // Things she says on her own never cut into an answer.
     function sayAuto(text, ms) { if (!talking) say(text, ms); }
+    // Background hint: reading pages only, for someone who has never picked a background (luliy-article-bg-choice,
+    // section 24); once per browsing session, twice in all (localStorage luliy-loon-bg-hint). About 6 s after she
+    // appears; waits while she talks or dances (gives up after ~20 s). Her button column lights up meanwhile.
+    const HINT = ['想换个背景的话，', '点目录里的图片按钮。'];
+    function bgHint() {
+      clearTimeout(hintT);
+      let n = 0;
+      try { if (localStorage.getItem('luliy-article-bg-choice')) return; n = +localStorage.getItem('luliy-loon-bg-hint') || 0; } catch (e) { return; }
+      if (n >= 2 || ss.get('luliy-loon-bg-hinted')) return;
+      let tries = 0;
+      const tryNow = () => {
+        if (box.hidden || !reading() || !document.querySelector('#main .luliy-bg-toggle')) return;
+        if (talking || mode === 'intro' || bubble.classList.contains('show')) { if (++tries < 10) hintT = setTimeout(tryNow, 1500); return; }
+        ss.set('luliy-loon-bg-hinted');
+        try { localStorage.setItem('luliy-loon-bg-hint', String(n + 1)); } catch (e) {}
+        box.classList.add('lm-hint');
+        say(HINT, 5600);
+        hintT = setTimeout(() => box.classList.remove('lm-hint'), 5600);
+      };
+      hintT = setTimeout(tryNow, 6000);
+    }
     // The dance plays once per browsing session.
     const DANCED = 'luliy-loon-danced';
     function dance() {
@@ -2708,16 +2750,10 @@
     stage.addEventListener('pointerenter', e => {
       if (e.pointerType && e.pointerType !== 'mouse') return;
       hoverMe = true;
-      if (tocOpen) { gaze(true); return; }
-      clearTimeout(whatT);
-      whatT = setTimeout(() => {   // rests on her for 0.4 s; once per 30 s; never while she talks or dances
-        if (!hoverMe || tocOpen || talking || mode === 'intro' || bubble.classList.contains('show') || Date.now() - lastWhat < 30000) return;
-        lastWhat = Date.now(); say("What's up?", 2200);
-      }, 400);
+      if (tocOpen) gaze(true);   // contents open: she opens her eyes; otherwise hovering her does nothing
     });
-    stage.addEventListener('pointerleave', () => { hoverMe = false; clearTimeout(whatT); gaze(false); });
+    stage.addEventListener('pointerleave', () => { hoverMe = false; gaze(false); });
     stage.addEventListener('pointerdown', e => {
-      clearTimeout(whatT);
       if (e.button !== 0) return;
       longFired = false; box.classList.add('lm-press'); clearTimeout(pressT);
       pressT = setTimeout(() => { longFired = true; box.classList.remove('lm-press'); respond(nextQuote()); }, 600);
@@ -2783,7 +2819,7 @@
     document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.reader-toc-close')) refocus(); else requestAnimationFrame(reflect); }, true);
 
     box.querySelector('[data-m="hide"]').addEventListener('click', () => { write(true); sync(); peek.focus(); });
-    peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { if (atlas) playIntro(); else { wantDance = true; loadAtlas(); } sayAuto('我回来了。', 2400); }, 350); });
+    peek.addEventListener('click', () => { write(false); sync(); setTimeout(() => { if (atlas) playIntro(); else { wantDance = true; loadAtlas(); } }, 350); });
 
     /* Show only where there is room: a wide screen and a left margin beside the content. She shrinks to fit the margin
        (190px down to 130px on reading pages, 110px on the lists and works page) and never pushes the page aside. */
@@ -2811,6 +2847,7 @@
       if (key !== lastHash) {
         lastHash = key;
         setTimeout(() => { dance(); if (!greeted && !ss.get('luliy-loon-greeted')) { greeted = true; ss.set('luliy-loon-greeted'); greet(); } }, 900);
+        if (reading()) bgHint();
       }
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
@@ -2982,8 +3019,9 @@
           if (open) document.querySelectorAll('.lj-note').forEach(n => { if (n !== a && n._ljCloseComments) n._ljCloseComments(); });
           setOpen(open);
         });
-        bar.append(btn); bar.hidden = true; col.append(bar, box);
-        requestAnimationFrame(() => { if (window.LuliyComments) { bar.hidden = false; if (single) setOpen(true); } });   // permalink: thread already open
+        // shown from the start so the note does not grow a frame later (2026-10-31); hidden again only if comments are off
+        bar.append(btn); col.append(bar, box);
+        requestAnimationFrame(() => { if (!window.LuliyComments) bar.hidden = true; else if (single) setOpen(true); });   // permalink: thread already open
       }
       a.append(avatar, col);
 
@@ -3100,6 +3138,13 @@
             feed.append(more);
           }
           add();
+          // The bodies arrive a moment after the notes: keep the list invisible until the first ones are filled
+          // (at most 0.7 s), so the text settling in is not seen as a jump (2026-10-31).
+          feed.classList.add('lj-settling');
+          const reveal = () => feed.classList.remove('lj-settling');
+          const capR = setTimeout(reveal, 700);
+          const check = () => { if (!feed.isConnected) return; if (!feed.querySelector('.lj-note[aria-busy="true"]')) { clearTimeout(capR); requestAnimationFrame(reveal); } else setTimeout(check, 60); };
+          check();
         };
         const plain = item => new Promise(res => queue(item, f => res(f.textContent || ''), () => res('')));
         const runSearch = async value => {
@@ -3330,6 +3375,40 @@
       box.innerHTML = '<p class="lc-note" aria-live="polite">正在載入評論…</p><div class="lc-slot"></div>';
       load(box, box.querySelector('.lc-slot'), term);
     } };
+  })();
+
+
+  /* 35. 文章 / 短札 / 編年史 tab switches (2026-10-31): no collapse-and-grow, no lurch.
+     a) The page height from just before the switch is held (min-height on #main) until the new tab has been quiet for
+        300 ms (at most 1.5 s), then released once. The router swaps the content before this listener runs (it reacts
+        to popstate), so a ResizeObserver keeps the last two heights: if the height changed just now, the one before
+        that is the old tab's.
+     b) The new tab's content fades in (0.18 s, home-fixes.css 35); the toolbar with the tabs does not move.
+     c) home-fixes.css 35 also keeps the scrollbar space reserved on these pages, so a short tab never shifts sideways. */
+  (() => {
+    const main = document.getElementById('main');
+    if (!main || !window.ResizeObserver) return;
+    const tabs = h => /^#\/posts(?:\?|$)/.test(h || '');
+    let prev = location.hash, lastH = 0, prevH = 0, lastAt = 0, quietT = 0, capT = 0, fadeT = 0, mo = null;
+    new ResizeObserver(() => {
+      if (main.style.minHeight) return;
+      const h = main.offsetHeight;
+      if (h !== lastH) { prevH = lastH; lastH = h; lastAt = performance.now(); }
+    }).observe(main);
+    const release = () => { clearTimeout(quietT); clearTimeout(capT); if (mo) { mo.disconnect(); mo = null; } main.style.minHeight = ''; };
+    addEventListener('hashchange', () => {
+      const was = prev; prev = location.hash;
+      if (!tabs(was) || !tabs(location.hash)) return;
+      const hold = performance.now() - lastAt < 250 && prevH ? prevH : lastH;   // the height of the tab we just left
+      release();
+      if (hold) main.style.minHeight = hold + 'px';
+      root.classList.add('luliy-tab-switch');
+      clearTimeout(fadeT); fadeT = setTimeout(() => root.classList.remove('luliy-tab-switch'), 450);
+      const settle = () => { clearTimeout(quietT); quietT = setTimeout(release, 300); };
+      mo = new MutationObserver(settle);
+      mo.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-busy', 'hidden', 'class'] });
+      settle(); capT = setTimeout(release, 1500);
+    });
   })();
 
 })();
