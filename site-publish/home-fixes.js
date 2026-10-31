@@ -3492,4 +3492,223 @@
     });
   })();
 
+
+  /* 36. Weekly / 周記 magazine layout (2026-10-31). Only blog articles (#/article/Pxx) whose Issue carries the label
+     `weekly` (any case; 周記 / 周记 / 週記 also count) get it; every other article, 短札 and 編年史 are untouched.
+     a) html.lk-weekly switches on a paper page (home-fixes.css 36): 白紙 when the site appearance is light, 夜間
+        otherwise. The stars, the article artwork, Loon, the record player, the old TOC and the orange meta row hide.
+     b) Issue number: every weekly Issue in postList.json, oldest first (createdAt, then date, then P number), is
+        第 1 期, 第 2 期 … The list is cached in localStorage so the number shows before the feed arrives.
+     c) Inside the article: a kicker (WEEKLY · 第 N 期), a byline between a double rule (date, reading time, 分享),
+        a drop cap on the first paragraph, short one-paragraph quotes as pull quotes, image alt text as captions,
+        an end mark, and 上一期 / 下一期 between weekly issues instead of the general prev / next.
+     d) A bottom status bar (目錄 · progress · time left · %) and a contents drawer from the left (h1 and h2 of
+        the article; no numbering). Esc / the dim layer close it; focus returns to the button.
+     Idempotent: apply() runs at most once per frame on #main changes and hash changes. */
+  (() => {
+    const main = document.getElementById('main');
+    if (!main) return;
+    const FEED = 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/postList.json';
+    const KEY = 'luliy-weekly-index-v1';
+    const WEEKLY = /(^|[^a-z])weekly([^a-z]|$)|周[记記]|週記/i;
+    const T = s => (typeof window.LuliyInterfaceText === 'function' ? window.LuliyInterfaceText(s) : s);
+    const L = (zh, en, ja) => (/^en/.test(root.lang) ? en : /^ja/.test(root.lang) ? ja : root.lang === 'zh-Hant' ? T(zh) : zh);
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const labelNames = it => (Array.isArray(it && it.labels) ? it.labels : []).map(l => String(l && l.name !== undefined ? l.name : l).trim());
+
+    /* ---- b) the weekly index ---- */
+    let index = [];
+    try { const c = JSON.parse(localStorage.getItem(KEY) || '[]'); if (Array.isArray(c)) index = c; } catch (e) {}
+    let fetched = false;
+    const stamp = it => { const n = Number(it.createdAt); return isFinite(n) && n > 0 ? (n > 1e12 ? n : n * 1000) : (Date.parse(it.createdDate || '') || 0); };
+    function loadIndex() {
+      if (fetched || typeof fetch !== 'function') return;
+      fetched = true;
+      fetch(FEED).then(r => (r.ok ? r.json() : null)).then(json => {
+        if (!json || typeof json !== 'object') return;
+        const list = Object.keys(json).filter(k => /^P\d+$/.test(k) && json[k] && typeof json[k] === 'object' && labelNames(json[k]).some(l => WEEKLY.test(l)))
+          .map(k => ({ id: k, title: String(json[k].postTitle || ''), date: String(json[k].createdDate || ''), ts: stamp(json[k]) }))
+          .sort((a, b) => (a.ts - b.ts) || a.date.localeCompare(b.date) || (Number(a.id.slice(1)) - Number(b.id.slice(1))));
+        index = list;
+        try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
+        done = ''; schedule();
+      }).catch(() => {});
+    }
+
+    /* ---- chrome: status bar + drawer (live outside #main, shown only on weekly pages) ---- */
+    let bar = null, drawer = null, dim = null, list = null, opener = null;
+    function chrome() {
+      if (bar) return;
+      bar = el('div', 'lk-bar'); bar.setAttribute('role', 'region');
+      const tb = el('button', 'lk-tocb'); tb.type = 'button'; tb.setAttribute('aria-expanded', 'false'); tb.setAttribute('aria-controls', 'lkDrawer');
+      tb.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 4h12M2 8h12M2 12h8"/></svg><span></span>';
+      const track = el('span', 'lk-track'); track.append(el('i'));
+      const left = el('span', 'lk-left'), pct = el('span', 'lk-pct');
+      bar.append(tb, track, left, pct);
+      dim = el('div', 'lk-dim');
+      drawer = el('nav', 'lk-drawer'); drawer.id = 'lkDrawer'; drawer.tabIndex = -1;
+      const head = el('header'); head.append(el('small', '', 'CONTENTS'), el('b'), el('span'));
+      list = el('ol');
+      const foot = el('footer'); foot.append(el('span', 'lk-dpct'), el('span', '', 'Esc'));
+      drawer.append(head, list, foot);
+      document.body.append(dim, drawer, bar);
+      tb.addEventListener('click', () => toggle(!drawer.classList.contains('open')));
+      dim.addEventListener('click', () => toggle(false));
+      addEventListener('keydown', e => { if (e.key === 'Escape' && drawer.classList.contains('open')) { e.preventDefault(); toggle(false); } }, true);
+      list.addEventListener('click', e => {
+        const a = e.target.closest('a[data-i]'); if (!a) return;
+        e.preventDefault();
+        const h = heads[+a.dataset.i]; toggle(false, true);
+        if (h) { const y = h.getBoundingClientRect().top + scrollY - (innerWidth <= 700 ? 84 : 120); scrollTo({ top: Math.max(0, y), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+      });
+    }
+    let heads = [];
+    function toggle(open, noFocus) {
+      if (!drawer) return;
+      if (open) { opener = document.activeElement; fillList(); }
+      drawer.classList.toggle('open', open); dim.classList.toggle('open', open);
+      bar.querySelector('.lk-tocb').setAttribute('aria-expanded', String(open));
+      root.classList.toggle('lk-drawer-open', open);
+      if (open) { const cur = list.querySelector('a[aria-current]') || list.querySelector('a'); setTimeout(() => (cur || drawer).focus({ preventScroll: true }), 40); if (cur) cur.scrollIntoView({ block: 'nearest' }); }
+      else if (!noFocus && opener && opener.focus) opener.focus({ preventScroll: true });
+    }
+    function current() { let c = 0; heads.forEach((h, i) => { if (h.getBoundingClientRect().top < 160) c = i; }); return c; }
+    function fillList() {
+      const c = current();
+      list.innerHTML = '';
+      heads.forEach((h, i) => {
+        const li = el('li'), a = el('a', h.dataset.lkLevel === '2' ? 'l2' : '');
+        a.href = '#'; a.dataset.i = i; const c2 = h.cloneNode(true); c2.querySelectorAll('button, .reader-heading-link, svg').forEach(n => n.remove()); a.textContent = c2.textContent.replace(/\s+/g, ' ').trim();
+        if (i === c) a.setAttribute('aria-current', 'true');
+        li.append(a); list.append(li);
+      });
+      if (!heads.length) { const li = el('li', 'lk-none', L('这篇没有小标题', 'No headings in this article', '見出しはありません')); list.append(li); }
+    }
+    let minutes = 0;
+    function progress() {
+      if (!bar || !root.classList.contains('lk-weekly')) return;
+      const body = main.querySelector('.source-body');
+      let p = 1;
+      if (body) {
+        const r = body.getBoundingClientRect(), total = r.height - innerHeight * .6;
+        p = total > 0 ? Math.min(1, Math.max(0, (-r.top + innerHeight * .4) / total)) : 1;
+      }
+      const pc = Math.round(p * 100);
+      bar.querySelector('.lk-track i').style.width = pc + '%';
+      bar.querySelector('.lk-pct').textContent = pc + '%';
+      const left = Math.max(0, Math.round(minutes * (1 - p)));
+      bar.querySelector('.lk-left').textContent = p >= .99 ? L('读完了', 'Finished', '読了') : left ? L('剩约 ' + left + ' 分钟', left + ' min left', '残り約 ' + left + ' 分') : L('快读完了', 'Almost done', 'もうすぐ読了');
+      if (drawer.classList.contains('open')) drawer.querySelector('.lk-dpct').textContent = L('已读 ', 'Read ', '既読 ') + pc + '%';
+    }
+
+    /* ---- c) decorate one article ---- */
+    const meaningfulAlt = a => !!a && a.length > 1 && !/^(image|img|圖片|图片|screenshot)$/i.test(a) && !/\.(png|jpe?g|webp|gif|avif|svg)$/i.test(a);
+    function decorate(shell, id) {
+      const body = shell.querySelector('.source-body'), h1 = shell.querySelector(':scope > h1'), meta = shell.querySelector('.source-meta');
+      if (!body || !h1) return false;
+      const pos = index.findIndex(x => x.id === id), no = pos >= 0 ? pos + 1 : 0;
+      // kicker
+      let kick = shell.querySelector(':scope > .lk-kick');
+      if (!kick) { kick = el('p', 'lk-kick'); h1.before(kick); }
+      kick.textContent = 'WEEKLY' + (no ? ' · ' + L('第 ' + no + ' 期', 'No. ' + no, '第 ' + no + ' 号') : '');
+      // byline
+      if (!shell.querySelector(':scope > .lk-by') && meta) {
+        const by = el('div', 'lk-by'), l = el('span'), r = el('span');
+        l.append(el('b', '', 'LULIY'));
+        const time = meta.querySelector('time');
+        if (time) r.append(el('span', '', time.textContent.trim().replace(/-/g, ' · ')));
+        r.append(el('span', 'lk-rt'));
+        const share = meta.querySelector('.source-share');
+        if (share) { const b = el('button', 'lk-share', L('分享', 'Share', '共有')); b.type = 'button'; b.addEventListener('click', () => share.click()); r.append(b); }
+        by.append(l, r); meta.after(by);
+      }
+      const rt = meta && meta.querySelector('#sourceReadingTime'), mm = rt && rt.textContent.match(/(\d+)\s*(?:分|min)/i);
+      minutes = mm ? +mm[1] : Math.max(1, Math.round(body.textContent.replace(/\s+/g, '').length / 400));
+      const rts = shell.querySelector(':scope > .lk-by .lk-rt');
+      if (rts) rts.textContent = L('约 ' + minutes + ' 分钟', minutes + ' min', '約 ' + minutes + ' 分');
+      const sig = id + ':' + body.childElementCount + ':' + body.textContent.length;
+      if (body.dataset.lkDone === sig) return true;
+      if (!body.textContent.trim()) return false;
+      // drop cap: the first block is a paragraph of text
+      const first = body.firstElementChild && body.firstElementChild.matches('.markdown-body') ? body.firstElementChild : body;
+      const firstBlock = [...first.children].find(n => !/^(H[1-6]|HR)$/.test(n.tagName) && n.textContent.trim());
+      if (firstBlock && firstBlock.tagName === 'P' && !firstBlock.querySelector('img,video,iframe') && /^[「『“"(（]?[\p{L}\p{N}]/u.test(firstBlock.textContent.trim()) && firstBlock.textContent.trim().length > 20) firstBlock.classList.add('lk-first');
+      // pull quotes
+      body.querySelectorAll('blockquote').forEach(q => {
+        if (q.closest('.markdown-alert') || q.parentElement.closest('blockquote')) return;
+        const ps = q.querySelectorAll(':scope > p'), t = q.textContent.trim();
+        if (q.children.length === ps.length && ps.length === 1 && t.length && t.length <= 90) q.classList.add('lk-pull');
+      });
+      // captions from alt text
+      body.querySelectorAll('img').forEach(img => {
+        const alt = (img.getAttribute('alt') || '').trim();
+        if (!meaningfulAlt(alt) || img.closest('a.lk-capd, figure')) return;
+        const host = img.closest('p') && img.closest('p').textContent.trim() === '' ? img.closest('p') : img;
+        if (host.nextElementSibling && host.nextElementSibling.classList.contains('lk-cap')) return;
+        const cap = el(host === img ? 'span' : 'p', 'lk-cap', alt); host.after(cap);
+      });
+      // end mark
+      const blocks = [...first.children].filter(n => n.textContent.trim() || n.querySelector('img'));
+      const last = blocks[blocks.length - 1];
+      if (last && last.tagName === 'P' && !last.querySelector('.lk-end')) { const s = el('span', 'lk-end'); s.setAttribute('aria-hidden', 'true'); last.append(s); }
+      // headings for the drawer: the top two levels used in the article
+      const hs = [...body.querySelectorAll('h1,h2,h3,h4')].filter(h => h.textContent.trim());
+      const lv = [...new Set(hs.map(h => +h.tagName[1]))].sort((a, b) => a - b).slice(0, 2);
+      heads = hs.filter(h => lv.includes(+h.tagName[1]));
+      heads.forEach(h => { h.dataset.lkLevel = +h.tagName[1] === lv[0] ? '1' : '2'; });
+      body.dataset.lkDone = sig;
+      return true;
+    }
+    function series(shell, id) {
+      const pos = index.findIndex(x => x.id === id);
+      let nav = shell.querySelector('.lk-pn');
+      if (pos < 0) { if (nav) nav.remove(); return; }
+      const key = id + ':' + index.length;
+      if (nav && nav.dataset.key === key) return;
+      if (nav) nav.remove();
+      nav = el('nav', 'lk-pn'); nav.dataset.key = key; nav.setAttribute('aria-label', L('上一期与下一期', 'Previous and next issue', '前号と次号'));
+      const mk = (it, n, cls, lab) => { const a = el('a', cls); a.href = '#/article/' + it.id; const s = el('small', '', lab + ' · ' + L('第 ' + n + ' 期', 'No. ' + n, '第 ' + n + ' 号')); a.append(s, el('b', '', it.title)); return a; };
+      nav.append(pos > 0 ? mk(index[pos - 1], pos, 'pv', L('← 上一期', '← Previous', '← 前号')) : el('span'));
+      nav.append(pos < index.length - 1 ? mk(index[pos + 1], pos + 2, 'nx', L('下一期 →', 'Next →', '次号 →')) : el('span'));
+      const body = shell.querySelector('.source-body');
+      if (body) body.after(nav); else (shell.querySelector(':scope > .source-end') || shell.lastElementChild).before(nav);
+    }
+
+    /* ---- apply ---- */
+    let done = '', frame = 0;
+    function apply() {
+      frame = 0;
+      const m = /^#\/article\/(P\d+)(?:[?#/]|$)/.exec(location.hash || '');
+      const shell = m && main.querySelector('.source-reading');
+      const cat = shell && shell.querySelector('.source-category');
+      const on = !!(shell && ((cat && WEEKLY.test(cat.textContent)) || index.some(x => x.id === m[1])));
+      if (!on) {
+        if (root.classList.contains('lk-weekly')) { root.classList.remove('lk-weekly'); toggle(false, true); }
+        done = ''; return;
+      }
+      loadIndex(); chrome();
+      root.classList.add('lk-weekly');
+      const tb = bar.querySelector('.lk-tocb span'); tb.textContent = L('目录', 'Contents', '目次');
+      bar.setAttribute('aria-label', L('阅读进度', 'Reading progress', '読書の進み具合'));
+      drawer.setAttribute('aria-label', L('本文目录', 'Contents', '本文の目次'));
+      drawer.querySelector('header small').textContent = 'CONTENTS · ' + L('目录', 'Contents', '目次');
+      const key = m[1] + ':' + index.length + ':' + root.lang;
+      if (decorate(shell, m[1])) {
+        series(shell, m[1]);
+        drawer.querySelector('header b').textContent = shell.querySelector(':scope > h1').textContent.trim();
+        const pos = index.findIndex(x => x.id === m[1]);
+        drawer.querySelector('header span').textContent = 'WEEKLY' + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
+        done = key;
+      }
+      progress();
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(apply); };
+    new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
+    addEventListener('hashchange', schedule);
+    addEventListener('scroll', () => { if (root.classList.contains('lk-weekly')) progress(); }, { passive: true });
+    addEventListener('resize', progress);
+    new MutationObserver(schedule).observe(root, { attributes: true, attributeFilter: ['lang'] });
+    schedule();
+  })();
+
 })();

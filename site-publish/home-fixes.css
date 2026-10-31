@@ -1957,3 +1957,132 @@ html:has(#main .post-archive) { scrollbar-gutter: stable; }
   #main .post-archive > .article-modes a[aria-current]:after { bottom: -15px; }
 }
 .luliy-journal .lj-feed.lj-settling .lj-note[aria-busy="true"] :is(.lj-text, .lj-media) { visibility: hidden; }
+
+/* 36. Weekly / 周記 magazine layout (2026-10-31; home-fixes.js 36). Everything here is scoped to html.lk-weekly,
+   which is only set on blog articles labelled `weekly`. Paper follows the site appearance: 白紙 for light, 夜間 otherwise.
+   Fonts stay the site's own (--font-body, --font-mono). */
+html.lk-weekly {
+  --lk-bg: #121212; --lk-surface: #1b1b1a; --lk-ink: #cfcac0; --lk-soft: #a39e94; --lk-mute: #7d786f; --lk-rule: #2e2d2a; --lk-acc: #c98a62;
+  --lk-fs: 19px; --lk-lh: 1.85;
+}
+html.lk-weekly[data-appearance="light"] {
+  --lk-bg: #f5f2ea; --lk-surface: #ebe6dc; --lk-ink: #1d1b18; --lk-soft: #5d5850; --lk-mute: #8a8478; --lk-rule: #d9d3c5; --lk-acc: #8a2b1f;
+}
+@media (max-width: 700px) { html.lk-weekly { --lk-fs: 17.5px; --lk-lh: 1.9; } }
+
+/* a) the page: paper, nothing behind the text */
+/* beats html:root[data-appearance][data-palette] body (the palette sky) */
+html.lk-weekly.lk-weekly:root[class], html.lk-weekly.lk-weekly:root[class] :is(body, .page-above) { background: var(--lk-bg) !important; background-image: none !important; }
+html.lk-weekly :is(.subpage-stars, .click-stars, #luliy-article-bg, .luliy-mascot, .luliy-mascot-hub, .lr-mini, .reader-music-card),
+html.lk-weekly #main :is(.source-toc, .reader-float, .source-meta, .reader-series) { display: none !important; }
+html.lk-weekly #header { background: var(--lk-bg); box-shadow: 0 -14px 0 var(--lk-bg); }
+html.lk-weekly body.luliy-article-bg-on :is(.article-body, #sourceArticleBody, .source-end, .source-end *) { text-shadow: none !important; }
+html.lk-weekly #main { padding-bottom: 72px; }
+html.lk-weekly #main .source-reading { max-width: 700px; margin-inline: auto; color: var(--lk-ink); }
+html.lk-weekly #main .source-layout { display: block !important; }
+
+/* c) masthead */
+html.lk-weekly #main .lk-kick { margin: 0 0 14px; font: 600 11.5px/1 var(--font-mono); letter-spacing: .26em; color: var(--lk-acc); text-transform: uppercase; }
+html.lk-weekly #main .source-reading > h1 { margin: 0 0 22px; font-family: var(--font-body); font-size: clamp(32px, 5vw, 46px); line-height: 1.2; font-weight: 700;
+  letter-spacing: .01em; color: var(--lk-ink); text-shadow: none; text-align: left; }
+html.lk-weekly #main .lk-by { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin: 0 0 2.2em; padding: 16px 0 12px; border-bottom: 1px solid var(--lk-rule); font: 11.5px/1.4 var(--font-mono); letter-spacing: .1em; color: var(--lk-mute); }
+html.lk-weekly #main .lk-by::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; border-top: 3px solid var(--lk-ink); border-bottom: 1px solid var(--lk-ink); }
+html.lk-weekly #main .lk-by b { color: var(--lk-ink); font-weight: 600; letter-spacing: .18em; }
+html.lk-weekly #main .lk-by > span:last-child { display: flex; align-items: center; gap: 16px; }
+html.lk-weekly #main .lk-share { font: inherit; letter-spacing: inherit; color: var(--lk-ink); background: none; border: 1px solid var(--lk-ink); padding: 4px 9px; cursor: pointer;
+  transition: background-color .1s steps(2), color .1s steps(2); }
+html.lk-weekly #main .lk-share:hover, html.lk-weekly #main .lk-share:focus-visible { background: var(--lk-ink); color: var(--lk-bg); outline: none; }
+
+/* c) the text */
+html.lk-weekly #main .source-body { width: auto !important; max-width: none !important; font-family: var(--font-body); font-size: var(--lk-fs) !important;
+  line-height: var(--lk-lh) !important; color: var(--lk-ink) !important; text-align: justify; text-justify: inter-character; letter-spacing: .015em; }
+html.lk-weekly #main .source-body :is(p, li, td, th, blockquote, figcaption) { color: inherit; }
+html.lk-weekly #main .source-body p { margin: 0; }
+html.lk-weekly #main .source-body p:where(:not(:has(img, video, iframe)):not(.lk-cap)) { text-indent: 2em; }
+html.lk-weekly #main .source-body p + p { margin-top: .2em; }
+html.lk-weekly #main .source-body :is(ul, ol, pre, table, figure, .markdown-alert, blockquote, hr) + p { margin-top: 1em; }
+html.lk-weekly #main .source-body :is(td, th, li, blockquote, .markdown-alert, details) p { text-indent: 0; }
+html.lk-weekly #main .source-body p.lk-first { text-indent: 0; }
+html.lk-weekly #main .source-body p.lk-first::first-letter { float: left; margin: .1em .14em 0 0; font-size: 3.5em; line-height: .86; font-weight: 700; color: var(--lk-acc); }
+html.lk-weekly #main .source-body :is(h1, h2, h3, h4) { color: var(--lk-ink); text-align: left; text-shadow: none; letter-spacing: .01em; break-after: avoid; }
+html.lk-weekly #main .source-body h1 { margin: 2.2em 0 .7em; font-size: 1.36em; line-height: 1.35; font-weight: 700; }
+html.lk-weekly #main .source-body h2 { margin: 1.9em 0 .6em; font-size: 1.16em; line-height: 1.4; font-weight: 700; }
+html.lk-weekly #main .source-body :is(h3, h4) { margin: 1.6em 0 .5em; font-size: 1em; font-weight: 700; }
+html.lk-weekly #main .source-body > :first-child, html.lk-weekly #main .source-body > .markdown-body > :first-child { margin-top: 0; }
+html.lk-weekly #main .source-body a { color: var(--lk-ink); text-decoration: underline; text-decoration-color: var(--lk-acc); text-underline-offset: 4px; }
+html.lk-weekly #main .source-body :is(ul, ol) { margin: .8em 0; padding-left: 1.6em; text-align: left; }
+html.lk-weekly #main .source-body li { margin: .3em 0; }
+html.lk-weekly #main .source-body li::marker { color: var(--lk-acc); }
+html.lk-weekly #main .source-body blockquote { margin: 1.4em 0; padding: .1em 0 .1em 1.2em; border-left: 2px solid var(--lk-ink); color: var(--lk-soft); background: none; font-style: normal; }
+html.lk-weekly #main .source-body blockquote.lk-pull { margin: 1.8em 0; padding: .9em 0 1em; border: 0; border-top: 2px solid var(--lk-ink); border-bottom: 1px solid var(--lk-rule);
+  color: var(--lk-ink); font-size: 1.28em; line-height: 1.55; font-weight: 600; text-align: left; }
+html.lk-weekly #main .source-body blockquote.lk-pull::before { content: "\201C"; display: block; height: .42em; font: 700 2.4em/.9 'Times New Roman', serif; color: var(--lk-acc); }
+html.lk-weekly #main .source-body img { display: block; max-width: 100%; height: auto; margin: 1.6em auto 0; border-radius: 0; }
+html.lk-weekly #main .source-body .lk-cap { display: block; margin: .6em 0 1.6em; text-align: left; text-indent: 0; font: 12.5px/1.6 var(--font-mono); letter-spacing: .04em; color: var(--lk-mute); }
+html.lk-weekly #main .source-body hr { height: auto; margin: 2.4em 0; border: 0; background: none; text-align: center; }
+html.lk-weekly #main .source-body hr::after { content: "\00B7\2003\00B7\2003\00B7"; color: var(--lk-mute); }
+html.lk-weekly #main .source-body :is(pre, code) { font-family: var(--font-mono); text-align: left; }
+html.lk-weekly #main .source-body :not(pre) > code { padding: .1em .35em; font-size: .86em; background: var(--lk-surface); color: var(--lk-ink); border-radius: 3px; }
+html.lk-weekly #main .source-body pre { margin: 1.4em 0; padding: 14px 16px; font-size: 14px; line-height: 1.7; background: var(--lk-surface) !important; color: var(--lk-ink);
+  border: 1px solid var(--lk-rule); border-radius: 2px; overflow: auto; }
+html.lk-weekly #main .source-body table { display: table; width: 100%; margin: 1.4em 0; border-collapse: collapse; font-size: .9em; line-height: 1.6; text-align: left; }
+html.lk-weekly #main .source-body :is(th, td) { padding: .55em .7em; border: 0; border-bottom: 1px solid var(--lk-rule); background: none; }
+html.lk-weekly #main .source-body th { font: 600 11.5px/1.4 var(--font-mono); letter-spacing: .12em; color: var(--lk-mute); border-bottom-color: var(--lk-ink); }
+html.lk-weekly #main .source-body .lk-end { display: inline-block; width: .55em; height: .55em; margin-left: .4em; vertical-align: .06em; background: var(--lk-acc); }
+html.lk-weekly #main .source-body ::selection { background: var(--lk-ink); color: var(--lk-bg); }
+
+/* c) after the text: 上一期 / 下一期, comments, end links */
+html.lk-weekly #main .lk-pn { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 3em 0 0; }
+html.lk-weekly #main .lk-pn a { display: block; padding: 12px 14px; border: 1px solid var(--lk-ink); color: var(--lk-ink); text-decoration: none;
+  transition: background-color .1s steps(2), color .1s steps(2); }
+html.lk-weekly #main .lk-pn a:hover, html.lk-weekly #main .lk-pn a:focus-visible { background: var(--lk-ink); color: var(--lk-bg); outline: none; }
+html.lk-weekly #main .lk-pn small { display: block; margin-bottom: 4px; font: 10.5px/1.4 var(--font-mono); letter-spacing: .16em; color: var(--lk-mute); }
+html.lk-weekly #main .lk-pn a:hover small, html.lk-weekly #main .lk-pn a:focus-visible small { color: inherit; }
+html.lk-weekly #main .lk-pn b { font: 700 15px/1.45 var(--font-body); }
+html.lk-weekly #main .lk-pn .nx { text-align: right; }
+html.lk-weekly #main .luliy-comments { margin-top: 3em; padding-top: 1.4em; border-top: 1px solid var(--lk-rule); }
+html.lk-weekly #main .luliy-comments > h2 { font: 600 11.5px/1 var(--font-mono); letter-spacing: .26em; color: var(--lk-acc); text-transform: uppercase; }
+html.lk-weekly #main .source-end { border-color: var(--lk-rule); }
+html.lk-weekly #main .source-end a { font: 12px var(--font-mono); letter-spacing: .08em; color: var(--lk-mute); background: none !important; text-shadow: none; }
+html.lk-weekly #main .source-end a:hover { color: var(--lk-ink); }
+
+/* d) status bar and contents drawer (outside #main; hidden on every other page) */
+.lk-bar, .lk-drawer, .lk-dim { display: none; }
+html.lk-weekly .lk-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; display: flex; align-items: center; gap: 16px; height: 46px;
+  padding: 0 clamp(14px, 4vw, 48px) env(safe-area-inset-bottom); background: var(--lk-bg); border-top: 1px solid var(--lk-rule);
+  font: 11.5px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-mute); box-sizing: content-box; }
+html.lk-weekly .lk-tocb { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px 0 0; font: inherit; letter-spacing: .14em; color: var(--lk-ink);
+  background: none; border: 0; cursor: pointer; }
+html.lk-weekly .lk-tocb svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.4; }
+html.lk-weekly .lk-tocb:hover span { text-decoration: underline; text-underline-offset: 4px; }
+html.lk-weekly .lk-tocb:focus-visible { outline: 2px solid var(--lk-acc); outline-offset: 2px; }
+html.lk-weekly .lk-track { flex: 1; height: 1px; background: var(--lk-rule); }
+html.lk-weekly .lk-track i { display: block; width: 0; height: 100%; background: var(--lk-ink); }
+html.lk-weekly .lk-pct { min-width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
+html.lk-weekly .lk-dim { position: fixed; inset: 0; z-index: 80; display: block; background: rgba(0, 0, 0, .22); opacity: 0; pointer-events: none; transition: opacity .25s; }
+html.lk-weekly .lk-dim.open { opacity: 1; pointer-events: auto; }
+html.lk-weekly .lk-drawer { position: fixed; top: 0; bottom: 0; left: 0; z-index: 81; display: flex; flex-direction: column; width: min(360px, 86vw);
+  background: var(--lk-bg); color: var(--lk-ink); border-right: 1px solid var(--lk-rule); box-shadow: 12px 0 40px rgba(0, 0, 0, .16);
+  transform: translateX(-102%); visibility: hidden; transition: transform .28s cubic-bezier(.2, .7, .2, 1), visibility 0s .28s; outline: none; }
+html.lk-weekly .lk-drawer.open { transform: none; visibility: visible; transition: transform .28s cubic-bezier(.2, .7, .2, 1); }
+html.lk-weekly .lk-drawer header { position: relative; padding: 26px 28px 18px; }
+html.lk-weekly .lk-drawer header::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; border-top: 3px solid var(--lk-ink); border-bottom: 1px solid var(--lk-ink); }
+html.lk-weekly .lk-drawer header small { display: block; margin-bottom: 8px; font: 600 10.5px/1 var(--font-mono); letter-spacing: .26em; color: var(--lk-acc); }
+html.lk-weekly .lk-drawer header b { display: block; font: 700 21px/1.35 var(--font-body); }
+html.lk-weekly .lk-drawer header span { display: block; margin-top: 6px; font: 11px/1.4 var(--font-mono); letter-spacing: .1em; color: var(--lk-mute); }
+html.lk-weekly .lk-drawer ol { flex: 1; margin: 0; padding: 10px 0; list-style: none; overflow: auto; }
+html.lk-weekly .lk-drawer a { display: block; padding: 12px 28px 12px 25px; border-left: 3px solid transparent; font: 16px/1.45 var(--font-body); color: var(--lk-ink); text-decoration: none; }
+html.lk-weekly .lk-drawer a.l2 { padding-left: 45px; font-size: 14px; color: var(--lk-soft); }
+html.lk-weekly .lk-drawer a:hover { background: color-mix(in srgb, var(--lk-ink) 6%, transparent); }
+html.lk-weekly .lk-drawer a[aria-current] { border-left-color: var(--lk-acc); color: var(--lk-acc); }
+html.lk-weekly .lk-drawer a:focus-visible { outline: 2px solid var(--lk-acc); outline-offset: -2px; }
+html.lk-weekly .lk-drawer .lk-none { padding: 14px 28px; font: 13px var(--font-mono); color: var(--lk-mute); }
+html.lk-weekly .lk-drawer footer { display: flex; justify-content: space-between; padding: 14px 28px 22px; border-top: 1px solid var(--lk-rule); font: 11.5px var(--font-mono); letter-spacing: .08em; color: var(--lk-mute); }
+@media (max-width: 700px) {
+  html.lk-weekly #main .lk-pn { grid-template-columns: 1fr; }
+  html.lk-weekly #main .lk-pn .nx { text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.lk-weekly :is(.lk-drawer, .lk-dim, .lk-pn a, .lk-share) { transition: none !important; }
+}
