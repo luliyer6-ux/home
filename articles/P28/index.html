@@ -259,8 +259,8 @@
 </blockquote>
 <hr>
 <h2 id="heading-11">2.1 第 00 节 — 字体导入 <code>@import</code></h2>
-<div><pre><span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&amp;display=swap&#x27;</span>);
-<span>@import</span> <span>url</span>(<span>&#x27;https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css&#x27;</span>);</pre></div>
+<div><pre><span>@import</span> <span>url</span><span>(</span><span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&amp;display=swap&#x27;</span><span>)</span><span>;</span>
+<span>@import</span> <span>url</span><span>(</span><span>&#x27;https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css&#x27;</span><span>)</span><span>;</span></pre></div>
 <p><strong>作用：</strong> 从网上下载两套字体：</p>
 <ul>
 <li><strong>Noto Sans SC</strong>（= 思源黑体的 Google 版本）→ 用于标题</li>
@@ -292,25 +292,25 @@
 <p><strong>国内访问慢的解决方案：</strong> 把 <code>fonts.googleapis.com</code> 换成 <code>fonts.loli.net</code>（国内镜像）。</p>
 <hr>
 <h2 id="heading-12">2.2 第 01 节 — CSS 变量与重置</h2>
-<div><pre><span>:</span><span>root</span> {
-  <span>--card-c1</span><span>:</span> <span><span>#</span>8250df</span>;
-  <span>--card-c2</span><span>:</span> <span><span>#</span>0969da</span>;
-  <span>--card-c3</span><span>:</span> <span><span>#</span>e05c8a</span>;
-  <span>--card-c4</span><span>:</span> <span><span>#</span>f0b429</span>;
-}</pre></div>
+<div><pre><span>:</span><span>root</span> <span>{</span>
+  <span>--card-c1</span><span>:</span> <span><span>#</span>8250df</span><span>;</span>
+  <span>--card-c2</span><span>:</span> <span><span>#</span>0969da</span><span>;</span>
+  <span>--card-c3</span><span>:</span> <span><span>#</span>e05c8a</span><span>;</span>
+  <span>--card-c4</span><span>:</span> <span><span>#</span>f0b429</span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>作用：</strong> 定义”全局色板”。首页文章卡片的顶部彩色边框，按 1→2→3→4 循环使用这 4 个颜色。</p>
 <p><strong>怎么改：</strong> 直接换色值。比如全部换成同色系渐变：</p>
-<div><pre><span>:</span><span>root</span> {
-  <span>--card-c1</span><span>:</span> <span><span>#</span>f0b429</span>;
-  <span>--card-c2</span><span>:</span> <span><span>#</span>ff8c00</span>;
-  <span>--card-c3</span><span>:</span> <span><span>#</span>ff4500</span>;
-  <span>--card-c4</span><span>:</span> <span><span>#</span>dc143c</span>;
-}</pre></div>
+<div><pre><span>:</span><span>root</span> <span>{</span>
+  <span>--card-c1</span><span>:</span> <span><span>#</span>f0b429</span><span>;</span>
+  <span>--card-c2</span><span>:</span> <span><span>#</span>ff8c00</span><span>;</span>
+  <span>--card-c3</span><span>:</span> <span><span>#</span>ff4500</span><span>;</span>
+  <span>--card-c4</span><span>:</span> <span><span>#</span>dc143c</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-13">2.3 第 02 节 — 欢迎进入画面</h2>
-<div><pre><span>#</span><span>luliy-welcome</span> {
-  <span>background</span><span>:</span> <span>url</span>(<span>&#x27;...static/img/9.jpg&#x27;</span>) center <span>/</span> cover no-repeat;
-}</pre></div>
+<div><pre><span>#</span><span>luliy-welcome</span> <span>{</span>
+  <span>background</span><span>:</span> <span>url</span><span>(</span><span>&#x27;...static/img/9.jpg&#x27;</span><span>)</span> center <span>/</span> cover no-repeat<span>;</span>
+<span>}</span></pre></div>
 <p><strong>可以改的参数：</strong></p>
 <table>
 <thead>
@@ -342,25 +342,25 @@
 </tr>
 </tbody>
 </table>
-<div><pre><span>#</span><span>luliy-welcome-title</span> {
-  <span>font-size</span><span>:</span> <span>clamp</span>(<span>1.8<span>rem</span></span><span>,</span> <span>5<span>vw</span></span><span>,</span> <span>3.2<span>rem</span></span>);
-  <span>letter-spacing</span><span>:</span> <span>4<span>px</span></span>;
-}</pre></div>
+<div><pre><span>#</span><span>luliy-welcome-title</span> <span>{</span>
+  <span>font-size</span><span>:</span> <span>clamp</span><span>(</span><span>1.8<span>rem</span></span><span>,</span> <span>5<span>vw</span></span><span>,</span> <span>3.2<span>rem</span></span><span>)</span><span>;</span>
+  <span>letter-spacing</span><span>:</span> <span>4<span>px</span></span><span>;</span>
+<span>}</span></pre></div>
 <p><strong><code>clamp(最小值, 响应式值, 最大值)</code></strong> = 字体大小会随屏幕宽度自动缩放，但不会小于 1.8rem，不会大于 3.2rem。<br>
 <strong>改字体大小：</strong> 比如 <code>clamp(1.4rem, 4vw, 2.6rem)</code> 让标题稍微小一点。</p>
-<div><pre><span>@keyframes</span> welcomeFadeIn {
-  <span>from</span> { <span>opacity</span><span>:</span> <span>0</span>; <span>transform</span><span>:</span> <span>translateY</span>(<span>28<span>px</span></span>); }
-  <span>to</span>   { <span>opacity</span><span>:</span> <span>1</span>; <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>); }
-}</pre></div>
+<div><pre><span>@keyframes</span> welcomeFadeIn <span>{</span>
+  <span>from</span> <span>{</span> <span>opacity</span><span>:</span> <span>0</span><span>;</span> <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>28<span>px</span></span><span>)</span><span>;</span> <span>}</span>
+  <span>to</span>   <span>{</span> <span>opacity</span><span>:</span> <span>1</span><span>;</span> <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>0</span><span>)</span><span>;</span> <span>}</span>
+<span>}</span></pre></div>
 <p><strong>作用：</strong> 欢迎页内容从下方 28px 处淡入。<br>
 <strong>改动画方向：</strong> 改 <code>translateY(28px)</code> 为 <code>translateX(-30px)</code> = 从左侧滑入。</p>
 <hr>
 <h2 id="heading-14">2.4 第 03 节 — 全站背景图</h2>
-<div><pre><span>body</span> {
-  <span>background-image</span><span>:</span> <span>url</span>(<span>&#x27;...static/img/bg.png&#x27;</span>) <span>!important</span>;
-  <span>background-size</span><span>:</span> cover <span>!important</span>;
-  <span>background-attachment</span><span>:</span> fixed <span>!important</span>;
-}</pre></div>
+<div><pre><span>body</span> <span>{</span>
+  <span>background-image</span><span>:</span> <span>url</span><span>(</span><span>&#x27;...static/img/bg.png&#x27;</span><span>)</span> <span>!important</span><span>;</span>
+  <span>background-size</span><span>:</span> cover <span>!important</span><span>;</span>
+  <span>background-attachment</span><span>:</span> fixed <span>!important</span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>可改参数：</strong></p>
 <table>
 <thead>
@@ -399,14 +399,14 @@
 </tbody>
 </table>
 <p><strong>如果不想用背景图，改成纯色：</strong></p>
-<div><pre><span>body</span> { <span>background-image</span><span>:</span> none <span>!important</span>; <span>background-color</span><span>:</span> <span><span>#</span>f5f0ff</span> <span>!important</span>; }</pre></div>
+<div><pre><span>body</span> <span>{</span> <span>background-image</span><span>:</span> none <span>!important</span><span>;</span> <span>background-color</span><span>:</span> <span><span>#</span>f5f0ff</span> <span>!important</span><span>;</span> <span>}</span></pre></div>
 <hr>
 <h2 id="heading-15">2.5 第 04 节 — 文字排版</h2>
-<div><pre><span>body</span> {
-  <span>font-family</span><span>:</span> <span>&#x27;LXGW WenKai Screen&#x27;</span><span>,</span> <span>&#x27;LXGW WenKai&#x27;</span><span>,</span> <span>&#x27;Noto Serif SC&#x27;</span><span>,</span> serif;
-}</pre></div>
+<div><pre><span>body</span> <span>{</span>
+  <span>font-family</span><span>:</span> <span>&#x27;LXGW WenKai Screen&#x27;</span><span>,</span> <span>&#x27;LXGW WenKai&#x27;</span><span>,</span> <span>&#x27;Noto Serif SC&#x27;</span><span>,</span> serif<span>;</span>
+<span>}</span></pre></div>
 <p><strong>字体书写顺序（优先级从高到低）：</strong> 浏览器会先尝试第一个，找不到就用第二个，以此类推。最后的 <code>serif</code> 是系统兜底。</p>
-<div><pre><span>#</span><span>postBody</span> { <span>font-size</span><span>:</span> <span>18<span>px</span></span>; <span>line-height</span><span>:</span> <span>1.9</span>; }</pre></div>
+<div><pre><span>#</span><span>postBody</span> <span>{</span> <span>font-size</span><span>:</span> <span>18<span>px</span></span><span>;</span> <span>line-height</span><span>:</span> <span>1.9</span><span>;</span> <span>}</span></pre></div>
 <p><strong>可改参数：</strong></p>
 <table>
 <thead>
@@ -430,18 +430,18 @@
 </tbody>
 </table>
 <p><strong>h2 的特殊样式解释：</strong></p>
-<div><pre><span>#</span><span>postBody</span> <span>h2</span> {
-  <span>border-left</span><span>:</span> <span>var</span>(<span>--th-h2-bl</span>);   <span>/* 左边彩色竖条 */</span>
-  <span>background</span><span>:</span> <span>var</span>(<span>--th-h2-bg</span>);    <span>/* 淡色背景 */</span>
-  <span>padding</span><span>:</span> <span>5<span>px</span></span> <span>12<span>px</span></span>;              <span>/* 内边距 */</span>
-  <span>border-radius</span><span>:</span> <span>0</span> <span>8<span>px</span></span> <span>8<span>px</span></span> <span>0</span>;    <span>/* 右侧圆角 */</span>
-}</pre></div>
+<div><pre><span>#</span><span>postBody</span> <span>h2</span> <span>{</span>
+  <span>border-left</span><span>:</span> <span>var</span><span>(</span><span>--th-h2-bl</span><span>)</span><span>;</span>   <span>/* 左边彩色竖条 */</span>
+  <span>background</span><span>:</span> <span>var</span><span>(</span><span>--th-h2-bg</span><span>)</span><span>;</span>    <span>/* 淡色背景 */</span>
+  <span>padding</span><span>:</span> <span>5<span>px</span></span> <span>12<span>px</span></span><span>;</span>              <span>/* 内边距 */</span>
+  <span>border-radius</span><span>:</span> <span>0</span> <span>8<span>px</span></span> <span>8<span>px</span></span> <span>0</span><span>;</span>    <span>/* 右侧圆角 */</span>
+<span>}</span></pre></div>
 <p>这就是为什么 h2 标题有”竖线+淡色背景”效果。</p>
 <hr>
 <h2 id="heading-16">2.6 第 05 节 — 导航栏</h2>
-<div><pre><span>#</span><span>header</span> {
-  <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>32<span>px</span></span>) <span>saturate</span>(<span>2.4</span>) <span>brightness</span>(<span>1.08</span>);
-}</pre></div>
+<div><pre><span>#</span><span>header</span> <span>{</span>
+  <span>backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>32<span>px</span></span><span>)</span> <span>saturate</span><span>(</span><span>2.4</span><span>)</span> <span>brightness</span><span>(</span><span>1.08</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>毛玻璃效果三个参数：</strong></p>
 <table>
 <thead>
@@ -473,24 +473,24 @@
 </tr>
 </tbody>
 </table>
-<div><pre><span>#</span><span>header</span> {
-  <span>min-height</span><span>:</span> <span>56<span>px</span></span>;
-}</pre></div>
+<div><pre><span>#</span><span>header</span> <span>{</span>
+  <span>min-height</span><span>:</span> <span>56<span>px</span></span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>导航栏高度：</strong> 改成 <code>64px</code> 可以让导航栏更高。同时要在 JS 的 <code>initArticleTocSpy()</code> 里把 <code>110</code> 改成对应值，确保 TOC 高亮判断正确。</p>
 <hr>
 <h2 id="heading-17">2.7 第 12 节 — 文章面板（4 个主题）</h2>
 <p>这是最核心的视觉部分。4 个主题的文章背景：</p>
 <div><pre><span>/* 默认主题：无背景框 */</span>
-<span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;default&quot;</span>] <span>#</span><span>postBody</span> {
-  <span>background</span><span>:</span> transparent <span>!important</span>;
-}
+<span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;default&quot;</span>] <span>#</span><span>postBody</span> <span>{</span>
+  <span>background</span><span>:</span> transparent <span>!important</span><span>;</span>
+<span>}</span>
 
 <span>/* 樱花主题：粉色毛玻璃 */</span>
-<span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>#</span><span>postBody</span> {
-  <span>background</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>238</span><span>,</span><span>245</span><span>,</span><span>0.84</span>) <span>!important</span>;
-  <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>26<span>px</span></span>) <span>saturate</span>(<span>1.6</span>) <span>!important</span>;
-  <span>border</span><span>:</span> <span>1<span>px</span></span> solid <span>rgba</span>(<span>249</span><span>,</span><span>168</span><span>,</span><span>201</span><span>,</span><span>0.50</span>) <span>!important</span>;
-}</pre></div>
+<span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>#</span><span>postBody</span> <span>{</span>
+  <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span><span>238</span><span>,</span><span>245</span><span>,</span><span>0.84</span><span>)</span> <span>!important</span><span>;</span>
+  <span>backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>26<span>px</span></span><span>)</span> <span>saturate</span><span>(</span><span>1.6</span><span>)</span> <span>!important</span><span>;</span>
+  <span>border</span><span>:</span> <span>1<span>px</span></span> solid <span>rgba</span><span>(</span><span>249</span><span>,</span><span>168</span><span>,</span><span>201</span><span>,</span><span>0.50</span><span>)</span> <span>!important</span><span>;</span>
+<span>}</span></pre></div>
 <p><strong><code>rgba(r, g, b, 透明度)</code>：</strong></p>
 <ul>
 <li>r/g/b = 0~255 的红/绿/蓝分量</li>
@@ -498,37 +498,37 @@
 <li><code>rgba(255,238,245,0.84)<span></span></code> = 粉白色，84% 不透明</li>
 </ul>
 <p><strong>自定义主题背景的方法：</strong> 比如要改樱花主题的背景色，更偏紫色：</p>
-<div><pre><span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>#</span><span>postBody</span> {
-  <span>background</span><span>:</span> <span>rgba</span>(<span>250</span><span>,</span><span>235</span><span>,</span><span>255</span><span>,</span><span>0.82</span>) <span>!important</span>;  <span>/* 改这里 */</span>
-}</pre></div>
+<div><pre><span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>#</span><span>postBody</span> <span>{</span>
+  <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>250</span><span>,</span><span>235</span><span>,</span><span>255</span><span>,</span><span>0.82</span><span>)</span> <span>!important</span><span>;</span>  <span>/* 改这里 */</span>
+<span>}</span></pre></div>
 <p><strong><code>box-shadow</code> 阴影解释：</strong></p>
-<div><pre><span>box-shadow</span><span>:</span> <span>0</span> <span>6<span>px</span></span> <span>44<span>px</span></span> <span>rgba</span>(<span>224</span><span>,</span><span>92</span><span>,</span><span>138</span><span>,</span><span>0.16</span>)
+<div><pre><span>box-shadow</span><span>:</span> 0 6px 44px rgba<span>(</span>224<span>,</span>92<span>,</span>138<span>,</span>0.16<span>)</span>
 <span>/*          ↑ ↑   ↑      ↑</span>
 <span>          X Y 模糊   颜色+透明度  */</span></pre></div>
 <hr>
 <h2 id="heading-18">2.8 第 13 节 — macOS 代码块</h2>
-<div><pre>.<span>mac-strip</span> {
-  <span>height</span><span>:</span> <span>36<span>px</span></span>;  <span>/* 代码块顶部条的高度 */</span>
-  <span>padding</span><span>:</span> <span>0</span> <span>14<span>px</span></span>; <span>gap</span><span>:</span> <span>7<span>px</span></span>;  <span>/* 三个圆点按钮间距 */</span>
-}
-.<span>mac-btn</span> {
-  <span>width</span><span>:</span> <span>13<span>px</span></span>; <span>height</span><span>:</span> <span>13<span>px</span></span>;  <span>/* 圆点大小 */</span>
-}
-.<span>mac-btn-red</span>    { <span>background</span><span>:</span> <span><span>#</span>ff5f57</span>; }  <span>/* 红色=复制 */</span>
-.<span>mac-btn-yellow</span> { <span>background</span><span>:</span> <span><span>#</span>ffbd2e</span>; }  <span>/* 黄色=折叠 */</span>
-.<span>mac-btn-green</span>  { <span>background</span><span>:</span> <span><span>#</span>28c840</span>; }  <span>/* 绿色=全屏 */</span></pre></div>
+<div><pre><span>.</span><span>mac-strip</span> <span>{</span>
+  <span>height</span><span>:</span> <span>36<span>px</span></span><span>;</span>  <span>/* 代码块顶部条的高度 */</span>
+  <span>padding</span><span>:</span> <span>0</span> <span>14<span>px</span></span><span>;</span> <span>gap</span><span>:</span> <span>7<span>px</span></span><span>;</span>  <span>/* 三个圆点按钮间距 */</span>
+<span>}</span>
+<span>.</span><span>mac-btn</span> <span>{</span>
+  <span>width</span><span>:</span> <span>13<span>px</span></span><span>;</span> <span>height</span><span>:</span> <span>13<span>px</span></span><span>;</span>  <span>/* 圆点大小 */</span>
+<span>}</span>
+<span>.</span><span>mac-btn-red</span>    <span>{</span> <span>background</span><span>:</span> <span><span>#</span>ff5f57</span><span>;</span> <span>}</span>  <span>/* 红色=复制 */</span>
+<span>.</span><span>mac-btn-yellow</span> <span>{</span> <span>background</span><span>:</span> <span><span>#</span>ffbd2e</span><span>;</span> <span>}</span>  <span>/* 黄色=折叠 */</span>
+<span>.</span><span>mac-btn-green</span>  <span>{</span> <span>background</span><span>:</span> <span><span>#</span>28c840</span><span>;</span> <span>}</span>  <span>/* 绿色=全屏 */</span></pre></div>
 <p><strong>改圆点大小：</strong> 把 <code>13px</code> 改成 <code>11px</code> 或 <code>15px</code>。<br>
 <strong>改顶部条高度：</strong> 修改 <code>height: 36px</code>，同时 <code>enhance.css</code> 里 <code>pre { padding-top: 44px }</code> 也要跟着改（要比条的高度大 8px 左右）。</p>
 <hr>
 <h2 id="heading-19">2.9 第 15 节 — 4 个主题的颜色变量</h2>
-<div><pre><span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
-  <span>--th-h1</span><span>:</span> <span><span>#</span>7a1040</span>;       <span>/* h1 文字颜色 */</span>
-  <span>--th-h1-border</span><span>:</span> <span>2<span>px</span></span> solid <span>rgba</span>(<span>224</span><span>,</span><span>92</span><span>,</span><span>138</span><span>,</span><span>0.35</span>);  <span>/* h1 下划线 */</span>
-  <span>--th-h2</span><span>:</span> <span><span>#</span>c94070</span>;       <span>/* h2 文字颜色 */</span>
-  <span>--th-h2-bl</span><span>:</span> <span>5<span>px</span></span> solid <span><span>#</span>f9a8c9</span>;  <span>/* h2 左边竖线颜色 */</span>
-  <span>--th-h2-bg</span><span>:</span> <span>rgba</span>(<span>249</span><span>,</span><span>168</span><span>,</span><span>201</span><span>,</span><span>0.12</span>);  <span>/* h2 背景色 */</span>
-  <span>--th-strong</span><span>:</span> <span><span>#</span>e05c8a</span>;   <span>/* 加粗文字颜色 */</span>
-}</pre></div>
+<div><pre><span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>{</span>
+  <span>--th-h1</span><span>:</span> <span><span>#</span>7a1040</span><span>;</span>       <span>/* h1 文字颜色 */</span>
+  <span>--th-h1-border</span><span>:</span> <span>2<span>px</span></span> solid <span>rgba</span><span>(</span><span>224</span><span>,</span><span>92</span><span>,</span><span>138</span><span>,</span><span>0.35</span><span>)</span><span>;</span>  <span>/* h1 下划线 */</span>
+  <span>--th-h2</span><span>:</span> <span><span>#</span>c94070</span><span>;</span>       <span>/* h2 文字颜色 */</span>
+  <span>--th-h2-bl</span><span>:</span> <span>5<span>px</span></span> solid <span><span>#</span>f9a8c9</span><span>;</span>  <span>/* h2 左边竖线颜色 */</span>
+  <span>--th-h2-bg</span><span>:</span> <span>rgba</span><span>(</span><span>249</span><span>,</span><span>168</span><span>,</span><span>201</span><span>,</span><span>0.12</span><span>)</span><span>;</span>  <span>/* h2 背景色 */</span>
+  <span>--th-strong</span><span>:</span> <span><span>#</span>e05c8a</span><span>;</span>   <span>/* 加粗文字颜色 */</span>
+<span>}</span></pre></div>
 <p><strong>修改主题颜色的步骤（以调整樱花主题为例）：</strong></p>
 <ol>
 <li>找到 <code>body[data-luliy-theme=&quot;sakura&quot;]</code> 这段</li>
@@ -538,21 +538,21 @@
 </ol>
 <hr>
 <h2 id="heading-20">2.10 第 16 节 — 目录 TOC 高亮</h2>
-<div><pre><span>#</span><span>TOC</span> <span>a</span>.<span>luliy-toc-active</span> {
-  <span>background</span><span>:</span> <span>rgba</span>(<span>130</span><span>,</span><span>80</span><span>,</span><span>223</span><span>,</span><span>0.14</span>) <span>!important</span>;  <span>/* 高亮背景 */</span>
-  <span>color</span><span>:</span> <span><span>#</span>8250df</span> <span>!important</span>;                      <span>/* 高亮文字颜色 */</span>
-  <span>border-left</span><span>:</span> <span>3<span>px</span></span> solid <span><span>#</span>8250df</span>;                <span>/* 左边蓝线 */</span>
-  <span>padding-left</span><span>:</span> <span>14<span>px</span></span> <span>!important</span>;                  <span>/* 缩进 */</span>
-}</pre></div>
+<div><pre><span>#</span><span>TOC</span> <span>a</span><span>.</span><span>luliy-toc-active</span> <span>{</span>
+  <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>130</span><span>,</span><span>80</span><span>,</span><span>223</span><span>,</span><span>0.14</span><span>)</span> <span>!important</span><span>;</span>  <span>/* 高亮背景 */</span>
+  <span>color</span><span>:</span> <span><span>#</span>8250df</span> <span>!important</span><span>;</span>                      <span>/* 高亮文字颜色 */</span>
+  <span>border-left</span><span>:</span> <span>3<span>px</span></span> solid <span><span>#</span>8250df</span><span>;</span>                <span>/* 左边蓝线 */</span>
+  <span>padding-left</span><span>:</span> <span>14<span>px</span></span> <span>!important</span><span>;</span>                  <span>/* 缩进 */</span>
+<span>}</span></pre></div>
 <p><strong>改高亮背景透明度：</strong> 把 <code>0.14</code> 改成 <code>0.25</code> = 更明显的高亮。<br>
 <strong>改高亮颜色：</strong> 把 <code>#8250df<span></span></code> 换成任意颜色，比如 <code>#e05c8a<span></span></code>（粉色）。</p>
 <hr>
 <h2 id="heading-21">2.11 第 17 节 — 浮动工具栏按钮</h2>
-<div><pre>.<span>luliy-tb-btn</span> {
-  <span>width</span><span>:</span> <span>42<span>px</span></span>; <span>height</span><span>:</span> <span>42<span>px</span></span>;   <span>/* 按钮大小 */</span>
-  <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;           <span>/* 圆形 */</span>
-  <span>bottom</span><span>:</span> <span>28<span>px</span></span>; <span>right</span><span>:</span> <span>20<span>px</span></span>;   <span>/* 位置：右下角 */</span>
-}</pre></div>
+<div><pre><span>.</span><span>luliy-tb-btn</span> <span>{</span>
+  <span>width</span><span>:</span> <span>42<span>px</span></span><span>;</span> <span>height</span><span>:</span> <span>42<span>px</span></span><span>;</span>   <span>/* 按钮大小 */</span>
+  <span>border-radius</span><span>:</span> <span>50<span>%</span></span><span>;</span>           <span>/* 圆形 */</span>
+  <span>bottom</span><span>:</span> <span>28<span>px</span></span><span>;</span> <span>right</span><span>:</span> <span>20<span>px</span></span><span>;</span>   <span>/* 位置：右下角 */</span>
+<span>}</span></pre></div>
 <p><strong>改按钮大小：</strong> 把 <code>42px</code> 改成 <code>48px</code> = 更大的按钮。<br>
 <strong>改位置：</strong> 修改 <code>#luliy-toolbar</code> 的 <code>bottom</code> 和 <code>right</code> 值。</p>
 <hr>
@@ -594,9 +594,9 @@
 <div><pre><span>bar</span><span>.</span><span>style</span><span>.</span><span>width</span> <span>=</span> <span>(</span><span>dh</span> <span>&gt;</span> <span>0</span> ? <span>Math</span><span>.</span><span>round</span><span>(</span><span>st</span> <span>/</span> <span>dh</span> <span>*</span> <span>100</span><span>)</span> : <span>0</span><span>)</span> <span>+</span> <span>&#x27;%&#x27;</span><span>;</span></pre></div>
 <p><strong>原理：</strong> <code>st</code>(已滚动距离) ÷ <code>dh</code>(总可滚动距离) × 100 = 百分比。<br>
 <strong>改进度条颜色：</strong> 在 <code>enhance.css</code> 里找：</p>
-<div><pre><span>#</span><span>luliy-progress-bar</span> {
-  <span>background</span><span>:</span> <span>linear-gradient</span>(<span>90<span>deg</span></span><span>,</span> <span><span>#</span>8250df</span><span>,</span> <span><span>#</span>ff6b9d</span><span>,</span> <span><span>#</span>f0b429</span>);
-}</pre></div>
+<div><pre><span>#</span><span>luliy-progress-bar</span> <span>{</span>
+  <span>background</span><span>:</span> <span>linear-gradient</span><span>(</span><span>90<span>deg</span></span><span>,</span> <span><span>#</span>8250df</span><span>,</span> <span><span>#</span>ff6b9d</span><span>,</span> <span><span>#</span>f0b429</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <p>改成你想要的渐变颜色。</p>
 <hr>
 <h2 id="heading-26">3.4 模块 03 — 动态标签页标题 <code>initDynamicTitle()</code></h2>
@@ -707,18 +707,18 @@
 <ol>
 <li>在 <code>enhance.css</code> 的第 15 节末尾添加：</li>
 </ol>
-<div><pre><span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
-  <span>--th-h1</span><span>:</span> <span><span>#</span>003366</span>; <span>--th-h1-border</span><span>:</span> <span>2<span>px</span></span> solid <span>rgba</span>(<span>0</span><span>,</span><span>100</span><span>,</span><span>200</span><span>,</span><span>0.30</span>);
-  <span>--th-h2</span><span>:</span> <span><span>#</span>0066cc</span>; <span>--th-h2-bl</span><span>:</span> <span>5<span>px</span></span> solid <span><span>#</span>00ccff</span>; <span>--th-h2-bg</span><span>:</span> <span>rgba</span>(<span>0</span><span>,</span><span>100</span><span>,</span><span>200</span><span>,</span><span>0.08</span>);
-  <span>--th-h3</span><span>:</span> <span><span>#</span>0080ff</span>; <span>--th-h4</span><span>:</span> <span><span>#</span>4da6ff</span>; <span>--th-strong</span><span>:</span> <span><span>#</span>00ccff</span>;
-}
-<span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;ocean&quot;</span>] <span>#</span><span>postBody</span> {
-  <span>background</span><span>:</span> <span>rgba</span>(<span>230</span><span>,</span><span>240</span><span>,</span><span>255</span><span>,</span><span>0.84</span>) <span>!important</span>;
-  <span>border</span><span>:</span> <span>1<span>px</span></span> solid <span>rgba</span>(<span>0</span><span>,</span><span>100</span><span>,</span><span>200</span><span>,</span><span>0.25</span>) <span>!important</span>;
-  <span>border-top</span><span>:</span> <span>3<span>px</span></span> solid <span>rgba</span>(<span>0</span><span>,</span><span>150</span><span>,</span><span>255</span><span>,</span><span>0.65</span>) <span>!important</span>;
-  <span>border-radius</span><span>:</span> <span>20<span>px</span></span> <span>!important</span>;
-  <span>padding</span><span>:</span> <span>36<span>px</span></span> <span>40<span>px</span></span> <span>!important</span>;
-}</pre></div>
+<div><pre><span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;ocean&quot;</span>] <span>{</span>
+  <span>--th-h1</span><span>:</span> <span><span>#</span>003366</span><span>;</span> <span>--th-h1-border</span><span>:</span> <span>2<span>px</span></span> solid <span>rgba</span><span>(</span><span>0</span><span>,</span><span>100</span><span>,</span><span>200</span><span>,</span><span>0.30</span><span>)</span><span>;</span>
+  <span>--th-h2</span><span>:</span> <span><span>#</span>0066cc</span><span>;</span> <span>--th-h2-bl</span><span>:</span> <span>5<span>px</span></span> solid <span><span>#</span>00ccff</span><span>;</span> <span>--th-h2-bg</span><span>:</span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>100</span><span>,</span><span>200</span><span>,</span><span>0.08</span><span>)</span><span>;</span>
+  <span>--th-h3</span><span>:</span> <span><span>#</span>0080ff</span><span>;</span> <span>--th-h4</span><span>:</span> <span><span>#</span>4da6ff</span><span>;</span> <span>--th-strong</span><span>:</span> <span><span>#</span>00ccff</span><span>;</span>
+<span>}</span>
+<span>body</span>[<span>data-luliy-theme</span><span>=</span><span>&quot;ocean&quot;</span>] <span>#</span><span>postBody</span> <span>{</span>
+  <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>230</span><span>,</span><span>240</span><span>,</span><span>255</span><span>,</span><span>0.84</span><span>)</span> <span>!important</span><span>;</span>
+  <span>border</span><span>:</span> <span>1<span>px</span></span> solid <span>rgba</span><span>(</span><span>0</span><span>,</span><span>100</span><span>,</span><span>200</span><span>,</span><span>0.25</span><span>)</span> <span>!important</span><span>;</span>
+  <span>border-top</span><span>:</span> <span>3<span>px</span></span> solid <span>rgba</span><span>(</span><span>0</span><span>,</span><span>150</span><span>,</span><span>255</span><span>,</span><span>0.65</span><span>)</span> <span>!important</span><span>;</span>
+  <span>border-radius</span><span>:</span> <span>20<span>px</span></span> <span>!important</span><span>;</span>
+  <span>padding</span><span>:</span> <span>36<span>px</span></span> <span>40<span>px</span></span> <span>!important</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-33">3.11 模块 14 — 首页文章卡片重建 <code>initCards()</code></h2>
 <div><pre><span>var</span> <span>perPage</span> <span>=</span> <span>12</span><span>;</span>  <span>// 每页文章数（和 config.json 的 onePageListNum 保持一致）</span></pre></div>
@@ -1060,10 +1060,10 @@
 <li>在 <code>enhance.css</code> 里找到对应选择器，在下方加一条夜间覆盖：</li>
 </ol>
 <div><pre><span>/* 假设你找到了这条规则 */</span>
-.某个选择器 { col<span>or</span><span>:</span> <span>#</span>333; }
+<span>.</span>某个选择器 <span>{</span> col<span>or</span><span>:</span> <span>#</span>333<span>;</span> <span>}</span>
 
 <span>/* 在下面补上夜间覆盖 */</span>
-[<span>data-color-mode</span><span>=</span><span>&quot;dark&quot;</span>] .某个选择器 { <span>color</span><span>:</span> <span><span>#</span>e0e0e0</span> <span>!important</span>; }</pre></div>
+[<span>data-color-mode</span><span>=</span><span>&quot;dark&quot;</span>] <span>.</span>某个选择器 <span>{</span> <span>color</span><span>:</span> <span><span>#</span>e0e0e0</span> <span>!important</span><span>;</span> <span>}</span></pre></div>
 <hr>
 <h3 id="heading-70">❌ 问题：enhance.css 没有生效，样式看起来是旧版的</h3>
 <p><strong>可能原因及解决方案：</strong></p>
@@ -1098,16 +1098,16 @@
 <p><strong>原因：</strong> 手机屏幕宽度不够，<code>.title-right</code> 里的元素太多。</p>
 <p><strong>已有的解决方案：</strong> 当屏幕宽度 ≤ 768px 时，CSS 会自动隐藏 <code>.title-right</code>，显示汉堡菜单按钮（三条横线）。如果还是看不全，可能是 <code>768px</code> 这个断点需要调大：</p>
 <div><pre><span>/* enhance.css 第 26 节，找到这一行 */</span>
-<span>@media</span> (<span>max-width</span><span>:</span> <span>768<span>px</span></span>) {
+<span>@media</span> <span>(</span><span>max-width</span><span>:</span> <span>768<span>px</span></span><span>)</span> <span>{</span>
 <span>/* 改成 */</span>
-<span>@media</span> (<span>max-width</span><span>:</span> <span>900<span>px</span></span>) {  <span>/* 适用于平板横屏 */</span></pre></div>
+<span>@media</span> <span>(</span><span>max-width</span><span>:</span> <span>900<span>px</span></span><span>)</span> <span>{</span>  <span>/* 适用于平板横屏 */</span></pre></div>
 <hr>
 <h3 id="heading-72">❌ 问题：文章正文与导航栏重叠（文章顶部被遮住了）</h3>
 <p><strong>原因：</strong> 文章页的 <code>margin-top</code> 不够，被固定定位的导航栏（56px 高）盖住了。</p>
 <p><strong>解决方案：</strong> 确认 <code>enhance.js</code> 的 <code>_luliyInitPost</code> 里有执行：</p>
 <div><pre><span>document</span><span>.</span><span>body</span><span>.</span><span>classList</span><span>.</span><span>add</span><span>(</span><span>&#x27;luliy-post-page&#x27;</span><span>)</span><span>;</span></pre></div>
 <p>并且 <code>enhance.css</code> 里有：</p>
-<div><pre><span>body</span>.<span>luliy-post-page</span> <span>#</span><span>content</span> { <span>margin-top</span><span>:</span> <span>72<span>px</span></span> <span>!important</span>; }</pre></div>
+<div><pre><span>body</span><span>.</span><span>luliy-post-page</span> <span>#</span><span>content</span> <span>{</span> <span>margin-top</span><span>:</span> <span>72<span>px</span></span> <span>!important</span><span>;</span> <span>}</span></pre></div>
 <p>如果导航栏改高了（比如改成 64px），这里的 <code>72px</code> 也要对应增大（<code>64 + 16 = 80px</code>）。</p>
 <hr>
 <h3 id="heading-73">❌ 问题：欢迎画面背景图不显示（一片黑）</h3>
@@ -1164,13 +1164,13 @@ https://raw.githubusercontent.com/luliy6/luliy6.github.io/refs/heads/main/static
 <p><strong>原因：</strong> 目录锚点跳转没有考虑固定导航栏的高度（56px），导致标题被遮住。</p>
 <p><strong>解决方案（加入 enhance.css）：</strong></p>
 <div><pre><span>/* 让所有带 id 的标题，向上预留 72px 的空白，防止被导航栏遮住 */</span>
-<span>#</span><span>postBody</span> [<span>id</span>]::<span>before</span> {
-  <span>content</span><span>:</span> <span>&#x27;&#x27;</span>;
-  <span>display</span><span>:</span> block;
-  <span>height</span><span>:</span> <span>72<span>px</span></span>;
-  <span>margin-top</span><span>:</span> <span>-72<span>px</span></span>;
-  <span>pointer-events</span><span>:</span> none;
-}</pre></div>
+<span>#</span><span>postBody</span> [<span>id</span>]<span>::</span><span>before</span> <span>{</span>
+  <span>content</span><span>:</span> <span>&#x27;&#x27;</span><span>;</span>
+  <span>display</span><span>:</span> block<span>;</span>
+  <span>height</span><span>:</span> <span>72<span>px</span></span><span>;</span>
+  <span>margin-top</span><span>:</span> <span>-72<span>px</span></span><span>;</span>
+  <span>pointer-events</span><span>:</span> none<span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-80">❌ 问题：点击音效在 iOS Safari 上没有声音</h3>
 <p><strong>原因：</strong> iOS 强制要求音频必须由用户的直接手势触发，<code>click</code> 事件里的 <code>AudioContext</code> 在某些情况下会被阻止。</p>
@@ -1332,96 +1332,96 @@ git push</pre></div>
 <hr>
 <h2 id="heading-93">9.1 [CSS] 给文章加”打印友好”样式</h2>
 <p>粘贴到 <code>enhance.css</code> 末尾：</p>
-<div><pre><span>@media</span> print {
+<div><pre><span>@media</span> print <span>{</span>
   <span>#</span><span>header</span><span>,</span> <span>#</span><span>luliy-toolbar</span><span>,</span> <span>#</span><span>luliy-back-top</span><span>,</span> 
-  <span>#</span><span>luliy-sakura-canvas</span><span>,</span> .<span>luliy-prevnext</span><span>,</span>
-  .<span>luliy-tb-btn</span><span>,</span> <span>#</span><span>luliy-progress-bar</span> { <span>display</span><span>:</span> none <span>!important</span>; }
-  <span>body</span> { <span>background</span><span>:</span> white <span>!important</span>; <span>background-image</span><span>:</span> none <span>!important</span>; }
-  <span>#</span><span>postBody</span> { 
-    <span>backdrop-filter</span><span>:</span> none <span>!important</span>; 
-    <span>background</span><span>:</span> white <span>!important</span>;
-    <span>border</span><span>:</span> none <span>!important</span>;
-    <span>box-shadow</span><span>:</span> none <span>!important</span>;
-  }
-  <span>a</span>[<span>href</span>]::<span>after</span> { <span>content</span><span>:</span> <span>&quot; (&quot;</span> <span>attr</span>(href) <span>&quot;)&quot;</span>; <span>font-size</span><span>:</span> <span>0.8<span>em</span></span>; <span>color</span><span>:</span> <span><span>#</span>666</span>; }
-}</pre></div>
+  <span>#</span><span>luliy-sakura-canvas</span><span>,</span> <span>.</span><span>luliy-prevnext</span><span>,</span>
+  <span>.</span><span>luliy-tb-btn</span><span>,</span> <span>#</span><span>luliy-progress-bar</span> <span>{</span> <span>display</span><span>:</span> none <span>!important</span><span>;</span> <span>}</span>
+  <span>body</span> <span>{</span> <span>background</span><span>:</span> white <span>!important</span><span>;</span> <span>background-image</span><span>:</span> none <span>!important</span><span>;</span> <span>}</span>
+  <span>#</span><span>postBody</span> <span>{</span> 
+    <span>backdrop-filter</span><span>:</span> none <span>!important</span><span>;</span> 
+    <span>background</span><span>:</span> white <span>!important</span><span>;</span>
+    <span>border</span><span>:</span> none <span>!important</span><span>;</span>
+    <span>box-shadow</span><span>:</span> none <span>!important</span><span>;</span>
+  <span>}</span>
+  <span>a</span>[<span>href</span>]<span>::</span><span>after</span> <span>{</span> <span>content</span><span>:</span> <span>&quot; (&quot;</span> <span>attr</span><span>(</span>href<span>)</span> <span>&quot;)&quot;</span><span>;</span> <span>font-size</span><span>:</span> <span>0.8<span>em</span></span><span>;</span> <span>color</span><span>:</span> <span><span>#</span>666</span><span>;</span> <span>}</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-94">9.2 [CSS] 文章里的引用块加左侧装饰线变体（橙色警告风格）</h2>
 <p>粘贴到 <code>enhance.css</code> 里 <code>#postBody blockquote</code> 规则的<strong>后面</strong>：</p>
 <div><pre><span>/* 在引用块第一行加 ⚠️ 前缀的特殊样式 */</span>
-<span>#</span><span>postBody</span> <span>blockquote</span><span>:</span><span>has</span>(<span>strong</span><span>:</span><span>first-child</span>)<span>,</span>
-<span>#</span><span>postBody</span> <span>blockquote</span>.<span>warning</span> {
-  <span>border-left-color</span><span>:</span> <span><span>#</span>f0b429</span> <span>!important</span>;
-  <span>background</span><span>:</span> <span>rgba</span>(<span>240</span><span>,</span><span>180</span><span>,</span><span>41</span><span>,</span><span>0.07</span>) <span>!important</span>;
-}
-<span>#</span><span>postBody</span> <span>blockquote</span><span>:</span><span>has</span>(<span>strong</span><span>:</span><span>first-child</span>) <span>strong</span><span>:</span><span>first-child</span>::<span>before</span> {
-  <span>content</span><span>:</span> <span>&#x27;⚠️ &#x27;</span>;
-}</pre></div>
+<span>#</span><span>postBody</span> <span>blockquote</span><span>:</span><span>has</span><span>(</span><span>strong</span><span>:</span><span>first-child</span><span>)</span><span>,</span>
+<span>#</span><span>postBody</span> <span>blockquote</span><span>.</span><span>warning</span> <span>{</span>
+  <span>border-left-color</span><span>:</span> <span><span>#</span>f0b429</span> <span>!important</span><span>;</span>
+  <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>240</span><span>,</span><span>180</span><span>,</span><span>41</span><span>,</span><span>0.07</span><span>)</span> <span>!important</span><span>;</span>
+<span>}</span>
+<span>#</span><span>postBody</span> <span>blockquote</span><span>:</span><span>has</span><span>(</span><span>strong</span><span>:</span><span>first-child</span><span>)</span> <span>strong</span><span>:</span><span>first-child</span><span>::</span><span>before</span> <span>{</span>
+  <span>content</span><span>:</span> <span>&#x27;⚠️ &#x27;</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-95">9.3 [CSS] 文章里的外链显示小图标（区分内外链）</h2>
 <p>粘贴到 <code>enhance.css</code> 里 <code>#postBody a</code> 规则的后面：</p>
 <div><pre><span>/* 覆盖全局的 a[target=&quot;_blank&quot;]::after，让文章里的外链更明显 */</span>
-<span>#</span><span>postBody</span> <span>a</span>[<span>target</span><span>=</span><span>&quot;_blank&quot;</span>]::<span>after</span> {
-  <span>content</span><span>:</span> <span>&#x27; ↗&#x27;</span>;
-  <span>font-size</span><span>:</span> <span>0.72<span>em</span></span>;
-  <span>color</span><span>:</span> <span>rgba</span>(<span>130</span><span>,</span><span>80</span><span>,</span><span>223</span><span>,</span><span>0.60</span>);
-  <span>text-decoration</span><span>:</span> none;
-}</pre></div>
+<span>#</span><span>postBody</span> <span>a</span>[<span>target</span><span>=</span><span>&quot;_blank&quot;</span>]<span>::</span><span>after</span> <span>{</span>
+  <span>content</span><span>:</span> <span>&#x27; ↗&#x27;</span><span>;</span>
+  <span>font-size</span><span>:</span> <span>0.72<span>em</span></span><span>;</span>
+  <span>color</span><span>:</span> <span>rgba</span><span>(</span><span>130</span><span>,</span><span>80</span><span>,</span><span>223</span><span>,</span><span>0.60</span><span>)</span><span>;</span>
+  <span>text-decoration</span><span>:</span> none<span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-96">9.4 [CSS] 平滑的图片悬浮放大效果</h2>
 <p>粘贴到 <code>enhance.css</code> 的 <code>#postBody img</code> 规则后面：</p>
-<div><pre><span>#</span><span>postBody</span> <span>img</span> {
-  <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> ease<span>,</span> box-shadow <span>0.3<span>s</span></span> ease <span>!important</span>;
-}
-<span>#</span><span>postBody</span> <span>img</span><span>:</span><span>hover</span> {
-  <span>transform</span><span>:</span> <span>scale</span>(<span>1.02</span>) <span>!important</span>;
-  <span>box-shadow</span><span>:</span> <span>0</span> <span>12<span>px</span></span> <span>40<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.25</span>) <span>!important</span>;
-}</pre></div>
+<div><pre><span>#</span><span>postBody</span> <span>img</span> <span>{</span>
+  <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> ease<span>,</span> box-shadow <span>0.3<span>s</span></span> ease <span>!important</span><span>;</span>
+<span>}</span>
+<span>#</span><span>postBody</span> <span>img</span><span>:</span><span>hover</span> <span>{</span>
+  <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>1.02</span><span>)</span> <span>!important</span><span>;</span>
+  <span>box-shadow</span><span>:</span> <span>0</span> <span>12<span>px</span></span> <span>40<span>px</span></span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.25</span><span>)</span> <span>!important</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-97">9.5 [CSS] 文章内的有序列表加彩色数字样式</h2>
 <p>粘贴到 <code>enhance.css</code> 末尾：</p>
-<div><pre><span>#</span><span>postBody</span> <span>ol</span> {
-  <span>counter-reset</span><span>:</span> luliy-ol;
-  <span>list-style</span><span>:</span> none;
-  <span>padding-left</span><span>:</span> <span>0</span>;
-}
-<span>#</span><span>postBody</span> <span>ol</span> <span>li</span> {
-  <span>counter-increment</span><span>:</span> luliy-ol;
-  <span>position</span><span>:</span> relative;
-  <span>padding-left</span><span>:</span> <span>2.2<span>em</span></span>;
-  <span>margin-bottom</span><span>:</span> <span>0.5<span>em</span></span>;
-}
-<span>#</span><span>postBody</span> <span>ol</span> <span>li</span>::<span>before</span> {
-  <span>content</span><span>:</span> <span>counter</span>(luliy-ol);
-  <span>position</span><span>:</span> absolute;
-  <span>left</span><span>:</span> <span>0</span>;
-  <span>width</span><span>:</span> <span>1.6<span>em</span></span>; <span>height</span><span>:</span> <span>1.6<span>em</span></span>;
-  <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
-  <span>background</span><span>:</span> <span>var</span>(<span>--th-strong</span><span>,</span> <span><span>#</span>8250df</span>);
-  <span>color</span><span>:</span> <span><span>#</span>fff</span>;
-  <span>font-size</span><span>:</span> <span>12<span>px</span></span>; <span>font-weight</span><span>:</span> <span>700</span>;
-  <span>display</span><span>:</span> flex; <span>align-items</span><span>:</span> center; <span>justify-content</span><span>:</span> center;
-  <span>top</span><span>:</span> <span>3<span>px</span></span>;
-  <span>font-family</span><span>:</span> <span>&#x27;Noto Sans SC&#x27;</span><span>,</span> sans-serif;
-}</pre></div>
+<div><pre><span>#</span><span>postBody</span> <span>ol</span> <span>{</span>
+  <span>counter-reset</span><span>:</span> luliy-ol<span>;</span>
+  <span>list-style</span><span>:</span> none<span>;</span>
+  <span>padding-left</span><span>:</span> <span>0</span><span>;</span>
+<span>}</span>
+<span>#</span><span>postBody</span> <span>ol</span> <span>li</span> <span>{</span>
+  <span>counter-increment</span><span>:</span> luliy-ol<span>;</span>
+  <span>position</span><span>:</span> relative<span>;</span>
+  <span>padding-left</span><span>:</span> <span>2.2<span>em</span></span><span>;</span>
+  <span>margin-bottom</span><span>:</span> <span>0.5<span>em</span></span><span>;</span>
+<span>}</span>
+<span>#</span><span>postBody</span> <span>ol</span> <span>li</span><span>::</span><span>before</span> <span>{</span>
+  <span>content</span><span>:</span> <span>counter</span><span>(</span>luliy-ol<span>)</span><span>;</span>
+  <span>position</span><span>:</span> absolute<span>;</span>
+  <span>left</span><span>:</span> <span>0</span><span>;</span>
+  <span>width</span><span>:</span> <span>1.6<span>em</span></span><span>;</span> <span>height</span><span>:</span> <span>1.6<span>em</span></span><span>;</span>
+  <span>border-radius</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+  <span>background</span><span>:</span> <span>var</span><span>(</span><span>--th-strong</span><span>,</span> <span><span>#</span>8250df</span><span>)</span><span>;</span>
+  <span>color</span><span>:</span> <span><span>#</span>fff</span><span>;</span>
+  <span>font-size</span><span>:</span> <span>12<span>px</span></span><span>;</span> <span>font-weight</span><span>:</span> <span>700</span><span>;</span>
+  <span>display</span><span>:</span> flex<span>;</span> <span>align-items</span><span>:</span> center<span>;</span> <span>justify-content</span><span>:</span> center<span>;</span>
+  <span>top</span><span>:</span> <span>3<span>px</span></span><span>;</span>
+  <span>font-family</span><span>:</span> <span>&#x27;Noto Sans SC&#x27;</span><span>,</span> sans-serif<span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-98">9.6 [CSS] 首页的卡片网格改为两列（平板专用）</h2>
 <p>粘贴到 <code>enhance.css</code> 第 26 节的响应式媒体查询里：</p>
-<div><pre><span>@media</span> (<span>min-width</span><span>:</span> <span>600<span>px</span></span>) <span>and</span> (<span>max-width</span><span>:</span> <span>900<span>px</span></span>) {
-  .<span>luliy-card-grid</span> {
-    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(<span>2</span><span>,</span> <span>1<span>fr</span></span>) <span>!important</span>;
-  }
-}</pre></div>
+<div><pre><span>@media</span> <span>(</span><span>min-width</span><span>:</span> <span>600<span>px</span></span><span>)</span> <span>and</span> <span>(</span><span>max-width</span><span>:</span> <span>900<span>px</span></span><span>)</span> <span>{</span>
+  <span>.</span><span>luliy-card-grid</span> <span>{</span>
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span><span>2</span><span>,</span> <span>1<span>fr</span></span><span>)</span> <span>!important</span><span>;</span>
+  <span>}</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-99">9.7 [CSS] 夜间模式下给代码块加彩色行号</h2>
 <p>粘贴到 <code>enhance.css</code> 末尾：</p>
 <div><pre><span>/* 需要 Prism.js 的 line-numbers 插件，如果没开启这段不会生效 */</span>
-[<span>data-color-mode</span><span>=</span><span>&quot;dark&quot;</span>] .<span>line-numbers</span> .<span>line-numbers-rows</span> {
-  <span>border-right</span><span>:</span> <span>1<span>px</span></span> solid <span>rgba</span>(<span>130</span><span>,</span><span>80</span><span>,</span><span>223</span><span>,</span><span>0.30</span>) <span>!important</span>;
-}
-[<span>data-color-mode</span><span>=</span><span>&quot;dark&quot;</span>] .<span>line-numbers-rows</span> <span>&gt;</span> <span>span</span>::<span>before</span> {
-  <span>color</span><span>:</span> <span>rgba</span>(<span>130</span><span>,</span><span>80</span><span>,</span><span>223</span><span>,</span><span>0.45</span>) <span>!important</span>;
-}</pre></div>
+[<span>data-color-mode</span><span>=</span><span>&quot;dark&quot;</span>] <span>.</span><span>line-numbers</span> <span>.</span><span>line-numbers-rows</span> <span>{</span>
+  <span>border-right</span><span>:</span> <span>1<span>px</span></span> solid <span>rgba</span><span>(</span><span>130</span><span>,</span><span>80</span><span>,</span><span>223</span><span>,</span><span>0.30</span><span>)</span> <span>!important</span><span>;</span>
+<span>}</span>
+[<span>data-color-mode</span><span>=</span><span>&quot;dark&quot;</span>] <span>.</span><span>line-numbers-rows</span> <span>&gt;</span> <span>span</span><span>::</span><span>before</span> <span>{</span>
+  <span>color</span><span>:</span> <span>rgba</span><span>(</span><span>130</span><span>,</span><span>80</span><span>,</span><span>223</span><span>,</span><span>0.45</span><span>)</span> <span>!important</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h2 id="heading-100">9.8 [JS] 让首页横幅文字随机从列表里选一句</h2>
 <p>在 <code>enhance.js</code> 的 <code>initHeroBanner()</code> 函数里，把：</p>

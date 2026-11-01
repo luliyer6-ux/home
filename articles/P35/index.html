@@ -584,16 +584,16 @@ enhance.css  →  样式层（主题变量 / 布局 / 过渡动画）
 <h2 id="heading-32">5. CSS 主题系统</h2>
 <p><code>enhance.css</code> 通过 CSS 变量 + <code>[data-luliy-theme]</code> 属性选择器实现 6 套主题：</p>
 <div><pre><span>/* 每个主题定义自己的颜色组 */</span>
-[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
-  <span>--accent</span><span>:</span> <span><span>#</span>e05c8a</span>;
-  <span>--accent-light</span><span>:</span> <span><span>#</span>f9a8c9</span>;
-  <span>--card-border</span><span>:</span> <span>rgba</span>(<span>224</span><span>,</span> <span>92</span><span>,</span> <span>138</span><span>,</span> <span>0.18</span>);
+[<span>data-luliy-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>{</span>
+  <span>--accent</span><span>:</span> <span><span>#</span>e05c8a</span><span>;</span>
+  <span>--accent-light</span><span>:</span> <span><span>#</span>f9a8c9</span><span>;</span>
+  <span>--card-border</span><span>:</span> <span>rgba</span><span>(</span><span>224</span><span>,</span> <span>92</span><span>,</span> <span>138</span><span>,</span> <span>0.18</span><span>)</span><span>;</span>
   <span>/* ... */</span>
-}</pre></div>
+<span>}</span></pre></div>
 <p>同时 JS 更新 4 个卡片渐变变量：</p>
 <div><pre>--card-c1 <span>/</span> <span>-</span><span>-</span>card<span>-</span>c2 <span>/</span> <span>-</span><span>-</span>card<span>-</span>c3 <span>/</span> <span>-</span><span>-</span>card<span>-</span>c4</pre></div>
 <p>卡片渐变写法：</p>
-<div><pre>.<span>luliy-card</span><span>:</span><span>nth-child</span>(4n+1) { <span>background</span><span>:</span> <span>linear-gradient</span>(<span>135<span>deg</span></span><span>,</span> <span>var</span>(<span>--card-c1</span>)<span>,</span> <span>var</span>(<span>--card-c2</span>)); }</pre></div>
+<div><pre><span>.</span><span>luliy-card</span><span>:</span><span>nth-child</span><span>(</span>4n+1<span>)</span> <span>{</span> <span>background</span><span>:</span> <span>linear-gradient</span><span>(</span><span>135<span>deg</span></span><span>,</span> <span>var</span><span>(</span><span>--card-c1</span><span>)</span><span>,</span> <span>var</span><span>(</span><span>--card-c2</span><span>)</span><span>)</span><span>;</span> <span>}</span></pre></div>
 <hr>
 <h2 id="heading-33">6. 性能设计说明</h2>
 <table>

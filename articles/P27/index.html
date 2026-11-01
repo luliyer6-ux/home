@@ -259,10 +259,10 @@
 </table>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加自定义纹理 */</span>
-[<span>data-theme</span><span>=</span><span>&quot;custom&quot;</span>] {
-    <span>--bg-gradient</span><span>:</span> <span>linear-gradient</span>(<span>135<span>deg</span></span><span>,</span> <span><span>#</span>667eea</span> <span>0<span>%</span></span><span>,</span> <span><span>#</span>764ba2</span> <span>100<span>%</span></span>);
-    <span>--bg-texture</span><span>:</span> <span>url</span>(<span>&quot;data:image/svg+xml,%3Csvg width=&#x27;60&#x27; height=&#x27;60&#x27;...&quot;</span>); <span>/* 内联 SVG */</span>
-}</pre></div>
+[<span>data-theme</span><span>=</span><span>&quot;custom&quot;</span>] <span>{</span>
+    <span>--bg-gradient</span><span>:</span> <span>linear-gradient</span><span>(</span><span>135<span>deg</span></span><span>,</span> <span><span>#</span>667eea</span> <span>0<span>%</span></span><span>,</span> <span><span>#</span>764ba2</span> <span>100<span>%</span></span><span>)</span><span>;</span>
+    <span>--bg-texture</span><span>:</span> <span>url</span><span>(</span><span>&quot;data:image/svg+xml,%3Csvg width=&#x27;60&#x27; height=&#x27;60&#x27;...&quot;</span><span>)</span><span>;</span> <span>/* 内联 SVG */</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-11"><code>Module 07</code> — Web Audio SFX 音效系统</h3>
 <div><pre><span>// 功能：全站交互音效，基于 Web Audio API（非 HTML5 Audio）</span>
@@ -948,49 +948,49 @@
 <h2 id="heading-28">三、CSS 区域详解</h2>
 <h3 id="heading-29"><code>Section 00</code> — Font Imports 字体导入</h3>
 <div><pre><span>/* 当前加载 */</span>
-<span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&amp;family=JetBrains+Mono&amp;display=swap&#x27;</span>);
+<span>@import</span> <span>url</span><span>(</span><span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&amp;family=JetBrains+Mono&amp;display=swap&#x27;</span><span>)</span><span>;</span>
 
 <span>/* 建议添加 */</span>
-<span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap&#x27;</span>); <span>/* 无衬线正文 */</span></pre></div>
+<span>@import</span> <span>url</span><span>(</span><span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap&#x27;</span><span>)</span><span>;</span> <span>/* 无衬线正文 */</span></pre></div>
 <hr>
 <h3 id="heading-30"><code>Section 01</code> — CSS Variables + Reset 变量与重置</h3>
-<div><pre><span>:</span><span>root</span> {
+<div><pre><span>:</span><span>root</span> <span>{</span>
     <span>/* 核心变量 */</span>
-    <span>--font-serif</span><span>:</span> <span>&#x27;Noto Serif SC&#x27;</span><span>,</span> serif;
-    <span>--font-sans</span><span>:</span> <span>&#x27;Noto Sans SC&#x27;</span><span>,</span> sans-serif;
-    <span>--font-mono</span><span>:</span> <span>&#x27;JetBrains Mono&#x27;</span><span>,</span> monospace;
+    <span>--font-serif</span><span>:</span> <span>&#x27;Noto Serif SC&#x27;</span><span>,</span> serif<span>;</span>
+    <span>--font-sans</span><span>:</span> <span>&#x27;Noto Sans SC&#x27;</span><span>,</span> sans-serif<span>;</span>
+    <span>--font-mono</span><span>:</span> <span>&#x27;JetBrains Mono&#x27;</span><span>,</span> monospace<span>;</span>
     
     <span>/* 动态主题变量（由 JS 切换） */</span>
-    <span>--bg-primary</span><span>:</span> <span><span>#</span>faf7f5</span>;
-    <span>--bg-secondary</span><span>:</span> <span><span>#</span>f0ebe7</span>;
-    <span>--text-primary</span><span>:</span> <span><span>#</span>2c2420</span>;
-    <span>--text-secondary</span><span>:</span> <span><span>#</span>6b5e55</span>;
-    <span>--accent</span><span>:</span> <span><span>#</span>e8919c</span>;        <span>/* 主题色 */</span>
-    <span>--accent-hover</span><span>:</span> <span><span>#</span>d67a85</span>;  <span>/* 悬停态 */</span>
-    <span>--glass-bg</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.7</span>);
-    <span>--glass-border</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.3</span>);
+    <span>--bg-primary</span><span>:</span> <span><span>#</span>faf7f5</span><span>;</span>
+    <span>--bg-secondary</span><span>:</span> <span><span>#</span>f0ebe7</span><span>;</span>
+    <span>--text-primary</span><span>:</span> <span><span>#</span>2c2420</span><span>;</span>
+    <span>--text-secondary</span><span>:</span> <span><span>#</span>6b5e55</span><span>;</span>
+    <span>--accent</span><span>:</span> <span><span>#</span>e8919c</span><span>;</span>        <span>/* 主题色 */</span>
+    <span>--accent-hover</span><span>:</span> <span><span>#</span>d67a85</span><span>;</span>  <span>/* 悬停态 */</span>
+    <span>--glass-bg</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.7</span><span>)</span><span>;</span>
+    <span>--glass-border</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.3</span><span>)</span><span>;</span>
     
     <span>/* 间距系统 */</span>
-    <span>--space-xs</span><span>:</span> <span>0.25<span>rem</span></span>;   <span>/* 4px */</span>
-    <span>--space-sm</span><span>:</span> <span>0.5<span>rem</span></span>;    <span>/* 8px */</span>
-    <span>--space-md</span><span>:</span> <span>1<span>rem</span></span>;      <span>/* 16px */</span>
-    <span>--space-lg</span><span>:</span> <span>1.5<span>rem</span></span>;    <span>/* 24px */</span>
-    <span>--space-xl</span><span>:</span> <span>2<span>rem</span></span>;      <span>/* 32px */</span>
-    <span>--space-2xl</span><span>:</span> <span>3<span>rem</span></span>;     <span>/* 48px */</span>
+    <span>--space-xs</span><span>:</span> <span>0.25<span>rem</span></span><span>;</span>   <span>/* 4px */</span>
+    <span>--space-sm</span><span>:</span> <span>0.5<span>rem</span></span><span>;</span>    <span>/* 8px */</span>
+    <span>--space-md</span><span>:</span> <span>1<span>rem</span></span><span>;</span>      <span>/* 16px */</span>
+    <span>--space-lg</span><span>:</span> <span>1.5<span>rem</span></span><span>;</span>    <span>/* 24px */</span>
+    <span>--space-xl</span><span>:</span> <span>2<span>rem</span></span><span>;</span>      <span>/* 32px */</span>
+    <span>--space-2xl</span><span>:</span> <span>3<span>rem</span></span><span>;</span>     <span>/* 48px */</span>
     
     <span>/* 圆角系统 */</span>
-    <span>--radius-sm</span><span>:</span> <span>4<span>px</span></span>;
-    <span>--radius-md</span><span>:</span> <span>8<span>px</span></span>;
-    <span>--radius-lg</span><span>:</span> <span>12<span>px</span></span>;
-    <span>--radius-xl</span><span>:</span> <span>16<span>px</span></span>;
-    <span>--radius-full</span><span>:</span> <span>9999<span>px</span></span>;
+    <span>--radius-sm</span><span>:</span> <span>4<span>px</span></span><span>;</span>
+    <span>--radius-md</span><span>:</span> <span>8<span>px</span></span><span>;</span>
+    <span>--radius-lg</span><span>:</span> <span>12<span>px</span></span><span>;</span>
+    <span>--radius-xl</span><span>:</span> <span>16<span>px</span></span><span>;</span>
+    <span>--radius-full</span><span>:</span> <span>9999<span>px</span></span><span>;</span>
     
     <span>/* 阴影系统 */</span>
-    <span>--shadow-sm</span><span>:</span> <span>0</span> <span>1<span>px</span></span> <span>2<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.05</span>);
-    <span>--shadow-md</span><span>:</span> <span>0</span> <span>4<span>px</span></span> <span>6<span>px</span></span> <span>-1<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
-    <span>--shadow-lg</span><span>:</span> <span>0</span> <span>10<span>px</span></span> <span>15<span>px</span></span> <span>-3<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
-    <span>--shadow-glow</span><span>:</span> <span>0</span> <span>0</span> <span>20<span>px</span></span> <span>var</span>(<span>--accent-alpha</span>);
-}</pre></div>
+    <span>--shadow-sm</span><span>:</span> <span>0</span> <span>1<span>px</span></span> <span>2<span>px</span></span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.05</span><span>)</span><span>;</span>
+    <span>--shadow-md</span><span>:</span> <span>0</span> <span>4<span>px</span></span> <span>6<span>px</span></span> <span>-1<span>px</span></span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span><span>)</span><span>;</span>
+    <span>--shadow-lg</span><span>:</span> <span>0</span> <span>10<span>px</span></span> <span>15<span>px</span></span> <span>-3<span>px</span></span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span><span>)</span><span>;</span>
+    <span>--shadow-glow</span><span>:</span> <span>0</span> <span>0</span> <span>20<span>px</span></span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-31"><code>Section 02</code> — Welcome Splash Overlay 欢迎闪屏样式</h3>
 <table>
@@ -1022,15 +1022,15 @@
 <hr>
 <h3 id="heading-32"><code>Section 03</code> — Background Image 背景图</h3>
 <div><pre><span>/* 主题背景映射 */</span>
-[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
-    <span>--bg-image</span><span>:</span> <span>url</span>(<span>&#x27;/assets/bg-sakura.jpg&#x27;</span>);
-    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span>(<span>180<span>deg</span></span><span>,</span> <span>rgba</span>(<span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.9</span>) <span>0<span>%</span></span><span>,</span> <span>rgba</span>(<span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.6</span>) <span>100<span>%</span></span>);
-}
+[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>{</span>
+    <span>--bg-image</span><span>:</span> <span>url</span><span>(</span><span>&#x27;/assets/bg-sakura.jpg&#x27;</span><span>)</span><span>;</span>
+    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span><span>(</span><span>180<span>deg</span></span><span>,</span> <span>rgba</span><span>(</span><span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.9</span><span>)</span> <span>0<span>%</span></span><span>,</span> <span>rgba</span><span>(</span><span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.6</span><span>)</span> <span>100<span>%</span></span><span>)</span><span>;</span>
+<span>}</span>
 
-[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
-    <span>--bg-image</span><span>:</span> <span>url</span>(<span>&#x27;/assets/bg-ocean.jpg&#x27;</span>);
-    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span>(<span>180<span>deg</span></span><span>,</span> <span>rgba</span>(<span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.9</span>) <span>0<span>%</span></span><span>,</span> <span>rgba</span>(<span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.6</span>) <span>100<span>%</span></span>);
-}</pre></div>
+[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] <span>{</span>
+    <span>--bg-image</span><span>:</span> <span>url</span><span>(</span><span>&#x27;/assets/bg-ocean.jpg&#x27;</span><span>)</span><span>;</span>
+    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span><span>(</span><span>180<span>deg</span></span><span>,</span> <span>rgba</span><span>(</span><span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.9</span><span>)</span> <span>0<span>%</span></span><span>,</span> <span>rgba</span><span>(</span><span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.6</span><span>)</span> <span>100<span>%</span></span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-33"><code>Section 04</code> — Typography 排版</h3>
 <table>
@@ -1062,67 +1062,67 @@
 <hr>
 <h3 id="heading-34"><code>Section 05</code> — Navbar 导航栏</h3>
 <p><strong>Liquid Glass 效果</strong>：</p>
-<div><pre>.<span>navbar</span> {
-    <span>background</span><span>:</span> <span>var</span>(<span>--glass-bg</span>);
-    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>20<span>px</span></span>) <span>saturate</span>(<span>180<span>%</span></span>);
-    <span>-webkit-backdrop-filter</span><span>:</span> <span>blur</span>(<span>20<span>px</span></span>) <span>saturate</span>(<span>180<span>%</span></span>);
-    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--glass-border</span>);
-}</pre></div>
+<div><pre><span>.</span><span>navbar</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--glass-bg</span><span>)</span><span>;</span>
+    <span>backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>20<span>px</span></span><span>)</span> <span>saturate</span><span>(</span><span>180<span>%</span></span><span>)</span><span>;</span>
+    <span>-webkit-backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>20<span>px</span></span><span>)</span> <span>saturate</span><span>(</span><span>180<span>%</span></span><span>)</span><span>;</span>
+    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span><span>(</span><span>--glass-border</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-35"><code>Section 06-07</code> — Hero 区域</h3>
 <p>见 Module 09-10 说明。</p>
 <hr>
 <h3 id="heading-36"><code>Section 08</code> — Progress Bar 进度条</h3>
-<div><pre>.<span>progress-bar</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>top</span><span>:</span> <span>0</span>;
-    <span>left</span><span>:</span> <span>0</span>;
-    <span>height</span><span>:</span> <span>3<span>px</span></span>;
-    <span>background</span><span>:</span> <span>linear-gradient</span>(<span>90<span>deg</span></span><span>,</span> <span>var</span>(<span>--accent</span>)<span>,</span> <span>var</span>(<span>--accent-hover</span>));
-    <span>z-index</span><span>:</span> <span>9999</span>;
-    <span>transition</span><span>:</span> width <span>0.1<span>s</span></span> linear;
-}</pre></div>
+<div><pre><span>.</span><span>progress-bar</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>top</span><span>:</span> <span>0</span><span>;</span>
+    <span>left</span><span>:</span> <span>0</span><span>;</span>
+    <span>height</span><span>:</span> <span>3<span>px</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>linear-gradient</span><span>(</span><span>90<span>deg</span></span><span>,</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>,</span> <span>var</span><span>(</span><span>--accent-hover</span><span>)</span><span>)</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>9999</span><span>;</span>
+    <span>transition</span><span>:</span> width <span>0.1<span>s</span></span> linear<span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-37"><code>Section 09</code> — Cards 卡片网格</h3>
-<div><pre>.<span>card-grid</span> {
-    <span>display</span><span>:</span> grid;
-    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(auto-fill<span>,</span> <span>minmax</span>(<span>min</span>(<span>100<span>%</span></span><span>,</span> <span>320<span>px</span></span>)<span>,</span> <span>1<span>fr</span></span>));
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-}
+<div><pre><span>.</span><span>card-grid</span> <span>{</span>
+    <span>display</span><span>:</span> grid<span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span>auto-fill<span>,</span> <span>minmax</span><span>(</span><span>min</span><span>(</span><span>100<span>%</span></span><span>,</span> <span>320<span>px</span></span><span>)</span><span>,</span> <span>1<span>fr</span></span><span>)</span><span>)</span><span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 3D 悬停效果 */</span>
-.<span>card</span> {
-    <span>transform-style</span><span>:</span> preserve-3d;
-    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> ease;
-}
-.<span>card</span><span>:</span><span>hover</span> {
-    <span>transform</span><span>:</span> <span>translateY</span>(<span>-4<span>px</span></span>) <span>rotateX</span>(<span>2<span>deg</span></span>) <span>rotateY</span>(<span>-2<span>deg</span></span>);
-}</pre></div>
+<span>.</span><span>card</span> <span>{</span>
+    <span>transform-style</span><span>:</span> preserve-3d<span>;</span>
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> ease<span>;</span>
+<span>}</span>
+<span>.</span><span>card</span><span>:</span><span>hover</span> <span>{</span>
+    <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>-4<span>px</span></span><span>)</span> <span>rotateX</span><span>(</span><span>2<span>deg</span></span><span>)</span> <span>rotateY</span><span>(</span><span>-2<span>deg</span></span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-38"><code>Section 10</code> — Date Badge 日期徽章</h3>
-<div><pre>.<span>date-badge</span> {
-    <span>display</span><span>:</span> inline-flex;
-    <span>align-items</span><span>:</span> center;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
-    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
-    <span>font-variant-numeric</span><span>:</span> tabular-nums;
-}</pre></div>
+<div><pre><span>.</span><span>date-badge</span> <span>{</span>
+    <span>display</span><span>:</span> inline-flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-full</span><span>)</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span><span>;</span>
+    <span>font-variant-numeric</span><span>:</span> tabular-nums<span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-39"><code>Section 11</code> — Pinned Section 置顶区</h3>
-<div><pre>.<span>pinned-section</span> {
-    <span>position</span><span>:</span> relative;
-    <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>border-left</span><span>:</span> <span>3<span>px</span></span> solid <span>var</span>(<span>--accent</span>);
-}
+<div><pre><span>.</span><span>pinned-section</span> <span>{</span>
+    <span>position</span><span>:</span> relative<span>;</span>
+    <span>padding-left</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>border-left</span><span>:</span> <span>3<span>px</span></span> solid <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>pinned-badge</span>::<span>before</span> {
-    <span>content</span><span>:</span> <span>&#x27;📌&#x27;</span>;
-    <span>margin-right</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-}</pre></div>
+<span>.</span><span>pinned-badge</span><span>::</span><span>before</span> <span>{</span>
+    <span>content</span><span>:</span> <span>&#x27;📌&#x27;</span><span>;</span>
+    <span>margin-right</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-40"><code>Section 12</code> — Article Reading Panels 文章阅读面板（4主题）</h3>
 <table>
@@ -1167,79 +1167,79 @@
 <hr>
 <h3 id="heading-42"><code>Section 14</code> — Tables 表格</h3>
 <div><pre><span>/* 响应式表格：小屏横向滚动 */</span>
-.<span>table-wrapper</span> {
-    <span>overflow-x</span><span>:</span> auto;
-    <span>-webkit-overflow-scrolling</span><span>:</span> touch;
-}
+<span>.</span><span>table-wrapper</span> <span>{</span>
+    <span>overflow-x</span><span>:</span> auto<span>;</span>
+    <span>-webkit-overflow-scrolling</span><span>:</span> touch<span>;</span>
+<span>}</span>
 
 <span>/* 斑马纹 */</span>
-.<span>table-row</span><span>:</span><span>nth-child</span>(even) {
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-}</pre></div>
+<span>.</span><span>table-row</span><span>:</span><span>nth-child</span><span>(</span>even<span>)</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-43"><code>Section 15</code> — Article Theme CSS Variables 文章主题变量</h3>
-<div><pre>[<span>data-article-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
-    <span>--article-bg</span><span>:</span> <span><span>#</span>fdfbf7</span>;
-    <span>--article-text</span><span>:</span> <span><span>#</span>3d322b</span>;
-    <span>--article-heading</span><span>:</span> <span><span>#</span>8b4513</span>;
-    <span>--article-link</span><span>:</span> <span><span>#</span>c45c6a</span>;
-    <span>--article-link-hover</span><span>:</span> <span><span>#</span>a03040</span>;
-    <span>--article-quote-border</span><span>:</span> <span><span>#</span>e8919c</span>;
-    <span>--article-code-bg</span><span>:</span> <span><span>#</span>f5f0eb</span>;
-}
+<div><pre>[<span>data-article-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>{</span>
+    <span>--article-bg</span><span>:</span> <span><span>#</span>fdfbf7</span><span>;</span>
+    <span>--article-text</span><span>:</span> <span><span>#</span>3d322b</span><span>;</span>
+    <span>--article-heading</span><span>:</span> <span><span>#</span>8b4513</span><span>;</span>
+    <span>--article-link</span><span>:</span> <span><span>#</span>c45c6a</span><span>;</span>
+    <span>--article-link-hover</span><span>:</span> <span><span>#</span>a03040</span><span>;</span>
+    <span>--article-quote-border</span><span>:</span> <span><span>#</span>e8919c</span><span>;</span>
+    <span>--article-code-bg</span><span>:</span> <span><span>#</span>f5f0eb</span><span>;</span>
+<span>}</span>
 
-[<span>data-article-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
-    <span>--article-bg</span><span>:</span> <span><span>#</span>0f172a</span>;
-    <span>--article-text</span><span>:</span> <span><span>#</span>e2e8f0</span>;
-    <span>--article-heading</span><span>:</span> <span><span>#</span>7dd3fc</span>;
-    <span>--article-link</span><span>:</span> <span><span>#</span>38bdf8</span>;
-    <span>--article-link-hover</span><span>:</span> <span><span>#</span>0ea5e9</span>;
-    <span>--article-quote-border</span><span>:</span> <span><span>#</span>0ea5e9</span>;
-    <span>--article-code-bg</span><span>:</span> <span><span>#</span>1e293b</span>;
-}
+[<span>data-article-theme</span><span>=</span><span>&quot;ocean&quot;</span>] <span>{</span>
+    <span>--article-bg</span><span>:</span> <span><span>#</span>0f172a</span><span>;</span>
+    <span>--article-text</span><span>:</span> <span><span>#</span>e2e8f0</span><span>;</span>
+    <span>--article-heading</span><span>:</span> <span><span>#</span>7dd3fc</span><span>;</span>
+    <span>--article-link</span><span>:</span> <span><span>#</span>38bdf8</span><span>;</span>
+    <span>--article-link-hover</span><span>:</span> <span><span>#</span>0ea5e9</span><span>;</span>
+    <span>--article-quote-border</span><span>:</span> <span><span>#</span>0ea5e9</span><span>;</span>
+    <span>--article-code-bg</span><span>:</span> <span><span>#</span>1e293b</span><span>;</span>
+<span>}</span>
 <span>/* ... forest, stardust 同理 */</span></pre></div>
 <hr>
 <h3 id="heading-44"><code>Section 16</code> — TOC Scroll-Spy 目录滚动监听</h3>
-<div><pre>.<span>toc-link</span> {
-    <span>display</span><span>:</span> block;
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
-    <span>border-left</span><span>:</span> <span>2<span>px</span></span> solid transparent;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
-}
+<div><pre><span>.</span><span>toc-link</span> <span>{</span>
+    <span>display</span><span>:</span> block<span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>border-left</span><span>:</span> <span>2<span>px</span></span> solid transparent<span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>toc-link</span>.<span>active</span> {
-    <span>border-left-color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
-    <span>font-weight</span><span>:</span> <span>500</span>;
-}
+<span>.</span><span>toc-link</span><span>.</span><span>active</span> <span>{</span>
+    <span>border-left-color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+    <span>font-weight</span><span>:</span> <span>500</span><span>;</span>
+<span>}</span>
 
 <span>/* 层级缩进 */</span>
-.<span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] { <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-lg</span>); }
-.<span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] { <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-xl</span>); }</pre></div>
+<span>.</span><span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] <span>{</span> <span>padding-left</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span> <span>}</span>
+<span>.</span><span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] <span>{</span> <span>padding-left</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span><span>;</span> <span>}</span></pre></div>
 <hr>
 <h3 id="heading-45"><code>Section 17</code> — Floating Toolbar + Sink Menu</h3>
-<div><pre>.<span>floating-toolbar</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    <span>bottom</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
-    <span>display</span><span>:</span> flex;
-    <span>flex-direction</span><span>:</span> column;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-sm</span>);
-    <span>z-index</span><span>:</span> <span>100</span>;
-}
+<div><pre><span>.</span><span>floating-toolbar</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>right</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>flex-direction</span><span>:</span> column<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>100</span><span>;</span>
+<span>}</span>
 
 <span>/* 展开动画 */</span>
-.<span>sink-panel</span> {
-    <span>transform-origin</span><span>:</span> bottom right;
-    <span>animation</span><span>:</span> sink-expand <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
-}
+<span>.</span><span>sink-panel</span> <span>{</span>
+    <span>transform-origin</span><span>:</span> bottom right<span>;</span>
+    <span>animation</span><span>:</span> sink-expand <span>0.3<span>s</span></span> <span>cubic-bezier</span><span>(</span><span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span><span>)</span><span>;</span>
+<span>}</span>
 
-<span>@keyframes</span> sink-expand {
-    <span>from</span> { <span>transform</span><span>:</span> <span>scale</span>(<span>0.8</span>); <span>opacity</span><span>:</span> <span>0</span>; }
-    <span>to</span> { <span>transform</span><span>:</span> <span>scale</span>(<span>1</span>); <span>opacity</span><span>:</span> <span>1</span>; }
-}</pre></div>
+<span>@keyframes</span> sink-expand <span>{</span>
+    <span>from</span> <span>{</span> <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>0.8</span><span>)</span><span>;</span> <span>opacity</span><span>:</span> <span>0</span><span>;</span> <span>}</span>
+    <span>to</span> <span>{</span> <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span> <span>opacity</span><span>:</span> <span>1</span><span>;</span> <span>}</span>
+<span>}</span></pre></div>
 <hr>
 <p>我来为您生成 <strong>Luliy Blog v8 完整技术说明书</strong>，涵盖所有模块、CSS 区域、JSON 配置及扩展建议。</p>
 <hr>
@@ -1515,10 +1515,10 @@
 </table>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加自定义纹理 */</span>
-[<span>data-theme</span><span>=</span><span>&quot;custom&quot;</span>] {
-    <span>--bg-gradient</span><span>:</span> <span>linear-gradient</span>(<span>135<span>deg</span></span><span>,</span> <span><span>#</span>667eea</span> <span>0<span>%</span></span><span>,</span> <span><span>#</span>764ba2</span> <span>100<span>%</span></span>);
-    <span>--bg-texture</span><span>:</span> <span>url</span>(<span>&quot;data:image/svg+xml,%3Csvg width=&#x27;60&#x27; height=&#x27;60&#x27;...&quot;</span>); <span>/* 内联 SVG */</span>
-}</pre></div>
+[<span>data-theme</span><span>=</span><span>&quot;custom&quot;</span>] <span>{</span>
+    <span>--bg-gradient</span><span>:</span> <span>linear-gradient</span><span>(</span><span>135<span>deg</span></span><span>,</span> <span><span>#</span>667eea</span> <span>0<span>%</span></span><span>,</span> <span><span>#</span>764ba2</span> <span>100<span>%</span></span><span>)</span><span>;</span>
+    <span>--bg-texture</span><span>:</span> <span>url</span><span>(</span><span>&quot;data:image/svg+xml,%3Csvg width=&#x27;60&#x27; height=&#x27;60&#x27;...&quot;</span><span>)</span><span>;</span> <span>/* 内联 SVG */</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-57"><code>Module 07</code> — Web Audio SFX 音效系统</h3>
 <div><pre><span>// 功能：全站交互音效，基于 Web Audio API（非 HTML5 Audio）</span>
@@ -2204,49 +2204,49 @@
 <h2 id="heading-74">三、CSS 区域详解</h2>
 <h3 id="heading-75"><code>Section 00</code> — Font Imports 字体导入</h3>
 <div><pre><span>/* 当前加载 */</span>
-<span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&amp;family=JetBrains+Mono&amp;display=swap&#x27;</span>);
+<span>@import</span> <span>url</span><span>(</span><span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&amp;family=JetBrains+Mono&amp;display=swap&#x27;</span><span>)</span><span>;</span>
 
 <span>/* 建议添加 */</span>
-<span>@import</span> <span>url</span>(<span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap&#x27;</span>); <span>/* 无衬线正文 */</span></pre></div>
+<span>@import</span> <span>url</span><span>(</span><span>&#x27;https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap&#x27;</span><span>)</span><span>;</span> <span>/* 无衬线正文 */</span></pre></div>
 <hr>
 <h3 id="heading-76"><code>Section 01</code> — CSS Variables + Reset 变量与重置</h3>
-<div><pre><span>:</span><span>root</span> {
+<div><pre><span>:</span><span>root</span> <span>{</span>
     <span>/* 核心变量 */</span>
-    <span>--font-serif</span><span>:</span> <span>&#x27;Noto Serif SC&#x27;</span><span>,</span> serif;
-    <span>--font-sans</span><span>:</span> <span>&#x27;Noto Sans SC&#x27;</span><span>,</span> sans-serif;
-    <span>--font-mono</span><span>:</span> <span>&#x27;JetBrains Mono&#x27;</span><span>,</span> monospace;
+    <span>--font-serif</span><span>:</span> <span>&#x27;Noto Serif SC&#x27;</span><span>,</span> serif<span>;</span>
+    <span>--font-sans</span><span>:</span> <span>&#x27;Noto Sans SC&#x27;</span><span>,</span> sans-serif<span>;</span>
+    <span>--font-mono</span><span>:</span> <span>&#x27;JetBrains Mono&#x27;</span><span>,</span> monospace<span>;</span>
     
     <span>/* 动态主题变量（由 JS 切换） */</span>
-    <span>--bg-primary</span><span>:</span> <span><span>#</span>faf7f5</span>;
-    <span>--bg-secondary</span><span>:</span> <span><span>#</span>f0ebe7</span>;
-    <span>--text-primary</span><span>:</span> <span><span>#</span>2c2420</span>;
-    <span>--text-secondary</span><span>:</span> <span><span>#</span>6b5e55</span>;
-    <span>--accent</span><span>:</span> <span><span>#</span>e8919c</span>;        <span>/* 主题色 */</span>
-    <span>--accent-hover</span><span>:</span> <span><span>#</span>d67a85</span>;  <span>/* 悬停态 */</span>
-    <span>--glass-bg</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.7</span>);
-    <span>--glass-border</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.3</span>);
+    <span>--bg-primary</span><span>:</span> <span><span>#</span>faf7f5</span><span>;</span>
+    <span>--bg-secondary</span><span>:</span> <span><span>#</span>f0ebe7</span><span>;</span>
+    <span>--text-primary</span><span>:</span> <span><span>#</span>2c2420</span><span>;</span>
+    <span>--text-secondary</span><span>:</span> <span><span>#</span>6b5e55</span><span>;</span>
+    <span>--accent</span><span>:</span> <span><span>#</span>e8919c</span><span>;</span>        <span>/* 主题色 */</span>
+    <span>--accent-hover</span><span>:</span> <span><span>#</span>d67a85</span><span>;</span>  <span>/* 悬停态 */</span>
+    <span>--glass-bg</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.7</span><span>)</span><span>;</span>
+    <span>--glass-border</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.3</span><span>)</span><span>;</span>
     
     <span>/* 间距系统 */</span>
-    <span>--space-xs</span><span>:</span> <span>0.25<span>rem</span></span>;   <span>/* 4px */</span>
-    <span>--space-sm</span><span>:</span> <span>0.5<span>rem</span></span>;    <span>/* 8px */</span>
-    <span>--space-md</span><span>:</span> <span>1<span>rem</span></span>;      <span>/* 16px */</span>
-    <span>--space-lg</span><span>:</span> <span>1.5<span>rem</span></span>;    <span>/* 24px */</span>
-    <span>--space-xl</span><span>:</span> <span>2<span>rem</span></span>;      <span>/* 32px */</span>
-    <span>--space-2xl</span><span>:</span> <span>3<span>rem</span></span>;     <span>/* 48px */</span>
+    <span>--space-xs</span><span>:</span> <span>0.25<span>rem</span></span><span>;</span>   <span>/* 4px */</span>
+    <span>--space-sm</span><span>:</span> <span>0.5<span>rem</span></span><span>;</span>    <span>/* 8px */</span>
+    <span>--space-md</span><span>:</span> <span>1<span>rem</span></span><span>;</span>      <span>/* 16px */</span>
+    <span>--space-lg</span><span>:</span> <span>1.5<span>rem</span></span><span>;</span>    <span>/* 24px */</span>
+    <span>--space-xl</span><span>:</span> <span>2<span>rem</span></span><span>;</span>      <span>/* 32px */</span>
+    <span>--space-2xl</span><span>:</span> <span>3<span>rem</span></span><span>;</span>     <span>/* 48px */</span>
     
     <span>/* 圆角系统 */</span>
-    <span>--radius-sm</span><span>:</span> <span>4<span>px</span></span>;
-    <span>--radius-md</span><span>:</span> <span>8<span>px</span></span>;
-    <span>--radius-lg</span><span>:</span> <span>12<span>px</span></span>;
-    <span>--radius-xl</span><span>:</span> <span>16<span>px</span></span>;
-    <span>--radius-full</span><span>:</span> <span>9999<span>px</span></span>;
+    <span>--radius-sm</span><span>:</span> <span>4<span>px</span></span><span>;</span>
+    <span>--radius-md</span><span>:</span> <span>8<span>px</span></span><span>;</span>
+    <span>--radius-lg</span><span>:</span> <span>12<span>px</span></span><span>;</span>
+    <span>--radius-xl</span><span>:</span> <span>16<span>px</span></span><span>;</span>
+    <span>--radius-full</span><span>:</span> <span>9999<span>px</span></span><span>;</span>
     
     <span>/* 阴影系统 */</span>
-    <span>--shadow-sm</span><span>:</span> <span>0</span> <span>1<span>px</span></span> <span>2<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.05</span>);
-    <span>--shadow-md</span><span>:</span> <span>0</span> <span>4<span>px</span></span> <span>6<span>px</span></span> <span>-1<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
-    <span>--shadow-lg</span><span>:</span> <span>0</span> <span>10<span>px</span></span> <span>15<span>px</span></span> <span>-3<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span>);
-    <span>--shadow-glow</span><span>:</span> <span>0</span> <span>0</span> <span>20<span>px</span></span> <span>var</span>(<span>--accent-alpha</span>);
-}</pre></div>
+    <span>--shadow-sm</span><span>:</span> <span>0</span> <span>1<span>px</span></span> <span>2<span>px</span></span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.05</span><span>)</span><span>;</span>
+    <span>--shadow-md</span><span>:</span> <span>0</span> <span>4<span>px</span></span> <span>6<span>px</span></span> <span>-1<span>px</span></span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span><span>)</span><span>;</span>
+    <span>--shadow-lg</span><span>:</span> <span>0</span> <span>10<span>px</span></span> <span>15<span>px</span></span> <span>-3<span>px</span></span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.1</span><span>)</span><span>;</span>
+    <span>--shadow-glow</span><span>:</span> <span>0</span> <span>0</span> <span>20<span>px</span></span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-77"><code>Section 02</code> — Welcome Splash Overlay 欢迎闪屏样式</h3>
 <table>
@@ -2278,15 +2278,15 @@
 <hr>
 <h3 id="heading-78"><code>Section 03</code> — Background Image 背景图</h3>
 <div><pre><span>/* 主题背景映射 */</span>
-[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
-    <span>--bg-image</span><span>:</span> <span>url</span>(<span>&#x27;/assets/bg-sakura.jpg&#x27;</span>);
-    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span>(<span>180<span>deg</span></span><span>,</span> <span>rgba</span>(<span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.9</span>) <span>0<span>%</span></span><span>,</span> <span>rgba</span>(<span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.6</span>) <span>100<span>%</span></span>);
-}
+[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>{</span>
+    <span>--bg-image</span><span>:</span> <span>url</span><span>(</span><span>&#x27;/assets/bg-sakura.jpg&#x27;</span><span>)</span><span>;</span>
+    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span><span>(</span><span>180<span>deg</span></span><span>,</span> <span>rgba</span><span>(</span><span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.9</span><span>)</span> <span>0<span>%</span></span><span>,</span> <span>rgba</span><span>(</span><span>250</span><span>,</span><span>247</span><span>,</span><span>245</span><span>,</span><span>0.6</span><span>)</span> <span>100<span>%</span></span><span>)</span><span>;</span>
+<span>}</span>
 
-[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
-    <span>--bg-image</span><span>:</span> <span>url</span>(<span>&#x27;/assets/bg-ocean.jpg&#x27;</span>);
-    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span>(<span>180<span>deg</span></span><span>,</span> <span>rgba</span>(<span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.9</span>) <span>0<span>%</span></span><span>,</span> <span>rgba</span>(<span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.6</span>) <span>100<span>%</span></span>);
-}</pre></div>
+[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] <span>{</span>
+    <span>--bg-image</span><span>:</span> <span>url</span><span>(</span><span>&#x27;/assets/bg-ocean.jpg&#x27;</span><span>)</span><span>;</span>
+    <span>--bg-overlay</span><span>:</span> <span>linear-gradient</span><span>(</span><span>180<span>deg</span></span><span>,</span> <span>rgba</span><span>(</span><span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.9</span><span>)</span> <span>0<span>%</span></span><span>,</span> <span>rgba</span><span>(</span><span>240</span><span>,</span><span>248</span><span>,</span><span>255</span><span>,</span><span>0.6</span><span>)</span> <span>100<span>%</span></span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-79"><code>Section 04</code> — Typography 排版</h3>
 <table>
@@ -2318,67 +2318,67 @@
 <hr>
 <h3 id="heading-80"><code>Section 05</code> — Navbar 导航栏</h3>
 <p><strong>Liquid Glass 效果</strong>：</p>
-<div><pre>.<span>navbar</span> {
-    <span>background</span><span>:</span> <span>var</span>(<span>--glass-bg</span>);
-    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>20<span>px</span></span>) <span>saturate</span>(<span>180<span>%</span></span>);
-    <span>-webkit-backdrop-filter</span><span>:</span> <span>blur</span>(<span>20<span>px</span></span>) <span>saturate</span>(<span>180<span>%</span></span>);
-    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--glass-border</span>);
-}</pre></div>
+<div><pre><span>.</span><span>navbar</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--glass-bg</span><span>)</span><span>;</span>
+    <span>backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>20<span>px</span></span><span>)</span> <span>saturate</span><span>(</span><span>180<span>%</span></span><span>)</span><span>;</span>
+    <span>-webkit-backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>20<span>px</span></span><span>)</span> <span>saturate</span><span>(</span><span>180<span>%</span></span><span>)</span><span>;</span>
+    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span><span>(</span><span>--glass-border</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-81"><code>Section 06-07</code> — Hero 区域</h3>
 <p>见 Module 09-10 说明。</p>
 <hr>
 <h3 id="heading-82"><code>Section 08</code> — Progress Bar 进度条</h3>
-<div><pre>.<span>progress-bar</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>top</span><span>:</span> <span>0</span>;
-    <span>left</span><span>:</span> <span>0</span>;
-    <span>height</span><span>:</span> <span>3<span>px</span></span>;
-    <span>background</span><span>:</span> <span>linear-gradient</span>(<span>90<span>deg</span></span><span>,</span> <span>var</span>(<span>--accent</span>)<span>,</span> <span>var</span>(<span>--accent-hover</span>));
-    <span>z-index</span><span>:</span> <span>9999</span>;
-    <span>transition</span><span>:</span> width <span>0.1<span>s</span></span> linear;
-}</pre></div>
+<div><pre><span>.</span><span>progress-bar</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>top</span><span>:</span> <span>0</span><span>;</span>
+    <span>left</span><span>:</span> <span>0</span><span>;</span>
+    <span>height</span><span>:</span> <span>3<span>px</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>linear-gradient</span><span>(</span><span>90<span>deg</span></span><span>,</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>,</span> <span>var</span><span>(</span><span>--accent-hover</span><span>)</span><span>)</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>9999</span><span>;</span>
+    <span>transition</span><span>:</span> width <span>0.1<span>s</span></span> linear<span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-83"><code>Section 09</code> — Cards 卡片网格</h3>
-<div><pre>.<span>card-grid</span> {
-    <span>display</span><span>:</span> grid;
-    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(auto-fill<span>,</span> <span>minmax</span>(<span>min</span>(<span>100<span>%</span></span><span>,</span> <span>320<span>px</span></span>)<span>,</span> <span>1<span>fr</span></span>));
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-}
+<div><pre><span>.</span><span>card-grid</span> <span>{</span>
+    <span>display</span><span>:</span> grid<span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span>auto-fill<span>,</span> <span>minmax</span><span>(</span><span>min</span><span>(</span><span>100<span>%</span></span><span>,</span> <span>320<span>px</span></span><span>)</span><span>,</span> <span>1<span>fr</span></span><span>)</span><span>)</span><span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 3D 悬停效果 */</span>
-.<span>card</span> {
-    <span>transform-style</span><span>:</span> preserve-3d;
-    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> ease;
-}
-.<span>card</span><span>:</span><span>hover</span> {
-    <span>transform</span><span>:</span> <span>translateY</span>(<span>-4<span>px</span></span>) <span>rotateX</span>(<span>2<span>deg</span></span>) <span>rotateY</span>(<span>-2<span>deg</span></span>);
-}</pre></div>
+<span>.</span><span>card</span> <span>{</span>
+    <span>transform-style</span><span>:</span> preserve-3d<span>;</span>
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> ease<span>;</span>
+<span>}</span>
+<span>.</span><span>card</span><span>:</span><span>hover</span> <span>{</span>
+    <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>-4<span>px</span></span><span>)</span> <span>rotateX</span><span>(</span><span>2<span>deg</span></span><span>)</span> <span>rotateY</span><span>(</span><span>-2<span>deg</span></span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-84"><code>Section 10</code> — Date Badge 日期徽章</h3>
-<div><pre>.<span>date-badge</span> {
-    <span>display</span><span>:</span> inline-flex;
-    <span>align-items</span><span>:</span> center;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
-    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
-    <span>font-variant-numeric</span><span>:</span> tabular-nums;
-}</pre></div>
+<div><pre><span>.</span><span>date-badge</span> <span>{</span>
+    <span>display</span><span>:</span> inline-flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-full</span><span>)</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span><span>;</span>
+    <span>font-variant-numeric</span><span>:</span> tabular-nums<span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-85"><code>Section 11</code> — Pinned Section 置顶区</h3>
-<div><pre>.<span>pinned-section</span> {
-    <span>position</span><span>:</span> relative;
-    <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>border-left</span><span>:</span> <span>3<span>px</span></span> solid <span>var</span>(<span>--accent</span>);
-}
+<div><pre><span>.</span><span>pinned-section</span> <span>{</span>
+    <span>position</span><span>:</span> relative<span>;</span>
+    <span>padding-left</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>border-left</span><span>:</span> <span>3<span>px</span></span> solid <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>pinned-badge</span>::<span>before</span> {
-    <span>content</span><span>:</span> <span>&#x27;📌&#x27;</span>;
-    <span>margin-right</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-}</pre></div>
+<span>.</span><span>pinned-badge</span><span>::</span><span>before</span> <span>{</span>
+    <span>content</span><span>:</span> <span>&#x27;📌&#x27;</span><span>;</span>
+    <span>margin-right</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-86"><code>Section 12</code> — Article Reading Panels 文章阅读面板（4主题）</h3>
 <table>
@@ -2423,96 +2423,96 @@
 <hr>
 <h3 id="heading-88"><code>Section 14</code> — Tables 表格</h3>
 <div><pre><span>/* 响应式表格：小屏横向滚动 */</span>
-.<span>table-wrapper</span> {
-    <span>overflow-x</span><span>:</span> auto;
-    <span>-webkit-overflow-scrolling</span><span>:</span> touch;
-}
+<span>.</span><span>table-wrapper</span> <span>{</span>
+    <span>overflow-x</span><span>:</span> auto<span>;</span>
+    <span>-webkit-overflow-scrolling</span><span>:</span> touch<span>;</span>
+<span>}</span>
 
 <span>/* 斑马纹 */</span>
-.<span>table-row</span><span>:</span><span>nth-child</span>(even) {
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-}</pre></div>
+<span>.</span><span>table-row</span><span>:</span><span>nth-child</span><span>(</span>even<span>)</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-89"><code>Section 15</code> — Article Theme CSS Variables 文章主题变量</h3>
-<div><pre>[<span>data-article-theme</span><span>=</span><span>&quot;sakura&quot;</span>] {
-    <span>--article-bg</span><span>:</span> <span><span>#</span>fdfbf7</span>;
-    <span>--article-text</span><span>:</span> <span><span>#</span>3d322b</span>;
-    <span>--article-heading</span><span>:</span> <span><span>#</span>8b4513</span>;
-    <span>--article-link</span><span>:</span> <span><span>#</span>c45c6a</span>;
-    <span>--article-link-hover</span><span>:</span> <span><span>#</span>a03040</span>;
-    <span>--article-quote-border</span><span>:</span> <span><span>#</span>e8919c</span>;
-    <span>--article-code-bg</span><span>:</span> <span><span>#</span>f5f0eb</span>;
-}
+<div><pre>[<span>data-article-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>{</span>
+    <span>--article-bg</span><span>:</span> <span><span>#</span>fdfbf7</span><span>;</span>
+    <span>--article-text</span><span>:</span> <span><span>#</span>3d322b</span><span>;</span>
+    <span>--article-heading</span><span>:</span> <span><span>#</span>8b4513</span><span>;</span>
+    <span>--article-link</span><span>:</span> <span><span>#</span>c45c6a</span><span>;</span>
+    <span>--article-link-hover</span><span>:</span> <span><span>#</span>a03040</span><span>;</span>
+    <span>--article-quote-border</span><span>:</span> <span><span>#</span>e8919c</span><span>;</span>
+    <span>--article-code-bg</span><span>:</span> <span><span>#</span>f5f0eb</span><span>;</span>
+<span>}</span>
 
-[<span>data-article-theme</span><span>=</span><span>&quot;ocean&quot;</span>] {
-    <span>--article-bg</span><span>:</span> <span><span>#</span>0f172a</span>;
-    <span>--article-text</span><span>:</span> <span><span>#</span>e2e8f0</span>;
-    <span>--article-heading</span><span>:</span> <span><span>#</span>7dd3fc</span>;
-    <span>--article-link</span><span>:</span> <span><span>#</span>38bdf8</span>;
-    <span>--article-link-hover</span><span>:</span> <span><span>#</span>0ea5e9</span>;
-    <span>--article-quote-border</span><span>:</span> <span><span>#</span>0ea5e9</span>;
-    <span>--article-code-bg</span><span>:</span> <span><span>#</span>1e293b</span>;
-}
+[<span>data-article-theme</span><span>=</span><span>&quot;ocean&quot;</span>] <span>{</span>
+    <span>--article-bg</span><span>:</span> <span><span>#</span>0f172a</span><span>;</span>
+    <span>--article-text</span><span>:</span> <span><span>#</span>e2e8f0</span><span>;</span>
+    <span>--article-heading</span><span>:</span> <span><span>#</span>7dd3fc</span><span>;</span>
+    <span>--article-link</span><span>:</span> <span><span>#</span>38bdf8</span><span>;</span>
+    <span>--article-link-hover</span><span>:</span> <span><span>#</span>0ea5e9</span><span>;</span>
+    <span>--article-quote-border</span><span>:</span> <span><span>#</span>0ea5e9</span><span>;</span>
+    <span>--article-code-bg</span><span>:</span> <span><span>#</span>1e293b</span><span>;</span>
+<span>}</span>
 <span>/* ... forest, stardust 同理 */</span></pre></div>
 <hr>
 <h3 id="heading-90"><code>Section 16</code> — TOC Scroll-Spy 目录滚动监听</h3>
-<div><pre>.<span>toc-link</span> {
-    <span>display</span><span>:</span> block;
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
-    <span>border-left</span><span>:</span> <span>2<span>px</span></span> solid transparent;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
-}
+<div><pre><span>.</span><span>toc-link</span> <span>{</span>
+    <span>display</span><span>:</span> block<span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>border-left</span><span>:</span> <span>2<span>px</span></span> solid transparent<span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>toc-link</span>.<span>active</span> {
-    <span>border-left-color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
-    <span>font-weight</span><span>:</span> <span>500</span>;
-}
+<span>.</span><span>toc-link</span><span>.</span><span>active</span> <span>{</span>
+    <span>border-left-color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+    <span>font-weight</span><span>:</span> <span>500</span><span>;</span>
+<span>}</span>
 
 <span>/* 层级缩进 */</span>
-.<span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] { <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-lg</span>); }
-.<span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] { <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-xl</span>); }</pre></div>
+<span>.</span><span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] <span>{</span> <span>padding-left</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span> <span>}</span>
+<span>.</span><span>toc-link</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] <span>{</span> <span>padding-left</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span><span>;</span> <span>}</span></pre></div>
 <hr>
 <h3 id="heading-91"><code>Section 17</code> — Floating Toolbar + Sink Menu</h3>
-<div><pre>.<span>floating-toolbar</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    <span>bottom</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
-    <span>display</span><span>:</span> flex;
-    <span>flex-direction</span><span>:</span> column;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-sm</span>);
-    <span>z-index</span><span>:</span> <span>100</span>;
-}
+<div><pre><span>.</span><span>floating-toolbar</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>right</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>flex-direction</span><span>:</span> column<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>100</span><span>;</span>
+<span>}</span>
 
 <span>/* 展开动画 */</span>
-.<span>sink-panel</span> {
-    <span>transform-origin</span><span>:</span> bottom right;
-    <span>animation</span><span>:</span> sink-expand <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
-}
+<span>.</span><span>sink-panel</span> <span>{</span>
+    <span>transform-origin</span><span>:</span> bottom right<span>;</span>
+    <span>animation</span><span>:</span> sink-expand <span>0.3<span>s</span></span> <span>cubic-bezier</span><span>(</span><span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span><span>)</span><span>;</span>
+<span>}</span>
 
-<span>@keyframes</span> sink-expand {
-    <span>from</span> { <span>transform</span><span>:</span> <span>scale</span>(<span>0.8</span>); <span>opacity</span><span>:</span> <span>0</span>; }
-    <span>to</span> { <span>transform</span><span>:</span> <span>scale</span>(<span>1</span>); <span>opacity</span><span>:</span> <span>1</span>; }
-}</pre></div>
+<span>@keyframes</span> sink-expand <span>{</span>
+    <span>from</span> <span>{</span> <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>0.8</span><span>)</span><span>;</span> <span>opacity</span><span>:</span> <span>0</span><span>;</span> <span>}</span>
+    <span>to</span> <span>{</span> <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span> <span>opacity</span><span>:</span> <span>1</span><span>;</span> <span>}</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-92"><code>Section 18</code> — Prev/Next Navigation 前后文导航</h3>
-<div><pre>.<span>post-nav</span> {
-    <span>display</span><span>:</span> grid;
-    <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>1<span>fr</span></span>;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    <span>margin-top</span><span>:</span> <span>var</span>(<span>--space-2xl</span>);
-    <span>padding-top</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
-    <span>border-top</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--border-color</span>);
-}
+<div><pre><span>.</span><span>post-nav</span> <span>{</span>
+    <span>display</span><span>:</span> grid<span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>1<span>fr</span></span><span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>margin-top</span><span>:</span> <span>var</span><span>(</span><span>--space-2xl</span><span>)</span><span>;</span>
+    <span>padding-top</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span><span>;</span>
+    <span>border-top</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span><span>(</span><span>--border-color</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>post-nav-prev</span> { <span>text-align</span><span>:</span> left; }
-.<span>post-nav-next</span> { <span>text-align</span><span>:</span> right; }
+<span>.</span><span>post-nav-prev</span> <span>{</span> <span>text-align</span><span>:</span> left<span>;</span> <span>}</span>
+<span>.</span><span>post-nav-next</span> <span>{</span> <span>text-align</span><span>:</span> right<span>;</span> <span>}</span>
 
-.<span>post-nav-label</span> {
-    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
-    <span>text-transform</span><span>:</span> uppercase;
+<span>.</span><span>post-nav-label</span> <span>{</span>
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span><span>;</span>
+    <span>text-transform</span><span>:</span> uppercase<span>;</span>
     <span>letter-spacing</span><span>:</span> 
 
 我继续完成 Luliy Blog v8 的技术说明书，从 Section 18 继续，并补充完整的 JSON 配置说明和扩展功能建议。
@@ -2524,935 +2524,935 @@
 <span>#</span><span>#</span><span>#</span> `Section 18` — Prev<span>/</span>Next Navigation 前后文导航（续）
 
 ```css
-.<span>post-nav-label</span> {
-    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
-    <span>text-transform</span><span>:</span> uppercase;
-    <span>letter-spacing</span><span>:</span> <span>0.05<span>em</span></span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-}
+<span>.</span><span>post-nav-label</span> <span>{</span>
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span><span>;</span>
+    <span>text-transform</span><span>:</span> uppercase<span>;</span>
+    <span>letter-spacing</span><span>:</span> <span>0.05<span>em</span></span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+    <span>margin-bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>post-nav-title</span> {
-    <span>font-size</span><span>:</span> <span>1.125<span>rem</span></span>;
-    <span>font-weight</span><span>:</span> <span>600</span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
-    <span>line-height</span><span>:</span> <span>1.4</span>;
-    <span>display</span><span>:</span> -webkit-box;
-    <span>-webkit-line-clamp</span><span>:</span> <span>2</span>;
-    <span>-webkit-box-orient</span><span>:</span> vertical;
-    <span>overflow</span><span>:</span> hidden;
-}
+<span>.</span><span>post-nav-title</span> <span>{</span>
+    <span>font-size</span><span>:</span> <span>1.125<span>rem</span></span><span>;</span>
+    <span>font-weight</span><span>:</span> <span>600</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-primary</span><span>)</span><span>;</span>
+    <span>line-height</span><span>:</span> <span>1.4</span><span>;</span>
+    <span>display</span><span>:</span> -webkit-box<span>;</span>
+    <span>-webkit-line-clamp</span><span>:</span> <span>2</span><span>;</span>
+    <span>-webkit-box-orient</span><span>:</span> vertical<span>;</span>
+    <span>overflow</span><span>:</span> hidden<span>;</span>
+<span>}</span>
 
 <span>/* 悬停效果 */</span>
-.<span>post-nav-link</span><span>:</span><span>hover</span> .<span>post-nav-title</span> {
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-}
+<span>.</span><span>post-nav-link</span><span>:</span><span>hover</span> <span>.</span><span>post-nav-title</span> <span>{</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>post-nav-link</span><span>:</span><span>hover</span> .<span>post-nav-arrow</span> {
-    <span>transform</span><span>:</span> <span>translateX</span>(<span>var</span>(<span>--space-xs</span>));
-}
-.<span>post-nav-prev</span><span>:</span><span>hover</span> .<span>post-nav-arrow</span> {
-    <span>transform</span><span>:</span> <span>translateX</span>(<span>calc</span>(<span>var</span>(<span>--space-xs</span>) <span>*</span> <span>-1</span>));
-}</pre></div>
+<span>.</span><span>post-nav-link</span><span>:</span><span>hover</span> <span>.</span><span>post-nav-arrow</span> <span>{</span>
+    <span>transform</span><span>:</span> <span>translateX</span><span>(</span><span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>post-nav-prev</span><span>:</span><span>hover</span> <span>.</span><span>post-nav-arrow</span> <span>{</span>
+    <span>transform</span><span>:</span> <span>translateX</span><span>(</span><span>calc</span><span>(</span><span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>*</span> <span>-1</span><span>)</span><span>)</span><span>;</span>
+<span>}</span><span></span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加文章封面缩略图 */</span>
-.<span>post-nav-thumb</span> {
-    <span>width</span><span>:</span> <span>80<span>px</span></span>;
-    <span>height</span><span>:</span> <span>60<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-md</span>);
-    <span>object-fit</span><span>:</span> cover;
-    <span>opacity</span><span>:</span> <span>0.8</span>;
-    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span>;
-}
-.<span>post-nav-link</span><span>:</span><span>hover</span> .<span>post-nav-thumb</span> {
-    <span>opacity</span><span>:</span> <span>1</span>;
-}
+<span>.</span><span>post-nav-thumb</span> <span>{</span>
+    <span>width</span><span>:</span> <span>80<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>60<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-md</span><span>)</span><span>;</span>
+    <span>object-fit</span><span>:</span> cover<span>;</span>
+    <span>opacity</span><span>:</span> <span>0.8</span><span>;</span>
+    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
+<span>.</span><span>post-nav-link</span><span>:</span><span>hover</span> <span>.</span><span>post-nav-thumb</span> <span>{</span>
+    <span>opacity</span><span>:</span> <span>1</span><span>;</span>
+<span>}</span>
 
 <span>/* 改为垂直堆叠（移动端） */</span>
-<span>@media</span> (<span>max-width</span><span>:</span> <span>640<span>px</span></span>) {
-    .<span>post-nav</span> {
-        <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span>;
-    }
-    .<span>post-nav-next</span> {
-        <span>text-align</span><span>:</span> left;
-        <span>border-top</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--border-color</span>);
-        <span>padding-top</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    }
-}</pre></div>
+<span>@media</span> <span>(</span><span>max-width</span><span>:</span> <span>640<span>px</span></span><span>)</span> <span>{</span>
+    <span>.</span><span>post-nav</span> <span>{</span>
+        <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span><span>;</span>
+    <span>}</span>
+    <span>.</span><span>post-nav-next</span> <span>{</span>
+        <span>text-align</span><span>:</span> left<span>;</span>
+        <span>border-top</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span><span>(</span><span>--border-color</span><span>)</span><span>;</span>
+        <span>padding-top</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-93"><code>Section 19</code> — Lightbox 灯箱样式</h3>
-<div><pre>.<span>lightbox-overlay</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>inset</span><span>:</span> <span>0</span>;
-    <span>background</span><span>:</span> <span>rgba</span>(<span>0</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>,</span> <span>0.92</span>);
-    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>10<span>px</span></span>);
-    <span>z-index</span><span>:</span> <span>1000</span>;
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> center;
-    <span>justify-content</span><span>:</span> center;
-    <span>opacity</span><span>:</span> <span>0</span>;
-    <span>transition</span><span>:</span> opacity <span>0.3<span>s</span></span>;
-}
+<div><pre><span>.</span><span>lightbox-overlay</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>inset</span><span>:</span> <span>0</span><span>;</span>
+    <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>0</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>,</span> <span>0.92</span><span>)</span><span>;</span>
+    <span>backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>10<span>px</span></span><span>)</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>1000</span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>justify-content</span><span>:</span> center<span>;</span>
+    <span>opacity</span><span>:</span> <span>0</span><span>;</span>
+    <span>transition</span><span>:</span> opacity <span>0.3<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>lightbox-overlay</span>.<span>active</span> {
-    <span>opacity</span><span>:</span> <span>1</span>;
-}
+<span>.</span><span>lightbox-overlay</span><span>.</span><span>active</span> <span>{</span>
+    <span>opacity</span><span>:</span> <span>1</span><span>;</span>
+<span>}</span>
 
-.<span>lightbox-image</span> {
-    <span>max-width</span><span>:</span> <span>90<span>vw</span></span>;
-    <span>max-height</span><span>:</span> <span>90<span>vh</span></span>;
-    <span>object-fit</span><span>:</span> contain;
-    <span>transform</span><span>:</span> <span>scale</span>(<span>0.9</span>);
-    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
-}
+<span>.</span><span>lightbox-image</span> <span>{</span>
+    <span>max-width</span><span>:</span> <span>90<span>vw</span></span><span>;</span>
+    <span>max-height</span><span>:</span> <span>90<span>vh</span></span><span>;</span>
+    <span>object-fit</span><span>:</span> contain<span>;</span>
+    <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>0.9</span><span>)</span><span>;</span>
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span><span>(</span><span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>lightbox-overlay</span>.<span>active</span> .<span>lightbox-image</span> {
-    <span>transform</span><span>:</span> <span>scale</span>(<span>1</span>);
-}
+<span>.</span><span>lightbox-overlay</span><span>.</span><span>active</span> <span>.</span><span>lightbox-image</span> <span>{</span>
+    <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 图片信息栏 */</span>
-.<span>lightbox-meta</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>bottom</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    <span>left</span><span>:</span> <span>50<span>%</span></span>;
-    <span>transform</span><span>:</span> <span>translateX</span>(<span>-50<span>%</span></span>);
-    <span>text-align</span><span>:</span> center;
-    <span>color</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.8</span>);
-    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
-}
+<span>.</span><span>lightbox-meta</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>left</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>transform</span><span>:</span> <span>translateX</span><span>(</span><span>-50<span>%</span></span><span>)</span><span>;</span>
+    <span>text-align</span><span>:</span> center<span>;</span>
+    <span>color</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.8</span><span>)</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span><span>;</span>
+<span>}</span>
 
 <span>/* 导航箭头 */</span>
-.<span>lightbox-nav</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>top</span><span>:</span> <span>50<span>%</span></span>;
-    <span>transform</span><span>:</span> <span>translateY</span>(<span>-50<span>%</span></span>);
-    <span>width</span><span>:</span> <span>48<span>px</span></span>;
-    <span>height</span><span>:</span> <span>48<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
-    <span>background</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.1</span>);
-    <span>color</span><span>:</span> white;
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> center;
-    <span>justify-content</span><span>:</span> center;
-    <span>cursor</span><span>:</span> pointer;
-    <span>transition</span><span>:</span> background <span>0.2<span>s</span></span>;
-}
-.<span>lightbox-nav</span><span>:</span><span>hover</span> {
-    <span>background</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.2</span>);
-}
-.<span>lightbox-prev</span> { <span>left</span><span>:</span> <span>var</span>(<span>--space-lg</span>); }
-.<span>lightbox-next</span> { <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>); }
+<span>.</span><span>lightbox-nav</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>top</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>-50<span>%</span></span><span>)</span><span>;</span>
+    <span>width</span><span>:</span> <span>48<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>48<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-full</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.1</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> white<span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>justify-content</span><span>:</span> center<span>;</span>
+    <span>cursor</span><span>:</span> pointer<span>;</span>
+    <span>transition</span><span>:</span> background <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
+<span>.</span><span>lightbox-nav</span><span>:</span><span>hover</span> <span>{</span>
+    <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span> <span>255</span><span>,</span> <span>255</span><span>,</span> <span>0.2</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>lightbox-prev</span> <span>{</span> <span>left</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span> <span>}</span>
+<span>.</span><span>lightbox-next</span> <span>{</span> <span>right</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span> <span>}</span>
 
 <span>/* 关闭按钮 */</span>
-.<span>lightbox-close</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>top</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    <span>width</span><span>:</span> <span>40<span>px</span></span>;
-    <span>height</span><span>:</span> <span>40<span>px</span></span>;
-    <span>color</span><span>:</span> white;
-    <span>opacity</span><span>:</span> <span>0.7</span>;
-    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span>;
-}
-.<span>lightbox-close</span><span>:</span><span>hover</span> {
-    <span>opacity</span><span>:</span> <span>1</span>;
-}</pre></div>
+<span>.</span><span>lightbox-close</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>top</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>right</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>width</span><span>:</span> <span>40<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>40<span>px</span></span><span>;</span>
+    <span>color</span><span>:</span> white<span>;</span>
+    <span>opacity</span><span>:</span> <span>0.7</span><span>;</span>
+    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
+<span>.</span><span>lightbox-close</span><span>:</span><span>hover</span> <span>{</span>
+    <span>opacity</span><span>:</span> <span>1</span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加缩放指示器 */</span>
-.<span>lightbox-zoom-hint</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>bottom</span><span>:</span> <span>calc</span>(<span>var</span>(<span>--space-lg</span>) <span>+</span> <span>40<span>px</span></span>);
-    <span>left</span><span>:</span> <span>50<span>%</span></span>;
-    <span>transform</span><span>:</span> <span>translateX</span>(<span>-50<span>%</span></span>);
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
-    <span>background</span><span>:</span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.5</span>);
-    <span>color</span><span>:</span> white;
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
-    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
-    <span>pointer-events</span><span>:</span> none;
-}
+<span>.</span><span>lightbox-zoom-hint</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>bottom</span><span>:</span> <span>calc</span><span>(</span><span>var</span><span>(</span><span>--space-lg</span><span>)</span> <span>+</span> <span>40<span>px</span></span><span>)</span><span>;</span>
+    <span>left</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>transform</span><span>:</span> <span>translateX</span><span>(</span><span>-50<span>%</span></span><span>)</span><span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.5</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> white<span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-full</span><span>)</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span><span>;</span>
+    <span>pointer-events</span><span>:</span> none<span>;</span>
+<span>}</span>
 
 <span>/* 图片对比模式样式 */</span>
-.<span>lightbox-compare</span> {
-    <span>display</span><span>:</span> grid;
-    <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>1<span>fr</span></span>;
-    <span>gap</span><span>:</span> <span>2<span>px</span></span>;
-    <span>background</span><span>:</span> white;
-}
-.<span>lightbox-compare</span> <span>img</span> {
-    <span>max-width</span><span>:</span> <span>45<span>vw</span></span>;
-}
+<span>.</span><span>lightbox-compare</span> <span>{</span>
+    <span>display</span><span>:</span> grid<span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>1<span>fr</span></span><span>;</span>
+    <span>gap</span><span>:</span> <span>2<span>px</span></span><span>;</span>
+    <span>background</span><span>:</span> white<span>;</span>
+<span>}</span>
+<span>.</span><span>lightbox-compare</span> <span>img</span> <span>{</span>
+    <span>max-width</span><span>:</span> <span>45<span>vw</span></span><span>;</span>
+<span>}</span>
 
 <span>/* 缩略图导航条 */</span>
-.<span>lightbox-thumbs</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>bottom</span><span>:</span> <span>0</span>;
-    <span>left</span><span>:</span> <span>0</span>;
-    <span>right</span><span>:</span> <span>0</span>;
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>display</span><span>:</span> flex;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-sm</span>);
-    <span>justify-content</span><span>:</span> center;
-    <span>background</span><span>:</span> <span>linear-gradient</span>(transparent<span>,</span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.8</span>));
-    <span>overflow-x</span><span>:</span> auto;
-}
-.<span>lightbox-thumb</span> {
-    <span>width</span><span>:</span> <span>60<span>px</span></span>;
-    <span>height</span><span>:</span> <span>45<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-sm</span>);
-    <span>opacity</span><span>:</span> <span>0.5</span>;
-    <span>cursor</span><span>:</span> pointer;
-    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span>;
-}
-.<span>lightbox-thumb</span>.<span>active</span><span>,</span>
-.<span>lightbox-thumb</span><span>:</span><span>hover</span> {
-    <span>opacity</span><span>:</span> <span>1</span>;
-}</pre></div>
+<span>.</span><span>lightbox-thumbs</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>bottom</span><span>:</span> <span>0</span><span>;</span>
+    <span>left</span><span>:</span> <span>0</span><span>;</span>
+    <span>right</span><span>:</span> <span>0</span><span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>justify-content</span><span>:</span> center<span>;</span>
+    <span>background</span><span>:</span> <span>linear-gradient</span><span>(</span>transparent<span>,</span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.8</span><span>)</span><span>)</span><span>;</span>
+    <span>overflow-x</span><span>:</span> auto<span>;</span>
+<span>}</span>
+<span>.</span><span>lightbox-thumb</span> <span>{</span>
+    <span>width</span><span>:</span> <span>60<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>45<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-sm</span><span>)</span><span>;</span>
+    <span>opacity</span><span>:</span> <span>0.5</span><span>;</span>
+    <span>cursor</span><span>:</span> pointer<span>;</span>
+    <span>transition</span><span>:</span> opacity <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
+<span>.</span><span>lightbox-thumb</span><span>.</span><span>active</span><span>,</span>
+<span>.</span><span>lightbox-thumb</span><span>:</span><span>hover</span> <span>{</span>
+    <span>opacity</span><span>:</span> <span>1</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-94"><code>Section 20</code> — Back-to-Top 返回顶部</h3>
-<div><pre>.<span>back-to-top</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>right</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    <span>bottom</span><span>:</span> <span>calc</span>(<span>var</span>(<span>--space-xl</span>) <span>+</span> <span>60<span>px</span></span>); <span>/* 在工具栏上方 */</span>
-    <span>width</span><span>:</span> <span>44<span>px</span></span>;
-    <span>height</span><span>:</span> <span>44<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--glass-bg</span>);
-    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>10<span>px</span></span>);
-    <span>border</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--glass-border</span>);
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> center;
-    <span>justify-content</span><span>:</span> center;
-    <span>cursor</span><span>:</span> pointer;
-    <span>opacity</span><span>:</span> <span>0</span>;
-    <span>transform</span><span>:</span> <span>translateY</span>(<span>20<span>px</span></span>) <span>scale</span>(<span>0.9</span>);
-    <span>transition</span><span>:</span> all <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
-    <span>z-index</span><span>:</span> <span>99</span>;
-}
+<div><pre><span>.</span><span>back-to-top</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>right</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>bottom</span><span>:</span> <span>calc</span><span>(</span><span>var</span><span>(</span><span>--space-xl</span><span>)</span> <span>+</span> <span>60<span>px</span></span><span>)</span><span>;</span> <span>/* 在工具栏上方 */</span>
+    <span>width</span><span>:</span> <span>44<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>44<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-full</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--glass-bg</span><span>)</span><span>;</span>
+    <span>backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>10<span>px</span></span><span>)</span><span>;</span>
+    <span>border</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span><span>(</span><span>--glass-border</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-primary</span><span>)</span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>justify-content</span><span>:</span> center<span>;</span>
+    <span>cursor</span><span>:</span> pointer<span>;</span>
+    <span>opacity</span><span>:</span> <span>0</span><span>;</span>
+    <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>20<span>px</span></span><span>)</span> <span>scale</span><span>(</span><span>0.9</span><span>)</span><span>;</span>
+    <span>transition</span><span>:</span> all <span>0.3<span>s</span></span> <span>cubic-bezier</span><span>(</span><span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span><span>)</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>99</span><span>;</span>
+<span>}</span>
 
-.<span>back-to-top</span>.<span>visible</span> {
-    <span>opacity</span><span>:</span> <span>1</span>;
-    <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>) <span>scale</span>(<span>1</span>);
-}
+<span>.</span><span>back-to-top</span><span>.</span><span>visible</span> <span>{</span>
+    <span>opacity</span><span>:</span> <span>1</span><span>;</span>
+    <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>0</span><span>)</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 进度环 SVG */</span>
-.<span>back-to-top</span> <span>svg</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>inset</span><span>:</span> <span>0</span>;
-    <span>transform</span><span>:</span> <span>rotate</span>(<span>-90<span>deg</span></span>);
-}
-.<span>back-to-top</span> <span>circle</span> {
-    <span>fill</span><span>:</span> none;
-    <span>stroke-width</span><span>:</span> <span>2</span>;
-}
-.<span>back-to-top</span> .<span>progress-track</span> {
-    <span>stroke</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-}
-.<span>back-to-top</span> .<span>progress-fill</span> {
-    <span>stroke</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>stroke-dasharray</span><span>:</span> <span>126</span>; <span>/* 2 * PI * 20 */</span>
-    <span>stroke-dashoffset</span><span>:</span> <span>126</span>;
-    <span>transition</span><span>:</span> stroke-dashoffset <span>0.1<span>s</span></span>;
-}</pre></div>
+<span>.</span><span>back-to-top</span> <span>svg</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>inset</span><span>:</span> <span>0</span><span>;</span>
+    <span>transform</span><span>:</span> <span>rotate</span><span>(</span><span>-90<span>deg</span></span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>back-to-top</span> <span>circle</span> <span>{</span>
+    <span>fill</span><span>:</span> none<span>;</span>
+    <span>stroke-width</span><span>:</span> <span>2</span><span>;</span>
+<span>}</span>
+<span>.</span><span>back-to-top</span> <span>.</span><span>progress-track</span> <span>{</span>
+    <span>stroke</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>back-to-top</span> <span>.</span><span>progress-fill</span> <span>{</span>
+    <span>stroke</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>stroke-dasharray</span><span>:</span> <span>126</span><span>;</span> <span>/* 2 * PI * 20 */</span>
+    <span>stroke-dashoffset</span><span>:</span> <span>126</span><span>;</span>
+    <span>transition</span><span>:</span> stroke-dashoffset <span>0.1<span>s</span></span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加百分比显示 */</span>
-.<span>back-to-top</span>::<span>after</span> {
-    <span>content</span><span>:</span> <span>attr</span>(data-percent);
-    <span>position</span><span>:</span> absolute;
-    <span>font-size</span><span>:</span> <span>0.625<span>rem</span></span>;
-    <span>font-weight</span><span>:</span> <span>600</span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-}
+<span>.</span><span>back-to-top</span><span>::</span><span>after</span> <span>{</span>
+    <span>content</span><span>:</span> <span>attr</span><span>(</span>data-percent<span>)</span><span>;</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>font-size</span><span>:</span> <span>0.625<span>rem</span></span><span>;</span>
+    <span>font-weight</span><span>:</span> <span>600</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 改为长条形（底部固定） */</span>
-.<span>back-to-top-bar</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>bottom</span><span>:</span> <span>0</span>;
-    <span>left</span><span>:</span> <span>0</span>;
-    <span>right</span><span>:</span> <span>0</span>;
-    <span>height</span><span>:</span> <span>4<span>px</span></span>;
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>transform-origin</span><span>:</span> left;
-    <span>transform</span><span>:</span> <span>scaleX</span>(<span>var</span>(<span>--scroll-progress</span>));
-}
+<span>.</span><span>back-to-top-bar</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>bottom</span><span>:</span> <span>0</span><span>;</span>
+    <span>left</span><span>:</span> <span>0</span><span>;</span>
+    <span>right</span><span>:</span> <span>0</span><span>;</span>
+    <span>height</span><span>:</span> <span>4<span>px</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>transform-origin</span><span>:</span> left<span>;</span>
+    <span>transform</span><span>:</span> <span>scaleX</span><span>(</span><span>var</span><span>(</span><span>--scroll-progress</span><span>)</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 点击时的火箭动画 */</span>
-.<span>back-to-top</span>.<span>launching</span> {
-    <span>animation</span><span>:</span> rocket-launch <span>0.6<span>s</span></span> ease-out forwards;
-}
-<span>@keyframes</span> rocket-launch {
-    <span>0<span>%</span></span> { <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>); }
-    <span>50<span>%</span></span> { <span>transform</span><span>:</span> <span>translateY</span>(<span>-20<span>px</span></span>) <span>scale</span>(<span>1.2</span>); }
-    <span>100<span>%</span></span> { <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>) <span>scale</span>(<span>1</span>); }
-}</pre></div>
+<span>.</span><span>back-to-top</span><span>.</span><span>launching</span> <span>{</span>
+    <span>animation</span><span>:</span> rocket-launch <span>0.6<span>s</span></span> ease-out forwards<span>;</span>
+<span>}</span>
+<span>@keyframes</span> rocket-launch <span>{</span>
+    <span>0<span>%</span></span> <span>{</span> <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>0</span><span>)</span><span>;</span> <span>}</span>
+    <span>50<span>%</span></span> <span>{</span> <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>-20<span>px</span></span><span>)</span> <span>scale</span><span>(</span><span>1.2</span><span>)</span><span>;</span> <span>}</span>
+    <span>100<span>%</span></span> <span>{</span> <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>0</span><span>)</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span> <span>}</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-95"><code>Section 21</code> — Sakura Canvas / Theme Ripple 樱花画布与主题涟漪</h3>
 <div><pre><span>/* 樱花画布容器 */</span>
-.<span>sakura-container</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>inset</span><span>:</span> <span>0</span>;
-    <span>pointer-events</span><span>:</span> none;
-    <span>z-index</span><span>:</span> <span>1</span>; <span>/* 在内容下方 */</span>
-}
+<span>.</span><span>sakura-container</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>inset</span><span>:</span> <span>0</span><span>;</span>
+    <span>pointer-events</span><span>:</span> none<span>;</span>
+    <span>z-index</span><span>:</span> <span>1</span><span>;</span> <span>/* 在内容下方 */</span>
+<span>}</span>
 
 <span>/* 主题切换涟漪 */</span>
-.<span>theme-ripple</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
-    <span>background</span><span>:</span> <span>var</span>(<span>--ripple-color</span>);
-    <span>pointer-events</span><span>:</span> none;
-    <span>z-index</span><span>:</span> <span>9998</span>;
-    <span>animation</span><span>:</span> ripple-expand <span>0.6<span>s</span></span> <span>cubic-bezier</span>(<span>0.4</span><span>,</span> <span>0</span><span>,</span> <span>0.2</span><span>,</span> <span>1</span>) forwards;
-}
+<span>.</span><span>theme-ripple</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--ripple-color</span><span>)</span><span>;</span>
+    <span>pointer-events</span><span>:</span> none<span>;</span>
+    <span>z-index</span><span>:</span> <span>9998</span><span>;</span>
+    <span>animation</span><span>:</span> ripple-expand <span>0.6<span>s</span></span> <span>cubic-bezier</span><span>(</span><span>0.4</span><span>,</span> <span>0</span><span>,</span> <span>0.2</span><span>,</span> <span>1</span><span>)</span> forwards<span>;</span>
+<span>}</span>
 
-<span>@keyframes</span> ripple-expand {
-    <span>from</span> {
-        <span>width</span><span>:</span> <span>0</span>;
-        <span>height</span><span>:</span> <span>0</span>;
-        <span>opacity</span><span>:</span> <span>0.5</span>;
-    }
-    <span>to</span> {
-        <span>width</span><span>:</span> <span>var</span>(<span>--ripple-size</span>);
-        <span>height</span><span>:</span> <span>var</span>(<span>--ripple-size</span>);
-        <span>opacity</span><span>:</span> <span>0</span>;
-    }
-}
+<span>@keyframes</span> ripple-expand <span>{</span>
+    <span>from</span> <span>{</span>
+        <span>width</span><span>:</span> <span>0</span><span>;</span>
+        <span>height</span><span>:</span> <span>0</span><span>;</span>
+        <span>opacity</span><span>:</span> <span>0.5</span><span>;</span>
+    <span>}</span>
+    <span>to</span> <span>{</span>
+        <span>width</span><span>:</span> <span>var</span><span>(</span><span>--ripple-size</span><span>)</span><span>;</span>
+        <span>height</span><span>:</span> <span>var</span><span>(</span><span>--ripple-size</span><span>)</span><span>;</span>
+        <span>opacity</span><span>:</span> <span>0</span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 各主题涟漪色 */</span>
-[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] { <span>--ripple-color</span><span>:</span> <span><span>#</span>f8c3cd</span>; }
-[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] { <span>--ripple-color</span><span>:</span> <span><span>#</span>7dd3fc</span>; }
-[<span>data-theme</span><span>=</span><span>&quot;forest&quot;</span>] { <span>--ripple-color</span><span>:</span> <span><span>#</span>86efac</span>; }
-[<span>data-theme</span><span>=</span><span>&quot;stardust&quot;</span>] { <span>--ripple-color</span><span>:</span> <span><span>#</span>c4b5fd</span>; }</pre></div>
+[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>] <span>{</span> <span>--ripple-color</span><span>:</span> <span><span>#</span>f8c3cd</span><span>;</span> <span>}</span>
+[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>] <span>{</span> <span>--ripple-color</span><span>:</span> <span><span>#</span>7dd3fc</span><span>;</span> <span>}</span>
+[<span>data-theme</span><span>=</span><span>&quot;forest&quot;</span>] <span>{</span> <span>--ripple-color</span><span>:</span> <span><span>#</span>86efac</span><span>;</span> <span>}</span>
+[<span>data-theme</span><span>=</span><span>&quot;stardust&quot;</span>] <span>{</span> <span>--ripple-color</span><span>:</span> <span><span>#</span>c4b5fd</span><span>;</span> <span>}</span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加鼠标轨迹拖尾 */</span>
-.<span>cursor-trail</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>width</span><span>:</span> <span>8<span>px</span></span>;
-    <span>height</span><span>:</span> <span>8<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>pointer-events</span><span>:</span> none;
-    <span>opacity</span><span>:</span> <span>0.6</span>;
-    <span>animation</span><span>:</span> trail-fade <span>1<span>s</span></span> forwards;
-}
-<span>@keyframes</span> trail-fade {
-    <span>to</span> {
-        <span>opacity</span><span>:</span> <span>0</span>;
-        <span>transform</span><span>:</span> <span>scale</span>(<span>0</span>);
-    }
-}
+<span>.</span><span>cursor-trail</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>width</span><span>:</span> <span>8<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>8<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>pointer-events</span><span>:</span> none<span>;</span>
+    <span>opacity</span><span>:</span> <span>0.6</span><span>;</span>
+    <span>animation</span><span>:</span> trail-fade <span>1<span>s</span></span> forwards<span>;</span>
+<span>}</span>
+<span>@keyframes</span> trail-fade <span>{</span>
+    <span>to</span> <span>{</span>
+        <span>opacity</span><span>:</span> <span>0</span><span>;</span>
+        <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>0</span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 节日特效层 */</span>
-.<span>festival-overlay</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>inset</span><span>:</span> <span>0</span>;
-    <span>pointer-events</span><span>:</span> none;
-    <span>z-index</span><span>:</span> <span>2</span>;
-}
+<span>.</span><span>festival-overlay</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>inset</span><span>:</span> <span>0</span><span>;</span>
+    <span>pointer-events</span><span>:</span> none<span>;</span>
+    <span>z-index</span><span>:</span> <span>2</span><span>;</span>
+<span>}</span>
 <span>/* 春节：红色粒子 */</span>
 <span>/* 圣诞：雪花 */</span>
 <span>/* 万圣节：蝙蝠剪影 */</span></pre></div>
 <hr>
 <h3 id="heading-96"><code>Section 22</code> — Uptime 运行时间</h3>
-<div><pre>.<span>uptime-display</span> {
-    <span>font-family</span><span>:</span> <span>var</span>(<span>--font-mono</span>);
-    <span>font-variant-numeric</span><span>:</span> tabular-nums;
-    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-    <span>display</span><span>:</span> inline-flex;
-    <span>align-items</span><span>:</span> center;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-}
+<div><pre><span>.</span><span>uptime-display</span> <span>{</span>
+    <span>font-family</span><span>:</span> <span>var</span><span>(</span><span>--font-mono</span><span>)</span><span>;</span>
+    <span>font-variant-numeric</span><span>:</span> tabular-nums<span>;</span>
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+    <span>display</span><span>:</span> inline-flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>uptime-display</span>::<span>before</span> {
-    <span>content</span><span>:</span> <span>&#x27;&#x27;</span>;
-    <span>width</span><span>:</span> <span>8<span>px</span></span>;
-    <span>height</span><span>:</span> <span>8<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
-    <span>background</span><span>:</span> <span><span>#</span>22c55e</span>;
-    <span>animation</span><span>:</span> pulse <span>2<span>s</span></span> infinite;
-}
+<span>.</span><span>uptime-display</span><span>::</span><span>before</span> <span>{</span>
+    <span>content</span><span>:</span> <span>&#x27;&#x27;</span><span>;</span>
+    <span>width</span><span>:</span> <span>8<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>8<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>background</span><span>:</span> <span><span>#</span>22c55e</span><span>;</span>
+    <span>animation</span><span>:</span> pulse <span>2<span>s</span></span> infinite<span>;</span>
+<span>}</span>
 
-<span>@keyframes</span> pulse {
-    <span>0<span>%</span></span><span>,</span> <span>100<span>%</span></span> { <span>opacity</span><span>:</span> <span>1</span>; }
-    <span>50<span>%</span></span> { <span>opacity</span><span>:</span> <span>0.5</span>; }
-}
+<span>@keyframes</span> pulse <span>{</span>
+    <span>0<span>%</span></span><span>,</span> <span>100<span>%</span></span> <span>{</span> <span>opacity</span><span>:</span> <span>1</span><span>;</span> <span>}</span>
+    <span>50<span>%</span></span> <span>{</span> <span>opacity</span><span>:</span> <span>0.5</span><span>;</span> <span>}</span>
+<span>}</span>
 
 <span>/* 不同状态 */</span>
-.<span>uptime-display</span>.<span>warning</span>::<span>before</span> {
-    <span>background</span><span>:</span> <span><span>#</span>f59e0b</span>;
-}
-.<span>uptime-display</span>.<span>error</span>::<span>before</span> {
-    <span>background</span><span>:</span> <span><span>#</span>ef4444</span>;
-    <span>animation</span><span>:</span> none;
-}</pre></div>
+<span>.</span><span>uptime-display</span><span>.</span><span>warning</span><span>::</span><span>before</span> <span>{</span>
+    <span>background</span><span>:</span> <span><span>#</span>f59e0b</span><span>;</span>
+<span>}</span>
+<span>.</span><span>uptime-display</span><span>.</span><span>error</span><span>::</span><span>before</span> <span>{</span>
+    <span>background</span><span>:</span> <span><span>#</span>ef4444</span><span>;</span>
+    <span>animation</span><span>:</span> none<span>;</span>
+<span>}</span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加详细展开 */</span>
-.<span>uptime-detail</span> {
-    <span>display</span><span>:</span> grid;
-    <span>grid-template-columns</span><span>:</span> auto <span>1<span>fr</span></span>;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-md</span>);
-    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
-}
-.<span>uptime-detail</span> <span>dt</span> {
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-}
-.<span>uptime-detail</span> <span>dd</span> {
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
-    <span>font-family</span><span>:</span> <span>var</span>(<span>--font-mono</span>);
-}
+<span>.</span><span>uptime-detail</span> <span>{</span>
+    <span>display</span><span>:</span> grid<span>;</span>
+    <span>grid-template-columns</span><span>:</span> auto <span>1<span>fr</span></span><span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span><span>;</span>
+<span>}</span>
+<span>.</span><span>uptime-detail</span> <span>dt</span> <span>{</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>uptime-detail</span> <span>dd</span> <span>{</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-primary</span><span>)</span><span>;</span>
+    <span>font-family</span><span>:</span> <span>var</span><span>(</span><span>--font-mono</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 服务器状态网格 */</span>
-.<span>server-grid</span> {
-    <span>display</span><span>:</span> grid;
-    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(auto-fill<span>,</span> <span>minmax</span>(<span>120<span>px</span></span><span>,</span> <span>1<span>fr</span></span>));
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-}
-.<span>server-card</span> {
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-lg</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-}
-.<span>server-card</span> .<span>metric</span> {
-    <span>font-size</span><span>:</span> <span>1.5<span>rem</span></span>;
-    <span>font-weight</span><span>:</span> <span>700</span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-}</pre></div>
+<span>.</span><span>server-grid</span> <span>{</span>
+    <span>display</span><span>:</span> grid<span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span>auto-fill<span>,</span> <span>minmax</span><span>(</span><span>120<span>px</span></span><span>,</span> <span>1<span>fr</span></span><span>)</span><span>)</span><span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>server-card</span> <span>{</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-lg</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>server-card</span> <span>.</span><span>metric</span> <span>{</span>
+    <span>font-size</span><span>:</span> <span>1.5<span>rem</span></span><span>;</span>
+    <span>font-weight</span><span>:</span> <span>700</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-97"><code>Section 23</code> — Timeline / Archive 时间线/归档</h3>
-<div><pre>.<span>timeline</span> {
-    <span>position</span><span>:</span> relative;
-    <span>padding-left</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
-}
+<div><pre><span>.</span><span>timeline</span> <span>{</span>
+    <span>position</span><span>:</span> relative<span>;</span>
+    <span>padding-left</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>timeline</span>::<span>before</span> {
-    <span>content</span><span>:</span> <span>&#x27;&#x27;</span>;
-    <span>position</span><span>:</span> absolute;
-    <span>left</span><span>:</span> <span>7<span>px</span></span>; <span>/* 圆点中心对齐 */</span>
-    <span>top</span><span>:</span> <span>0</span>;
-    <span>bottom</span><span>:</span> <span>0</span>;
-    <span>width</span><span>:</span> <span>2<span>px</span></span>;
-    <span>background</span><span>:</span> <span>linear-gradient</span>(
+<span>.</span><span>timeline</span><span>::</span><span>before</span> <span>{</span>
+    <span>content</span><span>:</span> <span>&#x27;&#x27;</span><span>;</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>left</span><span>:</span> <span>7<span>px</span></span><span>;</span> <span>/* 圆点中心对齐 */</span>
+    <span>top</span><span>:</span> <span>0</span><span>;</span>
+    <span>bottom</span><span>:</span> <span>0</span><span>;</span>
+    <span>width</span><span>:</span> <span>2<span>px</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>linear-gradient</span><span>(</span>
         to bottom<span>,</span>
-        <span>var</span>(<span>--accent</span>)<span>,</span>
-        <span>var</span>(<span>--accent-alpha</span>)
-    );
-}
+        <span>var</span><span>(</span><span>--accent</span><span>)</span><span>,</span>
+        <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span>
+    <span>)</span><span>;</span>
+<span>}</span>
 
-.<span>timeline-item</span> {
-    <span>position</span><span>:</span> relative;
-    <span>padding-bottom</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
-}
+<span>.</span><span>timeline-item</span> <span>{</span>
+    <span>position</span><span>:</span> relative<span>;</span>
+    <span>padding-bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>timeline-dot</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>left</span><span>:</span> <span>calc</span>(<span>var</span>(<span>--space-xl</span>) <span>*</span> <span>-1</span> <span>+</span> <span>3<span>px</span></span>);
-    <span>width</span><span>:</span> <span>12<span>px</span></span>;
-    <span>height</span><span>:</span> <span>12<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-primary</span>);
-    <span>border</span><span>:</span> <span>2<span>px</span></span> solid <span>var</span>(<span>--accent</span>);
-    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
-}
+<span>.</span><span>timeline-dot</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>left</span><span>:</span> <span>calc</span><span>(</span><span>var</span><span>(</span><span>--space-xl</span><span>)</span> <span>*</span> <span>-1</span> <span>+</span> <span>3<span>px</span></span><span>)</span><span>;</span>
+    <span>width</span><span>:</span> <span>12<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>12<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-primary</span><span>)</span><span>;</span>
+    <span>border</span><span>:</span> <span>2<span>px</span></span> solid <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>timeline-item</span><span>:</span><span>hover</span> .<span>timeline-dot</span> {
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>transform</span><span>:</span> <span>scale</span>(<span>1.2</span>);
-}
+<span>.</span><span>timeline-item</span><span>:</span><span>hover</span> <span>.</span><span>timeline-dot</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>1.2</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>timeline-date</span> {
-    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-}
+<span>.</span><span>timeline-date</span> <span>{</span>
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+    <span>margin-bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>timeline-content</span> {
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-lg</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
-}
+<span>.</span><span>timeline-content</span> <span>{</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-lg</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>timeline-item</span><span>:</span><span>hover</span> .<span>timeline-content</span> {
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-primary</span>);
-    <span>box-shadow</span><span>:</span> <span>var</span>(<span>--shadow-md</span>);
-}
+<span>.</span><span>timeline-item</span><span>:</span><span>hover</span> <span>.</span><span>timeline-content</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-primary</span><span>)</span><span>;</span>
+    <span>box-shadow</span><span>:</span> <span>var</span><span>(</span><span>--shadow-md</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 年份标记 */</span>
-.<span>timeline-year</span> {
-    <span>position</span><span>:</span> sticky;
-    <span>top</span><span>:</span> <span>var</span>(<span>--space-lg</span>);
-    <span>z-index</span><span>:</span> <span>10</span>;
-    <span>font-size</span><span>:</span> <span>1.5<span>rem</span></span>;
-    <span>font-weight</span><span>:</span> <span>700</span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-primary</span>);
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-sm</span>) <span>0</span>;
-    <span>margin-left</span><span>:</span> <span>calc</span>(<span>var</span>(<span>--space-xl</span>) <span>*</span> <span>-1</span>);
-}</pre></div>
+<span>.</span><span>timeline-year</span> <span>{</span>
+    <span>position</span><span>:</span> sticky<span>;</span>
+    <span>top</span><span>:</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>10</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>1.5<span>rem</span></span><span>;</span>
+    <span>font-weight</span><span>:</span> <span>700</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-primary</span><span>)</span><span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span> <span>0</span><span>;</span>
+    <span>margin-left</span><span>:</span> <span>calc</span><span>(</span><span>var</span><span>(</span><span>--space-xl</span><span>)</span> <span>*</span> <span>-1</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加文章类型图标 */</span>
-.<span>timeline-type</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>right</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>top</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>width</span><span>:</span> <span>24<span>px</span></span>;
-    <span>height</span><span>:</span> <span>24<span>px</span></span>;
-    <span>opacity</span><span>:</span> <span>0.5</span>;
-}
-.<span>timeline-type-article</span>::<span>before</span> { <span>content</span><span>:</span> <span>&#x27;📝&#x27;</span>; }
-.<span>timeline-type-photo</span>::<span>before</span> { <span>content</span><span>:</span> <span>&#x27;📷&#x27;</span>; }
-.<span>timeline-type-video</span>::<span>before</span> { <span>content</span><span>:</span> <span>&#x27;🎬&#x27;</span>; }
+<span>.</span><span>timeline-type</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>right</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>top</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>width</span><span>:</span> <span>24<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>24<span>px</span></span><span>;</span>
+    <span>opacity</span><span>:</span> <span>0.5</span><span>;</span>
+<span>}</span>
+<span>.</span><span>timeline-type-article</span><span>::</span><span>before</span> <span>{</span> <span>content</span><span>:</span> <span>&#x27;📝&#x27;</span><span>;</span> <span>}</span>
+<span>.</span><span>timeline-type-photo</span><span>::</span><span>before</span> <span>{</span> <span>content</span><span>:</span> <span>&#x27;📷&#x27;</span><span>;</span> <span>}</span>
+<span>.</span><span>timeline-type-video</span><span>::</span><span>before</span> <span>{</span> <span>content</span><span>:</span> <span>&#x27;🎬&#x27;</span><span>;</span> <span>}</span>
 
 <span>/* 热力图式归档（GitHub 风格） */</span>
-.<span>archive-heatmap</span> {
-    <span>display</span><span>:</span> grid;
-    <span>grid-template-columns</span><span>:</span> <span>repeat</span>(<span>53</span><span>,</span> <span>1<span>fr</span></span>); <span>/* 53周 */</span>
-    <span>gap</span><span>:</span> <span>3<span>px</span></span>;
-}
-.<span>heatmap-cell</span> {
-    <span>aspect-ratio</span><span>:</span> <span>1</span>;
-    <span>border-radius</span><span>:</span> <span>2<span>px</span></span>;
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-}
-.<span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;1&quot;</span>] { <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>); }
-.<span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;2&quot;</span>] { <span>background</span><span>:</span> <span>var</span>(<span>--accent-light</span>); }
-.<span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] { <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>); }
-.<span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] { <span>background</span><span>:</span> <span>var</span>(<span>--accent-dark</span>); }</pre></div>
+<span>.</span><span>archive-heatmap</span> <span>{</span>
+    <span>display</span><span>:</span> grid<span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span><span>53</span><span>,</span> <span>1<span>fr</span></span><span>)</span><span>;</span> <span>/* 53周 */</span>
+    <span>gap</span><span>:</span> <span>3<span>px</span></span><span>;</span>
+<span>}</span>
+<span>.</span><span>heatmap-cell</span> <span>{</span>
+    <span>aspect-ratio</span><span>:</span> <span>1</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>2<span>px</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;1&quot;</span>] <span>{</span> <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span> <span>}</span>
+<span>.</span><span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;2&quot;</span>] <span>{</span> <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-light</span><span>)</span><span>;</span> <span>}</span>
+<span>.</span><span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;3&quot;</span>] <span>{</span> <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span> <span>}</span>
+<span>.</span><span>heatmap-cell</span>[<span>data-level</span><span>=</span><span>&quot;4&quot;</span>] <span>{</span> <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-dark</span><span>)</span><span>;</span> <span>}</span></pre></div>
 <hr>
 <h3 id="heading-98"><code>Section 24</code> — Homepage Bottom Gallery Banner 首页底部画廊横幅</h3>
-<div><pre>.<span>gallery-banner</span> {
-    <span>position</span><span>:</span> relative;
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-2xl</span>) <span>0</span>;
-    <span>overflow</span><span>:</span> hidden;
-}
+<div><pre><span>.</span><span>gallery-banner</span> <span>{</span>
+    <span>position</span><span>:</span> relative<span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-2xl</span><span>)</span> <span>0</span><span>;</span>
+    <span>overflow</span><span>:</span> hidden<span>;</span>
+<span>}</span>
 
-.<span>gallery-track</span> {
-    <span>display</span><span>:</span> flex;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>animation</span><span>:</span> gallery-scroll <span>30<span>s</span></span> linear infinite;
-}
+<span>.</span><span>gallery-track</span> <span>{</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>animation</span><span>:</span> gallery-scroll <span>30<span>s</span></span> linear infinite<span>;</span>
+<span>}</span>
 
-.<span>gallery-track</span><span>:</span><span>hover</span> {
-    <span>animation-play-state</span><span>:</span> paused;
-}
+<span>.</span><span>gallery-track</span><span>:</span><span>hover</span> <span>{</span>
+    <span>animation-play-state</span><span>:</span> paused<span>;</span>
+<span>}</span>
 
-<span>@keyframes</span> gallery-scroll {
-    <span>from</span> { <span>transform</span><span>:</span> <span>translateX</span>(<span>0</span>); }
-    <span>to</span> { <span>transform</span><span>:</span> <span>translateX</span>(<span>calc</span>(<span>-50<span>%</span></span> <span>-</span> <span>var</span>(<span>--space-md</span>) <span>/</span> <span>2</span>)); }
+<span>@keyframes</span> gallery-scroll <span>{</span>
+    <span>from</span> <span>{</span> <span>transform</span><span>:</span> <span>translateX</span><span>(</span><span>0</span><span>)</span><span>;</span> <span>}</span>
+    <span>to</span> <span>{</span> <span>transform</span><span>:</span> <span>translateX</span><span>(</span><span>calc</span><span>(</span><span>-50<span>%</span></span> <span>-</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span> <span>/</span> <span>2</span><span>)</span><span>)</span><span>;</span> <span>}</span>
     <span>/* 复制一份实现无缝循环 */</span>
-}
+<span>}</span>
 
-.<span>gallery-item</span> {
-    <span>flex-shrink</span><span>:</span> <span>0</span>;
-    <span>width</span><span>:</span> <span>280<span>px</span></span>;
-    <span>height</span><span>:</span> <span>200<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-lg</span>);
-    <span>overflow</span><span>:</span> hidden;
-    <span>position</span><span>:</span> relative;
-}
+<span>.</span><span>gallery-item</span> <span>{</span>
+    <span>flex-shrink</span><span>:</span> <span>0</span><span>;</span>
+    <span>width</span><span>:</span> <span>280<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>200<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-lg</span><span>)</span><span>;</span>
+    <span>overflow</span><span>:</span> hidden<span>;</span>
+    <span>position</span><span>:</span> relative<span>;</span>
+<span>}</span>
 
-.<span>gallery-item</span> <span>img</span> {
-    <span>width</span><span>:</span> <span>100<span>%</span></span>;
-    <span>height</span><span>:</span> <span>100<span>%</span></span>;
-    <span>object-fit</span><span>:</span> cover;
-    <span>transition</span><span>:</span> transform <span>0.5<span>s</span></span>;
-}
+<span>.</span><span>gallery-item</span> <span>img</span> <span>{</span>
+    <span>width</span><span>:</span> <span>100<span>%</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>100<span>%</span></span><span>;</span>
+    <span>object-fit</span><span>:</span> cover<span>;</span>
+    <span>transition</span><span>:</span> transform <span>0.5<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>gallery-item</span><span>:</span><span>hover</span> <span>img</span> {
-    <span>transform</span><span>:</span> <span>scale</span>(<span>1.05</span>);
-}
+<span>.</span><span>gallery-item</span><span>:</span><span>hover</span> <span>img</span> <span>{</span>
+    <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>1.05</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>gallery-item-overlay</span> {
-    <span>position</span><span>:</span> absolute;
-    <span>inset</span><span>:</span> <span>0</span>;
-    <span>background</span><span>:</span> <span>linear-gradient</span>(transparent <span>50<span>%</span></span><span>,</span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.7</span>));
-    <span>opacity</span><span>:</span> <span>0</span>;
-    <span>transition</span><span>:</span> opacity <span>0.3<span>s</span></span>;
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> flex-end;
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>color</span><span>:</span> white;
-}
+<span>.</span><span>gallery-item-overlay</span> <span>{</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>inset</span><span>:</span> <span>0</span><span>;</span>
+    <span>background</span><span>:</span> <span>linear-gradient</span><span>(</span>transparent <span>50<span>%</span></span><span>,</span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.7</span><span>)</span><span>)</span><span>;</span>
+    <span>opacity</span><span>:</span> <span>0</span><span>;</span>
+    <span>transition</span><span>:</span> opacity <span>0.3<span>s</span></span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> flex-end<span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> white<span>;</span>
+<span>}</span>
 
-.<span>gallery-item</span><span>:</span><span>hover</span> .<span>gallery-item-overlay</span> {
-    <span>opacity</span><span>:</span> <span>1</span>;
-}</pre></div>
+<span>.</span><span>gallery-item</span><span>:</span><span>hover</span> <span>.</span><span>gallery-item-overlay</span> <span>{</span>
+    <span>opacity</span><span>:</span> <span>1</span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 改为瀑布流 */</span>
-.<span>gallery-masonry</span> {
-    <span>columns</span><span>:</span> <span>3</span>;
-    <span>column-gap</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-}
-.<span>gallery-masonry</span> .<span>gallery-item</span> {
-    <span>break-inside</span><span>:</span> avoid;
-    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>height</span><span>:</span> auto;
-}
+<span>.</span><span>gallery-masonry</span> <span>{</span>
+    <span>columns</span><span>:</span> <span>3</span><span>;</span>
+    <span>column-gap</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>gallery-masonry</span> <span>.</span><span>gallery-item</span> <span>{</span>
+    <span>break-inside</span><span>:</span> avoid<span>;</span>
+    <span>margin-bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>height</span><span>:</span> auto<span>;</span>
+<span>}</span>
 
 <span>/* 添加 lightbox 快捷入口 */</span>
-.<span>gallery-item</span>::<span>after</span> {
-    <span>content</span><span>:</span> <span>&#x27;🔍&#x27;</span>;
-    <span>position</span><span>:</span> absolute;
-    <span>top</span><span>:</span> <span>50<span>%</span></span>;
-    <span>left</span><span>:</span> <span>50<span>%</span></span>;
-    <span>transform</span><span>:</span> <span>translate</span>(<span>-50<span>%</span></span><span>,</span> <span>-50<span>%</span></span>) <span>scale</span>(<span>0</span>);
-    <span>width</span><span>:</span> <span>40<span>px</span></span>;
-    <span>height</span><span>:</span> <span>40<span>px</span></span>;
-    <span>background</span><span>:</span> <span>rgba</span>(<span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.9</span>);
-    <span>border-radius</span><span>:</span> <span>50<span>%</span></span>;
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> center;
-    <span>justify-content</span><span>:</span> center;
-    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
-}
-.<span>gallery-item</span><span>:</span><span>hover</span>::<span>after</span> {
-    <span>transform</span><span>:</span> <span>translate</span>(<span>-50<span>%</span></span><span>,</span> <span>-50<span>%</span></span>) <span>scale</span>(<span>1</span>);
-}
+<span>.</span><span>gallery-item</span><span>::</span><span>after</span> <span>{</span>
+    <span>content</span><span>:</span> <span>&#x27;🔍&#x27;</span><span>;</span>
+    <span>position</span><span>:</span> absolute<span>;</span>
+    <span>top</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>left</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>transform</span><span>:</span> <span>translate</span><span>(</span><span>-50<span>%</span></span><span>,</span> <span>-50<span>%</span></span><span>)</span> <span>scale</span><span>(</span><span>0</span><span>)</span><span>;</span>
+    <span>width</span><span>:</span> <span>40<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>40<span>px</span></span><span>;</span>
+    <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>255</span><span>,</span><span>255</span><span>,</span><span>255</span><span>,</span><span>0.9</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>50<span>%</span></span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>justify-content</span><span>:</span> center<span>;</span>
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span><span>(</span><span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>gallery-item</span><span>:</span><span>hover</span><span>::</span><span>after</span> <span>{</span>
+    <span>transform</span><span>:</span> <span>translate</span><span>(</span><span>-50<span>%</span></span><span>,</span> <span>-50<span>%</span></span><span>)</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 全屏沉浸式画廊 */</span>
-.<span>gallery-immersive</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>inset</span><span>:</span> <span>0</span>;
-    <span>z-index</span><span>:</span> <span>1000</span>;
-    <span>background</span><span>:</span> black;
-    <span>display</span><span>:</span> grid;
-    <span>place-items</span><span>:</span> center;
-}
-.<span>gallery-immersive</span> <span>img</span> {
-    <span>max-width</span><span>:</span> <span>100<span>vw</span></span>;
-    <span>max-height</span><span>:</span> <span>100<span>vh</span></span>;
-}</pre></div>
+<span>.</span><span>gallery-immersive</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>inset</span><span>:</span> <span>0</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>1000</span><span>;</span>
+    <span>background</span><span>:</span> black<span>;</span>
+    <span>display</span><span>:</span> grid<span>;</span>
+    <span>place-items</span><span>:</span> center<span>;</span>
+<span>}</span>
+<span>.</span><span>gallery-immersive</span> <span>img</span> <span>{</span>
+    <span>max-width</span><span>:</span> <span>100<span>vw</span></span><span>;</span>
+    <span>max-height</span><span>:</span> <span>100<span>vh</span></span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-99"><code>Section 25</code> — Search Overlay 搜索遮罩层</h3>
-<div><pre>.<span>search-overlay</span> {
-    <span>position</span><span>:</span> fixed;
-    <span>inset</span><span>:</span> <span>0</span>;
-    <span>background</span><span>:</span> <span>rgba</span>(<span>0</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>,</span> <span>0.6</span>);
-    <span>backdrop-filter</span><span>:</span> <span>blur</span>(<span>8<span>px</span></span>);
-    <span>z-index</span><span>:</span> <span>200</span>;
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> flex-start;
-    <span>justify-content</span><span>:</span> center;
-    <span>padding-top</span><span>:</span> <span>15<span>vh</span></span>;
-    <span>opacity</span><span>:</span> <span>0</span>;
-    <span>visibility</span><span>:</span> hidden;
-    <span>transition</span><span>:</span> all <span>0.3<span>s</span></span>;
-}
+<div><pre><span>.</span><span>search-overlay</span> <span>{</span>
+    <span>position</span><span>:</span> fixed<span>;</span>
+    <span>inset</span><span>:</span> <span>0</span><span>;</span>
+    <span>background</span><span>:</span> <span>rgba</span><span>(</span><span>0</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>,</span> <span>0.6</span><span>)</span><span>;</span>
+    <span>backdrop-filter</span><span>:</span> <span>blur</span><span>(</span><span>8<span>px</span></span><span>)</span><span>;</span>
+    <span>z-index</span><span>:</span> <span>200</span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> flex-start<span>;</span>
+    <span>justify-content</span><span>:</span> center<span>;</span>
+    <span>padding-top</span><span>:</span> <span>15<span>vh</span></span><span>;</span>
+    <span>opacity</span><span>:</span> <span>0</span><span>;</span>
+    <span>visibility</span><span>:</span> hidden<span>;</span>
+    <span>transition</span><span>:</span> all <span>0.3<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>search-overlay</span>.<span>active</span> {
-    <span>opacity</span><span>:</span> <span>1</span>;
-    <span>visibility</span><span>:</span> visible;
-}
+<span>.</span><span>search-overlay</span><span>.</span><span>active</span> <span>{</span>
+    <span>opacity</span><span>:</span> <span>1</span><span>;</span>
+    <span>visibility</span><span>:</span> visible<span>;</span>
+<span>}</span>
 
-.<span>search-container</span> {
-    <span>width</span><span>:</span> <span>min</span>(<span>640<span>px</span></span><span>,</span> <span>90<span>vw</span></span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-primary</span>);
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-xl</span>);
-    <span>box-shadow</span><span>:</span> <span>var</span>(<span>--shadow-lg</span>)<span>,</span> <span>0</span> <span>25<span>px</span></span> <span>50<span>px</span></span> <span>-12<span>px</span></span> <span>rgba</span>(<span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.25</span>);
-    <span>overflow</span><span>:</span> hidden;
-    <span>transform</span><span>:</span> <span>translateY</span>(<span>-20<span>px</span></span>) <span>scale</span>(<span>0.95</span>);
-    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span>(<span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span>);
-}
+<span>.</span><span>search-container</span> <span>{</span>
+    <span>width</span><span>:</span> <span>min</span><span>(</span><span>640<span>px</span></span><span>,</span> <span>90<span>vw</span></span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-primary</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-xl</span><span>)</span><span>;</span>
+    <span>box-shadow</span><span>:</span> <span>var</span><span>(</span><span>--shadow-lg</span><span>)</span><span>,</span> <span>0</span> <span>25<span>px</span></span> <span>50<span>px</span></span> <span>-12<span>px</span></span> <span>rgba</span><span>(</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0</span><span>,</span><span>0.25</span><span>)</span><span>;</span>
+    <span>overflow</span><span>:</span> hidden<span>;</span>
+    <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>-20<span>px</span></span><span>)</span> <span>scale</span><span>(</span><span>0.95</span><span>)</span><span>;</span>
+    <span>transition</span><span>:</span> transform <span>0.3<span>s</span></span> <span>cubic-bezier</span><span>(</span><span>0.34</span><span>,</span> <span>1.56</span><span>,</span> <span>0.64</span><span>,</span> <span>1</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>search-overlay</span>.<span>active</span> .<span>search-container</span> {
-    <span>transform</span><span>:</span> <span>translateY</span>(<span>0</span>) <span>scale</span>(<span>1</span>);
-}
+<span>.</span><span>search-overlay</span><span>.</span><span>active</span> <span>.</span><span>search-container</span> <span>{</span>
+    <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>0</span><span>)</span> <span>scale</span><span>(</span><span>1</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>search-input-wrapper</span> {
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> center;
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>) <span>var</span>(<span>--space-lg</span>);
-    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--border-color</span>);
-}
+<span>.</span><span>search-input-wrapper</span> <span>{</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span><span>(</span><span>--border-color</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>search-input</span> {
-    <span>flex</span><span>:</span> <span>1</span>;
-    <span>border</span><span>:</span> none;
-    <span>background</span><span>:</span> none;
-    <span>font-size</span><span>:</span> <span>1.125<span>rem</span></span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
-    <span>outline</span><span>:</span> none;
-}
+<span>.</span><span>search-input</span> <span>{</span>
+    <span>flex</span><span>:</span> <span>1</span><span>;</span>
+    <span>border</span><span>:</span> none<span>;</span>
+    <span>background</span><span>:</span> none<span>;</span>
+    <span>font-size</span><span>:</span> <span>1.125<span>rem</span></span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-primary</span><span>)</span><span>;</span>
+    <span>outline</span><span>:</span> none<span>;</span>
+<span>}</span>
 
-.<span>search-input</span>::<span>placeholder</span> {
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-}
+<span>.</span><span>search-input</span><span>::</span><span>placeholder</span> <span>{</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>search-shortcut-hint</span> {
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-sm</span>);
-    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-    <span>font-family</span><span>:</span> <span>var</span>(<span>--font-mono</span>);
-}
+<span>.</span><span>search-shortcut-hint</span> <span>{</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-sm</span><span>)</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+    <span>font-family</span><span>:</span> <span>var</span><span>(</span><span>--font-mono</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>search-results</span> {
-    <span>max-height</span><span>:</span> <span>60<span>vh</span></span>;
-    <span>overflow-y</span><span>:</span> auto;
-}
+<span>.</span><span>search-results</span> <span>{</span>
+    <span>max-height</span><span>:</span> <span>60<span>vh</span></span><span>;</span>
+    <span>overflow-y</span><span>:</span> auto<span>;</span>
+<span>}</span>
 
-.<span>search-result-item</span> {
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> flex-start;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-md</span>) <span>var</span>(<span>--space-lg</span>);
-    <span>cursor</span><span>:</span> pointer;
-    <span>transition</span><span>:</span> background <span>0.15<span>s</span></span>;
-}
+<span>.</span><span>search-result-item</span> <span>{</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> flex-start<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>cursor</span><span>:</span> pointer<span>;</span>
+    <span>transition</span><span>:</span> background <span>0.15<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>search-result-item</span><span>:</span><span>hover</span><span>,</span>
-.<span>search-result-item</span>.<span>selected</span> {
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-}
+<span>.</span><span>search-result-item</span><span>:</span><span>hover</span><span>,</span>
+<span>.</span><span>search-result-item</span><span>.</span><span>selected</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>search-result-icon</span> {
-    <span>width</span><span>:</span> <span>40<span>px</span></span>;
-    <span>height</span><span>:</span> <span>40<span>px</span></span>;
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-md</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
-    <span>display</span><span>:</span> flex;
-    <span>align-items</span><span>:</span> center;
-    <span>justify-content</span><span>:</span> center;
-    <span>flex-shrink</span><span>:</span> <span>0</span>;
-}
+<span>.</span><span>search-result-icon</span> <span>{</span>
+    <span>width</span><span>:</span> <span>40<span>px</span></span><span>;</span>
+    <span>height</span><span>:</span> <span>40<span>px</span></span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-md</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>justify-content</span><span>:</span> center<span>;</span>
+    <span>flex-shrink</span><span>:</span> <span>0</span><span>;</span>
+<span>}</span>
 
-.<span>search-result-content</span> {
-    <span>flex</span><span>:</span> <span>1</span>;
-    <span>min-width</span><span>:</span> <span>0</span>;
-}
+<span>.</span><span>search-result-content</span> <span>{</span>
+    <span>flex</span><span>:</span> <span>1</span><span>;</span>
+    <span>min-width</span><span>:</span> <span>0</span><span>;</span>
+<span>}</span>
 
-.<span>search-result-title</span> {
-    <span>font-weight</span><span>:</span> <span>500</span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-primary</span>);
-    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-}
+<span>.</span><span>search-result-title</span> <span>{</span>
+    <span>font-weight</span><span>:</span> <span>500</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-primary</span><span>)</span><span>;</span>
+    <span>margin-bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+<span>}</span>
 
-.<span>search-result-excerpt</span> {
-    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-secondary</span>);
-    <span>line-height</span><span>:</span> <span>1.5</span>;
-    <span>display</span><span>:</span> -webkit-box;
-    <span>-webkit-line-clamp</span><span>:</span> <span>2</span>;
-    <span>-webkit-box-orient</span><span>:</span> vertical;
-    <span>overflow</span><span>:</span> hidden;
-}
+<span>.</span><span>search-result-excerpt</span> <span>{</span>
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-secondary</span><span>)</span><span>;</span>
+    <span>line-height</span><span>:</span> <span>1.5</span><span>;</span>
+    <span>display</span><span>:</span> -webkit-box<span>;</span>
+    <span>-webkit-line-clamp</span><span>:</span> <span>2</span><span>;</span>
+    <span>-webkit-box-orient</span><span>:</span> vertical<span>;</span>
+    <span>overflow</span><span>:</span> hidden<span>;</span>
+<span>}</span>
 
-.<span>search-result-meta</span> {
-    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span>;
-    <span>color</span><span>:</span> <span>var</span>(<span>--text-tertiary</span>);
-    <span>margin-top</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-}
+<span>.</span><span>search-result-meta</span> <span>{</span>
+    <span>font-size</span><span>:</span> <span>0.75<span>rem</span></span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--text-tertiary</span><span>)</span><span>;</span>
+    <span>margin-top</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 高亮标记 */</span>
-.<span>search-highlight</span> {
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
-    <span>color</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>border-radius</span><span>:</span> <span>2<span>px</span></span>;
-    <span>padding</span><span>:</span> <span>0</span> <span>2<span>px</span></span>;
-}</pre></div>
+<span>.</span><span>search-highlight</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>2<span>px</span></span><span>;</span>
+    <span>padding</span><span>:</span> <span>0</span> <span>2<span>px</span></span><span>;</span>
+<span>}</span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加分类筛选标签 */</span>
-.<span>search-filters</span> {
-    <span>display</span><span>:</span> flex;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-sm</span>);
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-sm</span>) <span>var</span>(<span>--space-lg</span>);
-    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span>(<span>--border-color</span>);
-    <span>overflow-x</span><span>:</span> auto;
-}
+<span>.</span><span>search-filters</span> <span>{</span>
+    <span>display</span><span>:</span> flex<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+    <span>border-bottom</span><span>:</span> <span>1<span>px</span></span> solid <span>var</span><span>(</span><span>--border-color</span><span>)</span><span>;</span>
+    <span>overflow-x</span><span>:</span> auto<span>;</span>
+<span>}</span>
 
-.<span>search-filter</span> {
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-md</span>);
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-full</span>);
-    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
-    <span>white-space</span><span>:</span> nowrap;
-    <span>cursor</span><span>:</span> pointer;
-    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span>;
-}
+<span>.</span><span>search-filter</span> <span>{</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-full</span><span>)</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span><span>;</span>
+    <span>white-space</span><span>:</span> nowrap<span>;</span>
+    <span>cursor</span><span>:</span> pointer<span>;</span>
+    <span>transition</span><span>:</span> all <span>0.2<span>s</span></span><span>;</span>
+<span>}</span>
 
-.<span>search-filter</span>.<span>active</span> {
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent</span>);
-    <span>color</span><span>:</span> white;
-}
+<span>.</span><span>search-filter</span><span>.</span><span>active</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent</span><span>)</span><span>;</span>
+    <span>color</span><span>:</span> white<span>;</span>
+<span>}</span>
 
 <span>/* 空状态 */</span>
-.<span>search-empty</span> {
-    <span>text-align</span><span>:</span> center;
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-2xl</span>);
-}
-.<span>search-empty-icon</span> {
-    <span>font-size</span><span>:</span> <span>3<span>rem</span></span>;
-    <span>margin-bottom</span><span>:</span> <span>var</span>(<span>--space-md</span>);
-}
+<span>.</span><span>search-empty</span> <span>{</span>
+    <span>text-align</span><span>:</span> center<span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-2xl</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>search-empty-icon</span> <span>{</span>
+    <span>font-size</span><span>:</span> <span>3<span>rem</span></span><span>;</span>
+    <span>margin-bottom</span><span>:</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 搜索历史 */</span>
-.<span>search-history</span> {
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-sm</span>) <span>var</span>(<span>--space-lg</span>);
-}
-.<span>search-history-tag</span> {
-    <span>display</span><span>:</span> inline-flex;
-    <span>align-items</span><span>:</span> center;
-    <span>gap</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-    <span>padding</span><span>:</span> <span>var</span>(<span>--space-xs</span>) <span>var</span>(<span>--space-sm</span>);
-    <span>background</span><span>:</span> <span>var</span>(<span>--bg-secondary</span>);
-    <span>border-radius</span><span>:</span> <span>var</span>(<span>--radius-sm</span>);
-    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span>;
-    <span>margin</span><span>:</span> <span>var</span>(<span>--space-xs</span>);
-    <span>cursor</span><span>:</span> pointer;
-}
-.<span>search-history-tag</span><span>:</span><span>hover</span> {
-    <span>background</span><span>:</span> <span>var</span>(<span>--accent-alpha</span>);
-}</pre></div>
+<span>.</span><span>search-history</span> <span>{</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span> <span>var</span><span>(</span><span>--space-lg</span><span>)</span><span>;</span>
+<span>}</span>
+<span>.</span><span>search-history-tag</span> <span>{</span>
+    <span>display</span><span>:</span> inline-flex<span>;</span>
+    <span>align-items</span><span>:</span> center<span>;</span>
+    <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+    <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span> <span>var</span><span>(</span><span>--space-sm</span><span>)</span><span>;</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--bg-secondary</span><span>)</span><span>;</span>
+    <span>border-radius</span><span>:</span> <span>var</span><span>(</span><span>--radius-sm</span><span>)</span><span>;</span>
+    <span>font-size</span><span>:</span> <span>0.875<span>rem</span></span><span>;</span>
+    <span>margin</span><span>:</span> <span>var</span><span>(</span><span>--space-xs</span><span>)</span><span>;</span>
+    <span>cursor</span><span>:</span> pointer<span>;</span>
+<span>}</span>
+<span>.</span><span>search-history-tag</span><span>:</span><span>hover</span> <span>{</span>
+    <span>background</span><span>:</span> <span>var</span><span>(</span><span>--accent-alpha</span><span>)</span><span>;</span>
+<span>}</span></pre></div>
 <hr>
 <h3 id="heading-100"><code>Section 26</code> — Responsive (Mobile) 响应式设计</h3>
 <div><pre><span>/* 断点系统 */</span>
-<span>:</span><span>root</span> {
-    <span>--bp-sm</span><span>:</span> <span>640<span>px</span></span>;
-    <span>--bp-md</span><span>:</span> <span>768<span>px</span></span>;
-    <span>--bp-lg</span><span>:</span> <span>1024<span>px</span></span>;
-    <span>--bp-xl</span><span>:</span> <span>1280<span>px</span></span>;
-    <span>--bp-2xl</span><span>:</span> <span>1536<span>px</span></span>;
-}
+<span>:</span><span>root</span> <span>{</span>
+    <span>--bp-sm</span><span>:</span> <span>640<span>px</span></span><span>;</span>
+    <span>--bp-md</span><span>:</span> <span>768<span>px</span></span><span>;</span>
+    <span>--bp-lg</span><span>:</span> <span>1024<span>px</span></span><span>;</span>
+    <span>--bp-xl</span><span>:</span> <span>1280<span>px</span></span><span>;</span>
+    <span>--bp-2xl</span><span>:</span> <span>1536<span>px</span></span><span>;</span>
+<span>}</span>
 
 <span>/* 移动端优先，逐步增强 */</span>
 
 <span>/* 小屏基础 */</span>
-.<span>container</span> {
-    <span>width</span><span>:</span> <span>100<span>%</span></span>;
-    <span>padding</span><span>:</span> <span>0</span> <span>var</span>(<span>--space-md</span>);
-}
+<span>.</span><span>container</span> <span>{</span>
+    <span>width</span><span>:</span> <span>100<span>%</span></span><span>;</span>
+    <span>padding</span><span>:</span> <span>0</span> <span>var</span><span>(</span><span>--space-md</span><span>)</span><span>;</span>
+<span>}</span>
 
 <span>/* 中屏 */</span>
-<span>@media</span> (<span>min-width</span><span>:</span> <span>768<span>px</span></span>) {
-    .<span>container</span> {
-        <span>max-width</span><span>:</span> <span>720<span>px</span></span>;
-        <span>margin</span><span>:</span> <span>0</span> auto;
-    }
-    .<span>card-grid</span> {
-        <span>grid-template-columns</span><span>:</span> <span>repeat</span>(<span>2</span><span>,</span> <span>1<span>fr</span></span>);
-    }
-}
+<span>@media</span> <span>(</span><span>min-width</span><span>:</span> <span>768<span>px</span></span><span>)</span> <span>{</span>
+    <span>.</span><span>container</span> <span>{</span>
+        <span>max-width</span><span>:</span> <span>720<span>px</span></span><span>;</span>
+        <span>margin</span><span>:</span> <span>0</span> auto<span>;</span>
+    <span>}</span>
+    <span>.</span><span>card-grid</span> <span>{</span>
+        <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span><span>2</span><span>,</span> <span>1<span>fr</span></span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 大屏 */</span>
-<span>@media</span> (<span>min-width</span><span>:</span> <span>1024<span>px</span></span>) {
-    .<span>container</span> {
-        <span>max-width</span><span>:</span> <span>960<span>px</span></span>;
-    }
-    .<span>card-grid</span> {
-        <span>grid-template-columns</span><span>:</span> <span>repeat</span>(<span>3</span><span>,</span> <span>1<span>fr</span></span>);
-    }
-    .<span>layout-with-sidebar</span> {
-        <span>display</span><span>:</span> grid;
-        <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>280<span>px</span></span>;
-        <span>gap</span><span>:</span> <span>var</span>(<span>--space-xl</span>);
-    }
-}
+<span>@media</span> <span>(</span><span>min-width</span><span>:</span> <span>1024<span>px</span></span><span>)</span> <span>{</span>
+    <span>.</span><span>container</span> <span>{</span>
+        <span>max-width</span><span>:</span> <span>960<span>px</span></span><span>;</span>
+    <span>}</span>
+    <span>.</span><span>card-grid</span> <span>{</span>
+        <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span><span>3</span><span>,</span> <span>1<span>fr</span></span><span>)</span><span>;</span>
+    <span>}</span>
+    <span>.</span><span>layout-with-sidebar</span> <span>{</span>
+        <span>display</span><span>:</span> grid<span>;</span>
+        <span>grid-template-columns</span><span>:</span> <span>1<span>fr</span></span> <span>280<span>px</span></span><span>;</span>
+        <span>gap</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 超大屏 */</span>
-<span>@media</span> (<span>min-width</span><span>:</span> <span>1280<span>px</span></span>) {
-    .<span>container</span> {
-        <span>max-width</span><span>:</span> <span>1200<span>px</span></span>;
-    }
-}
+<span>@media</span> <span>(</span><span>min-width</span><span>:</span> <span>1280<span>px</span></span><span>)</span> <span>{</span>
+    <span>.</span><span>container</span> <span>{</span>
+        <span>max-width</span><span>:</span> <span>1200<span>px</span></span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 横屏优化 */</span>
-<span>@media</span> (<span>max-height</span><span>:</span> <span>500<span>px</span></span>) <span>and</span> (<span>orientation</span><span>:</span> landscape) {
-    .<span>hero-banner</span> {
-        <span>min-height</span><span>:</span> auto;
-        <span>padding</span><span>:</span> <span>var</span>(<span>--space-xl</span>) <span>0</span>;
-    }
-}
+<span>@media</span> <span>(</span><span>max-height</span><span>:</span> <span>500<span>px</span></span><span>)</span> <span>and</span> <span>(</span><span>orientation</span><span>:</span> landscape<span>)</span> <span>{</span>
+    <span>.</span><span>hero-banner</span> <span>{</span>
+        <span>min-height</span><span>:</span> auto<span>;</span>
+        <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--space-xl</span><span>)</span> <span>0</span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 深色模式偏好（系统级） */</span>
-<span>@media</span> (<span>prefers-color-scheme</span><span>:</span> dark) {
-    <span>:</span><span>root</span><span>:</span><span>not</span>([<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>])<span>:</span><span>not</span>([<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>])<span>:</span><span>not</span>([<span>data-theme</span><span>=</span><span>&quot;forest&quot;</span>]) {
+<span>@media</span> <span>(</span><span>prefers-color-scheme</span><span>:</span> dark<span>)</span> <span>{</span>
+    <span>:</span><span>root</span><span>:</span><span>not</span><span>(</span>[<span>data-theme</span><span>=</span><span>&quot;sakura&quot;</span>]<span>)</span><span>:</span><span>not</span><span>(</span>[<span>data-theme</span><span>=</span><span>&quot;ocean&quot;</span>]<span>)</span><span>:</span><span>not</span><span>(</span>[<span>data-theme</span><span>=</span><span>&quot;forest&quot;</span>]<span>)</span> <span>{</span>
         <span>/* 默认深色 fallback */</span>
-    }
-}
+    <span>}</span>
+<span>}</span>
 
 <span>/* 减少动画偏好 */</span>
-<span>@media</span> (<span>prefers-reduced-motion</span><span>:</span> reduce) {
+<span>@media</span> <span>(</span><span>prefers-reduced-motion</span><span>:</span> reduce<span>)</span> <span>{</span>
     <span><span>*</span></span><span>,</span>
-    <span><span>*</span></span>::<span>before</span><span>,</span>
-    <span><span>*</span></span>::<span>after</span> {
-        <span>animation-duration</span><span>:</span> <span>0.01<span>ms</span></span> <span>!important</span>;
-        <span>animation-iteration-count</span><span>:</span> <span>1</span> <span>!important</span>;
-        <span>transition-duration</span><span>:</span> <span>0.01<span>ms</span></span> <span>!important</span>;
-    }
-    .<span>sakura-container</span><span>,</span>
-    .<span>cursor-trail</span> {
-        <span>display</span><span>:</span> none <span>!important</span>;
-    }
-}
+    <span><span>*</span></span><span>::</span><span>before</span><span>,</span>
+    <span><span>*</span></span><span>::</span><span>after</span> <span>{</span>
+        <span>animation-duration</span><span>:</span> <span>0.01<span>ms</span></span> <span>!important</span><span>;</span>
+        <span>animation-iteration-count</span><span>:</span> <span>1</span> <span>!important</span><span>;</span>
+        <span>transition-duration</span><span>:</span> <span>0.01<span>ms</span></span> <span>!important</span><span>;</span>
+    <span>}</span>
+    <span>.</span><span>sakura-container</span><span>,</span>
+    <span>.</span><span>cursor-trail</span> <span>{</span>
+        <span>display</span><span>:</span> none <span>!important</span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 高对比度模式 */</span>
-<span>@media</span> (<span>prefers-contrast</span><span>:</span> high) {
-    <span>:</span><span>root</span> {
-        <span>--text-primary</span><span>:</span> <span><span>#</span>000</span>;
-        <span>--text-secondary</span><span>:</span> <span><span>#</span>333</span>;
-        <span>--accent</span><span>:</span> <span><span>#</span>0066cc</span>;
-    }
-}
+<span>@media</span> <span>(</span><span>prefers-contrast</span><span>:</span> high<span>)</span> <span>{</span>
+    <span>:</span><span>root</span> <span>{</span>
+        <span>--text-primary</span><span>:</span> <span><span>#</span>000</span><span>;</span>
+        <span>--text-secondary</span><span>:</span> <span><span>#</span>333</span><span>;</span>
+        <span>--accent</span><span>:</span> <span><span>#</span>0066cc</span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 打印样式 */</span>
-<span>@media</span> print {
-    .<span>navbar</span><span>,</span>
-    .<span>floating-toolbar</span><span>,</span>
-    .<span>back-to-top</span><span>,</span>
-    .<span>sakura-container</span><span>,</span>
-    .<span>comments</span> {
-        <span>display</span><span>:</span> none <span>!important</span>;
-    }
-    .<span>article-content</span> {
-        <span>font-size</span><span>:</span> <span>12<span>pt</span></span>;
-        <span>line-height</span><span>:</span> <span>1.6</span>;
-    }
-    <span>a</span> {
-        <span>text-decoration</span><span>:</span> underline;
-        <span>color</span><span>:</span> <span><span>#</span>000</span>;
-    }
-    <span>a</span>::<span>after</span> {
-        <span>content</span><span>:</span> <span>&quot; (&quot;</span> <span>attr</span>(href) <span>&quot;)&quot;</span>;
-        <span>font-size</span><span>:</span> <span>0.8<span>em</span></span>;
-        <span>color</span><span>:</span> <span><span>#</span>666</span>;
-    }
-}</pre></div>
+<span>@media</span> print <span>{</span>
+    <span>.</span><span>navbar</span><span>,</span>
+    <span>.</span><span>floating-toolbar</span><span>,</span>
+    <span>.</span><span>back-to-top</span><span>,</span>
+    <span>.</span><span>sakura-container</span><span>,</span>
+    <span>.</span><span>comments</span> <span>{</span>
+        <span>display</span><span>:</span> none <span>!important</span><span>;</span>
+    <span>}</span>
+    <span>.</span><span>article-content</span> <span>{</span>
+        <span>font-size</span><span>:</span> <span>12<span>pt</span></span><span>;</span>
+        <span>line-height</span><span>:</span> <span>1.6</span><span>;</span>
+    <span>}</span>
+    <span>a</span> <span>{</span>
+        <span>text-decoration</span><span>:</span> underline<span>;</span>
+        <span>color</span><span>:</span> <span><span>#</span>000</span><span>;</span>
+    <span>}</span>
+    <span>a</span><span>::</span><span>after</span> <span>{</span>
+        <span>content</span><span>:</span> <span>&quot; (&quot;</span> <span>attr</span><span>(</span>href<span>)</span> <span>&quot;)&quot;</span><span>;</span>
+        <span>font-size</span><span>:</span> <span>0.8<span>em</span></span><span>;</span>
+        <span>color</span><span>:</span> <span><span>#</span>666</span><span>;</span>
+    <span>}</span>
+<span>}</span></pre></div>
 <p><strong>修改方式</strong>：</p>
 <div><pre><span>/* 添加容器查询（现代浏览器） */</span>
-<span>@container</span> (<span>min-width</span><span>:</span> <span>400<span>px</span></span>) {
-    .<span>card</span> {
-        <span>display</span><span>:</span> grid;
-        <span>grid-template-columns</span><span>:</span> <span>120<span>px</span></span> <span>1<span>fr</span></span>;
-    }
-    .<span>card-image</span> {
-        <span>height</span><span>:</span> <span>100<span>%</span></span>;
-    }
-}
+<span>@container</span> <span>(</span><span>min-width</span><span>:</span> <span>400<span>px</span></span><span>)</span> <span>{</span>
+    <span>.</span><span>card</span> <span>{</span>
+        <span>display</span><span>:</span> grid<span>;</span>
+        <span>grid-template-columns</span><span>:</span> <span>120<span>px</span></span> <span>1<span>fr</span></span><span>;</span>
+    <span>}</span>
+    <span>.</span><span>card-image</span> <span>{</span>
+        <span>height</span><span>:</span> <span>100<span>%</span></span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 折叠屏适配 */</span>
-<span>@media</span> (<span>horizontal-viewport-segments</span><span>:</span> <span>2</span>) {
-    .<span>layout-with-sidebar</span> {
-        <span>grid-template-columns</span><span>:</span> <span>env</span>(viewport-segment-width <span>0</span> <span>0</span>) <span>1<span>fr</span></span>;
-    }
-}
+<span>@media</span> <span>(</span><span>horizontal-viewport-segments</span><span>:</span> <span>2</span><span>)</span> <span>{</span>
+    <span>.</span><span>layout-with-sidebar</span> <span>{</span>
+        <span>grid-template-columns</span><span>:</span> <span>env</span><span>(</span>viewport-segment-width <span>0</span> <span>0</span><span>)</span> <span>1<span>fr</span></span><span>;</span>
+    <span>}</span>
+<span>}</span>
 
 <span>/* 鼠标/触控检测 */</span>
-<span>@media</span> (<span>hover</span><span>:</span> hover) <span>and</span> (<span>pointer</span><span>:</span> fine) {
+<span>@media</span> <span>(</span><span>hover</span><span>:</span> hover<span>)</span> <span>and</span> <span>(</span><span>pointer</span><span>:</span> fine<span>)</span> <span>{</span>
     <span>/* 桌面端：悬停效果 */</span>
-    .<span>card</span><span>:</span><span>hover</span> {
-        <span>transform</span><span>:</span> <span>translateY</span>(<span>-4<span>px</span></span>);
-    }
-}
-<span>@media</span> (<span>hover</span><span>:</span> none) <span>and</span> (<span>pointer</span><span>:</span> coarse) {
+    <span>.</span><span>card</span><span>:</span><span>hover</span> <span>{</span>
+        <span>transform</span><span>:</span> <span>translateY</span><span>(</span><span>-4<span>px</span></span><span>)</span><span>;</span>
+    <span>}</span>
+<span>}</span>
+<span>@media</span> <span>(</span><span>hover</span><span>:</span> none<span>)</span> <span>and</span> <span>(</span><span>pointer</span><span>:</span> coarse<span>)</span> <span>{</span>
     <span>/* 移动端：点击反馈 */</span>
-    .<span>card</span><span>:</span><span>active</span> {
-        <span>transform</span><span>:</span> <span>scale</span>(<span>0.98</span>);
-    }
+    <span>.</span><span>card</span><span>:</span><span>active</span> <span>{</span>
+        <span>transform</span><span>:</span> <span>scale</span><span>(</span><span>0.98</span><span>)</span><span>;</span>
+    <span>}</span>
     <span>/* 增大点击区域 */</span>
-    .<span>button</span> {
-        <span>min-height</span><span>:</span> <span>44<span>px</span></span>;
-        <span>min-width</span><span>:</span> <span>44<span>px</span></span>;
-    }
-}</pre></div></article></div></main><footer><a href="/feed.xml">RSS 訂閱</a> · <a href="/#/posts">所有文章</a> · <a href="#">回到頂部 ↑</a></footer></body></html>
+    <span>.</span><span>button</span> <span>{</span>
+        <span>min-height</span><span>:</span> <span>44<span>px</span></span><span>;</span>
+        <span>min-width</span><span>:</span> <span>44<span>px</span></span><span>;</span>
+    <span>}</span>
+<span>}</span></pre></div></article></div></main><footer><a href="/feed.xml">RSS 訂閱</a> · <a href="/#/posts">所有文章</a> · <a href="#">回到頂部 ↑</a></footer></body></html>
