@@ -841,6 +841,7 @@ luliy.me 只读 **Blog A**（luliy6/luliy6.github.io）的文章，所以下面�
 | 页尾动画卡顿 | 局部绘制和离屏停止是否生效；在同一浏览器里分别测签名和背景粒子的开销 |
 | 手机顶栏压住内容、首页细节不见了 | `home-fixes.css/js` 是否已注入（查看首页源码里的 `data-home-fixes`） |
 | 贴了 `weekly`／`study` 等标签，版面没变 | 标签是否贴在 **Blog A**；Gmeek 的 Actions 是否跑完、`postList.json` 里这篇是否已带新标签；浏览器是否还在用旧的 `home-fixes.js`（看 `index.html` 里 `?v=` 是否是最新） |
+| 切到简体后文章正文还是繁体（或反过来） | 正文转换在 `home-fixes.js` 第 26 段：两个方向都走 `window.LuliyInterfaceText`（繁体用内置字表，简体用 OpenCC）。文章被判成日文就不转换——判定是「假名占比 ≥15% 且至少 20 个」，2026-11-01 之前是「出现一个假名就算日文」，所以引用了「レコード」的《网站使用指南》切不了。代码块、`<kbd>` 保持原样 |
 | 周记期号不对 | 期号按周记的发布时间从旧到新数；删文章、补发旧文章、把旧文章改贴 `weekly` 都会让后面的期号变。页面会先用 localStorage `luliy-weekly-index-v1` 里的旧列表，feed 回来后自动更正 |
 | 学习版的提示框没变色 | 第一行必须是 `> [!NOTE]` 这类写法；网站会去掉提示框原本的样式，是靠第一行的 Note／Tip／Important／Warning／Caution 认出来的 |
 | 学习版的脚注没跑到页边 | 页边要至少 270px 空位且用鼠标；不够时留在文末，属正常 |

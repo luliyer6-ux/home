@@ -2338,8 +2338,11 @@
     const bodies = () => document.querySelectorAll('#sourceArticleBody:not([data-loading="true"]), #main .article-body');
 
     function guessLang(el) {
-      const t = (el.textContent || '').slice(0, 4000);
-      if (KANA.test(t)) return 'ja';
+      const t = (el.textContent || '').slice(0, 6000);
+      // Japanese only when kana is a real share of the text: a Chinese article that quotes a few Japanese words
+      // (網站使用指南 has 「レコード」) used to count as Japanese and was never converted (2026-11-01).
+      const kana = (t.match(/[぀-ヿ]/g) || []).length, han = (t.match(/[㐀-鿿]/g) || []).length;
+      if (kana && kana >= Math.max(20, (kana + han) * 0.15)) return 'ja';
       if (HAN.test(t)) return 'zh';
       return LATIN.test(t) ? 'en' : '';
     }
@@ -2362,7 +2365,9 @@
           if (!orig.has(n)) orig.set(n, v);
           const o = orig.get(n);
           if (orig.get(n) !== undefined && n.__luliyOut === v) { /* ours, fall through to recompute */ }
-          const want = trad && typeof conv === 'function' ? conv(o) : o;
+          // Both directions (2026-11-01): LuliyInterfaceText converts to whichever script the site is in, so an article
+          // written in 繁體 also turns into 简体 (it used to stay as written, e.g. 網站使用指南).
+          const want = typeof conv === 'function' ? conv(o) : o;
           if (v !== want) { n.nodeValue = want; }
           n.__luliyOut = want;
         }
