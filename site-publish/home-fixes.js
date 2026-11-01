@@ -148,9 +148,13 @@
       setHidden(dy > 0 && y > 160 && !nearEnd && !busy());
     };
     addEventListener('scroll', () => { if (!queued) queued = requestAnimationFrame(measure); }, { passive: true });
-    addEventListener('hashchange', route);
+    // route() reads scrollY, which forces a layout; on a page change it runs once, in the next frame, after the new
+    // content is in (2026-11-01: it used to run on every #main mutation, in the middle of the router's work).
+    let routeQ = 0;
+    const routeSoon = () => { if (!routeQ) routeQ = requestAnimationFrame(() => { routeQ = 0; route(); }); };
+    addEventListener('hashchange', routeSoon);
     mobile.addEventListener('change', route);
-    new MutationObserver(route).observe(main, { childList: true });
+    new MutationObserver(routeSoon).observe(main, { childList: true });
     new MutationObserver(wash).observe(header, { attributes: true, attributeFilter: ['class'] });
     route();
   })();
@@ -3345,7 +3349,33 @@
     };
     new MutationObserver(sync).observe(main, { childList: true, subtree: true });
     addEventListener('hashchange', () => queueMicrotask(sync));
+    // Section 39 calls this right after the router's update, before any MutationObserver hears about the new list:
+    // the article list the router drew for 短札 is gone before other scripts start decorating its cards.
+    window.LuliyJournalSync = sync;
     sync();
+
+    /* ---- warm-up (2026-11-01): while 文章 / 編年史 is open, the first notes' texts are fetched and the avatar is
+       decoded when the browser is idle, so the first switch to 短札 shows everything in its first frame. Skipped on
+       Save-Data / 2G. The bodies land in the same cache loadBody() uses. */
+    let warmed = false, warmImg = null;
+    const warm = () => {
+      if (warmed || routeOf().path !== '/posts') return;
+      const J = window.LuliyJournal;
+      if (!J || !J.items || !J.items.length) return;
+      const c = navigator.connection;
+      if (c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ''))) return;
+      warmed = true;
+      const idle = window.requestIdleCallback || (f => setTimeout(f, 200));
+      idle(() => {
+        J.items.slice(0, 4).forEach(it => { loadBody(it).catch(() => {}); });
+        warmImg = new Image(); warmImg.decoding = 'async'; warmImg.src = '/assets/avatar/luliy.webp?v=5';
+        if (warmImg.decode) warmImg.decode().catch(() => {});
+      }, { timeout: 4000 });
+    };
+    const warmSoon = () => setTimeout(warm, 1200);
+    addEventListener('luliy-journal-feed', warmSoon);
+    addEventListener('hashchange', warmSoon);
+    warmSoon();
   })();
 
   /* 33. Phones: swipe left / right to switch the tabs in the header (2026-10-30). When the header carries tabs
@@ -3383,14 +3413,21 @@
       slide(dx < 0 ? 'next' : 'prev');
       location.hash = next.getAttribute('href');
     }, { passive: true });
-    // the new tab's content slides in a little from the side it came from (CSS: html[data-lj-slide])
-    let slideTimer = 0;
+    // the new tab's content slides in a little from the side it came from (CSS: html[data-lj-slide]). The direction
+    // is noted on the tap and applied once the hash has changed and the new content is in (2026-11-01): set on the
+    // tap itself, it started the slide on the old list, which showed a see-through frame before the switch.
+    let slideTimer = 0, want = null, wantAt = 0;
     function slide(dir) {
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      want = dir; wantAt = performance.now();
+    }
+    addEventListener('hashchange', () => {
+      const dir = want; want = null;
+      if (!dir || performance.now() - wantAt > 1000 || !/^#\/posts(?:\?|$)/.test(location.hash)) return;
       root.dataset.ljSlide = dir;
       clearTimeout(slideTimer);
       slideTimer = setTimeout(() => { delete root.dataset.ljSlide; }, 600);
-    }
+    });
     addEventListener('animationend', e => { if (/^luliy-slide-/.test(e.animationName)) delete root.dataset.ljSlide; }, true);
     document.addEventListener('click', e => {
       const a = e.target.closest && e.target.closest('#header .luliy-header-modes a');
@@ -4308,6 +4345,58 @@
     addEventListener('scroll', () => { if (S) spy(); }, { passive: true });
     addEventListener('resize', () => { if (S) { place(); spy(); } });
     schedule();
+  })();
+
+  /* 39. 文章 / 短札 / 編年史 switches in one frame (2026-11-01). Two things made a switch stall and blink:
+     a) The router hands every change inside the same page (a tab, a tag, a page of the list) to a View Transition:
+        the browser first freezes a snapshot of the whole page, waits for the new content, then cross-fades the two
+        (home-fixes.css: lift + settle). On the article page that was ~12 frames on a desktop and 20–30 on a phone of
+        a frozen, then see-through page. For #/posts → #/posts the update now runs straight away, with no snapshot;
+        the tabs, the header and the stars never take part. Other page changes keep their transition. The wrapper
+        sits on Document.prototype, so the room gate (section 22), which shadows document.startViewTransition for
+        one dispatch and then deletes its own copy, does not remove it. Right after the update, 短札 (section 32)
+        replaces the article list the router drew for it, before other scripts decorate that list's cards.
+     b) Every render() re-announces the current theme (luliy:theme), and the star layer answers by measuring the
+        page while the router is half-way through rebuilding it — a full extra style and layout pass per switch.
+        An announcement that repeats the theme and appearance already announced is stopped before it reaches
+        the listeners; a real change still goes through. */
+  (() => {
+    const hashPath = h => { try { return new URL(String(h || '').replace(/^#/, '') || '/', 'https://luliy.local').pathname.replace(/\/+$/, '') || '/'; } catch (e) { return null; } };
+    const urlPath = u => { try { return hashPath(new URL(u).hash); } catch (e) { return null; } };
+    // a) The router calls startViewTransition from its own hashchange listener. The event being dispatched says where
+    // the change comes from and goes to (window.event; listeners on window run in the order they were added, so a
+    // listener of ours cannot get in first). Without window.event: the last hash we saw, updated after the router.
+    let lastHash = location.hash;
+    addEventListener('hashchange', () => { lastHash = location.hash; });
+    const stays = () => {
+      const ev = window.event;
+      if (ev && ev.type === 'hashchange') return urlPath(ev.oldURL) === '/posts' && urlPath(ev.newURL) === '/posts';
+      if ('event' in window) return false;
+      return lastHash !== location.hash && hashPath(lastHash) === '/posts' && hashPath(location.hash) === '/posts';
+    };
+    const proto = window.Document && Document.prototype, real = proto && proto.startViewTransition;
+    if (typeof real === 'function') {
+      const done = Promise.resolve();
+      const wrapped = function (arg) {
+        if (stays()) {
+          const update = typeof arg === 'function' ? arg : arg && typeof arg.update === 'function' ? arg.update : null;
+          let out;
+          try { out = update ? update() : undefined; } catch (err) { setTimeout(() => { throw err; }); }
+          try { if (typeof window.LuliyJournalSync === 'function') window.LuliyJournalSync(); } catch (err) {}
+          const settled = Promise.resolve(out).then(() => {}, () => {});
+          return { ready: done, finished: settled, updateCallbackDone: settled, types: new Set(), skipTransition() {} };
+        }
+        return real.apply(this, arguments);
+      };
+      try { Object.defineProperty(proto, 'startViewTransition', { value: wrapped, writable: true, configurable: true }); } catch (e) {}
+    }
+    // b) drop repeats of luliy:theme (dispatched on document, so a capturing listener on window does hear it first)
+    let lastTheme = (root.dataset.theme || '') + '|' + (root.dataset.appearance || '');   // already announced before this file loaded
+    addEventListener('luliy:theme', e => {
+      const key = (e.detail && e.detail.theme) + '|' + (root.dataset.appearance || '');
+      if (key === lastTheme) e.stopImmediatePropagation();
+      lastTheme = key;
+    }, true);
   })();
 
 })();
