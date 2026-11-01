@@ -98,10 +98,20 @@
       "url": "https://jin.luliy.me/",
       "cover": "./assets/works/jingzhong.svg",
       "exam": false
+    },
+    {
+      "name": "ΔιάΝους",
+      "zh": "电子墨水风的阅读室：Blog B 的文章，列表、书摘与阅读进度。",
+      "en": "An e-ink reading room for Blog B: a plain list, clippings and reading progress.",
+      "ja": "電子ペーパー風の読書室。Blog B の記事を一覧と書き抜きで。",
+      "url": "./works/dianous/",
+      "cover": "./assets/works/dianous.webp",
+      "exam": false
     }
   ],
   "knownPaths": [
     "408",
+    "dianous",
     "gpt-e2-data",
     "gpt-english-2-exams.html",
     "gpt-english-2.html",
