@@ -1047,3 +1047,13 @@ Blog A 文章按标签换版面，Loon 照常出现。优先顺序：`weekly`（
 - **测过**：用 Blog A 真实文章（P26、P29、P18、P8 说明书；P46 教程）在 1440、1280、390 宽和浅色外观下；繁体「動畫」能搜到简体「动画」；周记和随笔／学习／AI 不受影响。
 - **未验证**：线上效果；Safari／Firefox 的高亮；很长的说明书（P8，约 43 分钟）滚动时的性能。
 
+
+### 15.11 ΔιάΝους（`works/dianous/`，2026-11-01）
+
+作品页第 7 个作品：Blog B（mini.luliy.me，`luliyer6-ux/luliyer6-ux.github.io`）的极简电子墨水阅读站，单个 HTML 文件，不依赖主站脚本。
+
+- **数据**：打开时读 `https://mini.luliy.me/postList.json`，读不到再读 raw.githubusercontent.com；文章正文读 `mini.luliy.me/post/*.html` 里的 `#postBody`。都失败时用文件里内置的 2026-11-01 副本（清单＋正文）。Blog B 发文或改文后这里自动跟着变，不用改本站。
+- **列表**：隐藏 `chronicle-data`／`chronicle`／`bug`／`timeline` 标签和没有正文的 Issue；编号按发布顺序连续（No.01 最早），网址里用的是 Issue 编号（`#P14`），所以链接稳定。
+- **页面**：首页（头像＋按年份的列表＋搜索）、阅读面板（Aa 字号行距栏宽、本文目录、书摘、读到哪里、章节 `#` 链接 `#P14-h-3`、图片放大、代码复制、utterances 评论）、关于（`#about`）、404。设置、书摘、进度只存在访客浏览器（localStorage `v-*`）。
+- **改它**：直接改 `works/dianous/index.html`。头像以 data URI 内嵌在文件里（白纸模式是透明墨线，夜间模式是原画）。封面 `assets/works/dianous.webp`；作品条目在 `data/works.json`，推送后 Action 自动重生成作品页。
+- **未验证**：线上效果；中国大陆访问 mini.luliy.me / GitHub 的情况（连不上时显示内置副本，评论区会提示去 GitHub 留言）。
