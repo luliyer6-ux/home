@@ -3378,13 +3378,31 @@
     warmSoon();
   })();
 
-  /* 33. Phones: swipe left / right to switch the tabs in the header (2026-10-30). When the header carries tabs
-     (.luliy-header-modes, e.g. 文章 · 短札 · 編年史), a quick horizontal swipe moves to the next / previous tab.
-     It stays out of the way of anything that scrolls sideways itself (tag row, code blocks, tables), of dialogs
-     and the filter sheet, and ignores slow or mostly vertical drags, so normal scrolling is unaffected. */
+  /* 33. Phones: the header tabs follow the finger (2026-11-02; replaces the 2026-10-30 swipe, which switched only
+     once the finger was lifted). On #/posts (文章 · 短札 · 編年史) a sideways drag moves the page with the finger:
+     while it moves, the pages become rounded cards with a dark seam between them, the next tab is already
+     beside the current one, and the gold bar under the header tabs travels with it. On release the page goes
+     to the next tab when it was dragged past 30% of the width or flicked; otherwise it springs back. A tap on a
+     header tab slides the same way. Each tab keeps its own scroll position.
+     How: the router draws one tab at a time, so the moving pages are copies. When a drag starts, the current
+     page is copied (rows below the screen dropped), and the copy of each tab is kept for the next drag; a tab
+     not seen yet shows placeholder rows. The copies sit in a fixed layer under the header, inert and hidden
+     from screen readers, only while the finger is down or the page is settling. After the hash changes the real
+     page is scrolled to where that tab was left, and the layer fades out (0.14 s) once the new content is in
+     (短札: once the first notes on screen have their text, at most 0.35 s).
+     Left alone: anything that scrolls sideways itself (tag row, code, tables), dialogs, the filter sheet, the
+     image viewer, text selection, drags starting within 20 px of the screen edge (the system back gesture),
+     reduced motion (the tabs then switch at once), and the Works page's header tabs (a quick swipe still
+     presses the next one). */
   (() => {
     const mobile = matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)');
-    let start = null;
+    const calm = matchMedia('(prefers-reduced-motion: reduce)');
+    const main = document.getElementById('main');
+    if (!main) return;
+    const GAP = 12, TH = .30, DUR = 380, VEL = .45, EDGE = 20, EASE = 'cubic-bezier(.2,.9,.25,1)';
+    const onPosts = () => /^#\/posts(?:[?&]|$)/.test(location.hash || '');
+    const viewOf = h => { try { return new URL(String(h || '').replace(/^#/, '') || '/', 'https://luliy.local').searchParams.get('view') || 'archive'; } catch (e) { return 'archive'; } };
+    const tabsNow = () => [...document.querySelectorAll('#header .luliy-header-modes :is(a, button)')];
     const scrollsSideways = el => {
       for (let n = el; n && n !== document.body && n.nodeType === 1; n = n.parentElement) {
         if (n.scrollWidth > n.clientWidth + 2) { const o = getComputedStyle(n).overflowX; if (o === 'auto' || o === 'scroll') return true; }
@@ -3392,49 +3410,180 @@
       }
       return false;
     };
-    document.addEventListener('touchstart', e => {
-      start = null;
-      if (!mobile.matches || e.touches.length !== 1) return;
-      if (!document.querySelector('#header .luliy-header-modes') || document.body.classList.contains('luliy-sheet-open') || document.body.classList.contains('lj-viewing')) return;
-      if (scrollsSideways(e.target)) return;
-      const t = e.touches[0];
-      start = { x: t.clientX, y: t.clientY, t: performance.now() };
-    }, { passive: true });
-    document.addEventListener('touchend', e => {
-      const s = start; start = null;
-      if (!s || !mobile.matches) return;
-      const t = e.changedTouches[0], dx = t.clientX - s.x, dy = t.clientY - s.y;
-      if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8 || performance.now() - s.t > 700) return;
-      if (String(getSelection() || '').length) return;
-      const tabs = [...document.querySelectorAll('#header .luliy-header-modes a')];
-      const at = tabs.findIndex(a => a.hasAttribute('aria-current'));
-      const next = tabs[at + (dx < 0 ? 1 : -1)];
-      if (at < 0 || !next) return;
-      slide(dx < 0 ? 'next' : 'prev');
-      location.hash = next.getAttribute('href');
-    }, { passive: true });
-    // the new tab's content slides in a little from the side it came from (CSS: html[data-lj-slide]). The direction
-    // is noted on the tap and applied once the hash has changed and the new content is in (2026-11-01): set on the
-    // tap itself, it started the slide on the old list, which showed a see-through frame before the switch.
-    let slideTimer = 0, want = null, wantAt = 0;
-    function slide(dir) {
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      want = dir; wantAt = performance.now();
+    const blocked = () => document.body.classList.contains('luliy-sheet-open') || document.body.classList.contains('lj-viewing') || !!document.querySelector('dialog[open]') || String(getSelection() || '').length > 0;
+
+    /* ---- copies of each tab ---- */
+    const snaps = new Map();   // view -> { node, y, top, left, width }
+    const ROWS = 'li, article, section, .post-row, .post-year, .lj-note, .study-entry, .archive-card, .month';
+    function snapshot() {
+      const r = main.getBoundingClientRect(), vh = innerHeight;
+      const live = [...main.querySelectorAll(ROWS)], below = live.map(n => n.getBoundingClientRect().top > vh + 160);
+      const node = main.cloneNode(true), copy = [...node.querySelectorAll(ROWS)];
+      if (copy.length === live.length) copy.forEach((n, i) => { if (below[i]) n.remove(); });
+      node.removeAttribute('tabindex'); node.style.minHeight = '';
+      return { node, y: scrollY, top: r.top + scrollY, left: r.left, width: r.width };
     }
-    addEventListener('hashchange', () => {
-      const dir = want; want = null;
-      if (!dir || performance.now() - wantAt > 1000 || !/^#\/posts(?:\?|$)/.test(location.hash)) return;
-      root.dataset.ljSlide = dir;
-      clearTimeout(slideTimer);
-      slideTimer = setTimeout(() => { delete root.dataset.ljSlide; }, 600);
-    });
-    addEventListener('animationend', e => { if (/^luliy-slide-/.test(e.animationName)) delete root.dataset.ljSlide; }, true);
+    function skeleton() {
+      const s = document.createElement('div'); s.className = 'lsw-skel';
+      for (let i = 0; i < 7; i++) s.append(document.createElement('i'));
+      return s;
+    }
+
+    /* ---- the moving layer ---- */
+    let L = null;          // { stage, track, bar, pages, tabs, idx, W, rects }
+    let s = null, busy = false, settleT = 0;
+    function build(tabs, idx) {
+      const W = innerWidth, header = document.getElementById('header');
+      const stage = document.createElement('div'); stage.className = 'lsw-stage'; stage.setAttribute('aria-hidden', 'true'); stage.inert = true;
+      stage.style.zIndex = String((parseInt(getComputedStyle(header || document.body).zIndex, 10) || 60) - 1);
+      const bg = getComputedStyle(document.body).backgroundColor;
+      stage.style.setProperty('--lsw-page', bg && bg !== 'rgba(0, 0, 0, 0)' ? bg : 'var(--bg)');
+      const track = document.createElement('div'); track.className = 'lsw-track';
+      const pages = tabs.map((t, i) => {
+        const p = document.createElement('div'); p.className = 'lsw-page';
+        const sn = snaps.get(viewOf(t.getAttribute('href')));
+        if (sn) {
+          sn.node.style.cssText = `position:absolute;margin:0;top:${sn.top - sn.y}px;left:${sn.left}px;width:${sn.width}px;transform:none;animation:none`;
+          p.append(sn.node);
+        } else p.append(skeleton());
+        track.append(p);
+        return p;
+      });
+      stage.append(track);
+      const bar = document.createElement('div'); bar.className = 'lsw-bar'; bar.setAttribute('aria-hidden', 'true');
+      bar.style.zIndex = String((parseInt(getComputedStyle(header || document.body).zIndex, 10) || 60) + 1);
+      const rects = tabs.map(t => t.getBoundingClientRect());
+      bar.style.top = (rects[idx].bottom - 5) + 'px';
+      document.body.append(stage, bar);
+      root.classList.add('lsw-on');
+      L = { stage, track, bar, pages, tabs, idx, W, rects };
+      requestAnimationFrame(() => { if (L && L.stage === stage) stage.classList.add('lsw-round'); });
+    }
+    const pos = i => -i * (L.W + GAP);
+    const currentX = () => { const m = getComputedStyle(L.track).transform; return m && m !== 'none' ? new DOMMatrixReadOnly(m).m41 : pos(L.idx); };
+    function setX(x, ms) {
+      L.track.style.transition = ms ? `transform ${ms}ms ${EASE}` : 'none';
+      L.track.style.transform = `translate3d(${x}px,0,0)`;
+      const p = Math.max(0, Math.min(L.tabs.length - 1, -x / (L.W + GAP))), i = Math.min(L.tabs.length - 2, Math.floor(p)), f = p - i;
+      const a = L.rects[Math.max(0, i)], b = L.rects[Math.max(0, i) + 1] || a;
+      const cx = (a.left + a.width / 2) + ((b.left + b.width / 2) - (a.left + a.width / 2)) * f;
+      L.bar.style.transition = ms ? `transform ${ms}ms ${EASE}` : 'none';
+      L.bar.style.transform = `translateX(${cx - 8}px)`;
+    }
+    function teardown(fade) {
+      if (!L) return;
+      const { stage, bar } = L; L = null;
+      clearTimeout(settleT);
+      const done = () => {
+        stage.querySelectorAll('.lsw-page > *').forEach(n => n.remove());   // the copies stay in snaps for the next drag
+        stage.remove(); bar.remove(); busy = false;
+      };
+      root.classList.remove('lsw-on');
+      if (fade && !calm.matches) { stage.classList.add('lsw-out'); bar.remove(); setTimeout(done, 160); } else done();
+    }
+    // animate to tab t; when it is a different tab, change the hash, put the real page where that tab was left,
+    // and let the layer go once the new content is in
+    function settle(t, ms) {
+      busy = true;
+      t = Math.max(0, Math.min(L.tabs.length - 1, t));
+      setX(pos(t), ms);
+      const squareAt = Math.max(0, ms - 180);
+      settleT = setTimeout(() => L && L.stage.classList.remove('lsw-round'), squareAt);
+      setTimeout(() => {
+        if (!L) return;
+        if (t === L.idx) { teardown(false); return; }
+        const a = L.tabs[t], href = a.getAttribute('href'), view = viewOf(href), sn = snaps.get(view);
+        const y = sn ? sn.y : 0;
+        addEventListener('hashchange', () => {      // added now, so it runs after every other listener (router, held height)
+          if (viewOf(location.hash) !== view) { teardown(true); return; }
+          scrollTo({ top: y, behavior: 'instant' });
+          const t0 = performance.now();
+          const ready = () => {
+            const waiting = view === 'journal' && [...main.querySelectorAll('.lj-note[aria-busy="true"]')].some(n => n.getBoundingClientRect().top < innerHeight);
+            if (waiting && performance.now() - t0 < 350) { setTimeout(ready, 50); return; }
+            requestAnimationFrame(() => requestAnimationFrame(() => teardown(true)));
+          };
+          ready();
+        }, { once: true });
+        location.hash = href;
+      }, ms);
+    }
+
+    /* ---- finger ---- */
+    document.addEventListener('touchstart', e => {
+      s = null;
+      if (busy || e.touches.length !== 1 || !mobile.matches || !tabsNow().length || blocked()) return;
+      const t = e.touches[0];
+      if (t.clientX < EDGE || t.clientX > innerWidth - EDGE || e.target.closest?.('#header') || scrollsSideways(e.target)) return;
+      s = { x: t.clientX, y: t.clientY, t: performance.now(), mode: null, base: 0, samples: [] };
+    }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      if (!s || e.touches.length !== 1) { s = null; return; }
+      const t = e.touches[0], dx = t.clientX - s.x, dy = t.clientY - s.y;
+      if (!s.mode) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dx) <= Math.abs(dy) * 1.2) { s = null; return; }
+        const tabs = tabsNow(), idx = tabs.findIndex(a => a.hasAttribute('aria-current'));
+        if (idx < 0) { s = null; return; }
+        if (!onPosts() || calm.matches || tabs.some(a => a.tagName !== 'A')) { s.mode = 'flick'; s.tabs = tabs; s.idx = idx; return; }
+        snaps.set(viewOf(tabs[idx].getAttribute('href')), snapshot());
+        build(tabs, idx);
+        s.mode = 'x'; s.x = t.clientX; s.base = pos(idx);
+      }
+      if (s.mode !== 'x') return;
+      if (e.cancelable) e.preventDefault();
+      let x = s.base + (t.clientX - s.x);
+      const min = pos(L.tabs.length - 1);
+      if (x > 0) x *= .32;                              // rubber band past the first / last tab
+      if (x < min) x = min + (x - min) * .32;
+      setX(x, 0);
+      const now = performance.now();
+      s.samples.push([now, t.clientX]); while (s.samples.length > 2 && now - s.samples[0][0] > 100) s.samples.shift();
+    }, { passive: false });
+    const end = cancelled => {
+      const st = s; s = null;
+      if (!st || !st.mode) return;
+      if (st.mode === 'flick') {   // Works page tabs, reduced motion: the old quick swipe
+        return;
+      }
+      if (!L) return;
+      const sm = st.samples, v = sm.length > 1 ? (sm[sm.length - 1][1] - sm[0][1]) / Math.max(1, sm[sm.length - 1][0] - sm[0][0]) : 0;
+      const p = -currentX() / (L.W + GAP), o = L.idx;
+      let t;
+      if (!cancelled && Math.abs(v) > VEL) t = v < 0 ? Math.floor(p) + 1 : Math.ceil(p) - 1;
+      else t = Math.round(p + (p > o ? .5 - TH : p < o ? -(.5 - TH) : 0));
+      t = Math.max(o - 1, Math.min(o + 1, t));
+      const target = Math.max(0, Math.min(L.tabs.length - 1, t));
+      const left = Math.abs(pos(target) - currentX());
+      settle(target, Math.round(Math.max(180, Math.min(DUR, DUR * (.45 + .55 * left / L.W)))));
+    };
+    document.addEventListener('touchend', e => {
+      const st = s;
+      if (st && st.mode === 'flick') {
+        const t = e.changedTouches[0], dx = t.clientX - st.x;
+        s = null;
+        if (Math.abs(dx) < 70 || performance.now() - st.t > 700) return;
+        const next = st.tabs[st.idx + (dx < 0 ? 1 : -1)];
+        if (next) { if (next.tagName === 'A') location.hash = next.getAttribute('href'); else next.click(); }
+        return;
+      }
+      end(false);
+    }, { passive: true });
+    document.addEventListener('touchcancel', () => end(true), { passive: true });
+
+    /* ---- a tap on a header tab slides the same way ---- */
     document.addEventListener('click', e => {
       const a = e.target.closest && e.target.closest('#header .luliy-header-modes a');
-      if (!a || !mobile.matches) return;
-      const tabs = [...a.parentElement.querySelectorAll('a')], at = tabs.findIndex(x => x.hasAttribute('aria-current')), to = tabs.indexOf(a);
-      if (at >= 0 && to >= 0 && at !== to) slide(to > at ? 'next' : 'prev');
+      if (!a || !mobile.matches || calm.matches || !onPosts() || busy || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey) return;
+      const tabs = tabsNow(), idx = tabs.findIndex(x => x.hasAttribute('aria-current')), to = tabs.indexOf(a);
+      if (idx < 0 || to < 0 || to === idx) return;
+      e.preventDefault();
+      snaps.set(viewOf(tabs[idx].getAttribute('href')), snapshot());
+      build(tabs, idx); setX(pos(idx), 0);
+      requestAnimationFrame(() => settle(to, Math.round(DUR * .9)));
     }, true);
+    // the router drew something else meanwhile (back button, a link): drop the layer
+    addEventListener('hashchange', () => { if (L && !busy) teardown(false); });
   })();
 
   /* 34. Comments / 評論 (2026-10-30): Giscus (GitHub Discussions) under each blog article (#/article/Pxx).

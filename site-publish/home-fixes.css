@@ -1849,14 +1849,31 @@ body.lj-viewing { overflow: hidden; }
 @media (min-width: 1001px) and (max-height: 860px) { .lj-side { position: static; } }
 .lj-nowrap { white-space: nowrap; }
 
-/* 33. Phones: a switched header tab slides its content in a little from the side it came from (2026-10-30).
-   2026-11-01: starts at 45% opacity, not 0, so the first frame of the new tab is never an empty page. */
-@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
-  html[data-lj-slide=next] #main .post-archive { animation: luliy-slide-next .26s cubic-bezier(.22, .8, .3, 1) both; }
-  html[data-lj-slide=prev] #main .post-archive { animation: luliy-slide-prev .26s cubic-bezier(.22, .8, .3, 1) both; }
+/* 33. Phones: the header tabs follow the finger (2026-11-02; home-fixes.js 33). A fixed layer under the header
+   holds a copy of each tab side by side; while it moves the copies are rounded cards with a dark seam, and a
+   gold bar travels under the header tabs in place of the current tab's own. */
+.lsw-stage {
+  position: fixed; inset: 0; overflow: hidden; pointer-events: none; contain: layout paint style;
+  background: color-mix(in srgb, var(--lsw-page, var(--bg)) 40%, #000);
 }
-@keyframes luliy-slide-next { from { opacity: .45; transform: translateX(22px); } to { opacity: 1; transform: none; } }
-@keyframes luliy-slide-prev { from { opacity: .45; transform: translateX(-22px); } to { opacity: 1; transform: none; } }
+.lsw-track { display: flex; gap: 12px; height: 100%; will-change: transform; }
+.lsw-page {
+  position: relative; flex: 0 0 100%; height: 100%; overflow: hidden; background: var(--lsw-page, var(--bg));
+  border-radius: 0; transition: border-radius .2s ease;
+}
+.lsw-stage.lsw-round .lsw-page { border-radius: 24px; }
+/* the copies show the end state of any entrance animation (rows fading in), never its first frame */
+.lsw-page * { animation-delay: -60s !important; animation-play-state: paused !important; transition: none !important; }
+.lsw-stage.lsw-out { opacity: 0; transition: opacity .14s ease; }
+.lsw-bar { position: fixed; left: 0; width: 16px; height: 2px; border-radius: 2px; background: var(--accent); pointer-events: none; }
+html.lsw-on #header .luliy-header-modes :is(a, button)[aria-current]::after { opacity: 0; }
+/* the header (and its tabs) stays in view while the pages move, even if scrolling had tucked it away */
+html.lsw-on body.luliy-chrome-hidden #header { opacity: 1 !important; transform: none !important; }
+/* a tab not seen yet: quiet placeholder rows in the list's place */
+.lsw-skel { position: absolute; left: 20px; right: 20px; top: 132px; display: grid; gap: 30px; }
+.lsw-skel i { display: block; height: 46px; border-radius: 8px; background: color-mix(in srgb, var(--ink, #fff) 6%, transparent); }
+.lsw-skel i:nth-child(3n+2) { width: 82%; }
+.lsw-skel i:nth-child(3n) { width: 64%; }
 
 /* 34. Comments / 評論 (2026-10-30): Giscus under blog articles; sits in the body column of .source-layout. */
 .luliy-comments { grid-column: 2; margin-top: 56px; padding-top: 22px; border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent); }
