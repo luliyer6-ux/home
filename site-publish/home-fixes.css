@@ -2493,3 +2493,5 @@ html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub::before 
 /* weekly: her speech bubble is clickable (opens the contents); the separate contents button is gone */
 html.lk-weekly .luliy-mascot .luliy-mascot-bubble.show { pointer-events: auto; cursor: pointer; }
 html.lk-weekly .luliy-mascot [data-m="toc"] { display: none !important; }
+/* the ribbon is joined to Loon like a speech bubble: a flat bottom edge with a small tail pointing down at her */
+html.lk-weekly.lk-weekly .lk-card-line { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 72px calc(100% - 10px), 62px 100%, 52px calc(100% - 10px), 0 calc(100% - 10px)); padding-bottom: 19px; }
