@@ -2005,7 +2005,7 @@ html.lk-weekly[data-appearance="light"] {
 /* a) the page: paper, nothing behind the text */
 /* beats html:root[data-appearance][data-palette] body (the palette sky) */
 html.lk-weekly.lk-weekly:root[class], html.lk-weekly.lk-weekly:root[class] :is(body, .page-above) { background: var(--lk-bg) !important; background-image: none !important; }
-html.lk-weekly :is(.subpage-stars, .click-stars, #luliy-article-bg, .lr-mini, .reader-music-card),
+html.lk-weekly :is(.subpage-stars, .click-stars, #luliy-article-bg),
 html.lk-weekly #main :is(.source-toc, .reader-float, .source-meta, .reader-series) { display: none !important; }
 html.lk-weekly #header { background: var(--lk-bg); box-shadow: 0 -14px 0 var(--lk-bg); }
 html.lk-weekly body.luliy-article-bg-on :is(.article-body, #sourceArticleBody, .source-end, .source-end *) { text-shadow: none !important; }
@@ -2168,6 +2168,9 @@ html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .lk-by[data-lk-no]::after { content: 
 }
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
   html.lk-weekly { --lk-num-size: 130px; --lk-num-up: 20px; }
+  /* the music bar sits above the weekly bottom bar (第N期 / ↑) and drops back when that bar tucks away */
+  html.lk-weekly.lm-bar-mode { --lm-bar-gap: 56px; }
+  html.lk-weekly.lm-bar-mode:has(body.luliy-chrome-hidden) { --lm-bar-gap: max(10px, env(safe-area-inset-bottom)); }
   html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-c :is(body, .page-above) { background-image: var(--lk-grain) !important; }
 }
 
