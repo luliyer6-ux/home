@@ -3980,6 +3980,8 @@
         done = key;
       }
       const byEl = shell.querySelector(':scope > .lk-by');
+      const rsm = shell.querySelector(':scope > .reader-resume'); // the site's 继续上次阅读 link is added before the byline; keep it under it
+      if (byEl && rsm && byEl.nextElementSibling !== rsm) byEl.after(rsm);
       if (byEl) { if (ipos >= 0) byEl.dataset.lkNo = String(ipos + 1).padStart(2, '0'); else delete byEl.dataset.lkNo; }
       progress();
     }

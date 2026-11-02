@@ -2363,3 +2363,6 @@ html:is(.ls-guide, .ls-doc) .lg-help.open { position: fixed; inset: 0; z-index: 
   html.ls-guide #main .source-body .lg-node { width: 20px; height: 20px; line-height: 16px; font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { html:is(.ls-guide, .ls-doc) #main .source-reading > h1::after { animation: none; } }
+
+/* weekly: the "continue reading" link (negative margin, made for the plain article head) sits as its own quiet line under the byline instead of on the rules */
+html.lk-weekly #main .reader-resume { display: block; width: 100%; max-width: 700px; margin: 8px auto 0; padding: 0; background: none; border: 0; cursor: pointer; font: 12px/1.4 var(--font-body); letter-spacing: .04em; color: var(--lk-accent, var(--accent)); text-align: left; }
