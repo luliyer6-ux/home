@@ -3987,13 +3987,11 @@
        Loon's button column on weekly pages gets one more button that cycles them, and she says the name. The choice
        is kept in localStorage luliy-weekly-paper. Phones have no Loon, so they show the chosen (or default) paper. */
     const PAPERS = [
-      ['an', '纸纹＋期号', 'Grain + issue number', '紙の質感＋号数'],
-      ['a', '纸纹＋暖光', 'Grain + lamp light', '紙の質感＋灯り'],
       ['b', '桌上的一本杂志', 'A magazine on a desk', '机の上の雑誌'],
-      ['c', '版式栏线＋期号', 'Layout rules + issue number', '版面の罫線＋号数']
+      ['an', '纸纹＋期号', 'Grain + issue number', '紙の質感＋号数']
     ];
     const PKEY = 'luliy-weekly-paper';
-    const paperNow = () => { let v = ''; try { v = localStorage.getItem(PKEY) || ''; } catch (e) {} return PAPERS.some(x => x[0] === v) ? v : 'an'; };
+    const paperNow = () => { let v = ''; try { v = localStorage.getItem(PKEY) || ''; } catch (e) {} return PAPERS.some(x => x[0] === v) ? v : 'b'; };
     function paper(v) {
       v = v || paperNow();
       PAPERS.forEach(x => root.classList.toggle('lk-p-' + x[0], x[0] === v));
