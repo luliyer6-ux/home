@@ -2434,3 +2434,45 @@ html.lk-weekly .lk-no { display: grid; place-items: center; padding: 7px 10px; }
 .lk-card-line .lk-cl-pill { flex: 0 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: 999px; background: #e2c27e; color: #1a1508; }
 .lk-card-line .lk-cl-pill .lk-cl-sub { flex: 0 10 auto; color: inherit; padding-left: 7px; border-left: 1px solid rgba(26,21,8,.35); }
 .lk-card-line .lk-cl-pill .lk-cl-sub::before { content: none; }
+
+/* weekly: comments are folded; click 評論 to open (home-fixes.js 36). The Giscus frame still loads in the background. */
+html.lk-weekly #main .luliy-comments > h2 { display: flex; align-items: center; justify-content: space-between; margin: 0; cursor: pointer; user-select: none; }
+html.lk-weekly #main .luliy-comments > h2::after { content: ""; width: 7px; height: 7px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg) translateY(-2px); transition: transform .25s; }
+html.lk-weekly #main .luliy-comments.lc-open > h2 { margin-bottom: 14px; }
+html.lk-weekly #main .luliy-comments.lc-open > h2::after { transform: rotate(-135deg) translateY(-2px); }
+html.lk-weekly #main .luliy-comments:not(.lc-open) > :is(.lc-note, .lc-slot) { position: absolute; left: -9999px; width: 700px; height: 1px; overflow: hidden; visibility: hidden; }
+html.lk-weekly #main .luliy-comments > h2:focus-visible { outline: 2px solid var(--lk-acc); outline-offset: 4px; }
+
+/* 36 f2) Contents card, paper style (2026-11-02): a bookmark ribbon (closed) and a paper page (open) in the weekly paper tokens. */
+html.lk-weekly.lk-weekly .luliy-mascot .lk-card { background: var(--lk-bg); color: var(--lk-ink); border: 1px solid var(--lk-rule); border-radius: 2px; box-shadow: 0 10px 26px rgba(0, 0, 0, .28); font-family: var(--font-body); }
+html.lk-weekly.lk-weekly .luliy-mascot .lk-card::after { display: none; }
+html.lk-weekly.lk-weekly .lk-card .lk-card-panel { border-bottom: 0; padding: 4px 0 4px; }
+html.lk-weekly.lk-weekly .lk-card-ib { border: 0; border-bottom: 1px solid var(--lk-ink); border-radius: 0; margin: 0 0 4px; padding: 8px 12px 7px; align-self: stretch; color: var(--lk-acc); font: 600 11px/1 var(--font-mono); letter-spacing: .16em; }
+html.lk-weekly.lk-weekly .lk-card-ib:hover, html.lk-weekly.lk-weekly .lk-card-ib[aria-expanded="true"] { background: color-mix(in srgb, var(--lk-acc) 10%, transparent); }
+html.lk-weekly.lk-weekly .lk-card :is(.lk-card-iss, .lk-card-list) a { color: var(--lk-ink); border-radius: 0; }
+html.lk-weekly.lk-weekly .lk-card :is(.lk-card-iss, .lk-card-list) a:hover { background: color-mix(in srgb, var(--lk-ink) 7%, transparent); }
+html.lk-weekly.lk-weekly .lk-card :is(.lk-card-iss, .lk-card-list) a b { color: var(--lk-acc); }
+html.lk-weekly.lk-weekly .lk-card .lk-card-list a.l2 { color: var(--lk-soft); }
+html.lk-weekly.lk-weekly .lk-card :is(.lk-card-iss, .lk-card-list) a[aria-current] { background: none; color: var(--lk-acc); font-weight: 700; }
+html.lk-weekly.lk-weekly .lk-card .lk-card-iss { border-bottom: 1px solid var(--lk-rule); }
+html.lk-weekly.lk-weekly .lk-card-line { color: var(--lk-ink); border-radius: 0; }
+html.lk-weekly.lk-weekly .lk-card-line:hover { background: color-mix(in srgb, var(--lk-ink) 7%, transparent); }
+html.lk-weekly.lk-weekly .lk-card-line .lk-cl-ico, html.lk-weekly.lk-weekly .lk-card-line i { color: var(--lk-acc); }
+html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill { background: none; padding: 0; color: var(--lk-ink); }
+html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub { color: var(--lk-acc); border-left-color: var(--lk-rule); }
+html.lk-weekly.lk-weekly .lk-card :is(button, a):focus-visible { outline-color: var(--lk-acc); }
+/* a 欄目表 */
+/* b 書籤絲帶: the closed line becomes a ribbon hanging under the page */
+html.lk-weekly.lk-weekly .luliy-mascot .lk-card { background: none; border: 0; box-shadow: none; align-items: flex-start; width: auto; min-width: 150px; max-width: var(--lk-card-w, 240px); }
+html.lk-weekly .lk-card.open .lk-card-panel { background: var(--lk-bg); border: 1px solid var(--lk-rule); width: var(--lk-card-w, 240px); margin-bottom: 4px; box-shadow: 0 10px 26px rgba(0, 0, 0, .28); }
+html.lk-weekly .lk-card-row { padding: 0; }
+html.lk-weekly .lk-card-line { background: var(--lk-acc); color: var(--lk-bg); padding: 9px 22px 17px 12px; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%); box-shadow: 0 6px 14px rgba(0, 0, 0, .25); font-weight: 700; }
+html.lk-weekly .lk-card-line:hover { background: var(--lk-acc); filter: brightness(1.08); }
+html.lk-weekly .lk-card-line :is(.lk-cl-ico, i, .lk-cl-pill, .lk-cl-pill .lk-cl-sub) { color: var(--lk-bg); border-left-color: color-mix(in srgb, var(--lk-bg) 50%, transparent); }
+html.lk-weekly .lk-card .lk-card-list a[aria-current] { border-left: 3px solid var(--lk-acc); padding-left: 7px; }
+/* c 大號數字 */
+/* d 側邊刻度 */
+html.lk-weekly .luliy-mascot .lk-card { width: max-content; }
+html.lk-weekly .lk-card-line { flex: none; max-width: var(--lk-card-w, 240px); }
+html.lk-weekly .lk-card-line .lk-cl-pill { flex: 0 1 auto; }
+html.lk-weekly.lk-weekly .lk-card-line:hover { background: var(--lk-acc); filter: brightness(1.08); }

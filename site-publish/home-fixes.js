@@ -3871,7 +3871,15 @@
       box.append(card);
       cardLine.addEventListener('click', e => { e.stopPropagation(); cardToggle(); });
       ih.addEventListener('click', e => { e.stopPropagation(); const o = cardIss.hidden; cardIss.hidden = !o; ih.setAttribute('aria-expanded', String(o)); });
-      cardList.addEventListener('click', e => { const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault(); e.stopPropagation(); cardToggle(false); jump(+a.dataset.i); });
+      cardList.addEventListener('click', e => {
+        const a = e.target.closest('a[data-i]'); if (!a) return;
+        e.preventDefault(); e.stopPropagation(); cardToggle(false); jump(+a.dataset.i);
+        const name = a.querySelector('span') ? a.querySelector('span').textContent.trim() : '';
+        const say = window.LuliyLoonSay; // she answers in her bubble (the ribbon steps aside while she talks)
+        const k = Math.floor(Math.random() * 3);
+        const zh = ['去「' + name + '」看看。', '翻到「' + name + '」了。', '「' + name + '」，慢慢读。'][k], en = ['To “' + name + '”.', 'Turning to “' + name + '”.', '“' + name + '” — take your time.'][k], ja = ['「' + name + '」へ。', '「' + name + '」を開きました。', '「' + name + '」、ゆっくりどうぞ。'][k];
+        if (say && name) setTimeout(() => say(L(zh, en, ja), 2800), 350);
+      });
       card.addEventListener('pointerdown', e => e.stopPropagation());
       document.addEventListener('click', e => { if (card.classList.contains('open') && !card.contains(e.target) && !(e.target.closest && e.target.closest('[data-m="toc"]'))) cardToggle(false); });
       addEventListener('keydown', e => { if (e.key === 'Escape' && card.classList.contains('open')) { e.preventDefault(); cardToggle(false); cardLine.focus({ preventScroll: true }); } }, true);
@@ -3888,6 +3896,7 @@
       const hb = head ? Math.max(0, head.getBoundingClientRect().bottom) : 0;
       card.style.setProperty('--lk-card-max', Math.max(160, Math.round(top - hb - 70)) + 'px'); // the open card stops below the top bar
     }
+    const sayCard = (zh, en, ja) => { const say = window.LuliyLoonSay; if (say) say(L(zh, en, ja), 2800); };
     function cardToggle(open) {
       if (!card) return;
       if (open === undefined) open = !card.classList.contains('open');
@@ -3909,7 +3918,7 @@
         const n = index.indexOf(it) + 1, li = el('li'), a = el('a');
         a.href = '#/article/' + it.id; if (it.id === curIssue) a.setAttribute('aria-current', 'true');
         a.append(el('b', 'lk-in', issueName(n)), el('span', '', it.title || it.id));
-        a.addEventListener('click', () => cardToggle(false));
+        a.addEventListener('click', () => { cardToggle(false); if (it.id !== curIssue) setTimeout(() => sayCard('翻到' + issueName(n) + '了。', 'Issue ' + n + '.', '第' + n + '号へ。'), 600); });
         li.append(a); cardIss.append(li);
       });
     }
@@ -3946,6 +3955,9 @@
       cardList.querySelectorAll('a[data-i]').forEach(a => { if (+a.dataset.i === c) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
       if (!card.classList.contains('open')) cardFit();
     }
+    const lcToggle = h => { const sec = h.parentElement, o = !sec.classList.contains('lc-open'); sec.classList.toggle('lc-open', o); h.setAttribute('aria-expanded', String(o)); };
+    document.addEventListener('click', e => { const h = e.target.closest && e.target.closest('html.lk-weekly .luliy-comments > h2'); if (h) lcToggle(h); });
+    document.addEventListener('keydown', e => { const h = e.target.closest && e.target.closest('html.lk-weekly .luliy-comments > h2'); if (h && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); lcToggle(h); } });
     function jump(i) {
       const h = heads[i];
       if (h) { const y = h.getBoundingClientRect().top + scrollY - (innerWidth <= 700 ? 84 : 120); scrollTo({ top: Math.max(0, y), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
@@ -4140,6 +4152,8 @@
         done = key;
       }
       const byEl = shell.querySelector(':scope > .lk-by');
+      const lcm = main.querySelector('.luliy-comments > h2'); // comments are folded on weekly pages (click 評論 to open)
+      if (lcm && !lcm.hasAttribute('aria-expanded')) { lcm.setAttribute('role', 'button'); lcm.tabIndex = 0; lcm.setAttribute('aria-expanded', 'false'); }
       const rsm = shell.querySelector(':scope > .reader-resume'); // the site's 继续上次阅读 link is added before the byline; keep it under it
       if (byEl && rsm && byEl.nextElementSibling !== rsm) byEl.after(rsm);
       if (byEl) { if (ipos >= 0) byEl.dataset.lkNo = String(ipos + 1).padStart(2, '0'); else delete byEl.dataset.lkNo; }
