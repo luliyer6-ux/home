@@ -2495,6 +2495,7 @@
     box.innerHTML =
       '<div class="luliy-mascot-bubble" role="status" aria-live="polite"></div>' +
       '<div class="luliy-mascot-tools">' +
+        '<button type="button" data-m="back" aria-label="返回" title="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>' +
         '<button type="button" data-m="toc" aria-label="文章目录" aria-expanded="false" title="目录"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>' +
         '<button type="button" data-m="top" aria-label="回到顶部" title="回到顶部"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>' +
         '<button type="button" data-m="hide" aria-label="收起 Loon" title="收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
@@ -2933,6 +2934,12 @@
       const t = realToggle();
       if (t) t.click();
       requestAnimationFrame(reflect);
+    });
+    // Back: one step back in the site's own history; if she was opened straight onto this page, go to the home page instead.
+    let inSite = 0;
+    addEventListener('hashchange', () => { inSite++; });
+    box.querySelector('[data-m="back"]').addEventListener('click', () => {
+      if (inSite > 0) { inSite--; history.back(); } else location.hash = '#/';
     });
     topBtn.addEventListener('click', () => { scrollTo({ top: 0, behavior: still() ? 'auto' : 'smooth' }); });
     // Hover or keyboard focus on a button sets her pose (mouse-click focus does not count).
