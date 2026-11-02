@@ -2488,3 +2488,5 @@ html.lk-weekly.lk-weekly .lk-card-ib { position: sticky; top: 0; z-index: 1; bac
 /* the sub-heading colour must beat the generic accent colour (it sits on an accent ribbon) */
 html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub { color: var(--lk-bg); border-left-color: transparent; }
 html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill { overflow: visible; padding: 0 2px; }
+/* no "›" before the sub-heading on the ribbon: it is already on its own line, and the tiny mark read like a stray quote */
+html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub::before { content: none; }
