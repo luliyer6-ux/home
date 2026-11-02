@@ -2366,3 +2366,7 @@ html:is(.ls-guide, .ls-doc) .lg-help.open { position: fixed; inset: 0; z-index: 
 
 /* weekly: the "continue reading" link (negative margin, made for the plain article head) sits as its own quiet line under the byline instead of on the rules */
 html.lk-weekly #main .reader-resume { display: block; width: 100%; max-width: 700px; margin: 8px auto 0; padding: 0; background: none; border: 0; cursor: pointer; font: 12px/1.4 var(--font-body); letter-spacing: .04em; color: var(--lk-accent, var(--accent)); text-align: left; }
+
+/* weekly: less empty space between the top bar and "WEEKLY · 第 N 期" (was 150px on desktop, 105px on phones) */
+html.lk-weekly #main .source-reading { padding-top: 108px !important; }
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) { html.lk-weekly #main .source-reading { padding-top: 92px !important; } }
