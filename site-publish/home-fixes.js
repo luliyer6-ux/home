@@ -3894,7 +3894,8 @@
       card.style.setProperty('--lk-card-w', Math.max(170, Math.min(280, room)) + 'px');
       const top = box.getBoundingClientRect().top, head = document.querySelector('#header');
       const hb = head ? Math.max(0, head.getBoundingClientRect().bottom) : 0;
-      card.style.setProperty('--lk-card-max', Math.max(160, Math.round(top - hb - 70)) + 'px'); // the open card stops below the top bar
+      const rowH = (card.querySelector('.lk-card-row') || {}).offsetHeight || 56;
+      card.style.setProperty('--lk-card-max', Math.max(160, Math.round(top - hb - rowH - 40)) + 'px'); // the open page stops below the top bar
     }
     const sayCard = (zh, en, ja) => { const say = window.LuliyLoonSay; if (say) say(L(zh, en, ja), 2800); };
     function cardToggle(open) {

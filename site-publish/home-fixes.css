@@ -2476,3 +2476,15 @@ html.lk-weekly .luliy-mascot .lk-card { width: max-content; }
 html.lk-weekly .lk-card-line { flex: none; max-width: var(--lk-card-w, 240px); }
 html.lk-weekly .lk-card-line .lk-cl-pill { flex: 0 1 auto; }
 html.lk-weekly.lk-weekly .lk-card-line:hover { background: var(--lk-acc); filter: brightness(1.08); }
+/* ribbon: the sub-heading goes on its own small line under the chapter, so it never gets squeezed out on narrow margins;
+   the issue button stays pinned at the top of the open page while the list scrolls */
+html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill { flex-direction: column; align-items: flex-start; gap: 2px; max-width: 100%; overflow: hidden; }
+html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-ch { max-width: 100%; }
+html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub { flex: none; max-width: 100%; min-width: 0; padding: 0; border: 0; font: 400 12px/1.3 var(--font-body); opacity: .9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub::before { content: "› "; opacity: .7; }
+html.lk-weekly.lk-weekly .lk-card-line { align-items: center; padding-bottom: 19px; }
+html.lk-weekly.lk-weekly .lk-card-line .lk-cl-ico { align-self: center; }
+html.lk-weekly.lk-weekly .lk-card-ib { position: sticky; top: 0; z-index: 1; background: var(--lk-bg); }
+/* the sub-heading colour must beat the generic accent colour (it sits on an accent ribbon) */
+html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub { color: var(--lk-bg); border-left-color: transparent; }
+html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill { overflow: visible; padding: 0 2px; }
