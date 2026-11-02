@@ -3950,16 +3950,19 @@
       const on = !!(shell && ((cat && WEEKLY.test(cat.textContent)) || index.some(x => x.id === m[1])));
       if (!on) {
         if (root.classList.contains('lk-weekly')) { root.classList.remove('lk-weekly'); toggle(false, true); }
+        paperButton(false);
         done = ''; return;
       }
       loadIndex(); chrome();
       root.classList.add('lk-weekly');
+      paper(); paperButton(true);
       const tb = bar.querySelector('.lk-tocb span'); tb.textContent = L('目录', 'Contents', '目次');
       bar.setAttribute('aria-label', L('阅读进度', 'Reading progress', '読書の進み具合'));
       drawer.setAttribute('aria-label', L('本文目录', 'Contents', '本文の目次'));
       const up = bar.querySelector('.lk-top'); up.setAttribute('aria-label', L('回到顶部', 'Back to top', 'ページの先頭へ')); up.title = up.getAttribute('aria-label');
       const key = m[1] + ':' + index.length + ':' + root.lang;
       const ipos = index.findIndex(x => x.id === m[1]);
+      if (ipos >= 0) shell.dataset.lkNo = String(ipos + 1).padStart(2, '0'); else delete shell.dataset.lkNo;
       bar.querySelector('.lk-no').textContent = ipos >= 0 ? L('第' + cnNum(ipos + 1) + '期', 'No. ' + (ipos + 1), '第' + (ipos + 1) + '号') : 'Weekly';
       if (decorate(shell, m[1])) {
         series(shell, m[1]);
@@ -3969,6 +3972,43 @@
         done = key;
       }
       progress();
+    }
+    /* ---- e) paper (2026-11-02): four backgrounds, html.lk-p-<id> (home-fixes.css 36 g). The default is an (紙紋 + 期號);
+       Loon's button column on weekly pages gets one more button that cycles them, and she says the name. The choice
+       is kept in localStorage luliy-weekly-paper. Phones have no Loon, so they show the chosen (or default) paper. */
+    const PAPERS = [
+      ['an', '纸纹＋期号', 'Grain + issue number', '紙の質感＋号数'],
+      ['a', '纸纹＋暖光', 'Grain + lamp light', '紙の質感＋灯り'],
+      ['b', '桌上的一本杂志', 'A magazine on a desk', '机の上の雑誌'],
+      ['c', '版式栏线＋期号', 'Layout rules + issue number', '版面の罫線＋号数']
+    ];
+    const PKEY = 'luliy-weekly-paper';
+    const paperNow = () => { let v = ''; try { v = localStorage.getItem(PKEY) || ''; } catch (e) {} return PAPERS.some(x => x[0] === v) ? v : 'an'; };
+    function paper(v) {
+      v = v || paperNow();
+      PAPERS.forEach(x => root.classList.toggle('lk-p-' + x[0], x[0] === v));
+    }
+    let pbtn = null;
+    function paperButton(on) {
+      const tools = document.querySelector('.luliy-mascot .luliy-mascot-tools');
+      if (!on || !tools) { if (pbtn) { pbtn.remove(); pbtn = null; } return; }
+      if (!pbtn) {
+        pbtn = document.createElement('button'); pbtn.type = 'button'; pbtn.dataset.m = 'paper';
+        pbtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg>';
+        pbtn.addEventListener('click', () => {
+          const i = PAPERS.findIndex(x => x[0] === paperNow()), next = PAPERS[(i + 1) % PAPERS.length];
+          try { localStorage.setItem(PKEY, next[0]); } catch (e) {}
+          paper(next[0]);
+          const name = L(next[1], next[2], next[3]);
+          if (window.LuliyLoonSay) window.LuliyLoonSay(L('换成「', 'Paper: ', '紙を「') + name + L('」了。', '.', '」に。'), 2600);
+          pbtn.title = L('换纸张', 'Change paper', '紙を変える') + ' · ' + name;
+        });
+      }
+      const cur = PAPERS.find(x => x[0] === paperNow());
+      pbtn.setAttribute('aria-label', L('换纸张', 'Change paper', '紙を変える'));
+      pbtn.title = pbtn.getAttribute('aria-label') + ' · ' + L(cur[1], cur[2], cur[3]);
+      const hide = tools.querySelector('[data-m="hide"]');
+      if (pbtn.parentElement !== tools) tools.insertBefore(pbtn, hide);
     }
     /* The issue title stays on one line (2026-11-02): white-space nowrap, and the font shrinks until it fits the
        column, down to 60% of its normal size; a title still too long after that wraps as before. Re-fitted on resize. */
