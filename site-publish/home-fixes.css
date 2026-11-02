@@ -95,8 +95,11 @@
 /* ---- Phones: articles first ---- */
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
   /* Reading: header and floating buttons step aside while scrolling down (home-fixes.js). */
-  html body #header { transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease) !important; }
-  html body.luliy-chrome-hidden #header { opacity: 0 !important; transform: translateY(-24px) !important; pointer-events: none !important; }
+  html body #header { transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease), visibility 0s !important; }
+  /* 2026-11-02: once faded, the header is also visibility: hidden, so nothing coloured stays fixed at the top edge and
+     the status bar (time, battery) has no fill of its own: the page shows through it. */
+  html body.luliy-chrome-hidden #header { opacity: 0 !important; transform: translateY(-24px) !important; pointer-events: none !important;
+    visibility: hidden !important; transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease), visibility 0s linear var(--dur-base) !important; }
   html body.luliy-chrome-hidden #main :is(.reader-toc-toggle, .reader-back-top) {
     opacity: 0 !important; transform: translateY(16px) !important; pointer-events: none !important;
   }
@@ -184,16 +187,27 @@ html.luliy-save-data .footer-left-art { display: none; }
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
   /* Flush with the top edge; the notch inset becomes padding, so the wash reaches the very top of the screen. */
   html body #header { top: 0 !important; padding-top: calc(6px + env(safe-area-inset-top)) !important; }
-  /* Once the page has moved, a soft wash keeps content from showing through the header. */
+  /* Once the page has moved, the header is frosted glass, as in iOS (2026-11-02; before: an 80% wash fading out
+     downwards): the page colour at 68% over a saturated blur, a straight lower edge with a hairline. It reaches up
+     under the status bar (the padding above), so time and battery sit on the same glass. The glass is .luliy-glass
+     (home-fixes.js 4), a sibling just before the header: the header's own ::before cannot blur the page. */
   html body #header.luliy-washed { background: none !important; }
-  html body #header.luliy-washed::before {
-    content: "" !important; display: block !important; position: absolute; inset: 0 0 -24px !important; z-index: -1; opacity: 1 !important;
-    background: color-mix(in srgb, var(--luliy-wash) 80%, transparent) !important; -webkit-backdrop-filter: blur(16px) !important; backdrop-filter: blur(16px) !important;
-    -webkit-mask-image: linear-gradient(#000 70%, transparent) !important; mask-image: linear-gradient(#000 70%, transparent) !important;
-    pointer-events: none;
+  html body #header.luliy-washed::before { display: none !important; }
+  html.luliy-glass-on body .luliy-glass {
+    display: block; position: fixed; left: 0; right: 0; top: 0; z-index: 60; height: var(--luliy-glass-h, 78px); pointer-events: none;
+    background: color-mix(in srgb, var(--luliy-wash) 68%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    box-shadow: inset 0 -.5px 0 color-mix(in srgb, var(--ink, #fff) 16%, transparent);
+    transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease), visibility 0s;
   }
+  html body.luliy-chrome-hidden .luliy-glass { opacity: 0; transform: translateY(-24px); visibility: hidden;
+    transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease), visibility 0s linear var(--dur-base); }
+  html.lsw-on body.luliy-chrome-hidden .luliy-glass { opacity: 1; transform: none; visibility: visible; }
+  html.luliy-cloth-open body .luliy-glass, html body.luliy-sheet-open .luliy-glass { opacity: 0; }
   html body.luliy-sheet-open #header { opacity: 0 !important; pointer-events: none !important; }
 }
+.luliy-glass { display: none; }
+@media (prefers-reduced-motion: reduce) { .luliy-glass { transition: none !important; } }
 
 /* ---- Phones: article list (home-fixes.js block 9) ---- */
 #header .luliy-header-modes { display: none; }
@@ -1152,7 +1166,7 @@ html[data-appearance=light] .ll .ll-sp,html[data-appearance=light] .ll .ll-dt{fi
     color: var(--ink); cursor: pointer; text-align: left; -webkit-tap-highlight-color: transparent;
   }
   html body .luliy-article-row .luliy-article-no {
-    flex: none; width: 2ch; color: var(--muted);
+    flex: none; min-width: 2ch; white-space: nowrap; color: var(--muted);
     font: 600 12px/1.4 var(--font-ui); font-variant-numeric: tabular-nums; letter-spacing: .08em;
   }
   html body .luliy-article-row .luliy-article-title {
@@ -1868,7 +1882,7 @@ body.lj-viewing { overflow: hidden; }
 .lsw-bar { position: fixed; left: 0; width: 16px; height: 2px; border-radius: 2px; background: var(--accent); pointer-events: none; }
 html.lsw-on #header .luliy-header-modes :is(a, button)[aria-current]::after { opacity: 0; }
 /* the header (and its tabs) stays in view while the pages move, even if scrolling had tucked it away */
-html.lsw-on body.luliy-chrome-hidden #header { opacity: 1 !important; transform: none !important; }
+html.lsw-on body.luliy-chrome-hidden #header { opacity: 1 !important; transform: none !important; visibility: visible !important; }
 /* a tab not seen yet: quiet placeholder rows in the list's place */
 .lsw-skel { position: absolute; left: 20px; right: 20px; top: 132px; display: grid; gap: 30px; }
 .lsw-skel i { display: block; height: 46px; border-radius: 8px; background: color-mix(in srgb, var(--ink, #fff) 6%, transparent); }
@@ -1991,7 +2005,7 @@ html.lk-weekly[data-appearance="light"] {
 /* a) the page: paper, nothing behind the text */
 /* beats html:root[data-appearance][data-palette] body (the palette sky) */
 html.lk-weekly.lk-weekly:root[class], html.lk-weekly.lk-weekly:root[class] :is(body, .page-above) { background: var(--lk-bg) !important; background-image: none !important; }
-html.lk-weekly :is(.subpage-stars, .click-stars, #luliy-article-bg, .luliy-mascot, .luliy-mascot-hub, .lr-mini, .reader-music-card),
+html.lk-weekly :is(.subpage-stars, .click-stars, #luliy-article-bg, .lr-mini, .reader-music-card),
 html.lk-weekly #main :is(.source-toc, .reader-float, .source-meta, .reader-series) { display: none !important; }
 html.lk-weekly #header { background: var(--lk-bg); box-shadow: 0 -14px 0 var(--lk-bg); }
 html.lk-weekly body.luliy-article-bg-on :is(.article-body, #sourceArticleBody, .source-end, .source-end *) { text-shadow: none !important; }
@@ -2104,6 +2118,29 @@ html.lk-weekly .lk-drawer footer { display: flex; justify-content: space-between
 @media (prefers-reduced-motion: reduce) {
   html.lk-weekly :is(.lk-drawer, .lk-dim, .lk-pn a, .lk-share) { transition: none !important; }
 }
+/* f) 2026-11-02. Loon stays on wider screens (phones still hide her on the paper page); the issue title keeps to one
+   line (home-fixes.js fitTitle shrinks it); the byline date (2026年10月4日 / OCT 4, 2026) sits closer to its neighbours. */
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) { html.lk-weekly :is(.luliy-mascot, .luliy-mascot-hub) { display: none !important; } }
+html.lk-weekly #main .source-reading > h1.lk-fit { white-space: nowrap; }
+html.lk-weekly #main .lk-by > span:last-child { gap: 12px; letter-spacing: .04em; }
+/* e) 2026-11-02. The phone header's frosted glass (section 'one header') takes the paper colour. */
+html.lk-weekly.lk-weekly:root[class] { --luliy-wash: var(--lk-bg); }
+/* e) 2026-11-02. Standfirst: an opening quote moves under the title (home-fixes.js 36 c). */
+html.lk-weekly #main .source-body .lk-stand-src { display: none !important; }
+html.lk-weekly #main .lk-stand { margin: -6px 0 22px; font: italic 400 clamp(17px, 2.2vw, 20px)/1.65 var(--font-body); letter-spacing: .02em; color: var(--lk-soft); text-wrap: pretty; }
+/* Phone status bar: 第一期 instead of the time left, ↑ (back to top) instead of the %; it steps down while reading
+   downwards and comes back with the header (body.luliy-chrome-hidden, home-fixes.js 4). Wider screens keep both. */
+.lk-no, .lk-top { display: none; }
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  html.lk-weekly .lk-left, html.lk-weekly .lk-pct { display: none; }
+  html.lk-weekly .lk-no { display: block; letter-spacing: .14em; color: var(--lk-soft); white-space: nowrap; }
+  html.lk-weekly .lk-top { display: grid; place-items: center; width: 44px; height: 44px; margin-right: -12px; padding: 0; color: var(--lk-ink); background: none; border: 0; border-radius: 50%; cursor: pointer; }
+  html.lk-weekly .lk-top svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  html.lk-weekly .lk-top:focus-visible { outline: 2px solid var(--lk-acc); outline-offset: -4px; }
+  html.lk-weekly .lk-bar { transition: transform var(--dur-base, .3s) var(--ease, ease); }
+  html.lk-weekly body.luliy-chrome-hidden .lk-bar { transform: translateY(calc(100% + 1px)); }
+}
+@media (prefers-reduced-motion: reduce) { html.lk-weekly .lk-bar { transition: none !important; } }
 
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
    Scoped to html.ls-on + ls-<style>. Colours come from the site theme (--ink, --muted, --line, --accent), so light

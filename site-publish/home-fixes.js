@@ -120,9 +120,18 @@
     let reading = false, hidden = false, washed = false, lastY = scrollY, queued = 0;
     const setHidden = h => { if (h !== hidden) { hidden = h; body.classList.toggle('luliy-chrome-hidden', h); } };
     const home = () => /^#?\/?(\?.*)?$/.test(location.hash);
+    /* 2026-11-02: the frosted glass behind the header is its own element (.luliy-glass, just before the header, same
+       z-index). Inside the header it could not blur: the header has a view-transition-name, which makes it a backdrop
+       root in Chromium, so its blur saw nothing of the page. html.luliy-glass-on while the header is washed. */
+    const glass = document.createElement('div');
+    glass.className = 'luliy-glass'; glass.setAttribute('aria-hidden', 'true');
+    header.before(glass);
+    const fit = () => root.style.setProperty('--luliy-glass-h', header.offsetHeight + 'px');
+    if ('ResizeObserver' in window) new ResizeObserver(fit).observe(header); else addEventListener('resize', fit);
+    fit();
     const wash = () => {
       const w = mobile.matches && scrollY > 20 && (!home() || header.classList.contains('is-scrolled'));
-      if (w !== washed) { washed = w; header.classList.toggle('luliy-washed', w); }
+      if (w !== washed) { washed = w; header.classList.toggle('luliy-washed', w); root.classList.toggle('luliy-glass-on', w && getComputedStyle(header).display !== 'none'); }
     };
     const route = () => {
       const next = mobile.matches && !!main.querySelector('.source-body, .article-body');
@@ -133,7 +142,7 @@
     };
     // Also while a header tab (block 17) scrolls the page to its section, so the tabs stay in view, and while the
     // records cloth (block 19) is down.
-    const busy = () => !!(root.classList.contains('luliy-tab-scrolling') || root.classList.contains('luliy-cloth-open') || main.querySelector('.reader-toc-toggle[aria-expanded="true"], .article-filter-drawer[open]') || document.querySelector('dialog[open]'));
+    const busy = () => !!(root.classList.contains('luliy-tab-scrolling') || root.classList.contains('luliy-cloth-open') || root.classList.contains('lk-drawer-open') || main.querySelector('.reader-toc-toggle[aria-expanded="true"], .article-filter-drawer[open]') || document.querySelector('dialog[open]'));
     const measure = () => {
       queued = 0;
       wash();
@@ -1468,15 +1477,44 @@
           const arr = Object.keys(d).filter(k => /^P\d+$/.test(k)).map(k => ({
             key: k.toUpperCase(),
             title: d[k].postTitle || '',
-            date: d[k].createdDate || ''
+            date: d[k].createdDate || '',
+            ts: (n => (isFinite(n) && n > 0 ? (n > 1e12 ? n : n * 1000) : (Date.parse(d[k].createdDate || '') || 0)))(Number(d[k].createdAt)),
+            labels: (Array.isArray(d[k].labels) ? d[k].labels : []).map(l => String(l && l.name !== undefined ? l.name : l).trim()).filter(Boolean)
           }));
           arr.sort((a, b) => b.date.localeCompare(a.date) || (+b.key.slice(1)) - (+a.key.slice(1)));
           posts = arr; postsLoading = false; built = '';
+          label();
           if (open) fill();
         })
         .catch(() => { postsLoading = false; postsFailed = true; built = ''; if (open) fill(); });
     };
-    const articles = () => posts || [];
+    /* 2026-11-02: 文章 becomes the category of the article being read (Weekly, AI, study …) and the cloth lists only
+       that category. weekly / 周記 wins over other labels; otherwise the first label. An article without labels
+       keeps 文章 and every article. Labels: the feed, else block 37's cached map, else the category line. */
+    const WEEKLY = /(^|[^a-z])weekly([^a-z]|$)|周[记記]|週記/i;
+    const labelsOf = key => {
+      const p = posts && posts.find(t => t.key === key);
+      if (p) return p.labels;
+      try { const m = JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}'); if (m && Array.isArray(m[key])) return m[key]; } catch (e) {}
+      const c = main.querySelector('.source-reading .source-category');
+      if (!c) return [];
+      const parts = c.textContent.split('·').map(s => s.trim());
+      return parts.length > 1 ? parts.slice(1).join('·').split('/').map(s => s.trim()).filter(Boolean) : [];
+    };
+    const catOf = key => {
+      const ls = key ? labelsOf(key) : [];
+      if (ls.some(l => WEEKLY.test(l))) return { name: 'Weekly', weekly: true, has: t => t.labels.some(l => WEEKLY.test(l)) };
+      if (!ls.length) return null;
+      const n = ls[0], low = n.toLowerCase();
+      return { name: /^[a-z]/.test(n) ? n[0].toUpperCase() + n.slice(1) : n, weekly: false, has: t => t.labels.some(l => l.toLowerCase() === low) };
+    };
+    let cat = null;
+    const articles = () => {
+      const all = posts || [];
+      if (!cat) return all;
+      const own = all.filter(cat.has);
+      return own.length ? own : all;
+    };
     const reflect = () => {
       if (!list) return;
       const key = currentKey();
@@ -1489,7 +1527,7 @@
     };
     const fill = () => {
       const items = articles(), l = lang();
-      const key = l + '|' + (posts ? items.map(t => t.key).join(',') : postsLoading ? 'loading' : 'failed');
+      const key = l + '|' + (cat ? cat.name : '') + '|' + (posts ? items.map(t => t.key).join(',') : postsLoading ? 'loading' : 'failed');
       if (key !== built) {
         built = key;
         list.textContent = '';
@@ -1501,30 +1539,35 @@
             : say('载入中…', 'Loading…', '読み込み中…');
           list.append(li);
         } else {
+          // Weekly: numbered by issue (oldest = 01, as in the article's 第 N 期), newest first.
+          const issue = cat && cat.weekly && items !== posts ? [...items].sort((a, b) => (a.ts - b.ts) || a.date.localeCompare(b.date) || (+a.key.slice(1)) - (+b.key.slice(1))) : null;
           items.forEach((t, idx) => {
             const li = document.createElement('li'), b = document.createElement('button');
             const no = document.createElement('span'), title = document.createElement('span');
             b.type = 'button'; b.className = 'luliy-article-row'; b.dataset.article = t.key;
             b.setAttribute('aria-label', t.title);
-            no.className = 'luliy-article-no'; no.textContent = String(idx + 1).padStart(2, '0');
+            no.className = 'luliy-article-no'; no.textContent = String(issue ? issue.indexOf(t) + 1 : idx + 1).padStart(2, '0');
             title.className = 'luliy-article-title'; title.textContent = t.title;
             b.append(no, title); li.append(b); list.append(li);
           });
         }
-        cloth.querySelector('.luliy-cloth-count').textContent = posts
-          ? say('全部文章 · ' + items.length, 'All articles · ' + items.length, 'すべての記事 · ' + items.length)
-          : '';
+        const own = cat && posts && items !== posts;
+        cloth.querySelector('.luliy-cloth-count').textContent = !posts ? ''
+          : own && cat.weekly ? say('Weekly · 共 ' + items.length + ' 期', 'Weekly · ' + items.length + ' issues', 'Weekly · 全 ' + items.length + ' 号')
+          : own ? cat.name + ' · ' + say(items.length + ' 篇', items.length + (items.length === 1 ? ' article' : ' articles'), items.length + ' 本')
+          : say('全部文章 · ' + items.length, 'All articles · ' + items.length, 'すべての記事 · ' + items.length);
       }
       reflect();
     };
     const label = () => {
+      cat = button ? catOf(currentKey()) : null;
       if (button) {
-        const t = say('文章', 'Articles', '記事');
+        const t = cat ? cat.name : say('文章', 'Articles', '記事');
         const span = button.querySelector('span');
         if (span.textContent !== t) span.textContent = t;
-        button.setAttribute('aria-label', say('文章：陳列所有文章', 'Articles: show every article', '記事：すべての記事を表示'));
+        button.setAttribute('aria-label', cat ? cat.name + say('：陳列本分類的文章', ': show this category', '：この分類の記事を表示') : say('文章：陳列所有文章', 'Articles: show every article', '記事：すべての記事を表示'));
       }
-      if (cloth) { hang.setAttribute('aria-label', say('全部文章', 'All articles', 'すべての記事')); if (open) fill(); else built = ''; }
+      if (cloth) { hang.setAttribute('aria-label', cat ? cat.name : say('全部文章', 'All articles', 'すべての記事')); if (open) fill(); else built = ''; }
     };
     const build = () => {
       cloth = document.createElement('div');
@@ -1621,8 +1664,14 @@
         inner.append(button);
         header.classList.add('luliy-has-articles-button');
       }
+      loadPosts();
       label();
     };
+    // The article (and its category line) changes without a body class change: relabel once per frame.
+    let relabelQ = 0;
+    const relabel = () => { if (button && !relabelQ) relabelQ = requestAnimationFrame(() => { relabelQ = 0; label(); }); };
+    addEventListener('hashchange', relabel);
+    new MutationObserver(relabel).observe(main, { childList: true });
     // A tap outside the cloth and 文章 closes it (the shade takes taps below the hem; this catches the header).
     document.addEventListener('pointerdown', e => {
       if (!open || e.target.closest('.luliy-cloth-hang, .luliy-header-articles, .luliy-cloth-shade')) return;
@@ -2720,7 +2769,7 @@
     ];
     const chronicle = () => /^#\/posts\?(?:[^#]*&)?view=chronicle(?:&|$)/.test(location.hash || '');
     const works = () => /^#\/projects(?:[/?]|$)/.test(location.hash || '');
-    function nextLine() { const own = reading() && typeof window.LuliyLoonLines === 'function' ? window.LuliyLoonLines() : null; lines = own && own.length ? own : journal() ? journalLines : reading() ? readingLines : chronicle() ? chronicleLines : works() ? worksLines : postsLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; return lines[li]; }
+    function nextLine() { const own = reading() && typeof window.LuliyLoonLines === 'function' ? window.LuliyLoonLines() : null; lines = own && own.length ? own : journal() ? journalLines : reading() ? (root.classList.contains('lk-weekly') ? readingLines.filter(t => !/背景/.test(t)) : readingLines) : chronicle() ? chronicleLines : works() ? worksLines : postsLines; li = (li + 1 + Math.floor(Math.random() * (lines.length - 1))) % lines.length; return lines[li]; }
     function nextQuote() { qi = (qi + 1) % QUOTES.length; return QUOTES[qi]; }
     const readTime = text => Math.max(3400, (Array.isArray(text) ? text.join('') : text).length * 240 + 1800); // long lines stay up longer
     function setFace(st) { if (st) box.dataset.face = st; else delete box.dataset.face; }
@@ -2797,7 +2846,7 @@
       if (n >= 2 || ss.get('luliy-loon-bg-hinted')) return;
       let tries = 0;
       const tryNow = () => {
-        if (box.hidden || !reading() || !document.querySelector('#main .luliy-bg-toggle') || root.classList.contains('ls-on')) return;
+        if (box.hidden || !reading() || !document.querySelector('#main .luliy-bg-toggle') || root.classList.contains('ls-on') || root.classList.contains('lk-weekly')) return;
         if (talking || mode === 'intro' || bubble.classList.contains('show')) { if (++tries < 10) hintT = setTimeout(tryNow, 1500); return; }
         ss.set('luliy-loon-bg-hinted');
         try { localStorage.setItem('luliy-loon-bg-hint', String(n + 1)); } catch (e) {}
@@ -3738,10 +3787,14 @@
       tb.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 4h12M2 8h12M2 12h8"/></svg><span></span>';
       const track = el('span', 'lk-track'); track.append(el('i'));
       const left = el('span', 'lk-left'), pct = el('span', 'lk-pct');
-      bar.append(tb, track, left, pct);
+      // Phones (2026-11-02): the issue number instead of the time left, and ↑ (back to the top) instead of the %.
+      const no = el('span', 'lk-no'), up = el('button', 'lk-top'); up.type = 'button';
+      up.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>';
+      up.addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+      bar.append(tb, track, left, pct, no, up);
       dim = el('div', 'lk-dim');
       drawer = el('nav', 'lk-drawer'); drawer.id = 'lkDrawer'; drawer.tabIndex = -1;
-      const head = el('header'); head.append(el('small', '', 'CONTENTS'), el('b'), el('span'));
+      const head = el('header'); head.append(el('b'), el('span'));
       list = el('ol');
       const foot = el('footer'); foot.append(el('span', 'lk-dpct'), el('span', '', 'Esc'));
       drawer.append(head, list, foot);
@@ -3810,12 +3863,21 @@
         const by = el('div', 'lk-by'), l = el('span'), r = el('span');
         l.append(el('b', '', 'LULIY'));
         const time = meta.querySelector('time');
-        if (time) r.append(el('span', '', time.textContent.trim().replace(/-/g, ' · ')));
+        if (time) { const d = el('span', 'lk-date'); d.dataset.iso = time.textContent.trim(); r.append(d); }
         r.append(el('span', 'lk-rt'));
         const share = meta.querySelector('.source-share');
         if (share) { const b = el('button', 'lk-share', L('分享', 'Share', '共有')); b.type = 'button'; b.addEventListener('click', () => share.click()); r.append(b); }
         by.append(l, r); meta.after(by);
       }
+      // date (2026-11-02): 2026年10月4日 in Chinese and Japanese, OCT 4, 2026 in English
+      const dEl = shell.querySelector(':scope > .lk-by .lk-date');
+      if (dEl) {
+        const g = /^(\d{4})\D(\d{1,2})\D(\d{1,2})/.exec(dEl.dataset.iso || '');
+        dEl.textContent = !g ? dEl.dataset.iso : /^en/.test(root.lang)
+          ? ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][+g[2] - 1] + ' ' + (+g[3]) + ', ' + g[1]
+          : g[1] + '年' + (+g[2]) + '月' + (+g[3]) + '日';
+      }
+      fitTitle(h1);
       const rt = meta && meta.querySelector('#sourceReadingTime'), mm = rt && rt.textContent.match(/(\d+)\s*(?:分|min)/i);
       minutes = mm ? +mm[1] : Math.max(1, Math.round(body.textContent.replace(/\s+/g, '').length / 400));
       const rts = shell.querySelector(':scope > .lk-by .lk-rt');
@@ -3825,11 +3887,21 @@
       if (!body.textContent.trim()) return false;
       // drop cap: the first block is a paragraph of text
       const first = body.firstElementChild && body.firstElementChild.matches('.markdown-body') ? body.firstElementChild : body;
-      const firstBlock = [...first.children].find(n => !/^(H[1-6]|HR)$/.test(n.tagName) && n.textContent.trim());
+      // standfirst (2026-11-02): a quote that opens the article (`> 這期寫……`, at most 200 characters) moves up under
+      // the title as one line of introduction; the quote itself is hidden. No opening quote, no standfirst.
+      const lead = [...first.children].find(n => n.textContent.trim() || n.querySelector('img,video,iframe'));
+      let stand = shell.querySelector(':scope > .lk-stand');
+      const st = lead && lead.tagName === 'BLOCKQUOTE' && !lead.querySelector('img,video,iframe,pre,ul,ol,table') ? lead.textContent.replace(/\s+/g, ' ').trim() : '';
+      if (st && st.length <= 200) {
+        lead.classList.add('lk-stand-src');
+        if (!stand) { stand = el('p', 'lk-stand'); h1.after(stand); }
+        if (stand.textContent !== st) stand.textContent = st;
+      } else if (stand) stand.remove();
+      const firstBlock = [...first.children].find(n => !/^(H[1-6]|HR)$/.test(n.tagName) && !n.classList.contains('lk-stand-src') && n.textContent.trim());
       if (firstBlock && firstBlock.tagName === 'P' && !firstBlock.querySelector('img,video,iframe') && /^[「『“"(（]?[\p{L}\p{N}]/u.test(firstBlock.textContent.trim()) && firstBlock.textContent.trim().length > 20) firstBlock.classList.add('lk-first');
       // pull quotes
       body.querySelectorAll('blockquote').forEach(q => {
-        if (q.closest('.markdown-alert') || q.parentElement.closest('blockquote')) return;
+        if (q.closest('.markdown-alert') || q.parentElement.closest('blockquote') || q.classList.contains('lk-stand-src')) return;
         const ps = q.querySelectorAll(':scope > p'), t = q.textContent.trim();
         if (q.children.length === ps.length && ps.length === 1 && t.length && t.length <= 90) q.classList.add('lk-pull');
       });
@@ -3885,8 +3957,10 @@
       const tb = bar.querySelector('.lk-tocb span'); tb.textContent = L('目录', 'Contents', '目次');
       bar.setAttribute('aria-label', L('阅读进度', 'Reading progress', '読書の進み具合'));
       drawer.setAttribute('aria-label', L('本文目录', 'Contents', '本文の目次'));
-      drawer.querySelector('header small').textContent = 'CONTENTS · ' + L('目录', 'Contents', '目次');
+      const up = bar.querySelector('.lk-top'); up.setAttribute('aria-label', L('回到顶部', 'Back to top', 'ページの先頭へ')); up.title = up.getAttribute('aria-label');
       const key = m[1] + ':' + index.length + ':' + root.lang;
+      const ipos = index.findIndex(x => x.id === m[1]);
+      bar.querySelector('.lk-no').textContent = ipos >= 0 ? L('第' + cnNum(ipos + 1) + '期', 'No. ' + (ipos + 1), '第' + (ipos + 1) + '号') : 'Weekly';
       if (decorate(shell, m[1])) {
         series(shell, m[1]);
         drawer.querySelector('header b').textContent = shell.querySelector(':scope > h1').textContent.trim();
@@ -3895,6 +3969,33 @@
         done = key;
       }
       progress();
+    }
+    /* The issue title stays on one line (2026-11-02): white-space nowrap, and the font shrinks until it fits the
+       column, down to 60% of its normal size; a title still too long after that wraps as before. Re-fitted on resize. */
+    function fitTitle(h1) {
+      if (!h1) return;
+      const k = h1.textContent + '|' + (h1.parentElement ? h1.parentElement.clientWidth : 0) + '|' + (document.fonts ? document.fonts.status : '');
+      if (h1.dataset.lkFit === k) return;
+      h1.classList.add('lk-fit'); h1.style.fontSize = '';
+      const w = h1.clientWidth; if (!w) return;
+      h1.dataset.lkFit = k;
+      const base = parseFloat(getComputedStyle(h1).fontSize), need = h1.scrollWidth;
+      if (need <= w + 1) return;
+      const size = Math.floor(base * w / need * 0.98 * 10) / 10;
+      if (size >= base * 0.6) h1.style.fontSize = size + 'px';
+      else { h1.classList.remove('lk-fit'); h1.style.fontSize = (base * 0.6).toFixed(1) + 'px'; }
+    }
+    let fitQ = 0;
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { const h = main.querySelector('.source-reading > h1'); if (h && root.classList.contains('lk-weekly')) { delete h.dataset.lkFit; fitTitle(h); } });
+    addEventListener('resize', () => { if (!fitQ) fitQ = requestAnimationFrame(() => { fitQ = 0; if (root.classList.contains('lk-weekly')) fitTitle(main.querySelector('.source-reading > h1')); }); }, { passive: true });
+    // 1 → 一, 10 → 十, 12 → 十二, 20 → 二十, 105 → 一百零五 (issue numbers on the phone status bar).
+    function cnNum(n) {
+      const D = '零一二三四五六七八九';
+      if (n < 10) return D[n];
+      if (n < 20) return '十' + (n % 10 ? D[n % 10] : '');
+      if (n < 100) return D[Math.floor(n / 10)] + '十' + (n % 10 ? D[n % 10] : '');
+      if (n < 1000) { const r = n % 100; return D[Math.floor(n / 100)] + '百' + (!r ? '' : r < 10 ? '零' + D[r] : r < 20 ? '一' + cnNum(r) : cnNum(r)); }
+      return String(n);
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(apply); };
     new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
