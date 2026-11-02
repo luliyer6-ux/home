@@ -2907,7 +2907,13 @@
     const realToggle = () => document.querySelector('#main .reader-toc-toggle');
     function reflect() {
       const t = realToggle();
-      tocBtn.hidden = !t || t.hidden || root.classList.contains('lk-weekly');
+      if (root.classList.contains('lk-weekly')) { // weekly (2026-11-02): her contents button opens the contents card in her bubble (block 36 f)
+        const open = !!document.querySelector('.luliy-mascot .lk-card.open');
+        tocBtn.hidden = !document.querySelector('.luliy-mascot .lk-card'); tocBtn.setAttribute('aria-expanded', String(open)); tocBtn.classList.toggle('is-active', open);
+        if (tocOpen) { tocOpen = false; root.classList.remove('luliy-toc-open'); retarget(); }
+        return;
+      }
+      tocBtn.hidden = !t || t.hidden;
       const was = tocOpen;
       tocOpen = !!t && t.getAttribute('aria-expanded') === 'true';
       tocBtn.setAttribute('aria-expanded', String(tocOpen));
@@ -2931,6 +2937,7 @@
     }
     tocBtn.addEventListener('click', e => {
       e.stopPropagation(); // the article closes its contents on any click outside the panel and its own button
+      if (root.classList.contains('lk-weekly') && window.LuliyWeeklyCard) { window.LuliyWeeklyCard.toggle(); requestAnimationFrame(reflect); return; }
       const t = realToggle();
       if (t) t.click();
       requestAnimationFrame(reflect);
@@ -3829,7 +3836,7 @@
         index.slice().reverse().forEach(it => {
           const n = index.indexOf(it) + 1, li = el('li'), a = el('a');
           a.href = '#/article/' + it.id; if (it.id === curIssue) a.setAttribute('aria-current', 'true');
-          a.append(el('b', '', 'W ' + n), el('span', '', it.title || it.id));
+          a.append(el('b', 'lk-in', issueName(n)), el('span', '', it.title || it.id));
           a.addEventListener('click', () => issues(false));
           li.append(a); issuesPop.append(li);
         });
@@ -3839,6 +3846,105 @@
         issuesPop.style.left = Math.round(Math.max(10, Math.min(r.left, innerWidth - 330))) + 'px';
       }
       issuesPop.hidden = !open; no.setAttribute('aria-expanded', String(open));
+    }
+    /* ---- f) contents card in Loon's bubble (2026-11-02). Desktop with Loon on screen (html.luliy-mascot-on): a card shaped
+       like her speech bubble sits above her: one line "W 1 · 01 章名 › 小节 ⌄" (↑ stays in her button column); click opens it upwards into the issue
+       switcher and every heading. While she talks the closed card steps aside for the bubble (CSS :has). It is not inside
+       her aria-live bubble, so chapter changes are not read out. Without Loon the capsule (.lk-bar) is shown instead. */
+    // The issue icon (2026-11-02, replaces the "W 1" text): a magazine cover; the number is in its title / aria-label.
+    const ISSUE_SVG = '<svg class="lk-ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="3" y="2" width="10" height="12" rx="1.2"/><path d="M5.5 5h5M5.5 7.5h5M5.5 10h3"/></svg>';
+    const issueName = n => n > 0 ? L('第 ' + n + ' 期', 'Issue ' + n, '第 ' + n + ' 号') : L('周记', 'Weekly', '週記');
+    let card = null, cardLine = null, cardPanel = null, cardIss = null, cardList = null, cardSig = '';
+    function cardMount() {
+      const box = document.querySelector('.luliy-mascot');
+      if (!box) return null;
+      if (card && card.isConnected) return card;
+      card = el('div', 'lk-card');
+      cardPanel = el('div', 'lk-card-panel'); cardPanel.id = 'lkCardPanel';
+      const ih = el('button', 'lk-card-ib'); ih.type = 'button'; ih.setAttribute('aria-expanded', 'false');
+      cardIss = el('ul', 'lk-card-iss'); cardIss.hidden = true;
+      cardList = el('ol', 'lk-card-list');
+      cardPanel.append(ih, cardIss, cardList);
+      const row = el('div', 'lk-card-row');
+      cardLine = el('button', 'lk-card-line'); cardLine.type = 'button'; cardLine.setAttribute('aria-expanded', 'false'); cardLine.setAttribute('aria-controls', 'lkCardPanel');
+      row.append(cardLine); card.append(cardPanel, row); // ↑ is already in her button column, so the card has none
+      box.append(card);
+      cardLine.addEventListener('click', e => { e.stopPropagation(); cardToggle(); });
+      ih.addEventListener('click', e => { e.stopPropagation(); const o = cardIss.hidden; cardIss.hidden = !o; ih.setAttribute('aria-expanded', String(o)); });
+      cardList.addEventListener('click', e => { const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault(); e.stopPropagation(); cardToggle(false); jump(+a.dataset.i); });
+      card.addEventListener('pointerdown', e => e.stopPropagation());
+      document.addEventListener('click', e => { if (card.classList.contains('open') && !card.contains(e.target) && !(e.target.closest && e.target.closest('[data-m="toc"]'))) cardToggle(false); });
+      addEventListener('keydown', e => { if (e.key === 'Escape' && card.classList.contains('open')) { e.preventDefault(); cardToggle(false); cardLine.focus({ preventScroll: true }); } }, true);
+      cardSig = '';
+      return card;
+    }
+    function cardFit() {
+      if (!card) return;
+      const body = main.querySelector('.source-body'), box = card.parentElement;
+      if (!body || !box) return;
+      const room = Math.round(body.getBoundingClientRect().left - 14 - 8 - 16); // her left edge 14px, bubble inset 8px, some air before the text
+      card.style.setProperty('--lk-card-w', Math.max(170, Math.min(280, room)) + 'px');
+      const top = box.getBoundingClientRect().top, head = document.querySelector('#header');
+      const hb = head ? Math.max(0, head.getBoundingClientRect().bottom) : 0;
+      card.style.setProperty('--lk-card-max', Math.max(160, Math.round(top - hb - 70)) + 'px'); // the open card stops below the top bar
+    }
+    function cardToggle(open) {
+      if (!card) return;
+      if (open === undefined) open = !card.classList.contains('open');
+      if (open) { cardIssues(); cardFill(); cardFit(); }
+      card.classList.toggle('open', open);
+      cardLine.setAttribute('aria-expanded', String(open));
+      if (!open) { cardIss.hidden = true; card.querySelector('.lk-card-ib').setAttribute('aria-expanded', 'false'); }
+      else { const c = cardList.querySelector('[aria-current]'); if (c) c.scrollIntoView({ block: 'nearest' }); }
+      const tb = document.querySelector('.luliy-mascot [data-m="toc"]');
+      if (tb) { tb.setAttribute('aria-expanded', String(open)); tb.classList.toggle('is-active', open); }
+    }
+    window.LuliyWeeklyCard = { toggle: () => { if (cardMount()) cardToggle(); } };
+    function cardIssues() {
+      const ipos = index.findIndex(x => x.id === curIssue);
+      const ih = card.querySelector('.lk-card-ib');
+      ih.innerHTML = ISSUE_SVG + '<span>' + issueName(ipos + 1) + '</span><i aria-hidden="true">⌄</i>'; ih.title = L('全部期刊', 'All issues', '全ての号');
+      cardIss.innerHTML = '';
+      index.slice().reverse().forEach(it => {
+        const n = index.indexOf(it) + 1, li = el('li'), a = el('a');
+        a.href = '#/article/' + it.id; if (it.id === curIssue) a.setAttribute('aria-current', 'true');
+        a.append(el('b', 'lk-in', issueName(n)), el('span', '', it.title || it.id));
+        a.addEventListener('click', () => cardToggle(false));
+        li.append(a); cardIss.append(li);
+      });
+    }
+    function cardFill() {
+      if (!card) return;
+      const sig = heads.map(h => h.dataset.lkLevel + hText(h)).join('|');
+      if (sig !== cardSig) {
+        cardSig = sig; cardList.innerHTML = ''; let n = 0;
+        heads.forEach((h, i) => {
+          const one = h.dataset.lkLevel === '1', li = el('li'), a = el('a', one ? '' : 'l2');
+          a.href = '#'; a.dataset.i = i;
+          if (one) a.append(el('b', '', String(++n).padStart(2, '0')));
+          a.append(el('span', '', hText(h))); li.append(a); cardList.append(li);
+        });
+        if (!heads.length) cardList.append(el('li', 'lk-none', L('这篇没有小标题', 'No headings in this article', '見出しはありません')));
+      }
+    }
+    function cardNow() {
+      if (!cardMount()) return;
+      const c = current();
+      let ch = c; while (ch > 0 && heads[ch] && heads[ch].dataset.lkLevel !== '1') ch--;
+      let num = 0; for (let i = 0; i <= ch && i < heads.length; i++) if (heads[i].dataset.lkLevel === '1') num++;
+      const ipos = index.findIndex(x => x.id === curIssue);
+      const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? hText(heads[ch]) : '';
+      const hc = heads[c], subName = hc && hc.dataset.lkLevel === '2' ? hText(hc) : '';
+      cardLine.innerHTML = '';
+      { const ic = el('b', 'lk-cl-ico'); ic.innerHTML = ISSUE_SVG; ic.title = issueName(ipos + 1); cardLine.append(ic); }
+      const pill = el('span', 'lk-cl-pill');
+      pill.append(el('span', 'lk-cl-ch', chName ? String(num).padStart(2, '0') + ' ' + chName : L('目录', 'Contents', '目次')));
+      if (subName) pill.append(el('span', 'lk-cl-sub', subName));
+      cardLine.append(pill);
+      cardLine.append(el('i', '', '⌄'));
+      cardLine.setAttribute('aria-label', issueName(ipos + 1) + ' · ' + L('目录：', 'Contents: ', '目次：') + (chName || '') + (subName ? ' › ' + subName : ''));
+      cardList.querySelectorAll('a[data-i]').forEach(a => { if (+a.dataset.i === c) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+      if (!card.classList.contains('open')) cardFit();
     }
     function jump(i) {
       const h = heads[i];
@@ -3870,7 +3976,7 @@
       let num = 0;
       bar.querySelectorAll('.lk-chs a').forEach(a => { const on = +a.dataset.ch === ch && heads[ch] && heads[ch].dataset.lkLevel === '1'; a.classList.toggle('act', on); if (on) { a.setAttribute('aria-current', 'true'); num = +a.querySelector('.lk-n').textContent; } else a.removeAttribute('aria-current'); });
       const hc = heads[c], isSub = hc && hc.dataset.lkLevel === '2';
-      const actA = bar.querySelector('.lk-chs a.act'); if (actA && actA.nextElementSibling !== sub) actA.after(sub); // sits right after the open chapter
+      const actA = bar.querySelector('.lk-chs a.act'); if (actA && sub.parentNode !== actA) actA.append(sub); // inside the coloured pill, after the chapter name
       sub.textContent = isSub ? hText(hc) : ''; sub.classList.toggle('on', !!isSub);
       const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? hText(heads[ch]) : '';
       cur.textContent = chName ? String(num).padStart(2, '0') + ' ' + chName : L('目录', 'Contents', '目次');
@@ -3900,7 +4006,7 @@
     let minutes = 0;
     function progress() {
       if (!bar || !root.classList.contains('lk-weekly')) return;
-      capsule(); capsuleNow();
+      capsule(); capsuleNow(); if (cardMount()) { cardFill(); cardNow(); }
       if (drawer.classList.contains('open')) {
         const body = main.querySelector('.source-body');
         let p = 1;
@@ -4024,8 +4130,8 @@
       const key = m[1] + ':' + index.length + ':' + root.lang;
       const ipos = index.findIndex(x => x.id === m[1]);
       if (ipos >= 0) shell.dataset.lkNo = String(ipos + 1).padStart(2, '0'); else delete shell.dataset.lkNo;
-      curIssue = m[1]; bar.querySelector('.lk-no').textContent = ipos >= 0 ? 'W ' + (ipos + 1) : 'W';
-      bar.querySelector('.lk-no').title = bar.querySelector('.lk-no').getAttribute('aria-label') ? '' : L('全部期刊', 'All issues', '全ての号');
+      curIssue = m[1]; bar.querySelector('.lk-no').innerHTML = ISSUE_SVG; bar.querySelector('.lk-no').setAttribute('aria-label', issueName(ipos + 1) + ' · ' + L('全部期刊', 'All issues', '全ての号'));
+      bar.querySelector('.lk-no').title = issueName(ipos + 1);
       if (decorate(shell, m[1])) {
         series(shell, m[1]);
         drawer.querySelector('header b').textContent = shell.querySelector(':scope > h1').textContent.trim();
@@ -4099,7 +4205,7 @@
     }
     let fitQ = 0;
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { const h = main.querySelector('.source-reading > h1'); if (h && root.classList.contains('lk-weekly')) { delete h.dataset.lkFit; fitTitle(h); fitNumber(main.querySelector('.source-reading')); } });
-    addEventListener('resize', () => { if (!fitQ) fitQ = requestAnimationFrame(() => { fitQ = 0; if (root.classList.contains('lk-weekly')) { const sh = main.querySelector('.source-reading'); fitTitle(sh && sh.querySelector(':scope > h1')); fitNumber(sh); } }); }, { passive: true });
+    addEventListener('resize', () => { if (!fitQ) fitQ = requestAnimationFrame(() => { fitQ = 0; if (root.classList.contains('lk-weekly')) { const sh = main.querySelector('.source-reading'); fitTitle(sh && sh.querySelector(':scope > h1')); fitNumber(sh); cardFit(); } }); }, { passive: true });
     // 1 → 一, 10 → 十, 12 → 十二, 20 → 二十, 105 → 一百零五 (issue numbers on the phone status bar).
     function cnNum(n) {
       const D = '零一二三四五六七八九';

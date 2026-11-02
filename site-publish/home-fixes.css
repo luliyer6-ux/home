@@ -2102,8 +2102,9 @@ html.lk-weekly .lk-chs a:hover { color: var(--lk-ink); }
 html.lk-weekly .lk-chs .lk-nm { display: none; }
 html.lk-weekly .lk-chs a.act { background: var(--lk-acc); color: var(--lk-bg); }
 html.lk-weekly .lk-chs a.act .lk-nm { display: inline; letter-spacing: .02em; font-family: var(--font-body); }
-html.lk-weekly .lk-sub { display: none; padding-left: 10px; border-left: 1px solid var(--lk-rule); color: var(--lk-acc); white-space: nowrap; font-family: var(--font-body); letter-spacing: .02em; }
-html.lk-weekly .lk-sub.on { display: block; }
+html.lk-weekly .lk-sub { display: none; padding-left: 8px; border-left: 1px solid color-mix(in srgb, var(--lk-bg) 45%, transparent); color: inherit; white-space: nowrap; font-family: var(--font-body); letter-spacing: .02em; }
+html.lk-weekly .lk-sub.on { display: inline; }
+html.lk-weekly .lk-sub.on::before { content: "› "; opacity: .7; }
 html.lk-weekly .lk-cur { display: none; max-width: 60vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 8px 12px; font: 13px/1 var(--font-body); color: var(--lk-acc); background: none; border: 0; cursor: pointer; }
 html.lk-weekly .lk-bar.lk-nochap .lk-chs { display: none; }
 html.lk-weekly .lk-top { display: grid; place-items: center; flex: none; width: 32px; height: 32px; padding: 0; color: var(--lk-ink); background: none; border: 0; border-radius: 50%; cursor: pointer; }
@@ -2381,3 +2382,55 @@ html.lk-weekly #main .reader-resume { display: block; width: 100%; max-width: 70
 /* weekly: less empty space between the top bar and "WEEKLY · 第 N 期" (was 150px on desktop, 105px on phones) */
 html.lk-weekly #main .source-reading { padding-top: 108px !important; }
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) { html.lk-weekly #main .source-reading { padding-top: 92px !important; } }
+
+/* 36 f) Contents card in Loon's bubble (2026-11-02, home-fixes.js 36 f). Weekly pages, desktop, only while Loon is on screen;
+   otherwise the capsule (.lk-bar) stands in. Same look as her speech bubble. Closed: one line (↑ is in her button column); open: grows upwards
+   (issue switcher, every heading), never past the top bar (--lk-card-max). While she talks the closed card fades out. */
+.lk-card { display: none; }
+html.lk-weekly .luliy-mascot .lk-card { position: absolute; left: 8px; bottom: calc(100% + 2px); z-index: 2; display: flex; flex-direction: column; width: var(--lk-card-w, 240px);
+  border-radius: 12px; background: rgba(10,15,28,.94); border: 1px solid rgba(226,194,126,.34); color: #ece6d6; box-shadow: 0 8px 28px rgba(0,0,0,.45);
+  font-size: 13.5px; line-height: 1.5; transition: opacity .3s, transform .3s; user-select: none; -webkit-user-select: none; }
+html.lk-weekly .luliy-mascot .lk-card::after { content: ""; position: absolute; left: 60px; bottom: -6px; width: 10px; height: 10px; background: inherit;
+  border-right: 1px solid rgba(226,194,126,.34); border-bottom: 1px solid rgba(226,194,126,.34); transform: rotate(45deg); }
+html.lk-weekly .luliy-mascot:has(.luliy-mascot-bubble.show) .lk-card:not(.open) { opacity: 0; transform: translateY(6px); pointer-events: none; }
+html.lk-weekly .luliy-mascot:has(.lk-card.open) .luliy-mascot-bubble { opacity: 0 !important; }
+html.lk-weekly.luliy-mascot-on .lk-bar, html.lk-weekly.luliy-mascot-on .lk-issues { display: none !important; }
+.lk-card-row { display: flex; align-items: center; padding: 3px; }
+.lk-card-line { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; padding: 7px 8px 7px 12px; border: 0; border-radius: 9px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.lk-card-line:hover { background: rgba(226,194,126,.1); }
+.lk-card-line b { flex: none; font: 600 11.5px/1 var(--font-mono); letter-spacing: .12em; color: #e2c27e; }
+.lk-card-line .lk-cl-ch { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lk-card-line .lk-cl-sub { flex: 0 10 auto; min-width: 2em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #e2c27e; font-size: 12.5px; }
+.lk-card-line .lk-cl-sub::before { content: "› "; opacity: .6; }
+.lk-card-line i { flex: none; margin-left: auto; font-style: normal; color: #e2c27e; opacity: .8; transition: transform .25s; }
+.lk-card.open .lk-card-line i { transform: rotate(180deg); }
+.lk-card :is(button, a):focus-visible { outline: 2px solid #e2c27e; outline-offset: -2px; }
+.lk-card-panel { display: none; }
+.lk-card.open .lk-card-panel { display: flex; flex-direction: column; max-height: var(--lk-card-max, 60vh); overflow: auto; padding: 8px 6px 6px; border-bottom: 1px solid rgba(226,194,126,.18); overscroll-behavior: contain; scrollbar-width: thin; }
+.lk-card-ib { align-self: flex-start; margin: 0 0 4px 4px; padding: 6px 10px; border: 1px solid rgba(226,194,126,.34); border-radius: 999px; background: none; color: #e2c27e; font: 600 11.5px/1 var(--font-mono); letter-spacing: .12em; cursor: pointer; }
+.lk-card-ib:hover, .lk-card-ib[aria-expanded="true"] { background: rgba(226,194,126,.14); }
+.lk-card-iss, .lk-card-list { margin: 0; padding: 0; list-style: none; }
+.lk-card-iss[hidden] { display: none; }
+.lk-card-iss { margin: 2px 0 6px; padding-bottom: 6px; border-bottom: 1px dashed rgba(226,194,126,.2); }
+.lk-card :is(.lk-card-iss, .lk-card-list) a { display: flex; gap: 10px; align-items: baseline; padding: 7px 10px; border-radius: 8px; color: #ece6d6; text-decoration: none; }
+.lk-card :is(.lk-card-iss, .lk-card-list) a:hover { background: rgba(226,194,126,.1); }
+.lk-card :is(.lk-card-iss, .lk-card-list) a b { flex: none; font: 600 11.5px/1 var(--font-mono); letter-spacing: .1em; color: #e2c27e; }
+.lk-card .lk-card-list a.l2 { padding-left: 38px; font-size: 12.5px; color: rgba(236,230,214,.72); }
+.lk-card :is(.lk-card-iss, .lk-card-list) a[aria-current] { background: rgba(226,194,126,.18); color: #f3e3bb; }
+.lk-card .lk-none { padding: 7px 10px; color: rgba(236,230,214,.6); font-size: 12.5px; }
+@media (prefers-reduced-motion: reduce) { .lk-card, .lk-card-line i { transition: none !important; } }
+/* weekly adds a 5th button (纸张) to her column, which then rises above her head: bubble and card sit a little higher */
+html.lk-weekly .luliy-mascot :is(.luliy-mascot-bubble, .lk-card) { bottom: calc(100% + 20px); }
+html.lk-weekly .luliy-mascot-tools { gap: 4px; }
+html.lk-weekly .luliy-mascot-tools button { width: 26px; height: 26px; }
+/* issue icon (a magazine cover) instead of the "W 1" text, in the card, its issue button and the capsule */
+.lk-ico { display: block; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+.lk-card-line .lk-cl-ico { align-self: center; color: #e2c27e; }
+.lk-card-ib { display: inline-flex; align-items: center; gap: 7px; font: 13px/1 var(--font-body); letter-spacing: .04em; }
+.lk-card-ib i { font-style: normal; opacity: .8; }
+html.lk-weekly .lk-no { display: grid; place-items: center; padding: 7px 10px; }
+.lk-card .lk-card-iss a b.lk-in, html.lk-weekly .lk-issues a b.lk-in { min-width: 3.6em; font: 12px/1.4 var(--font-body); letter-spacing: .04em; opacity: .85; }
+/* the chapter and the open sub-heading share one gold pill in her card (same idea as the capsule's coloured pill) */
+.lk-card-line .lk-cl-pill { flex: 0 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: 999px; background: #e2c27e; color: #1a1508; }
+.lk-card-line .lk-cl-pill .lk-cl-sub { flex: 0 10 auto; color: inherit; padding-left: 7px; border-left: 1px solid rgba(26,21,8,.35); }
+.lk-card-line .lk-cl-pill .lk-cl-sub::before { content: none; }
