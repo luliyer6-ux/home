@@ -2158,7 +2158,7 @@ html.lk-weekly #main .source-reading { position: relative; }
 /* The issue number rests on the double rule under the title (the top of the byline), at the right, as tall as the block
    above the rule (home-fixes.js fitNumber), so the kicker / title / standfirst are vertically centred on it and read across it
    (2026-11-02; before: top right corner). */
-html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .lk-by[data-lk-no]::after { content: attr(data-lk-no); position: absolute; z-index: -1; right: -10px; bottom: calc(100% - .06em);
+html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .lk-by[data-lk-no]::after { content: attr(data-lk-no); position: absolute; z-index: -1; right: -10px; bottom: calc(100% - .06em + var(--lk-num-up, 28px));
   font: 700 var(--lk-num-size, 210px)/.78 var(--font-body); letter-spacing: -.04em; color: var(--lk-ink); opacity: var(--lk-num); pointer-events: none; white-space: nowrap; }
 @media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
   html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-b :is(body, .page-above) { background-color: var(--lk-desk) !important; background-image: radial-gradient(90% 70% at 50% 0%, var(--lk-lamp), transparent 70%) !important; }
@@ -2167,7 +2167,7 @@ html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .lk-by[data-lk-no]::after { content: 
   html.lk-weekly[data-appearance="light"].lk-p-b #main .source-reading::before { box-shadow: 0 24px 60px rgba(60, 45, 20, .18), 0 2px 6px rgba(60, 45, 20, .12); }
 }
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
-  html.lk-weekly { --lk-num-size: 130px; }
+  html.lk-weekly { --lk-num-size: 130px; --lk-num-up: 20px; }
   html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-c :is(body, .page-above) { background-image: var(--lk-grain) !important; }
 }
 
