@@ -2490,3 +2490,6 @@ html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub { color:
 html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill { overflow: visible; padding: 0 2px; }
 /* no "›" before the sub-heading on the ribbon: it is already on its own line, and the tiny mark read like a stray quote */
 html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub::before { content: none; }
+/* weekly: her speech bubble is clickable (opens the contents); the separate contents button is gone */
+html.lk-weekly .luliy-mascot .luliy-mascot-bubble.show { pointer-events: auto; cursor: pointer; }
+html.lk-weekly .luliy-mascot [data-m="toc"] { display: none !important; }

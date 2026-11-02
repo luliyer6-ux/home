@@ -2909,7 +2909,7 @@
       const t = realToggle();
       if (root.classList.contains('lk-weekly')) { // weekly (2026-11-02): her contents button opens the contents card in her bubble (block 36 f)
         const open = !!document.querySelector('.luliy-mascot .lk-card.open');
-        tocBtn.hidden = !document.querySelector('.luliy-mascot .lk-card'); tocBtn.setAttribute('aria-expanded', String(open)); tocBtn.classList.toggle('is-active', open);
+        tocBtn.hidden = true; // no separate contents button on weekly pages: the ribbon (or her speech bubble) opens the contents
         if (tocOpen) { tocOpen = false; root.classList.remove('luliy-toc-open'); retarget(); }
         return;
       }
@@ -3881,6 +3881,8 @@
         if (say && name) setTimeout(() => say(L(zh, en, ja), 2800), 350);
       });
       card.addEventListener('pointerdown', e => e.stopPropagation());
+      const bub = box.querySelector('.luliy-mascot-bubble'); // clicking what she is saying also opens the contents
+      if (bub) bub.addEventListener('click', e => { e.stopPropagation(); cardToggle(true); });
       document.addEventListener('click', e => { if (card.classList.contains('open') && !card.contains(e.target) && !(e.target.closest && e.target.closest('[data-m="toc"]'))) cardToggle(false); });
       addEventListener('keydown', e => { if (e.key === 'Escape' && card.classList.contains('open')) { e.preventDefault(); cardToggle(false); cardLine.focus({ preventScroll: true }); } }, true);
       cardSig = '';
@@ -3906,8 +3908,6 @@
       cardLine.setAttribute('aria-expanded', String(open));
       if (!open) { cardIss.hidden = true; card.querySelector('.lk-card-ib').setAttribute('aria-expanded', 'false'); }
       else { const c = cardList.querySelector('[aria-current]'); if (c) c.scrollIntoView({ block: 'nearest' }); }
-      const tb = document.querySelector('.luliy-mascot [data-m="toc"]');
-      if (tb) { tb.setAttribute('aria-expanded', String(open)); tb.classList.toggle('is-active', open); }
     }
     window.LuliyWeeklyCard = { toggle: () => { if (cardMount()) cardToggle(); } };
     function cardIssues() {
