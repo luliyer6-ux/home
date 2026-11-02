@@ -2155,9 +2155,10 @@ html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-c :is(body, .page-above) { b
   linear-gradient(90deg, transparent calc(50% - 351px), var(--lk-rule) calc(50% - 351px), var(--lk-rule) calc(50% - 350px), transparent calc(50% - 350px),
   transparent calc(50% + 350px), var(--lk-rule) calc(50% + 350px), var(--lk-rule) calc(50% + 351px), transparent calc(50% + 351px)) !important; }
 html.lk-weekly #main .source-reading { position: relative; }
-/* The issue number rests on the double rule under the title (the top of the byline): centred in the column, behind the
-   kicker / title / standfirst, which read across it (2026-11-02; before: top right corner). */
-html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .lk-by[data-lk-no]::after { content: attr(data-lk-no); position: absolute; z-index: -1; left: 50%; bottom: calc(100% - 12px); transform: translateX(-50%);
+/* The issue number rests on the double rule under the title (the top of the byline), at the right, as tall as the block
+   above the rule (home-fixes.js fitNumber), so the kicker / title / standfirst are vertically centred on it and read across it
+   (2026-11-02; before: top right corner). */
+html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .lk-by[data-lk-no]::after { content: attr(data-lk-no); position: absolute; z-index: -1; right: -10px; bottom: calc(100% - .06em);
   font: 700 var(--lk-num-size, 210px)/.78 var(--font-body); letter-spacing: -.04em; color: var(--lk-ink); opacity: var(--lk-num); pointer-events: none; white-space: nowrap; }
 @media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
   html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-b :is(body, .page-above) { background-color: var(--lk-desk) !important; background-image: radial-gradient(90% 70% at 50% 0%, var(--lk-lamp), transparent 70%) !important; }
@@ -2181,9 +2182,9 @@ html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .lk-by[data-lk-no]::after { content: 
    appearance works too. Loon stays; the article artwork and the orange meta row do not. */
 html.ls-on { --ls-gold: var(--accent); --ls-gold2: color-mix(in srgb, var(--accent) 70%, #fff3cf); --ls-mono: var(--font-mono); }
 html.ls-on[data-appearance="light"] { --ls-gold2: color-mix(in srgb, var(--accent) 85%, #000); }
-html.ls-on #main :is(.source-meta, .luliy-bg-toggle, .luliy-bg-panel) { display: none !important; }
-/* 2026-11-02: the artwork layer is no longer hidden here: its controls are Loon's background button (home-fixes.js 37), and
-   the default is still 无背景. When one is picked the usual text shadows and scrim apply. */
+html.ls-on #main .source-meta { display: none !important; }
+/* 2026-11-02: the artwork layer and the contents panel's 背景 button are no longer hidden on label pages; the default is
+   still 无背景, and a picked background gets the usual scrim and text shadows. */
 html.ls-on #main .ls-share { font: inherit; letter-spacing: inherit; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; cursor: pointer; }
 html.ls-on #main .ls-share:hover, html.ls-on #main .ls-share:focus-visible { color: var(--ls-gold); border-color: var(--ls-gold); outline: none; }
 

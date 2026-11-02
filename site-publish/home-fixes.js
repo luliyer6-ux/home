@@ -2354,28 +2354,6 @@
     window.addEventListener('hashchange', function () { syncReading(); schedule(); });
     if (DESKTOP.addEventListener) DESKTOP.addEventListener('change', schedule);
     else if (DESKTOP.addListener) DESKTOP.addListener(schedule);
-    /* 2026-11-02: a small handle for Loon's button on label-styled pages (block 37). cycle() picks the next background
-       (无背景 → this article's picture → the artworks → the visitor's own) and returns its name. */
-    window.LuliyArticleBg = {
-      cycle: function (cb) {
-        loadList(function (list) {
-          var cov = coverSrc(), custom = customSrc(), items = [{ id: 'none', name: '无背景' }];
-          if (cov) items.push({ id: 'default', name: '文章配图' });
-          for (var i = 0; i < list.length; i++) if (list[i] && list[i].id && list[i].src) items.push({ id: list[i].id, name: list[i].name || ('背景' + (i + 1)) });
-          if (custom) items.push({ id: 'custom', name: '我的图片' });
-          var c = choice();
-          if (c === 'default' && !cov) c = items[1] ? items[1].id : 'none';
-          if (c === 'custom' && !custom) c = 'none';
-          var at = -1;
-          for (var j = 0; j < items.length; j++) if (items[j].id === c) { at = j; break; }
-          var next = items[(at + 1) % items.length];
-          store(LS_CHOICE, next.id);
-          apply();
-          if (cb) cb(next.name, next.id);
-        });
-      },
-      current: function () { return choice(); }
-    };
     syncReading();
     apply();
   })();
@@ -2868,7 +2846,7 @@
       if (n >= 2 || ss.get('luliy-loon-bg-hinted')) return;
       let tries = 0;
       const tryNow = () => {
-        if (box.hidden || !reading() || !document.querySelector('#main .luliy-bg-toggle') || root.classList.contains('ls-on') || root.classList.contains('lk-weekly')) return;
+        if (box.hidden || !reading() || !document.querySelector('#main .luliy-bg-toggle') || root.classList.contains('lk-weekly')) return;
         if (talking || mode === 'intro' || bubble.classList.contains('show')) { if (++tries < 10) hintT = setTimeout(tryNow, 1500); return; }
         ss.set('luliy-loon-bg-hinted');
         try { localStorage.setItem('luliy-loon-bg-hint', String(n + 1)); } catch (e) {}
@@ -3900,6 +3878,7 @@
           : g[1] + '年' + (+g[2]) + '月' + (+g[3]) + '日';
       }
       fitTitle(h1);
+      fitNumber(shell);
       const rt = meta && meta.querySelector('#sourceReadingTime'), mm = rt && rt.textContent.match(/(\d+)\s*(?:分|min)/i);
       minutes = mm ? +mm[1] : Math.max(1, Math.round(body.textContent.replace(/\s+/g, '').length / 400));
       const rts = shell.querySelector(':scope > .lk-by .lk-rt');
@@ -4049,9 +4028,17 @@
       if (size >= base * 0.6) h1.style.fontSize = size + 'px';
       else { h1.classList.remove('lk-fit'); h1.style.fontSize = (base * 0.6).toFixed(1) + 'px'; }
     }
+    /* The issue number is as tall as the block above the double rule (kicker → rule), so the text reads centred on it
+       vertically; horizontally it stays at the right. Set on .lk-by as --lk-num-size (digit height ≈ .72em). */
+    function fitNumber(shell) {
+      const by = shell && shell.querySelector(':scope > .lk-by'), kick = shell && shell.querySelector(':scope > .lk-kick');
+      if (!by || !kick) return;
+      const d = by.getBoundingClientRect().top - kick.getBoundingClientRect().top;
+      if (d > 40) by.style.setProperty('--lk-num-size', Math.round(Math.max(90, Math.min(300, d / 0.72))) + 'px');
+    }
     let fitQ = 0;
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { const h = main.querySelector('.source-reading > h1'); if (h && root.classList.contains('lk-weekly')) { delete h.dataset.lkFit; fitTitle(h); } });
-    addEventListener('resize', () => { if (!fitQ) fitQ = requestAnimationFrame(() => { fitQ = 0; if (root.classList.contains('lk-weekly')) fitTitle(main.querySelector('.source-reading > h1')); }); }, { passive: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { const h = main.querySelector('.source-reading > h1'); if (h && root.classList.contains('lk-weekly')) { delete h.dataset.lkFit; fitTitle(h); fitNumber(main.querySelector('.source-reading')); } });
+    addEventListener('resize', () => { if (!fitQ) fitQ = requestAnimationFrame(() => { fitQ = 0; if (root.classList.contains('lk-weekly')) { const sh = main.querySelector('.source-reading'); fitTitle(sh && sh.querySelector(':scope > h1')); fitNumber(sh); } }); }, { passive: true });
     // 1 → 一, 10 → 十, 12 → 十二, 20 → 二十, 105 → 一百零五 (issue numbers on the phone status bar).
     function cnNum(n) {
       const D = '零一二三四五六七八九';
@@ -4298,27 +4285,6 @@
       if (t && window.LuliyLoonSay) window.LuliyLoonSay(t, 4200);
     }
 
-    /* ---- Loon's background button (2026-11-02) ----
-       The label-styled pages hid the article-background controls in the contents panel; the backgrounds come back
-       here instead: one button in Loon's column that steps through 无背景 → this article's picture → the artworks →
-       the visitor's own (window.LuliyArticleBg.cycle, block 24, same choice as the contents panel) and she says which.
-       Desktop with Loon only; weekly keeps its paper (block 36 e). */
-    let bgBtn = null;
-    const BGICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.5"/><path d="m4.5 17 4.2-4.2 3.3 3.3 2.7-2.7 4.8 4.8"/></svg>';
-    function bgButton(on) {
-      const tools = document.querySelector('.luliy-mascot .luliy-mascot-tools');
-      if (!on || !tools || !window.LuliyArticleBg) { if (bgBtn) { bgBtn.remove(); bgBtn = null; } return; }
-      if (!bgBtn) {
-        bgBtn = document.createElement('button'); bgBtn.type = 'button'; bgBtn.dataset.m = 'bg'; bgBtn.innerHTML = BGICON;
-        bgBtn.addEventListener('click', () => window.LuliyArticleBg.cycle(name => {
-          if (window.LuliyLoonSay) window.LuliyLoonSay(L('背景：', 'Background: ', '背景：') + T(name), 2600);
-        }));
-      }
-      bgBtn.setAttribute('aria-label', L('换背景', 'Change background', '背景を変える')); bgBtn.title = bgBtn.getAttribute('aria-label');
-      const hide = tools.querySelector('[data-m="hide"]');
-      if (bgBtn.parentElement !== tools) tools.insertBefore(bgBtn, hide);
-    }
-
     /* ---- apply ---- */
     let frame = 0;
     function apply() {
@@ -4329,7 +4295,6 @@
       const style = shell && !root.classList.contains('lk-weekly') ? styleOf(m[1], shell) : '';
       ['musings', 'growth', 'study', 'ai', 'doc', 'guide'].forEach(s => root.classList.toggle('ls-' + s, s === style));
       root.classList.toggle('ls-on', !!style);
-      bgButton(!!style);
       if (!style) { if (state.id) { state = { id: '', style: '', quote: '', keys: [], ki: 0, prompts: [], ended: false }; clearTimeout(quoteT); } return; }
       loadMap();
       if (state.id !== m[1]) {
