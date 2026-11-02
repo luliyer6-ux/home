@@ -2155,8 +2155,10 @@ html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-c :is(body, .page-above) { b
   linear-gradient(90deg, transparent calc(50% - 351px), var(--lk-rule) calc(50% - 351px), var(--lk-rule) calc(50% - 350px), transparent calc(50% - 350px),
   transparent calc(50% + 350px), var(--lk-rule) calc(50% + 350px), var(--lk-rule) calc(50% + 351px), transparent calc(50% + 351px)) !important; }
 html.lk-weekly #main .source-reading { position: relative; }
-html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .source-reading[data-lk-no]::after { content: attr(data-lk-no); position: absolute; z-index: -1; top: -30px; right: -10px;
-  font: 700 220px/1 var(--font-body); letter-spacing: -.04em; color: var(--lk-ink); opacity: var(--lk-num); pointer-events: none; }
+/* The issue number rests on the double rule under the title (the top of the byline): centred in the column, behind the
+   kicker / title / standfirst, which read across it (2026-11-02; before: top right corner). */
+html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .lk-by[data-lk-no]::after { content: attr(data-lk-no); position: absolute; z-index: -1; left: 50%; bottom: calc(100% - 12px); transform: translateX(-50%);
+  font: 700 var(--lk-num-size, 210px)/.78 var(--font-body); letter-spacing: -.04em; color: var(--lk-ink); opacity: var(--lk-num); pointer-events: none; white-space: nowrap; }
 @media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
   html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-b :is(body, .page-above) { background-color: var(--lk-desk) !important; background-image: radial-gradient(90% 70% at 50% 0%, var(--lk-lamp), transparent 70%) !important; }
   html.lk-weekly.lk-p-b #main .source-reading::before { content: ""; position: absolute; z-index: -1; inset: -56px -64px -40px; border-radius: 2px;
@@ -2164,8 +2166,14 @@ html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .source-reading[data-lk-no]::after { 
   html.lk-weekly[data-appearance="light"].lk-p-b #main .source-reading::before { box-shadow: 0 24px 60px rgba(60, 45, 20, .18), 0 2px 6px rgba(60, 45, 20, .12); }
 }
 @media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
-  html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .source-reading[data-lk-no]::after { top: 52px; right: -4px; font-size: 128px; }
+  html.lk-weekly { --lk-num-size: 130px; }
   html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-c :is(body, .page-above) { background-image: var(--lk-grain) !important; }
+}
+
+/* h) 2026-11-02. Desktop: no bottom status bar on weekly pages (phones keep theirs). */
+@media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
+  html.lk-weekly .lk-bar { display: none !important; }
+  html.lk-weekly #main { padding-bottom: 24px; }
 }
 
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
@@ -2173,8 +2181,9 @@ html.lk-weekly:is(.lk-p-an, .lk-p-c) #main .source-reading[data-lk-no]::after { 
    appearance works too. Loon stays; the article artwork and the orange meta row do not. */
 html.ls-on { --ls-gold: var(--accent); --ls-gold2: color-mix(in srgb, var(--accent) 70%, #fff3cf); --ls-mono: var(--font-mono); }
 html.ls-on[data-appearance="light"] { --ls-gold2: color-mix(in srgb, var(--accent) 85%, #000); }
-html.ls-on :is(#luliy-article-bg), html.ls-on #main :is(.source-meta, .luliy-bg-toggle, .luliy-bg-panel) { display: none !important; }
-html.ls-on body.luliy-article-bg-on :is(.article-body, #sourceArticleBody, .source-end, .source-end *) { text-shadow: none !important; }
+html.ls-on #main :is(.source-meta, .luliy-bg-toggle, .luliy-bg-panel) { display: none !important; }
+/* 2026-11-02: the artwork layer is no longer hidden here: its controls are Loon's background button (home-fixes.js 37), and
+   the default is still 无背景. When one is picked the usual text shadows and scrim apply. */
 html.ls-on #main .ls-share { font: inherit; letter-spacing: inherit; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; cursor: pointer; }
 html.ls-on #main .ls-share:hover, html.ls-on #main .ls-share:focus-visible { color: var(--ls-gold); border-color: var(--ls-gold); outline: none; }
 

@@ -2354,6 +2354,28 @@
     window.addEventListener('hashchange', function () { syncReading(); schedule(); });
     if (DESKTOP.addEventListener) DESKTOP.addEventListener('change', schedule);
     else if (DESKTOP.addListener) DESKTOP.addListener(schedule);
+    /* 2026-11-02: a small handle for Loon's button on label-styled pages (block 37). cycle() picks the next background
+       (无背景 → this article's picture → the artworks → the visitor's own) and returns its name. */
+    window.LuliyArticleBg = {
+      cycle: function (cb) {
+        loadList(function (list) {
+          var cov = coverSrc(), custom = customSrc(), items = [{ id: 'none', name: '无背景' }];
+          if (cov) items.push({ id: 'default', name: '文章配图' });
+          for (var i = 0; i < list.length; i++) if (list[i] && list[i].id && list[i].src) items.push({ id: list[i].id, name: list[i].name || ('背景' + (i + 1)) });
+          if (custom) items.push({ id: 'custom', name: '我的图片' });
+          var c = choice();
+          if (c === 'default' && !cov) c = items[1] ? items[1].id : 'none';
+          if (c === 'custom' && !custom) c = 'none';
+          var at = -1;
+          for (var j = 0; j < items.length; j++) if (items[j].id === c) { at = j; break; }
+          var next = items[(at + 1) % items.length];
+          store(LS_CHOICE, next.id);
+          apply();
+          if (cb) cb(next.name, next.id);
+        });
+      },
+      current: function () { return choice(); }
+    };
     syncReading();
     apply();
   })();
@@ -2906,7 +2928,7 @@
     const realToggle = () => document.querySelector('#main .reader-toc-toggle');
     function reflect() {
       const t = realToggle();
-      tocBtn.hidden = !t || t.hidden;
+      tocBtn.hidden = !t || t.hidden || root.classList.contains('lk-weekly');
       const was = tocOpen;
       tocOpen = !!t && t.getAttribute('aria-expanded') === 'true';
       tocBtn.setAttribute('aria-expanded', String(tocOpen));
@@ -3971,6 +3993,8 @@
         drawer.querySelector('header span').textContent = 'WEEKLY' + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
         done = key;
       }
+      const byEl = shell.querySelector(':scope > .lk-by');
+      if (byEl) { if (ipos >= 0) byEl.dataset.lkNo = String(ipos + 1).padStart(2, '0'); else delete byEl.dataset.lkNo; }
       progress();
     }
     /* ---- e) paper (2026-11-02): four backgrounds, html.lk-p-<id> (home-fixes.css 36 g). The default is an (紙紋 + 期號);
@@ -4274,6 +4298,27 @@
       if (t && window.LuliyLoonSay) window.LuliyLoonSay(t, 4200);
     }
 
+    /* ---- Loon's background button (2026-11-02) ----
+       The label-styled pages hid the article-background controls in the contents panel; the backgrounds come back
+       here instead: one button in Loon's column that steps through 无背景 → this article's picture → the artworks →
+       the visitor's own (window.LuliyArticleBg.cycle, block 24, same choice as the contents panel) and she says which.
+       Desktop with Loon only; weekly keeps its paper (block 36 e). */
+    let bgBtn = null;
+    const BGICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.5"/><path d="m4.5 17 4.2-4.2 3.3 3.3 2.7-2.7 4.8 4.8"/></svg>';
+    function bgButton(on) {
+      const tools = document.querySelector('.luliy-mascot .luliy-mascot-tools');
+      if (!on || !tools || !window.LuliyArticleBg) { if (bgBtn) { bgBtn.remove(); bgBtn = null; } return; }
+      if (!bgBtn) {
+        bgBtn = document.createElement('button'); bgBtn.type = 'button'; bgBtn.dataset.m = 'bg'; bgBtn.innerHTML = BGICON;
+        bgBtn.addEventListener('click', () => window.LuliyArticleBg.cycle(name => {
+          if (window.LuliyLoonSay) window.LuliyLoonSay(L('背景：', 'Background: ', '背景：') + T(name), 2600);
+        }));
+      }
+      bgBtn.setAttribute('aria-label', L('换背景', 'Change background', '背景を変える')); bgBtn.title = bgBtn.getAttribute('aria-label');
+      const hide = tools.querySelector('[data-m="hide"]');
+      if (bgBtn.parentElement !== tools) tools.insertBefore(bgBtn, hide);
+    }
+
     /* ---- apply ---- */
     let frame = 0;
     function apply() {
@@ -4284,6 +4329,7 @@
       const style = shell && !root.classList.contains('lk-weekly') ? styleOf(m[1], shell) : '';
       ['musings', 'growth', 'study', 'ai', 'doc', 'guide'].forEach(s => root.classList.toggle('ls-' + s, s === style));
       root.classList.toggle('ls-on', !!style);
+      bgButton(!!style);
       if (!style) { if (state.id) { state = { id: '', style: '', quote: '', keys: [], ki: 0, prompts: [], ended: false }; clearTimeout(quoteT); } return; }
       loadMap();
       if (state.id !== m[1]) {
