@@ -3870,6 +3870,7 @@
       row.append(cardLine); card.append(cardPanel, row); // ↑ is already in her button column, so the card has none
       box.append(card);
       cardLine.addEventListener('click', e => { e.stopPropagation(); cardToggle(); });
+      row.addEventListener('click', e => { e.stopPropagation(); cardToggle(); }); // the strip around the ribbon (its tail, its padding) counts too
       ih.addEventListener('click', e => { e.stopPropagation(); const o = cardIss.hidden; cardIss.hidden = !o; ih.setAttribute('aria-expanded', String(o)); });
       cardList.addEventListener('click', e => {
         const a = e.target.closest('a[data-i]'); if (!a) return;
