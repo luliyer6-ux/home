@@ -2081,17 +2081,36 @@ html.lk-weekly #main .source-end a:hover { color: var(--lk-ink); }
 
 /* d) status bar and contents drawer (outside #main; hidden on every other page) */
 .lk-bar, .lk-drawer, .lk-dim { display: none; }
-html.lk-weekly .lk-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; display: flex; align-items: center; gap: 16px; height: 46px;
-  padding: 0 clamp(14px, 4vw, 48px) env(safe-area-inset-bottom); background: var(--lk-bg); border-top: 1px solid var(--lk-rule);
-  font: 11.5px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-mute); box-sizing: content-box; }
-html.lk-weekly .lk-tocb { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px 0 0; font: inherit; letter-spacing: .14em; color: var(--lk-ink);
-  background: none; border: 0; cursor: pointer; }
-html.lk-weekly .lk-tocb svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.4; }
-html.lk-weekly .lk-tocb:hover span { text-decoration: underline; text-underline-offset: 4px; }
-html.lk-weekly .lk-tocb:focus-visible { outline: 2px solid var(--lk-acc); outline-offset: 2px; }
-html.lk-weekly .lk-track { flex: 1; height: 1px; background: var(--lk-rule); }
-html.lk-weekly .lk-track i { display: block; width: 0; height: 100%; background: var(--lk-ink); }
-html.lk-weekly .lk-pct { min-width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
+html.lk-weekly .lk-bar { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 70; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; max-width: calc(100vw - 20px); padding: 6px 8px;
+  overflow-x: auto; scrollbar-width: none; background: color-mix(in srgb, var(--lk-bg) 92%, var(--lk-ink)); border: 1px solid var(--lk-rule); border-radius: 999px; box-shadow: 0 8px 24px rgba(0, 0, 0, .28);
+  font: 12px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-mute); transition: transform var(--dur-base, .3s) var(--ease, ease), bottom var(--dur-base, .3s) var(--ease, ease); }
+html.lk-weekly .lk-bar::-webkit-scrollbar { display: none; }
+html.lk-weekly.lm-bar-mode .lk-bar { bottom: calc(var(--lm-bar-space, 80px) + 12px); }
+html.lk-weekly .lk-no { padding: 8px 10px 8px 12px; font: 600 12px/1 var(--font-mono); letter-spacing: .14em; color: var(--lk-acc); white-space: nowrap; background: none; border: 0; border-radius: 999px; cursor: pointer; }
+html.lk-weekly .lk-no:hover { background: color-mix(in srgb, var(--lk-acc) 14%, transparent); }
+html.lk-weekly .lk-issues { position: fixed; z-index: 75; width: 320px; max-height: 50vh; margin: 0; padding: 6px; overflow: auto; list-style: none; background: var(--lk-bg); border: 1px solid var(--lk-rule); border-radius: 14px; box-shadow: 0 12px 32px rgba(0, 0, 0, .32); }
+html.lk-weekly .lk-issues[hidden] { display: none; }
+html.lk-weekly .lk-issues a { display: flex; gap: 12px; align-items: baseline; padding: 10px 12px; border-radius: 9px; color: var(--lk-ink); text-decoration: none; font: 14px/1.4 var(--font-body); }
+html.lk-weekly .lk-issues a b { flex: none; font: 600 12px/1 var(--font-mono); letter-spacing: .12em; color: var(--lk-acc); }
+html.lk-weekly .lk-issues a:hover { background: color-mix(in srgb, var(--lk-ink) 8%, transparent); }
+html.lk-weekly .lk-issues a[aria-current] { background: color-mix(in srgb, var(--lk-acc) 16%, transparent); }
+html.lk-weekly .lk-issues .lk-none { padding: 10px 12px; font: 13px var(--font-mono); color: var(--lk-mute); }
+html:not(.lk-weekly) .lk-issues { display: none !important; }
+html.lk-weekly .lk-chs { display: flex; align-items: center; gap: 4px; }
+html.lk-weekly .lk-chs a { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; font-size: 13px; color: var(--lk-mute); text-decoration: none; white-space: nowrap; }
+html.lk-weekly .lk-chs a:hover { color: var(--lk-ink); }
+html.lk-weekly .lk-chs .lk-nm { display: none; }
+html.lk-weekly .lk-chs a.act { background: var(--lk-acc); color: var(--lk-bg); }
+html.lk-weekly .lk-chs a.act .lk-nm { display: inline; letter-spacing: .02em; font-family: var(--font-body); }
+html.lk-weekly .lk-sub { display: none; padding-left: 10px; border-left: 1px solid var(--lk-rule); color: var(--lk-acc); white-space: nowrap; font-family: var(--font-body); letter-spacing: .02em; }
+html.lk-weekly .lk-sub.on { display: block; }
+html.lk-weekly .lk-cur { display: none; max-width: 60vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 8px 12px; font: 13px/1 var(--font-body); color: var(--lk-acc); background: none; border: 0; cursor: pointer; }
+html.lk-weekly .lk-bar.lk-nochap .lk-chs { display: none; }
+html.lk-weekly .lk-top { display: grid; place-items: center; flex: none; width: 32px; height: 32px; padding: 0; color: var(--lk-ink); background: none; border: 0; border-radius: 50%; cursor: pointer; }
+html.lk-weekly .lk-top:hover { background: color-mix(in srgb, var(--lk-ink) 10%, transparent); }
+html.lk-weekly .lk-top svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+html.lk-weekly :is(.lk-top, .lk-cur, .lk-chs a):focus-visible { outline: 2px solid var(--lk-acc); outline-offset: 1px; }
+html.lk-weekly body.luliy-chrome-hidden .lk-bar { transform: translate(-50%, calc(100% + 28px)); }
 html.lk-weekly .lk-dim { position: fixed; inset: 0; z-index: 80; display: block; background: rgba(0, 0, 0, .22); opacity: 0; pointer-events: none; transition: opacity .25s; }
 html.lk-weekly .lk-dim.open { opacity: 1; pointer-events: auto; }
 html.lk-weekly .lk-drawer { position: fixed; top: 0; bottom: 0; left: 0; z-index: 81; display: flex; flex-direction: column; width: min(360px, 86vw);
@@ -2128,17 +2147,10 @@ html.lk-weekly.lk-weekly:root[class] { --luliy-wash: var(--lk-bg); }
 /* e) 2026-11-02. Standfirst: an opening quote moves under the title (home-fixes.js 36 c). */
 html.lk-weekly #main .source-body .lk-stand-src { display: none !important; }
 html.lk-weekly #main .lk-stand { margin: -6px 0 22px; font: italic 400 clamp(17px, 2.2vw, 20px)/1.65 var(--font-body); letter-spacing: .02em; color: var(--lk-soft); text-wrap: pretty; }
-/* Phone status bar: 第一期 instead of the time left, ↑ (back to top) instead of the %; it steps down while reading
-   downwards and comes back with the header (body.luliy-chrome-hidden, home-fixes.js 4). Wider screens keep both. */
-.lk-no, .lk-top { display: none; }
-@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
-  html.lk-weekly .lk-left, html.lk-weekly .lk-pct { display: none; }
-  html.lk-weekly .lk-no { display: block; letter-spacing: .14em; color: var(--lk-soft); white-space: nowrap; }
-  html.lk-weekly .lk-top { display: grid; place-items: center; width: 44px; height: 44px; margin-right: -12px; padding: 0; color: var(--lk-ink); background: none; border: 0; border-radius: 50%; cursor: pointer; }
-  html.lk-weekly .lk-top svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-  html.lk-weekly .lk-top:focus-visible { outline: 2px solid var(--lk-acc); outline-offset: -4px; }
-  html.lk-weekly .lk-bar { transition: transform var(--dur-base, .3s) var(--ease, ease); }
-  html.lk-weekly body.luliy-chrome-hidden .lk-bar { transform: translateY(calc(100% + 1px)); }
+/* Capsule contents bar (2026-11-02, replaces the status bar): see home-fixes.js 36 d. Phones: no issue label or chapter dots, just the current chapter (tap = the contents list) and ↑. */
+@media (max-width: 680px) {
+  html.lk-weekly .lk-no, html.lk-weekly .lk-chs, html.lk-weekly .lk-sub, html.lk-weekly .lk-sub.on { display: none; }
+  html.lk-weekly .lk-cur { display: block; }
 }
 @media (prefers-reduced-motion: reduce) { html.lk-weekly .lk-bar { transition: none !important; } }
 
@@ -2174,9 +2186,8 @@ html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .lk-by[data-lk-no]::after { content: 
   html.lk-weekly.lk-weekly.lk-weekly:root[class].lk-p-c :is(body, .page-above) { background-image: var(--lk-grain) !important; }
 }
 
-/* h) 2026-11-02. Desktop: no bottom status bar on weekly pages (phones keep theirs). */
+/* h) 2026-11-02. Desktop: a little less space under the text (the contents capsule floats). */
 @media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
-  html.lk-weekly .lk-bar { display: none !important; }
   html.lk-weekly #main { padding-bottom: 24px; }
 }
 

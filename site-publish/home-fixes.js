@@ -3786,19 +3786,24 @@
     }
 
     /* ---- chrome: status bar + drawer (live outside #main, shown only on weekly pages) ---- */
-    let bar = null, drawer = null, dim = null, list = null, opener = null;
+    let issuesPop = null, curIssue = '', capSub = null, bar = null, drawer = null, dim = null, list = null, opener = null;
     function chrome() {
       if (bar) return;
-      bar = el('div', 'lk-bar'); bar.setAttribute('role', 'region');
-      const tb = el('button', 'lk-tocb'); tb.type = 'button'; tb.setAttribute('aria-expanded', 'false'); tb.setAttribute('aria-controls', 'lkDrawer');
-      tb.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 4h12M2 8h12M2 12h8"/></svg><span></span>';
-      const track = el('span', 'lk-track'); track.append(el('i'));
-      const left = el('span', 'lk-left'), pct = el('span', 'lk-pct');
-      // Phones (2026-11-02): the issue number instead of the time left, and ↑ (back to the top) instead of the %.
-      const no = el('span', 'lk-no'), up = el('button', 'lk-top'); up.type = 'button';
+      // Capsule (2026-11-02): WEEKLY · 第 N 期 | 01 02 … (the open one shows its name; the open section's sub-heading is added) | ↑.
+      // Phones show the issue-less short form: the current chapter (tap: the full contents list) and ↑. Built by capsule().
+      bar = el('div', 'lk-bar'); bar.setAttribute('role', 'navigation');
+      const no = el('button', 'lk-no'), chs = el('span', 'lk-chs'), sub = el('span', 'lk-sub'), cur = el('button', 'lk-cur'), up = el('button', 'lk-top');
+      cur.type = 'button'; cur.setAttribute('aria-expanded', 'false'); cur.setAttribute('aria-controls', 'lkDrawer');
+      up.type = 'button'; capSub = sub;
       up.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>';
       up.addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
-      bar.append(tb, track, left, pct, no, up);
+      no.type = 'button'; no.setAttribute('aria-haspopup', 'true'); no.setAttribute('aria-expanded', 'false');
+      issuesPop = el('ul', 'lk-issues'); issuesPop.hidden = true; document.body.append(issuesPop);
+      no.addEventListener('click', e => { e.stopPropagation(); issues(issuesPop.hidden); });
+      document.addEventListener('click', e => { if (!issuesPop.hidden && !issuesPop.contains(e.target)) issues(false); });
+      addEventListener('keydown', e => { if (e.key === 'Escape' && !issuesPop.hidden) { issues(false); no.focus(); } });
+      bar.append(no, chs, cur, up);
+      chs.addEventListener('click', e => { const a = e.target.closest('a[data-i]'); if (!a) return; e.preventDefault(); jump(+a.dataset.i); });
       dim = el('div', 'lk-dim');
       drawer = el('nav', 'lk-drawer'); drawer.id = 'lkDrawer'; drawer.tabIndex = -1;
       const head = el('header'); head.append(el('b'), el('span'));
@@ -3806,22 +3811,76 @@
       const foot = el('footer'); foot.append(el('span', 'lk-dpct'), el('span', '', 'Esc'));
       drawer.append(head, list, foot);
       document.body.append(dim, drawer, bar);
-      tb.addEventListener('click', () => toggle(!drawer.classList.contains('open')));
+      cur.addEventListener('click', () => toggle(!drawer.classList.contains('open')));
       dim.addEventListener('click', () => toggle(false));
       addEventListener('keydown', e => { if (e.key === 'Escape' && drawer.classList.contains('open')) { e.preventDefault(); toggle(false); } }, true);
       list.addEventListener('click', e => {
         const a = e.target.closest('a[data-i]'); if (!a) return;
         e.preventDefault();
-        const h = heads[+a.dataset.i]; toggle(false, true);
-        if (h) { const y = h.getBoundingClientRect().top + scrollY - (innerWidth <= 700 ? 84 : 120); scrollTo({ top: Math.max(0, y), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+        toggle(false, true); jump(+a.dataset.i);
       });
+    }
+    // The "W 1" label opens the list of every weekly issue (from the feed, so new issues show up by themselves).
+    function issues(open) {
+      if (!issuesPop) return;
+      const no = bar.querySelector('.lk-no');
+      if (open) {
+        issuesPop.innerHTML = '';
+        index.slice().reverse().forEach(it => {
+          const n = index.indexOf(it) + 1, li = el('li'), a = el('a');
+          a.href = '#/article/' + it.id; if (it.id === curIssue) a.setAttribute('aria-current', 'true');
+          a.append(el('b', '', 'W ' + n), el('span', '', it.title || it.id));
+          a.addEventListener('click', () => issues(false));
+          li.append(a); issuesPop.append(li);
+        });
+        if (!index.length) issuesPop.append(el('li', 'lk-none', L('还没有期刊', 'No issues yet', 'まだ号がありません')));
+        const r = bar.getBoundingClientRect();
+        issuesPop.style.bottom = Math.round(innerHeight - r.top + 10) + 'px';
+        issuesPop.style.left = Math.round(Math.max(10, Math.min(r.left, innerWidth - 330))) + 'px';
+      }
+      issuesPop.hidden = !open; no.setAttribute('aria-expanded', String(open));
+    }
+    function jump(i) {
+      const h = heads[i];
+      if (h) { const y = h.getBoundingClientRect().top + scrollY - (innerWidth <= 700 ? 84 : 120); scrollTo({ top: Math.max(0, y), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+    }
+    const hText = h => { const c = h.cloneNode(true); c.querySelectorAll('button, .reader-heading-link, svg').forEach(n => n.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+    let capSig = '';
+    function capsule() {
+      if (!bar) return;
+      const sig = heads.map(h => h.dataset.lkLevel + hText(h)).join('|') + '#' + (index.length);
+      if (sig === capSig) return;
+      capSig = sig;
+      const chs = bar.querySelector('.lk-chs'); chs.innerHTML = '';
+      let n = 0;
+      heads.forEach((h, i) => {
+        if (h.dataset.lkLevel !== '1') return;
+        n++;
+        const a = el('a'); a.href = '#'; a.dataset.i = i; a.dataset.ch = i;
+        const num = el('span', 'lk-n', String(n).padStart(2, '0')), nm = el('span', 'lk-nm', hText(h));
+        a.append(num, nm); a.title = hText(h); chs.append(a);
+      });
+      bar.classList.toggle('lk-nochap', !n);
+    }
+    function capsuleNow() {
+      if (!bar) return;
+      const c = current();
+      let ch = c; while (ch > 0 && heads[ch] && heads[ch].dataset.lkLevel !== '1') ch--;
+      const sub = capSub, cur = bar.querySelector('.lk-cur');
+      let num = 0;
+      bar.querySelectorAll('.lk-chs a').forEach(a => { const on = +a.dataset.ch === ch && heads[ch] && heads[ch].dataset.lkLevel === '1'; a.classList.toggle('act', on); if (on) { a.setAttribute('aria-current', 'true'); num = +a.querySelector('.lk-n').textContent; } else a.removeAttribute('aria-current'); });
+      const hc = heads[c], isSub = hc && hc.dataset.lkLevel === '2';
+      const actA = bar.querySelector('.lk-chs a.act'); if (actA && actA.nextElementSibling !== sub) actA.after(sub); // sits right after the open chapter
+      sub.textContent = isSub ? hText(hc) : ''; sub.classList.toggle('on', !!isSub);
+      const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? hText(heads[ch]) : '';
+      cur.textContent = chName ? String(num).padStart(2, '0') + ' ' + chName : L('目录', 'Contents', '目次');
     }
     let heads = [];
     function toggle(open, noFocus) {
       if (!drawer) return;
       if (open) { opener = document.activeElement; fillList(); }
       drawer.classList.toggle('open', open); dim.classList.toggle('open', open);
-      bar.querySelector('.lk-tocb').setAttribute('aria-expanded', String(open));
+      bar.querySelector('.lk-cur').setAttribute('aria-expanded', String(open));
       root.classList.toggle('lk-drawer-open', open);
       if (open) { const cur = list.querySelector('a[aria-current]') || list.querySelector('a'); setTimeout(() => (cur || drawer).focus({ preventScroll: true }), 40); if (cur) cur.scrollIntoView({ block: 'nearest' }); }
       else if (!noFocus && opener && opener.focus) opener.focus({ preventScroll: true });
@@ -3841,18 +3900,13 @@
     let minutes = 0;
     function progress() {
       if (!bar || !root.classList.contains('lk-weekly')) return;
-      const body = main.querySelector('.source-body');
-      let p = 1;
-      if (body) {
-        const r = body.getBoundingClientRect(), total = r.height - innerHeight * .6;
-        p = total > 0 ? Math.min(1, Math.max(0, (-r.top + innerHeight * .4) / total)) : 1;
+      capsule(); capsuleNow();
+      if (drawer.classList.contains('open')) {
+        const body = main.querySelector('.source-body');
+        let p = 1;
+        if (body) { const r = body.getBoundingClientRect(), total = r.height - innerHeight * .6; p = total > 0 ? Math.min(1, Math.max(0, (-r.top + innerHeight * .4) / total)) : 1; }
+        drawer.querySelector('.lk-dpct').textContent = L('已读 ', 'Read ', '既読 ') + Math.round(p * 100) + '%';
       }
-      const pc = Math.round(p * 100);
-      bar.querySelector('.lk-track i').style.width = pc + '%';
-      bar.querySelector('.lk-pct').textContent = pc + '%';
-      const left = Math.max(0, Math.round(minutes * (1 - p)));
-      bar.querySelector('.lk-left').textContent = p >= .99 ? L('读完了', 'Finished', '読了') : left ? L('剩约 ' + left + ' 分钟', left + ' min left', '残り約 ' + left + ' 分') : L('快读完了', 'Almost done', 'もうすぐ読了');
-      if (drawer.classList.contains('open')) drawer.querySelector('.lk-dpct').textContent = L('已读 ', 'Read ', '既読 ') + pc + '%';
     }
 
     /* ---- c) decorate one article ---- */
@@ -3964,14 +4018,14 @@
       loadIndex(); chrome();
       root.classList.add('lk-weekly');
       paper(); paperButton(true);
-      const tb = bar.querySelector('.lk-tocb span'); tb.textContent = L('目录', 'Contents', '目次');
       bar.setAttribute('aria-label', L('阅读进度', 'Reading progress', '読書の進み具合'));
       drawer.setAttribute('aria-label', L('本文目录', 'Contents', '本文の目次'));
       const up = bar.querySelector('.lk-top'); up.setAttribute('aria-label', L('回到顶部', 'Back to top', 'ページの先頭へ')); up.title = up.getAttribute('aria-label');
       const key = m[1] + ':' + index.length + ':' + root.lang;
       const ipos = index.findIndex(x => x.id === m[1]);
       if (ipos >= 0) shell.dataset.lkNo = String(ipos + 1).padStart(2, '0'); else delete shell.dataset.lkNo;
-      bar.querySelector('.lk-no').textContent = ipos >= 0 ? L('第' + cnNum(ipos + 1) + '期', 'No. ' + (ipos + 1), '第' + (ipos + 1) + '号') : 'Weekly';
+      curIssue = m[1]; bar.querySelector('.lk-no').textContent = ipos >= 0 ? 'W ' + (ipos + 1) : 'W';
+      bar.querySelector('.lk-no').title = bar.querySelector('.lk-no').getAttribute('aria-label') ? '' : L('全部期刊', 'All issues', '全ての号');
       if (decorate(shell, m[1])) {
         series(shell, m[1]);
         drawer.querySelector('header b').textContent = shell.querySelector(':scope > h1').textContent.trim();
