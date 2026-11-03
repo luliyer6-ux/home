@@ -36,18 +36,6 @@
     "cover": "assets/site/81e5b5829adca30de16f.webp"
   },
   {
-    "id": "yesterday",
-    "name": {
-      "zh": "Yesterday",
-      "en": "Yesterday",
-      "ja": "Yesterday"
-    },
-    "src": "https://cloud.luliy.me/api/audio?path=shared%2FYesterday.mp3",
-    "duration": 60,
-    "color": "#b9ae94",
-    "cover": "assets/site/3346d3fd6aa97e896c8a.webp"
-  },
-  {
     "id": "someone-like-you",
     "name": {
       "zh": "Echos",
