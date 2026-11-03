@@ -2589,3 +2589,13 @@ html body .lr-album-popup:popover-open {
 html body .lr-album-popup:popover-open li .lm-queue-track:focus-visible { outline: none; }
 html body .lr-album-popup:popover-open li .lm-queue-track:focus { outline: none; }
 html body .lr-album-popup:popover-open .lm-queue-artist { align-self: flex-start; }
+
+/* Room album popup sheet width (2026-11-03):
+   measured on the phone, the sheet's cards ended ~42px short of the
+   phone queue's cards on the right, which is why long titles truncated
+   in the popup but not in the queue: a dialog width cap (100% - 2em)
+   was shrinking the panel despite left/right 0. Pin it to the full
+   viewport width with border-box sizing. */
+html body .lr-album-popup:popover-open {
+  width: 100% !important; max-width: none !important; box-sizing: border-box !important;
+}
