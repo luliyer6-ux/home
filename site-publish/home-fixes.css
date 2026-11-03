@@ -2564,3 +2564,19 @@ html body .lr-album-popup:popover-open li .lm-queue-track[aria-current="true"] .
     linear-gradient(currentColor, currentColor) 12px 100% / 3px 55% no-repeat,
     linear-gradient(currentColor, currentColor) 16px 100% / 3px 25% no-repeat;
 }
+
+/* Room album popup as the phone queue panel's bottom sheet (2026-11-03):
+   the user chose the phone queue's card module for both lists. The rows
+   already match; the panel itself was still a floating dialog, so it now
+   uses the queue panel's sheet form: full-width, pinned to the bottom,
+   rounded top corners only. The JS-set inline left/top are overridden
+   with !important. The shuffle control stays (it is the popup's own
+   function); the queue's footer pills are lm-bar settings and are not
+   part of this panel. */
+html body .lr-album-popup:popover-open {
+  left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important;
+  width: auto !important; margin: 0 !important; max-height: 88dvh !important;
+  border: 0 !important; border-radius: 24px 24px 0 0 !important;
+  box-shadow: 0 -8px 40px #0006 !important;
+  padding: 21.6px 21.6px calc(21.6px + env(safe-area-inset-bottom)) !important;
+}
