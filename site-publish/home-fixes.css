@@ -2529,3 +2529,38 @@ html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > button[aria-pressed="true"
 html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > * { background: var(--paper); border: 1px solid var(--line); }
 @media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > *:hover { background: var(--raised); } }
 html body .lr-mini.lm-mini.lm-bar .lm-bar-share-url { background: var(--paper); border: 1px solid var(--line); }
+
+/* Room album popup unified with the phone queue panel (2026-11-03):
+   the popup dialog lists the same lm-queue-track rows as the phone
+   queue, but the popup's own rules kept them as plain hairline rows
+   with a gold-text current row. They now use the phone queue's card
+   rows, gold fill current row, equalizer state and display serif
+   heading, so the two lists read as one. Scoped to :popover-open so
+   the standalone page's static 3-column album grid is untouched. */
+html body .lr-album-popup:popover-open { border-radius: 20px; }
+html body .lr-album-popup:popover-open .lr-album-heading { font-family: var(--font-display); border-bottom: 0; padding-bottom: 12px; }
+html body .lr-album-popup:popover-open ol { display: grid; gap: 4px; }
+html body .lr-album-popup:popover-open li .lm-queue-track {
+  display: flex !important; align-items: center; gap: 12px; width: 100%; min-height: 61px; box-sizing: border-box;
+  padding: 10.8px 21.6px 10.8px 10.8px !important;
+  border: 1px solid var(--line) !important; border-bottom: 1px solid var(--line) !important; border-radius: 12px;
+  background: var(--paper) !important; color: var(--ink) !important; text-align: left; font: inherit; cursor: pointer;
+}
+@media (hover: hover) { html body .lr-album-popup:popover-open li .lm-queue-track:hover { background: var(--raised) !important; } }
+html body .lr-album-popup:popover-open .lm-queue-cover { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 4px; overflow: hidden; }
+html body .lr-album-popup:popover-open .lm-queue-copy { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+html body .lr-album-popup:popover-open .lm-queue-copy strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 500 14.4px/1.3 var(--font-ui); }
+html body .lr-album-popup:popover-open .lm-queue-artist { display: block !important; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 500 12.6px/1.3 var(--font-ui); color: var(--muted); }
+html body .lr-album-popup:popover-open .lm-queue-artist:empty::before { content: "Luliy Records"; }
+html body .lr-album-popup:popover-open li .lm-queue-track[aria-current="true"] { background: var(--accent) !important; color: var(--bg) !important; }
+html body .lr-album-popup:popover-open li .lm-queue-track[aria-current="true"] .lm-queue-artist { color: color-mix(in oklab, var(--bg) 70%, transparent); }
+html body .lr-album-popup:popover-open .lm-queue-state { flex: none; font-size: 0 !important; width: 0; }
+html body .lr-album-popup:popover-open li .lm-queue-track[aria-current="true"] .lm-queue-state {
+  width: 19px; height: 16px; color: var(--bg);
+  background:
+    linear-gradient(currentColor, currentColor) 0 100% / 3px 35% no-repeat,
+    linear-gradient(currentColor, currentColor) 4px 100% / 3px 70% no-repeat,
+    linear-gradient(currentColor, currentColor) 8px 100% / 3px 100% no-repeat,
+    linear-gradient(currentColor, currentColor) 12px 100% / 3px 55% no-repeat,
+    linear-gradient(currentColor, currentColor) 16px 100% / 3px 25% no-repeat;
+}
