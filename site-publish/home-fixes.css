@@ -2580,3 +2580,12 @@ html body .lr-album-popup:popover-open {
   box-shadow: 0 -8px 40px #0006 !important;
   padding: 21.6px 21.6px calc(21.6px + env(safe-area-inset-bottom)) !important;
 }
+
+/* Room album popup leftovers vs the phone queue panel (2026-11-03):
+   the current row is auto-focused on open, so the room's gold focus
+   outline framed it, while the queue's current row is never focused;
+   and the popup's own li small rule centered the artist line, while
+   the queue's artist is left-aligned. Both now match the queue. */
+html body .lr-album-popup:popover-open li .lm-queue-track:focus-visible { outline: none; }
+html body .lr-album-popup:popover-open li .lm-queue-track:focus { outline: none; }
+html body .lr-album-popup:popover-open .lm-queue-artist { align-self: flex-start; }
