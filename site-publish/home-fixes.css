@@ -2497,3 +2497,35 @@ html.lk-weekly .luliy-mascot [data-m="toc"] { display: none !important; }
 html.lk-weekly.lk-weekly .lk-card-line { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 72px calc(100% - 10px), 62px 100%, 52px calc(100% - 10px), 0 calc(100% - 10px)); padding-bottom: 19px; }
 /* no "›" before the sub-heading in the capsule either (same reason as the ribbon) */
 html.lk-weekly .lk-sub.on::before { content: none; }
+
+/* ---- Player sheets unified with the site's pages (2026-11-03) ----
+   The expanded player sheet, the queue panel and the share popover used the
+   bar's raised-mix surface and UI font, which read as a generic music app
+   against the site's pages. They now use the pages' own tokens instead:
+   page background, paper rows with a line border, display serif for the
+   sheet titles, and the gold accent for everything active. Layout, sizes
+   and behaviour are unchanged; the collapsed mini bar is untouched. */
+html body .lr-mini.lm-mini.lm-bar.lm-expanded { background: var(--bg); }
+html body .lr-mini.lm-mini.lm-bar :is(.lm-mini-panel, .lm-bar-share) { background: var(--bg); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded :is(.lm-mini-panel, .lm-bar-share) { background: var(--bg); }
+html body .lr-mini.lm-mini.lm-bar :is(.lm-bar-panel-head, .lm-bar-pop-head) h2 { font-family: var(--font-display); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-title { font-family: var(--font-display); text-transform: none; }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-caption { border-color: var(--accent); color: var(--accent); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-controls .lr-mini-play { background: var(--accent); color: var(--bg) !important; }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-seek::-webkit-slider-runnable-track { background: linear-gradient(var(--accent), var(--accent)) 0 0 / var(--lm-fill) 100% no-repeat, var(--bar-track); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-seek::-webkit-slider-thumb { background: var(--accent); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-seek::-moz-range-progress { background: var(--accent); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lr-mini-seek::-moz-range-thumb { background: var(--accent); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-vol-fill { background: var(--accent); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-vol-fill::after { background: var(--accent); }
+html body .lr-mini.lm-mini.lm-bar.lm-expanded .lm-bar-vol-pop { background: var(--bg); }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-track { background: var(--paper) !important; border: 1px solid var(--line) !important; }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-queue-track:hover { background: var(--raised) !important; } }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-track[aria-current="true"] { background: var(--accent) !important; color: var(--bg) !important; }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-track[aria-current="true"] .lm-queue-artist { color: color-mix(in oklab, var(--bg) 70%, transparent); }
+html body .lr-mini.lm-mini.lm-bar .lm-queue-track[aria-current="true"] .lm-queue-state { color: var(--bg); }
+html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > :is(button, select) { background-color: var(--paper) !important; border: 1px solid var(--line) !important; }
+html body .lr-mini.lm-mini.lm-bar .lm-mini-settings > button[aria-pressed="true"] { background-color: var(--accent) !important; color: var(--bg) !important; }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > * { background: var(--paper); border: 1px solid var(--line); }
+@media (hover: hover) { html body .lr-mini.lm-mini.lm-bar .lm-bar-share-icons > *:hover { background: var(--raised); } }
+html body .lr-mini.lm-mini.lm-bar .lm-bar-share-url { background: var(--paper); border: 1px solid var(--line); }
