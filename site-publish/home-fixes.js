@@ -2547,7 +2547,7 @@
       if (hubImgs) return;
       hubImgs = {};
       [LOON].concat(DOORS).forEach(d => {
-        const im = new Image(); im.className = 'lm-wd'; im.alt = ''; im.decoding = 'async'; im.draggable = false;
+        const im = new Image(); im.className = 'lm-wd'; im.alt = ''; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; im.draggable = false;
         im.width = d.w; im.height = GEO.H; im.style.width = d.w + 'px'; im.style.height = GEO.H + 'px';
         im.src = BASE + d.img; hubImgs[d.k] = im; hubW.appendChild(im);
       });
@@ -2617,7 +2617,7 @@
       if (atlas || loading || still()) return;
       loading = true;
       const im = new Image();
-      im.decoding = 'async';
+      im.decoding = 'async'; im.referrerPolicy = 'no-referrer';
       im.onload = () => {
         (im.decode ? im.decode() : Promise.resolve()).catch(() => {}).then(() => {
           atlas = im; drawn = -1; draw(pos);
@@ -2672,7 +2672,7 @@
       stillsReady = true;
       [['front', FRONT], ['turn', TURN]].forEach(([name, src]) => {
         const im = new Image();
-        im.className = 'luliy-mascot-pose'; im.dataset.pose = name; im.alt = ''; im.decoding = 'async'; im.src = src;
+        im.className = 'luliy-mascot-pose'; im.dataset.pose = name; im.alt = ''; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; im.src = src;
         stage.appendChild(im);
       });
     }
@@ -3147,7 +3147,7 @@
     const tagsOf = item => item.labels.filter(l => l.toLowerCase() !== 'journal' && !isPin(l));
     const buildNote = (item, single) => {
       const a = el('article', 'lj-note'); a.id = 'note-' + item.id; a.dataset.id = item.id; a.setAttribute('aria-busy', 'true');
-      const avatar = el('a', 'lj-avatar-link'); avatar.href = '#/about'; avatar.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); avatar.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-avatar'); im.src = '/assets/avatar/luliy.webp?v=5'; im.alt = ''; im.width = 40; im.height = 40; im.decoding = 'async'; avatar.append(im); }
+      const avatar = el('a', 'lj-avatar-link'); avatar.href = '#/about'; avatar.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); avatar.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-avatar'); im.src = '/assets/avatar/luliy.webp?v=5'; im.alt = ''; im.width = 40; im.height = 40; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; avatar.append(im); }
       const col = el('div', 'lj-col');
       const head = el('header', 'lj-head');
       head.append(el('strong', 'lj-name', 'Luliy'));
@@ -3320,7 +3320,7 @@
 
         /* side: profile card, activity grid, search, tags */
         const card = el('div', 'lj-card');
-        const av = el('a', 'lj-card-avatar-link'); av.href = '#/about'; av.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); av.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-card-avatar'); im.src = '/assets/avatar/luliy.webp?v=5'; im.alt = ''; im.width = 84; im.height = 84; im.decoding = 'async'; av.append(im); }
+        const av = el('a', 'lj-card-avatar-link'); av.href = '#/about'; av.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); av.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-card-avatar'); im.src = '/assets/avatar/luliy.webp?v=5'; im.alt = ''; im.width = 84; im.height = 84; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; av.append(im); }
         const stats = el('dl', 'lj-stats');
         [[L('短札', 'Notes', '短札'), items.length], [L('标签', 'Tags', 'タグ'), counts.size], [L('天', 'Days', '日'), days.size]].forEach(([k, v]) => { const d = el('div'); d.append(el('dt', null, k), el('dd', null, String(v))); stats.append(d); });
         const social = el('div', 'lj-social');
@@ -4039,6 +4039,29 @@
       let kick = shell.querySelector(':scope > .lk-kick');
       if (!kick) { kick = el('p', 'lk-kick'); h1.before(kick); }
       kick.textContent = 'WEEKLY' + (no ? ' · ' + L('第 ' + no + ' 期', 'No. ' + no, '第 ' + no + ' 号') : '');
+      // cover (2026-11-06): an image that opens the article (no text before it) becomes a full-width cover above the
+      // issue line; the image leaves the body. No such image: nothing is added and the page is as before.
+      (() => {
+        let cov = shell.previousElementSibling && shell.previousElementSibling.classList.contains('lk-cover') ? shell.previousElementSibling : null;
+        if (cov && cov.dataset.id !== id) { cov.remove(); cov = null; }
+        if (cov) return;
+        const box = body.querySelector('.markdown-body') || body;
+        let img = null;
+        for (const n of box.children) {
+          if (n.classList.contains('lk-cover-src')) { img = null; break; }
+          const i = n.matches('img') ? n : n.querySelector('img');
+          if (i) { img = i; break; }
+          if (n.textContent.trim()) break;
+        }
+        const src = img && img.getAttribute('src');
+        if (!src) { shell.classList.remove('lk-cov'); return; }
+        const fig = el('figure', 'lk-cover'), im = document.createElement('img');
+        fig.dataset.id = id; im.src = src; im.alt = img.getAttribute('alt') || ''; im.decoding = 'async'; im.referrerPolicy = 'no-referrer';
+        fig.append(im); shell.before(fig);
+        shell.classList.add('lk-cov');
+        const blk = img.closest('p') && img.closest('p').textContent.trim() === '' ? img.closest('p') : img;
+        blk.classList.add('lk-cover-src');
+      })();
       // byline
       if (!shell.querySelector(':scope > .lk-by') && meta) {
         const by = el('div', 'lk-by'), l = el('span'), r = el('span');
@@ -4058,6 +4081,7 @@
           ? ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][+g[2] - 1] + ' ' + (+g[3]) + ', ' + g[1]
           : g[1] + '年' + (+g[2]) + '月' + (+g[3]) + '日';
       }
+      if (shell.classList.contains('lk-cov') && dEl && dEl.textContent) kick.textContent += ' · ' + dEl.textContent;
       fitTitle(h1);
       fitNumber(shell);
       const rt = meta && meta.querySelector('#sourceReadingTime'), mm = rt && rt.textContent.match(/(\d+)\s*(?:分|min)/i);

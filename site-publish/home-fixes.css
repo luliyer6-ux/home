@@ -2111,7 +2111,7 @@ html.lk-weekly .lk-top { display: grid; place-items: center; flex: none; width: 
 html.lk-weekly .lk-top:hover { background: color-mix(in srgb, var(--lk-ink) 10%, transparent); }
 html.lk-weekly .lk-top svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 html.lk-weekly :is(.lk-top, .lk-cur, .lk-chs a):focus-visible { outline: 2px solid var(--lk-acc); outline-offset: 1px; }
-html.lk-weekly body.luliy-chrome-hidden .lk-bar { transform: translate(-50%, calc(100% + 28px)); }
+html.lk-weekly body.luliy-chrome-hidden .lk-bar { transform: translate(-50%, calc(100% + 60px + var(--lm-bar-space, 0px) + env(safe-area-inset-bottom))); opacity: 0; pointer-events: none; }
 html.lk-weekly .lk-dim { position: fixed; inset: 0; z-index: 80; display: block; background: rgba(0, 0, 0, .22); opacity: 0; pointer-events: none; transition: opacity .25s; }
 html.lk-weekly .lk-dim.open { opacity: 1; pointer-events: auto; }
 html.lk-weekly .lk-drawer { position: fixed; top: 0; bottom: 0; left: 0; z-index: 81; display: flex; flex-direction: column; width: min(360px, 86vw);
@@ -2190,6 +2190,21 @@ html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .lk-by[data-lk-no]::after { content: 
 /* h) 2026-11-02. Desktop: a little less space under the text (the contents capsule floats). */
 @media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
   html.lk-weekly #main { padding-bottom: 24px; }
+}
+
+/* 36 h) Cover (2026-11-06; home-fixes.js decorate). An opening image of the article becomes a full-width cover above
+   the issue line (date moves into that line). Phones: the image's own proportions, cut flat. Desktop: capped height,
+   fading into the paper. No opening image: no .lk-cover, no .lk-cov, nothing changes. */
+html.lk-weekly .lk-cover { margin: 0 0 0 calc(50% - 50vw); width: 100vw; position: relative; overflow: hidden; z-index: 0; }
+html.lk-weekly .lk-cover img { display: block; width: 100%; height: auto; max-height: 70svh; object-fit: cover; }
+html.lk-weekly .lk-cover-src { display: none !important; }
+html.lk-weekly .lk-cov > .lk-by .lk-date { display: none; }
+html.lk-weekly #main .source-reading.lk-cov { padding-top: 0 !important; }
+html.lk-weekly .lk-cov > .lk-kick { padding-top: 30px !important; }
+@media (min-width: 769px) and (pointer: fine), (min-width: 1001px) { html.lk-weekly .lk-cov > .lk-kick { padding-top: 52px !important; } }
+@media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
+  html.lk-weekly .lk-cover img { height: min(46vw, 640px); max-height: none; }
+  html.lk-weekly .lk-cover::after { content: ""; position: absolute; inset: auto 0 0; height: 28%; background: linear-gradient(transparent, var(--lk-desk, var(--lk-bg))); pointer-events: none; }
 }
 
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
