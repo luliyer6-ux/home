@@ -4156,7 +4156,7 @@
       const on = !!(shell && ((cat && WEEKLY.test(cat.textContent)) || index.some(x => x.id === m[1])));
       if (!on) {
         if (root.classList.contains('lk-weekly')) { root.classList.remove('lk-weekly'); toggle(false, true); }
-        paperButton(false);
+        paperButton(false); glow();
         done = ''; return;
       }
       loadIndex(); chrome();
@@ -4177,6 +4177,7 @@
         drawer.querySelector('header span').textContent = 'WEEKLY' + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
         done = key;
       }
+      glow();
       const byEl = shell.querySelector(':scope > .lk-by');
       const lcm = main.querySelector('.luliy-comments > h2'); // comments are folded on weekly pages (click 評論 to open)
       if (lcm && !lcm.hasAttribute('aria-expanded')) { lcm.setAttribute('role', 'button'); lcm.tabIndex = 0; lcm.setAttribute('aria-expanded', 'false'); }
@@ -4189,14 +4190,29 @@
        Loon's button column on weekly pages gets one more button that cycles them, and she says the name. The choice
        is kept in localStorage luliy-weekly-paper. Phones have no Loon, so they show the chosen (or default) paper. */
     const PAPERS = [
+      ['g', '封面光', 'Cover glow', 'カバーの光'],
       ['b', '桌上的一本杂志', 'A magazine on a desk', '机の上の雑誌'],
       ['an', '纸纹＋期号', 'Grain + issue number', '紙の質感＋号数']
     ];
     const PKEY = 'luliy-weekly-paper';
-    const paperNow = () => { let v = ''; try { v = localStorage.getItem(PKEY) || ''; } catch (e) {} return PAPERS.some(x => x[0] === v) ? v : 'b'; };
+    const paperNow = () => { let v = ''; try { v = localStorage.getItem(PKEY) || ''; } catch (e) {} return PAPERS.some(x => x[0] === v) ? v : 'g'; };
     function paper(v) {
       v = v || paperNow();
-      PAPERS.forEach(x => root.classList.toggle('lk-p-' + x[0], x[0] === v));
+      // g is b (the magazine on a desk) plus the cover's light on the desk, so it carries both classes.
+      PAPERS.forEach(x => root.classList.toggle('lk-p-' + x[0], x[0] === v || (x[0] === 'b' && v === 'g')));
+      glow();
+    }
+    /* 封面光 (2026-11-06): the issue's cover, blurred and dimmed, lights the desk on both sides of the sheet (desktop;
+       CSS hides it on phones). One fixed layer inside .page-above, under the content. No cover: no layer, plain desk. */
+    let glowEl = null;
+    function glow() {
+      const img = root.classList.contains('lk-weekly') && root.classList.contains('lk-p-g') && main.querySelector('.lk-cover img');
+      const src = img && img.getAttribute('src');
+      const host = document.querySelector('.page-above');
+      if (!src || !host) { if (glowEl) { glowEl.remove(); glowEl = null; } return; }
+      if (!glowEl) { glowEl = el('div', 'lk-glow'); glowEl.setAttribute('aria-hidden', 'true'); }
+      if (glowEl.dataset.src !== src) { glowEl.dataset.src = src; glowEl.style.backgroundImage = 'url("' + src.replace(/"/g, '%22') + '")'; }
+      if (glowEl.parentElement !== host) host.prepend(glowEl);
     }
     let pbtn = null;
     function paperButton(on) {

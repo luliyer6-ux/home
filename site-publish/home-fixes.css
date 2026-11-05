@@ -2211,6 +2211,17 @@ html.lk-weekly .lk-cov > .lk-kick { padding-top: 30px !important; }
    over the title and standfirst instead of behind them. Still faint and click-through, so the text stays readable. */
 html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .lk-by[data-lk-no]::after { z-index: 5; }
 
+/* 36 j) 封面光 (2026-11-06; home-fixes.js paper 'g', the default): paper b plus the cover, blurred and dimmed, lighting the desk
+   on both sides of the sheet. Desktop only; phones and articles without a cover show plain paper b. */
+html .lk-glow { display: none; }
+@media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
+  html.lk-weekly.lk-p-g .lk-glow { display: block; position: fixed; inset: -12%; z-index: -1; pointer-events: none;
+    background: center / cover no-repeat; filter: blur(80px) saturate(1.2) brightness(.5); opacity: .85; }
+  html.lk-weekly.lk-p-g .lk-cover::after { display: none; }
+  html.lk-weekly.lk-p-g[data-appearance="light"] .lk-glow { filter: blur(80px) saturate(1.1) brightness(1.05); opacity: .4; }
+}
+@media (prefers-reduced-transparency: reduce) { html.lk-weekly.lk-p-g .lk-glow { opacity: .5; } }
+
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
    Scoped to html.ls-on + ls-<style>. Colours come from the site theme (--ink, --muted, --line, --accent), so light
    appearance works too. Loon stays; the article artwork and the orange meta row do not. */
