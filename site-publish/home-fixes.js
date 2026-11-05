@@ -4095,7 +4095,7 @@
       const first = body.firstElementChild && body.firstElementChild.matches('.markdown-body') ? body.firstElementChild : body;
       // standfirst (2026-11-02): a quote that opens the article (`> 這期寫……`, at most 200 characters) moves up under
       // the title as one line of introduction; the quote itself is hidden. No opening quote, no standfirst.
-      const lead = [...first.children].find(n => n.textContent.trim() || n.querySelector('img,video,iframe'));
+      const lead = [...first.children].find(n => !n.classList.contains('lk-cover-src') && (n.textContent.trim() || n.querySelector('img,video,iframe')));
       let stand = shell.querySelector(':scope > .lk-stand');
       const st = lead && lead.tagName === 'BLOCKQUOTE' && !lead.querySelector('img,video,iframe,pre,ul,ol,table') ? lead.textContent.replace(/\s+/g, ' ').trim() : '';
       if (st && st.length <= 200) {
