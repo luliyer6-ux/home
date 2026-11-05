@@ -4044,7 +4044,7 @@
       (() => {
         let cov = shell.previousElementSibling && shell.previousElementSibling.classList.contains('lk-cover') ? shell.previousElementSibling : null;
         if (cov && cov.dataset.id !== id) { cov.remove(); cov = null; }
-        if (cov) { if (shell.dataset.lkNo) cov.dataset.no = shell.dataset.lkNo; else delete cov.dataset.no; return; }
+        if (cov) return;
         const box = body.querySelector('.markdown-body') || body;
         let img = null;
         for (const n of box.children) {
@@ -4056,7 +4056,7 @@
         const src = img && img.getAttribute('src');
         if (!src) { shell.classList.remove('lk-cov'); return; }
         const fig = el('figure', 'lk-cover'), im = document.createElement('img');
-        fig.dataset.id = id; if (shell.dataset.lkNo) fig.dataset.no = shell.dataset.lkNo; im.src = src; im.alt = img.getAttribute('alt') || ''; im.decoding = 'async'; im.referrerPolicy = 'no-referrer';
+        fig.dataset.id = id; im.src = src; im.alt = img.getAttribute('alt') || ''; im.decoding = 'async'; im.referrerPolicy = 'no-referrer';
         fig.append(im); shell.before(fig);
         shell.classList.add('lk-cov');
         const blk = img.closest('p') && img.closest('p').textContent.trim() === '' ? img.closest('p') : img;

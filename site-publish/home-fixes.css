@@ -2207,11 +2207,9 @@ html.lk-weekly .lk-cov > .lk-kick { padding-top: 30px !important; }
   html.lk-weekly .lk-cover::after { content: ""; position: absolute; inset: auto 0 0; height: 28%; background: linear-gradient(transparent, var(--lk-desk, var(--lk-bg))); pointer-events: none; }
 }
 
-/* 36 i) With a cover, the issue numeral is the top layer: white, in the cover's lower right corner, above the photo and the
-   text (2026-11-06). The faint numeral behind the title is dropped there so the number is not shown twice. */
-html.lk-weekly .lk-cover[data-no]::before { content: attr(data-no); position: absolute; z-index: 5; bottom: 8px; right: max(16px, calc(50vw - 350px));
-  font: 700 clamp(96px, 17vw, 210px)/.8 var(--font-body); letter-spacing: -.04em; color: #fff; opacity: .95; text-shadow: 0 2px 24px rgb(0 0 0 / .4); pointer-events: none; }
-html.lk-weekly #main .lk-cov[data-lk-no] > .lk-by::after { display: none; }
+/* 36 i) The big issue numeral is the top layer (2026-11-06): same place as before (right, beside the title), now drawn
+   over the title and standfirst instead of behind them. Still faint and click-through, so the text stays readable. */
+html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .lk-by[data-lk-no]::after { z-index: 5; }
 
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
    Scoped to html.ls-on + ls-<style>. Colours come from the site theme (--ink, --muted, --line, --accent), so light
