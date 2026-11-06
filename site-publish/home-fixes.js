@@ -4048,7 +4048,7 @@
       // kicker
       let kick = shell.querySelector(':scope > .lk-kick');
       if (!kick) { kick = el('p', 'lk-kick'); h1.before(kick); }
-      kick.textContent = 'WEEKLY' + (no ? ' · ' + L('第 ' + no + ' 期', 'No. ' + no, '第 ' + no + ' 号') : '');
+      kick.textContent = root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY' + (no ? ' · ' + L('第 ' + no + ' 期', 'No. ' + no, '第 ' + no + ' 号') : '');
       // cover (2026-11-06): an image that opens the article (no text before it) becomes a full-width cover above the
       // issue line; the image leaves the body. No such image: nothing is added and the page is as before.
       (() => {
@@ -4231,12 +4231,24 @@
 
     /* ---- apply ---- */
     let done = '', frame = 0;
+    /* 2026-11-07: the weekly panel for every piece of writing. Articles whose labels are not ones that keep their own
+       layout (AI, Study, Doc, Guidebook — sections 37/38 — and the data posts) get the same magazine page, without the
+       issue parts (no number, no issue switcher, no neighbouring issues). html.lk-essay marks them. */
+    const OWN = /^(ai|study|doc|guidebook|chronicle-data|timeline)$/i;
+    function essay(id, shell) {
+      let ls = null;
+      try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id]; } catch (e) {}
+      if (!Array.isArray(ls)) { const c = shell.querySelector('.source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; }
+      return !ls.some(l => OWN.test(l));
+    }
     function apply() {
       frame = 0;
       const m = /^#\/article\/(P\d+)(?:[?#/]|$)/.exec(location.hash || '');
       const shell = m && main.querySelector('.source-reading');
       const cat = shell && shell.querySelector('.source-category');
-      const on = !!(shell && ((cat && WEEKLY.test(cat.textContent)) || index.some(x => x.id === m[1])));
+      const issue = !!(shell && ((cat && WEEKLY.test(cat.textContent)) || index.some(x => x.id === m[1])));
+      const on = issue || !!(shell && essay(m[1], shell));
+      root.classList.toggle('lk-essay', on && !issue);
       if (!on) {
         if (root.classList.contains('lk-weekly')) { root.classList.remove('lk-weekly'); toggle(false, true); }
         paperButton(false); glow();
@@ -4257,7 +4269,7 @@
         series(shell, m[1]); stack(shell, m[1]);
         drawer.querySelector('header b').textContent = shell.querySelector(':scope > h1').textContent.trim();
         const pos = index.findIndex(x => x.id === m[1]);
-        drawer.querySelector('header span').textContent = 'WEEKLY' + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
+        drawer.querySelector('header span').textContent = (root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY') + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
         done = key;
       }
       glow();
@@ -4409,7 +4421,7 @@
       let labels = map[id];
       if (!labels) { const c = shell.querySelector('.source-category'); labels = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()) : []; }
       if (labels.some(l => /^weekly$|周[记記]|週記/i.test(l))) return '';
-      for (const [name, re] of STYLES) if (labels.some(l => re.test(l))) return name;
+      for (const [name, re] of STYLES) if (labels.some(l => re.test(l))) return name === 'growth' || name === 'musings' ? '' : name; // 2026-11-07: writing uses the weekly page (36)
       return '';
     }
 

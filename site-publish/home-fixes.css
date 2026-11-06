@@ -2295,6 +2295,10 @@ html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-list li { an
 @keyframes lk-tkin { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: none; } }
 @media (prefers-reduced-motion: reduce) { html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-list li { animation: none; } }
 
+/* 36 m) Essays (2026-11-07): every article that is not AI / Study / Doc / Guidebook uses this page too; the issue parts stay
+   away (no issue icon in the capsule, no issue switcher in Loon's contents). */
+html.lk-essay .lk-bar .lk-no, html.lk-essay .lk-card .lk-card-ib, html.lk-essay .lk-card .lk-card-iss { display: none !important; }
+
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
    Scoped to html.ls-on + ls-<style>. Colours come from the site theme (--ink, --muted, --line, --accent), so light
    appearance works too. Loon stays; the article artwork and the orange meta row do not. */
