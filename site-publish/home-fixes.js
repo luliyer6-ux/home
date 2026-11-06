@@ -3784,7 +3784,7 @@
       fetch(FEED).then(r => (r.ok ? r.json() : null)).then(json => {
         if (!json || typeof json !== 'object') return;
         const list = Object.keys(json).filter(k => /^P\d+$/.test(k) && json[k] && typeof json[k] === 'object' && labelNames(json[k]).some(l => WEEKLY.test(l)))
-          .map(k => ({ id: k, title: String(json[k].postTitle || ''), date: String(json[k].createdDate || ''), ts: stamp(json[k]) }))
+          .map(k => ({ id: k, title: String(json[k].postTitle || ''), date: String(json[k].createdDate || ''), ts: stamp(json[k]), url: String(json[k].postUrl || '') }))
           .sort((a, b) => (a.ts - b.ts) || a.date.localeCompare(b.date) || (Number(a.id.slice(1)) - Number(b.id.slice(1))));
         index = list;
         try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
@@ -4142,9 +4142,79 @@
       const mk = (it, n, cls, lab) => { const a = el('a', cls); a.href = '#/article/' + it.id; const s = el('small', '', lab + ' · ' + L('第 ' + n + ' 期', 'No. ' + n, '第 ' + n + ' 号')); a.append(s, el('b', '', it.title)); return a; };
       nav.append(pos > 0 ? mk(index[pos - 1], pos, 'pv', L('← 上一期', '← Previous', '← 前号')) : el('span'));
       nav.append(pos < index.length - 1 ? mk(index[pos + 1], pos + 2, 'nx', L('下一期 →', 'Next →', '次号 →')) : el('span'));
+      const nx = nav.querySelector('.nx');
+      if (nx) {
+        nx.querySelector('small').textContent = L('下期预告', 'Next issue', '次号予告') + ' · ' + L('第 ' + (pos + 2) + ' 期', 'No. ' + (pos + 2), '第 ' + (pos + 2) + ' 号');
+        issueCover(index[pos + 1]).then(src => {
+          if (!src || !nx.isConnected || nx.querySelector('img')) return;
+          const im = document.createElement('img'); im.src = src; im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; im.referrerPolicy = 'no-referrer';
+          im.addEventListener('error', () => { im.remove(); nx.classList.remove('lk-has-img'); });
+          nx.prepend(im); nx.classList.add('lk-has-img');
+        });
+      }
       const body = shell.querySelector('.source-body');
       if (body) body.after(nav); else (shell.querySelector(':scope > .source-end') || shell.lastElementChild).before(nav);
     }
+
+    /* ---- 往期 (2026-11-06) ----
+       a) 纸角: on the desk papers (b, g; desktop) the neighbouring issues lie under the sheet: a thin edge shows along
+          its side and an index tab with the issue number sticks out near the top (previous on the left, next on the
+          right). Hover pulls the tab out with the title; Loon names it; a click (or ← / →) opens it.
+       b) 下期预告: after the article, the next issue as a card with its cover (fetched once, its opening image). */
+    function stack(shell, id) {
+      const pos = index.findIndex(x => x.id === id), key = id + ':' + index.length + ':' + root.lang;
+      let st = shell.querySelector(':scope > .lk-stack');
+      if (st && st.dataset.key === key) return;
+      if (st) st.remove();
+      if (pos < 0 || index.length < 2) return;
+      st = el('div', 'lk-stack'); st.dataset.key = key;
+      const mk = (it, n, side) => {
+        const a = el('a', 'lk-under ' + side); a.href = '#/article/' + it.id;
+        const lab = side === 'pv' ? L('上一期', 'Previous issue', '前号') : L('下一期', 'Next issue', '次号');
+        a.setAttribute('aria-label', lab + ' · ' + issueName(n) + ' · ' + (it.title || it.id));
+        const tab = el('span', 'lk-tab'); tab.append(el('b', '', String(n).padStart(2, '0')));
+        const tip = el('span', 'lk-tip'); tip.append(el('small', '', lab), el('span', '', it.title || it.id));
+        a.append(tab, tip);
+        let said = 0;
+        a.addEventListener('pointerenter', () => {
+          if (window.LuliyLoonSay && Date.now() - said > 4000) { said = Date.now(); window.LuliyLoonSay(lab + L('：《', ': “', '：「') + (it.title || it.id) + L('》', '”', '」'), 2400); }
+        });
+        return a;
+      };
+      if (pos > 0) st.append(mk(index[pos - 1], pos, 'pv'));
+      if (pos < index.length - 1) st.append(mk(index[pos + 1], pos + 2, 'nx'));
+      shell.prepend(st);
+    }
+    // The cover of another issue: the opening image of its post (same rule as this page's cover). Cached per session.
+    const coverCache = {};
+    function issueCover(it) {
+      if (coverCache[it.id]) return coverCache[it.id];
+      let hit = null; try { hit = sessionStorage.getItem('lk-cover-' + it.id); } catch (e) {}
+      if (hit !== null) return (coverCache[it.id] = Promise.resolve(hit));
+      const name = (it.url || '').split('/').pop();
+      if (!/^[\w.-]+\.html$/.test(name) || typeof fetch !== 'function') return Promise.resolve('');
+      return (coverCache[it.id] = fetch(FEED.replace(/postList\.json$/, 'post/' + name)).then(r => (r.ok ? r.text() : '')).then(html => {
+        const doc = new DOMParser().parseFromString(html || '', 'text/html');
+        const box = doc.querySelector('#postBody') || doc.body;
+        let src = '';
+        for (const n of (box ? box.children : [])) {
+          const i = n.matches('img') ? n : n.querySelector('img');
+          if (i) { src = i.getAttribute('src') || ''; break; }
+          if (n.textContent.trim()) break;
+        }
+        if (!/^https?:\/\//.test(src)) src = '';
+        try { sessionStorage.setItem('lk-cover-' + it.id, src); } catch (e) {}
+        return src;
+      }).catch(() => ''));
+    }
+    addEventListener('keydown', e => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.isComposing) return;
+      if (!root.classList.contains('lk-weekly') || !/^Arrow(Left|Right)$/.test(e.key)) return;
+      const t = e.target;
+      if (t && t !== document.body && t !== document.documentElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON|A|IFRAME)$/.test(t.tagName) || t.closest('pre, [role="dialog"], .lk-card'))) return;
+      const a = main.querySelector('.lk-stack .lk-under.' + (e.key === 'ArrowLeft' ? 'pv' : 'nx'));
+      if (a) { e.preventDefault(); location.hash = a.getAttribute('href'); }
+    });
 
     /* ---- apply ---- */
     let done = '', frame = 0;
@@ -4171,7 +4241,7 @@
       curIssue = m[1]; bar.querySelector('.lk-no').innerHTML = ISSUE_SVG; bar.querySelector('.lk-no').setAttribute('aria-label', issueName(ipos + 1) + ' · ' + L('全部期刊', 'All issues', '全ての号'));
       bar.querySelector('.lk-no').title = issueName(ipos + 1);
       if (decorate(shell, m[1])) {
-        series(shell, m[1]);
+        series(shell, m[1]); stack(shell, m[1]);
         drawer.querySelector('header b').textContent = shell.querySelector(':scope > h1').textContent.trim();
         const pos = index.findIndex(x => x.id === m[1]);
         drawer.querySelector('header span').textContent = 'WEEKLY' + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';

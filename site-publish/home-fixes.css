@@ -2222,6 +2222,46 @@ html .lk-glow { display: none; }
 }
 @media (prefers-reduced-transparency: reduce) { html.lk-weekly.lk-p-g .lk-glow { opacity: .5; } }
 
+/* 36 k) 往期 (2026-11-06; home-fixes.js stack(), series()).
+   纸角: desk papers (b, g), desktop. The neighbouring issue lies under the sheet (.lk-under, behind the sheet's ::before):
+   a thin edge shows along the side, and an index tab with its number sticks out near the top. */
+html .lk-stack { display: none; }
+@media (min-width: 1100px) and (pointer: fine) {
+  html.lk-weekly.lk-p-b #main .lk-stack { display: block; }
+  html.lk-weekly.lk-p-b #main .lk-under { position: absolute; z-index: -2; top: -48px; bottom: -32px; width: 120px; display: block; text-decoration: none; color: var(--lk-ink);
+    background: var(--lk-bg) var(--lk-grain); filter: brightness(.84); box-shadow: 0 20px 50px rgba(0, 0, 0, .35); transition: transform .3s var(--ease-soft, ease), filter .25s; }
+  html.lk-weekly.lk-p-b #main .lk-under.pv { left: -72px; }
+  html.lk-weekly.lk-p-b #main .lk-under.nx { right: -72px; }
+  html.lk-weekly.lk-p-b #main .lk-tab { position: absolute; top: 64px; width: 30px; height: 62px; display: grid; place-items: center; background: inherit; border-radius: 2px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .25); }
+  html.lk-weekly.lk-p-b #main .pv .lk-tab { left: -26px; border-radius: 3px 0 0 3px; }
+  html.lk-weekly.lk-p-b #main .nx .lk-tab { right: -26px; border-radius: 0 3px 3px 0; }
+  html.lk-weekly.lk-p-b #main .lk-tab b { font: 600 11px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-acc); }
+  html.lk-weekly.lk-p-b #main .lk-tip { position: absolute; top: 64px; display: block; width: max-content; max-width: 220px; padding: 9px 12px; font-size: 13px; line-height: 1.45;
+    color: var(--lk-ink); background: var(--lk-bg) var(--lk-grain); box-shadow: 0 10px 28px rgba(0, 0, 0, .3); opacity: 0; pointer-events: none; transition: opacity .2s, transform .25s; }
+  html.lk-weekly.lk-p-b #main .lk-tip small { display: block; margin-bottom: 2px; font: 10px/1.3 var(--font-mono); letter-spacing: .18em; color: var(--lk-mute); }
+  html.lk-weekly.lk-p-b #main .pv .lk-tip { right: calc(100% + 34px); transform: translateX(8px); }
+  html.lk-weekly.lk-p-b #main .nx .lk-tip { left: calc(100% + 34px); transform: translateX(-8px); }
+  html.lk-weekly.lk-p-b #main .lk-under:is(:hover, :focus-visible) { filter: brightness(.95); outline: none; }
+  html.lk-weekly.lk-p-b #main .lk-under.pv:is(:hover, :focus-visible) { transform: translateX(-8px); }
+  html.lk-weekly.lk-p-b #main .lk-under.nx:is(:hover, :focus-visible) { transform: translateX(8px); }
+  html.lk-weekly.lk-p-b #main .lk-under:is(:hover, :focus-visible) .lk-tip { opacity: 1; transform: none; }
+  html.lk-weekly.lk-p-b #main .lk-under:focus-visible .lk-tab { outline: 2px solid var(--lk-acc); outline-offset: 2px; }
+}
+/* 下期预告: the next-issue link becomes a card with that issue's cover (when it has one). */
+html.lk-weekly #main .lk-pn .nx.lk-has-img { position: relative; grid-column: 1 / -1; order: -1; min-height: 220px; padding: 0; overflow: hidden; border: 0; color: #fff; text-align: left;
+  display: flex; flex-direction: column; justify-content: flex-end; }
+html.lk-weekly #main .lk-pn .nx.lk-has-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; margin: 0; transition: transform .6s var(--ease-soft, ease); }
+html.lk-weekly #main .lk-pn .nx.lk-has-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 35%, rgba(0, 0, 0, .72)); }
+html.lk-weekly #main .lk-pn .nx.lk-has-img :is(small, b) { position: relative; z-index: 1; padding: 0 20px; }
+html.lk-weekly #main .lk-pn .nx.lk-has-img small { color: rgba(255, 255, 255, .8); }
+html.lk-weekly #main .lk-pn .nx.lk-has-img b { padding-bottom: 18px; font-size: 22px; }
+html.lk-weekly #main .lk-pn .nx.lk-has-img:is(:hover, :focus-visible) { background: none; color: #fff; }
+html.lk-weekly #main .lk-pn .nx.lk-has-img:is(:hover, :focus-visible) img { transform: scale(1.03); }
+html.lk-weekly #main .lk-pn .nx.lk-has-img:focus-visible { outline: 2px solid var(--lk-acc); outline-offset: 3px; }
+html.lk-weekly #main .lk-pn:has(.nx.lk-has-img) > span:empty { display: none; }
+@media (prefers-reduced-motion: reduce) { html.lk-weekly #main :is(.lk-under, .lk-tip, .lk-pn img) { transition: none !important; } }
+
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
    Scoped to html.ls-on + ls-<style>. Colours come from the site theme (--ink, --muted, --line, --accent), so light
    appearance works too. Loon stays; the article artwork and the orange meta row do not. */
