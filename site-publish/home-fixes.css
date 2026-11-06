@@ -2197,7 +2197,7 @@ html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .lk-by[data-lk-no]::after { content: 
    fading into the paper. No opening image: no .lk-cover, no .lk-cov, nothing changes. */
 html.lk-weekly .lk-cover { margin: 0 0 0 calc(50% - 50vw); width: 100vw; position: relative; overflow: hidden; z-index: 0; }
 html.lk-weekly .lk-cover img { display: block; width: 100%; height: auto; max-height: 70svh; object-fit: cover; }
-html.lk-weekly .lk-cover-src { display: none !important; }
+html.lk-weekly .lk-cover-src, html.lk-weekly .lk-cover-src + .lk-cap { display: none !important; }
 html.lk-weekly .lk-cov > .lk-by .lk-date { display: none; }
 html.lk-weekly #main .source-reading.lk-cov { padding-top: 0 !important; }
 html.lk-weekly .lk-cov > .lk-kick { padding-top: 30px !important; }
