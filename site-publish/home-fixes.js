@@ -4049,6 +4049,7 @@
         let img = null;
         for (const n of box.children) {
           if (n.classList.contains('lk-cover-src')) { img = null; break; }
+          if (n.matches('blockquote, .lk-stand')) continue; // the > standfirst may come before the cover
           const i = n.matches('img') ? n : n.querySelector('img');
           if (i) { img = i; break; }
           if (n.textContent.trim()) break;
@@ -4198,11 +4199,13 @@
         const box = doc.querySelector('#postBody') || doc.body;
         let src = '';
         for (const n of (box ? box.children : [])) {
+          if (n.matches('blockquote')) continue;
           const i = n.matches('img') ? n : n.querySelector('img');
           if (i) { src = i.getAttribute('src') || ''; break; }
           if (n.textContent.trim()) break;
         }
         if (!/^https?:\/\//.test(src)) src = '';
+        src = src.replace(/^https:\/\/camo\.githubusercontent\.com\/(?=[0-9a-f]{20})/i, location.origin + '/gh/camo/'); // same proxy the site uses
         try { sessionStorage.setItem('lk-cover-' + it.id, src); } catch (e) {}
         return src;
       }).catch(() => ''));
