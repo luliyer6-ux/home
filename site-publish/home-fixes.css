@@ -2262,6 +2262,39 @@ html.lk-weekly #main .lk-pn .nx.lk-has-img:focus-visible { outline: 2px solid va
 html.lk-weekly #main .lk-pn:has(.nx.lk-has-img) > span:empty { display: none; }
 @media (prefers-reduced-motion: reduce) { html.lk-weekly #main :is(.lk-under, .lk-tip, .lk-pn img) { transition: none !important; } }
 
+/* 36 l) Loon's contents as ticks (2026-11-07; after Maggie Appleton's contents). Her bubble shows one short line per heading
+   (sub-headings shorter, the one being read lit) over "02 章名 · 小节". Hover (or a click, which pins it) opens it
+   upward: the headings fade in from a blur one after another; the issue switcher stays at the top. Replaces the ribbon. */
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .luliy-mascot .lk-card { width: auto; min-width: 0; max-width: var(--lk-card-w, 260px); padding: 0; border: 0; border-radius: 12px; overflow: visible;
+  background: color-mix(in srgb, var(--lk-bg) 94%, transparent); color: var(--lk-ink); box-shadow: 0 10px 30px rgba(0, 0, 0, .3); backdrop-filter: blur(8px); }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .luliy-mascot .lk-card::after { content: ""; display: block; position: absolute; left: 46px; bottom: -8px; width: 0; height: 0; border: 8px solid transparent; border-bottom: 0;
+  border-top-color: color-mix(in srgb, var(--lk-bg) 94%, transparent); background: none; transform: none; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card-row { padding: 0; align-self: stretch; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card-line { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 10px 14px 10px 12px; clip-path: none; background: none; filter: none;
+  box-shadow: none; border-radius: 12px; color: var(--lk-ink); font: 13.5px/1.3 var(--font-body); }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card-line:hover { background: none; filter: none; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-tk { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; max-width: 200px; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-tk i { display: block; width: 16px; height: 2px; border-radius: 2px; background: var(--lk-mute); opacity: .5; transition: background .3s, opacity .3s; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-tk i.l2 { width: 9px; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-tk i.on { background: var(--lk-acc); opacity: 1; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now { display: flex; align-items: baseline; gap: 8px; max-width: 100%; min-width: 0; white-space: nowrap; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now b { flex: none; font: 600 11px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-acc); }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now .lk-cl-ch { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--lk-ink); }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now .lk-cl-sub { flex: 0 10 auto; min-width: 2em; overflow: hidden; text-overflow: ellipsis; color: var(--lk-mute); font-size: 12.5px; border: 0; padding: 0; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now .lk-cl-sub::before { content: "· "; opacity: .7; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-tk { display: none; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-line { border-top: 1px solid color-mix(in srgb, var(--lk-ink) 12%, transparent); border-radius: 0 0 12px 12px; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-panel { width: var(--lk-card-w, 260px); margin: 0; padding: 8px 4px 4px; background: none; border: 0; box-shadow: none; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card-ib { background: transparent; border-bottom: 1px solid color-mix(in srgb, var(--lk-ink) 12%, transparent); }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card :is(.lk-card-iss, .lk-card-list) a { padding: 6px 10px; border-radius: 6px; font-size: 13.5px; color: var(--lk-mute); }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card .lk-card-list a.l2 { padding-left: 34px; font-size: 13px; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card .lk-card-list a[aria-current] { border-left: 0; padding-left: 10px; color: var(--lk-acc); font-weight: 600; background: none; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card .lk-card-list a.l2[aria-current] { padding-left: 34px; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card :is(.lk-card-iss, .lk-card-list) a:hover { color: var(--lk-ink); background: color-mix(in srgb, var(--lk-ink) 6%, transparent); }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-list li { animation: lk-tkin .35s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(min(var(--i, 0), 14) * 30ms); }
+@keyframes lk-tkin { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: none; } }
+@media (prefers-reduced-motion: reduce) { html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-list li { animation: none; } }
+
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
    Scoped to html.ls-on + ls-<style>. Colours come from the site theme (--ink, --muted, --line, --accent), so light
    appearance works too. Loon stays; the article artwork and the orange meta row do not. */

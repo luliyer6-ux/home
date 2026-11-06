@@ -3869,8 +3869,15 @@
       cardLine = el('button', 'lk-card-line'); cardLine.type = 'button'; cardLine.setAttribute('aria-expanded', 'false'); cardLine.setAttribute('aria-controls', 'lkCardPanel');
       row.append(cardLine); card.append(cardPanel, row); // ↑ is already in her button column, so the card has none
       box.append(card);
-      cardLine.addEventListener('click', e => { e.stopPropagation(); cardToggle(); });
-      row.addEventListener('click', e => { e.stopPropagation(); cardToggle(); }); // the strip around the ribbon (its tail, its padding) counts too
+      // Hover opens it (and leaving closes it again); a click pins it open or closes it.
+      let pin = false, hovT = 0;
+      const fine = matchMedia('(hover: hover) and (pointer: fine)');
+      const click = e => { e.stopPropagation(); const o = card.classList.contains('open'); if (o && !pin) { pin = true; return; } pin = !o; cardToggle(!o); };
+      cardLine.addEventListener('click', click);
+      row.addEventListener('click', click);
+      card.addEventListener('pointerenter', () => { if (!fine.matches) return; clearTimeout(hovT); if (!card.classList.contains('open')) { pin = false; cardToggle(true); } });
+      card.addEventListener('pointerleave', () => { if (!fine.matches || pin) return; clearTimeout(hovT); hovT = setTimeout(() => { if (!pin) cardToggle(false); }, 280); });
+      card.addEventListener('lk-unpin', () => { pin = false; }); // the strip around the ribbon (its tail, its padding) counts too
       ih.addEventListener('click', e => { e.stopPropagation(); const o = cardIss.hidden; cardIss.hidden = !o; ih.setAttribute('aria-expanded', String(o)); });
       cardList.addEventListener('click', e => {
         const a = e.target.closest('a[data-i]'); if (!a) return;
@@ -3907,7 +3914,7 @@
       if (open) { cardIssues(); cardFill(); cardFit(); }
       card.classList.toggle('open', open);
       cardLine.setAttribute('aria-expanded', String(open));
-      if (!open) { cardIss.hidden = true; card.querySelector('.lk-card-ib').setAttribute('aria-expanded', 'false'); }
+      if (!open) { cardIss.hidden = true; card.querySelector('.lk-card-ib').setAttribute('aria-expanded', 'false'); card.dispatchEvent(new Event('lk-unpin')); }
       else { const c = cardList.querySelector('[aria-current]'); if (c) c.scrollIntoView({ block: 'nearest' }); }
     }
     window.LuliyWeeklyCard = { toggle: () => { if (cardMount()) cardToggle(); } };
@@ -3933,7 +3940,7 @@
           const one = h.dataset.lkLevel === '1', li = el('li'), a = el('a', one ? '' : 'l2');
           a.href = '#'; a.dataset.i = i;
           if (one) a.append(el('b', '', String(++n).padStart(2, '0')));
-          a.append(el('span', '', hText(h))); li.append(a); cardList.append(li);
+          a.append(el('span', '', hText(h))); li.style.setProperty('--i', i); li.append(a); cardList.append(li);
         });
         if (!heads.length) cardList.append(el('li', 'lk-none', L('这篇没有小标题', 'No headings in this article', '見出しはありません')));
       }
@@ -3946,13 +3953,16 @@
       const ipos = index.findIndex(x => x.id === curIssue);
       const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? hText(heads[ch]) : '';
       const hc = heads[c], subName = hc && hc.dataset.lkLevel === '2' ? hText(hc) : '';
+      // 2026-11-07: the closed bubble is a row of ticks (one per heading, the current one lit) over "02 章名 · 小节".
       cardLine.innerHTML = '';
-      { const ic = el('b', 'lk-cl-ico'); ic.innerHTML = ISSUE_SVG; ic.title = issueName(ipos + 1); cardLine.append(ic); }
-      const pill = el('span', 'lk-cl-pill');
-      pill.append(el('span', 'lk-cl-ch', chName ? String(num).padStart(2, '0') + ' ' + chName : L('目录', 'Contents', '目次')));
-      if (subName) pill.append(el('span', 'lk-cl-sub', subName));
-      cardLine.append(pill);
-      cardLine.append(el('i', '', '⌄'));
+      const tk = el('span', 'lk-tk');
+      heads.forEach((h, i) => tk.append(el('i', (h.dataset.lkLevel === '1' ? 'l1' : 'l2') + (i === c ? ' on' : ''))));
+      if (heads.length) cardLine.append(tk);
+      const now = el('span', 'lk-now');
+      if (chName) now.append(el('b', '', String(num).padStart(2, '0')));
+      now.append(el('span', 'lk-cl-ch', chName || L('目录', 'Contents', '目次')));
+      if (subName) now.append(el('span', 'lk-cl-sub', subName));
+      cardLine.append(now);
       cardLine.setAttribute('aria-label', issueName(ipos + 1) + ' · ' + L('目录：', 'Contents: ', '目次：') + (chName || '') + (subName ? ' › ' + subName : ''));
       cardList.querySelectorAll('a[data-i]').forEach(a => { if (+a.dataset.i === c) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
       if (!card.classList.contains('open')) cardFit();
