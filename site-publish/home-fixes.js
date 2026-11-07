@@ -4396,6 +4396,7 @@
       return String(n);
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(apply); };
+    (window.__lkSettle = window.__lkSettle || []).push(apply); // section 45 runs it at once when an article arrives
     new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
     addEventListener('hashchange', schedule);
     addEventListener('scroll', () => { if (root.classList.contains('lk-weekly')) progress(); }, { passive: true });
@@ -4666,6 +4667,7 @@
       body.dataset.lsDone = style + ':' + body.childElementCount + ':' + body.textContent.length;
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(apply); };
+    (window.__lkSettle = window.__lkSettle || []).push(apply); // section 45 runs it at once when an article arrives
     new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
     addEventListener('hashchange', schedule);
     addEventListener('scroll', onEnd, { passive: true });
@@ -4991,6 +4993,7 @@
       try { if (!sessionStorage.getItem('luliy-manual-keys')) { sessionStorage.setItem('luliy-manual-keys', '1'); setTimeout(() => { if (window.LuliyLoonSay) window.LuliyLoonSay(L('按 ? 看快捷键。', 'Press ? for keyboard shortcuts.', '? でショートカット。'), 4200); }, 2500); } } catch (e) {}
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(apply); };
+    (window.__lkSettle = window.__lkSettle || []).push(apply); // section 45 runs it at once when an article arrives
     new MutationObserver(schedule).observe(main, { childList: true, subtree: true });
     new MutationObserver(schedule).observe(root, { attributes: true, attributeFilter: ['class'] });
     addEventListener('hashchange', schedule);
@@ -5134,7 +5137,7 @@
     const root = document.documentElement;
     function run() {
       const body = box().querySelector('.source-body');
-      if (!body || body.dataset.lkTy === '1' || !body.textContent.trim()) return;
+      if (!body || body.dataset.loading === 'true' || body.dataset.lkTy === '1' || !body.textContent.trim()) return; // not the 正在载入 placeholder
       body.dataset.lkTy = '1';
       const go = () => {
         try {
@@ -5148,6 +5151,7 @@
       (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(go));
     }
     let t = 0;
+    (window.__lkSettle = window.__lkSettle || []).push(run); // section 45 runs it at once when an article arrives
     new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 150); }).observe(document.body, { childList: true, subtree: true }); // a throttle, not a debounce: the page never stops moving
     run();
     addEventListener('resize', () => { const b = box().querySelector('.source-body'); if (b) wide(b); }, { passive: true });
@@ -5698,6 +5702,7 @@
     }
     function bio(id) {
       let ls = []; try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id] || []; } catch (e) {}
+      if (!Array.isArray(ls) || !ls.length) { const c = document.querySelector('#main .source-reading .source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; } // before the label map arrives: the category line on the page
       if (!ls.some(l => /^(传记|傳記|biography)$/i.test(l))) { bioOff(); return; }
       const img = document.querySelector('#main .lk-cover img') || document.querySelector('#main .source-body img:not(.lk-bc-used)');
       if (!img) { bioOff(); return; }
@@ -5714,13 +5719,14 @@
       if (!read && !st) return;
       const shell = document.querySelector('#main .source-reading'), body = shell && shell.querySelector('.source-body');
       const id = idNow();
-      if (!body || !id || !shell.querySelector('.lk-by') || !body.textContent.trim()) return;
+      if (!body || !id || body.dataset.loading === 'true' || !shell.querySelector('.lk-by') || !body.textContent.trim()) return; // not the 正在载入 placeholder
       const key = id + (read ? ':r' : ':s');
       if (body.dataset.lkX === key) return;
       body.dataset.lkX = key;
       try { if (read) reading(shell, body); else study(shell, body, id); } catch (e) { /* decoration only */ }
     }
     let t = 0;
+    (window.__lkSettle = window.__lkSettle || []).push(run); // section 45 runs it at once when an article arrives
     new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 200); }).observe(document.body, { childList: true, subtree: true });
     run();
   })();
@@ -5739,7 +5745,7 @@
     try { const q = new URLSearchParams(location.search).get('toc'); if (q === 'v2') localStorage.setItem(KEY, '1'); if (q === 'v1') localStorage.removeItem(KEY); on = localStorage.getItem(KEY) === '1'; } catch (e) {}
     const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
     const name = h => { const c = h.cloneNode(true); c.querySelectorAll('button, .reader-heading-link, svg').forEach(n => n.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
-    let box = null, list = null, dots = null, heads = [], sig = '', pinned = false, cur = -1;
+    let box = null, list = null, dots = null, heads = [], sig = '', pinned = false, cur = -1, shut = 0;
     function chapters(body) { // all headings (h1–h3) in reading order
       const hs = [...body.querySelectorAll('h1, h2, h3')].filter(h => name(h));
       if (hs.length) return hs;
@@ -5762,8 +5768,8 @@
         const cap = el('p', 'lt-cap', '目錄');
         box.append(head, cap, list);
         head.addEventListener('click', () => { pinned = !box.classList.contains('open') || !pinned; setOpen(pinned); });
-        box.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') setOpen(true); });
-        box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !pinned) setOpen(false); });
+        box.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { clearTimeout(shut); setOpen(true); } });
+        box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !pinned) { clearTimeout(shut); shut = setTimeout(() => setOpen(false), 180); } }); // a short grace: brushing the edge does not blink it
         box.addEventListener('focusin', () => setOpen(true));
         box.addEventListener('focusout', e => { if (!box.contains(e.relatedTarget) && !pinned) setOpen(false); });
         addEventListener('keydown', e => { if (e.key === 'Escape' && box.classList.contains('open')) { pinned = false; setOpen(false); } });
@@ -5778,7 +5784,7 @@
       const levels = [...new Set(heads.map(h => h.tagName))].sort();
       const entries = heads.map(h => ({ label: strip(name(h)), lv: Math.min(2, levels.indexOf(h.tagName)), go: () => jump(h) }));
       entries.forEach((it, i) => {
-        const li = el('li'); li.dataset.i = i; li.className = 'lt-l' + it.lv;
+        const li = el('li'); li.dataset.i = i; li.className = 'lt-l' + it.lv; li.style.setProperty('--i', Math.min(i, 14));
         const a = el('a'); a.href = '#'; a.append(el('b', '', it.n ? String(it.n) : ''), el('span', '', it.label));
         a.addEventListener('click', e => { e.preventDefault(); it.go(); pinned = false; setOpen(false); });
         li.append(a); list.append(li); dots.append(el('i', 'd' + it.lv));
@@ -5805,11 +5811,66 @@
       build(body);
     }
     let t = 0;
+    (window.__lkSettle = window.__lkSettle || []).push(run); // section 45 runs it at once when an article arrives
     new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 250); }).observe(document.body, { childList: true, subtree: true });
     addEventListener('scroll', () => requestAnimationFrame(now), { passive: true });
     addEventListener('hashchange', () => { sig = ''; setTimeout(run, 80); });
     window.LuliyToc = { enable() { on = true; try { localStorage.setItem(KEY, '1'); } catch (e) {} sig = ''; run(); }, disable() { on = false; try { localStorage.removeItem(KEY); } catch (e) {} run(); } };
     run();
+  })();
+
+  /* 45. 進文章不閃舊樣式（2026-11-07）. The router draws an article in its plain layout first; sections 36–44 then dress it
+     (weekly sheet, 讀書／學習 parts, typesetting, 傳記 portrait, contents) a few frames to a few hundred ms later, so a
+     click showed the old look for a moment. Now: on the way into #/article/Pxx the sheet is held invisible
+     (html.lk-veil); the moment its text is in the page, every section's dressing runs at once (window.__lkSettle,
+     registered by each section), and two frames later the sheet fades in already dressed. A cap of 1.2 s lifts it
+     whatever happens, so a slow or failed part can never leave a blank page. */
+  (function () {
+    const root = document.documentElement;
+    const idOf = () => { const m = /^#\/article\/(P\d+)/.exec(location.hash || ''); return m ? m[1] : ''; };
+    const bodyNow = () => document.querySelector('#main .source-reading .source-body');
+    let cap = 0, fade = 0, armed = false, lifting = false, stale = null, shown = '';
+    function bioSoon() { // section 43 b's test, read ahead: Library + 传记 on a wide screen
+      if (!matchMedia('(min-width: 1001px)').matches) return false;
+      let ls = []; try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[idOf()] || []; } catch (e) {}
+      if (!Array.isArray(ls) || !ls.length) { const c = document.querySelector('#main .source-reading .source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; } // before the label map arrives: the category line on the page
+      return ls.some(l => /^(library|讀書|读书)$/i.test(l)) && ls.some(l => /^(传记|傳記|biography)$/i.test(l));
+    }
+    function lift() {
+      clearTimeout(cap); armed = false; lifting = false;
+      if (!root.classList.contains('lk-veil')) return;
+      root.classList.remove('lk-veil'); root.classList.add('lk-arrive');
+      clearTimeout(fade); fade = setTimeout(() => root.classList.remove('lk-arrive'), 400);
+    }
+    function check() {
+      if (!armed && shown && idOf() && idOf() !== shown) { arm(); return; } // the hash moved on before its hashchange event
+      if (!armed || lifting) return;
+      const body = bodyNow();
+      if (body && body.dataset.loading === 'true') stale = null; // the router reloads in place: from here this element is the new page
+      if (!body || body === stale || body.dataset.loading === 'true' || !body.textContent.trim()) return; // the 正在载入 placeholder is not the text
+      if (bioSoon() && !body.querySelector('img') && !document.querySelector('#main .lk-cover img')) return; // 傳記: its portrait comes with the first picture
+      lifting = true; shown = idOf();
+      (window.__lkSettle || []).forEach(f => { try { f(); } catch (e) { /* dressing only */ } });
+      requestAnimationFrame(() => requestAnimationFrame(lift)); // section 40 typesets one frame after fonts are ready
+    }
+    function arm(next) {
+      const id = typeof next === 'string' ? next : idOf();
+      if (!id) { if (armed) lift(); shown = ''; return; }
+      const cur = bodyNow();
+      if (id === shown && cur && cur.dataset.loading !== 'true') return; // same article, only the query changed: nothing to hide
+      stale = cur; // the page being left: never mistaken for the new one
+      armed = true; lifting = false; root.classList.add('lk-veil');
+      clearTimeout(cap); cap = setTimeout(lift, 1200);
+      check();
+    }
+    addEventListener('hashchange', () => arm());
+    document.addEventListener('click', e => { // hide the page being left at the click itself, before the hash even changes
+      if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest && e.target.closest('a[href^="#/article/P"]'); const m = a && /^#\/article\/(P\d+)/.exec(a.getAttribute('href'));
+      if (m && m[1] !== idOf()) arm(m[1]);
+    }, true);
+    new MutationObserver(check).observe(document.body, { childList: true, subtree: true }); // runs before the browser paints
+    if (idOf()) { if (bodyNow() && bodyNow().dataset.loading !== 'true') shown = idOf(); else arm(); }
   })();
 
 })();
