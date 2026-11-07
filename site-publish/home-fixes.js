@@ -5398,8 +5398,7 @@
        (the big cover is not used here). Other quotes become book excerpts; “——p.32” at the end becomes a page number;
        a quote starting with ★ is the one pulled out big. At the end 「本篇書摘」 collects every excerpt.
      學習 (html.lk-study): a line under the byline (N 章 · N 條重點 from 本篇要點 · 已讀 x／n; chapters = the top headings, or the second level when there is only one top heading); each chapter heading gets a
-       circle to tick when read (localStorage lk-done-v1); tables get a sticky head and stripes (phones scroll them
-       sideways); a table with a Chinese column and a Latin column gets 「遮住中文」 for self-testing (tap a cell to see
+       circle to tick when read (localStorage lk-done-v1); a table with a Chinese column and a Latin column gets 「遮住中文」 for self-testing (tap a cell to see
        it); code blocks get 「複製」. Each page is done once (data-lk-x). */
   (() => {
     const root = document.documentElement;

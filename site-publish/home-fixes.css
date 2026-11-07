@@ -2940,11 +2940,6 @@ html.lk-study #main .source-body .lk-done { display: inline-block; vertical-alig
 html.lk-study #main .source-body .lk-done[aria-pressed="true"] { border-color: var(--lk-acc); background: var(--lk-acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%23111' stroke-width='2'/%3E%3C/svg%3E") center / 12px no-repeat; }
 html.lk-study #main .source-body .lk-done:hover, html.lk-study #main .source-body .lk-done:focus-visible { border-color: var(--lk-acc); outline: none; }
 @media (max-width: 760px) { html.lk-study #main .source-body .lk-done { margin: 0 8px 0 0; } }
-html.lk-study #main .source-body .lk-tw { margin: 1.2em 0 1.6em; }
-html.lk-study #main .source-body .lk-tw table { width: 100%; border-collapse: collapse; font-size: .9em; text-indent: 0; }
-html.lk-study #main .source-body .lk-tw :is(th, td) { padding: .55em .7em; border-bottom: 1px solid var(--lk-rule); text-align: left; vertical-align: top; }
-html.lk-study #main .source-body .lk-tw thead th { position: sticky; top: var(--lk-head-h, 64px); z-index: 2; background: var(--lk-bg); border-bottom: 1.5px solid var(--lk-ink); font-weight: 600; }
-html.lk-study #main .source-body .lk-tw tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--lk-ink) 4%, transparent); }
 html.lk-study #main .source-body .lk-maskbtn { display: block; margin: 1em 0 -.6em auto; padding: 5px 10px; font: 12px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-acc); background: none; border: 1px solid var(--lk-acc); border-radius: 3px; cursor: pointer; }
 html.lk-study #main .source-body .lk-maskbtn[aria-pressed="true"] { background: var(--lk-acc); color: var(--lk-bg); }
 html.lk-study #main .source-body table.lk-masked td.lk-mcol:not(.lk-peek) { color: transparent; background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--lk-acc) 22%, transparent) 0 6px, color-mix(in srgb, var(--lk-acc) 12%, transparent) 6px 12px) !important; cursor: pointer; user-select: none; }
@@ -2953,8 +2948,3 @@ html.lk-study #main .source-body pre { position: relative; }
 html.lk-study #main .source-body .lk-copy { position: absolute; top: 8px; right: 8px; padding: 4px 8px; font: 11.5px/1 var(--font-mono); color: var(--lk-mute); background: var(--lk-bg); border: 1px solid var(--lk-rule); border-radius: 3px; cursor: pointer; opacity: 0; transition: opacity .2s; }
 html.lk-study #main .source-body pre:hover .lk-copy, html.lk-study #main .source-body .lk-copy:focus-visible { opacity: 1; }
 @media (hover: none) { html.lk-study #main .source-body .lk-copy { opacity: 1; } }
-@media (max-width: 680px) {
-  html.lk-study #main .source-body .lk-tw { overflow-x: auto; margin-inline: -20px; padding-inline: 20px; }
-  html.lk-study #main .source-body .lk-tw table { min-width: 520px; }
-  html.lk-study #main .source-body .lk-tw thead th { position: static; }
-}
