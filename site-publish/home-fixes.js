@@ -3934,7 +3934,8 @@
       });
     }
     // The row shows its own "01", so a leading "一、" / "第一章" / "1." in the chapter name is dropped (display only).
-    const tName = h => hText(h); // 2026-11-07: names stay whole (no trimming of 一、/1.)
+    // Contents show names without the writer's own numbering (「一、」「第一章」「1.」「(1)」); the article itself keeps it.
+    const tName = h => { const t = hText(h), u = t.replace(/^(?:第?[一二三四五六七八九十百零〇]+[、.．:：章节節部]|[（(]?\d{1,2}[)）]|\d{1,2}(?:\.\d{1,2})+(?:[、.．:：)）]|(?=\s))|\d{1,2}[、.．:：)）](?!\d))\s*/, ''); return u || t; };
     const cardOpen = new Map(); // chapter → true/false when the reader opened or shut it by hand
     function cardSubs() { // sub-sections show only under the chapter being read, or under one opened by hand
       if (!cardList) return;
@@ -3985,7 +3986,7 @@
       if (heads.length) cardLine.append(tk);
       // only the heading being read, written out in full (it may wrap)
       const now = el('span', 'lk-now');
-      now.append(el('span', 'lk-cl-ch', hc ? hText(hc) : L('目录', 'Contents', '目次')));
+      now.append(el('span', 'lk-cl-ch', hc ? tName(hc) : L('目录', 'Contents', '目次')));
       cardLine.append(now);
       cardLine.setAttribute('aria-label', issueName(ipos + 1) + ' · ' + L('目录：', 'Contents: ', '目次：') + (chName || '') + (subName ? ' › ' + subName : ''));
       cardList.querySelectorAll('a[data-i]').forEach(a => { if (+a.dataset.i === c) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
@@ -4011,8 +4012,8 @@
         if (h.dataset.lkLevel !== '1') return;
         n++;
         const a = el('a'); a.href = '#'; a.dataset.i = i; a.dataset.ch = i;
-        const num = el('span', 'lk-n', String(n).padStart(2, '0')), nm = el('span', 'lk-nm', hText(h));
-        a.append(num, nm); a.title = hText(h); chs.append(a);
+        const num = el('span', 'lk-n', String(n).padStart(2, '0')), nm = el('span', 'lk-nm', tName(h));
+        a.append(num, nm); a.title = tName(h); chs.append(a);
       });
       bar.classList.toggle('lk-nochap', !n);
     }
@@ -4025,9 +4026,9 @@
       bar.querySelectorAll('.lk-chs a').forEach(a => { const on = +a.dataset.ch === ch && heads[ch] && heads[ch].dataset.lkLevel === '1'; a.classList.toggle('act', on); if (on) { a.setAttribute('aria-current', 'true'); num = +a.querySelector('.lk-n').textContent; } else a.removeAttribute('aria-current'); });
       const hc = heads[c], isSub = hc && hc.dataset.lkLevel === '2';
       const actA = bar.querySelector('.lk-chs a.act'); if (actA && sub.parentNode !== actA) actA.append(sub); // inside the coloured pill, after the chapter name
-      sub.textContent = isSub ? hText(hc) : ''; sub.classList.toggle('on', !!isSub);
+      sub.textContent = isSub ? tName(hc) : ''; sub.classList.toggle('on', !!isSub);
       const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? tName(heads[ch]) : '';
-      cur.textContent = hc ? hText(hc) : (chName || L('目录', 'Contents', '目次')); // the heading being read, in full
+      cur.textContent = hc ? tName(hc) : (chName || L('目录', 'Contents', '目次')); // the heading being read, in full
     }
     let heads = [];
     function toggle(open, noFocus) {
@@ -4045,7 +4046,7 @@
       list.innerHTML = '';
       heads.forEach((h, i) => {
         const li = el('li'), a = el('a', h.dataset.lkLevel === '2' ? 'l2' : '');
-        a.href = '#'; a.dataset.i = i; const c2 = h.cloneNode(true); c2.querySelectorAll('button, .reader-heading-link, svg').forEach(n => n.remove()); a.textContent = c2.textContent.replace(/\s+/g, ' ').trim();
+        a.href = '#'; a.dataset.i = i; a.textContent = tName(h);
         if (i === c) a.setAttribute('aria-current', 'true');
         li.append(a); list.append(li);
       });
