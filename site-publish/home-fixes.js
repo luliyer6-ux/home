@@ -5781,7 +5781,7 @@
         const li = el('li'); li.dataset.i = i; li.className = 'lt-l' + it.lv;
         const a = el('a'); a.href = '#'; a.append(el('b', '', it.n ? String(it.n) : ''), el('span', '', it.label));
         a.addEventListener('click', e => { e.preventDefault(); it.go(); pinned = false; setOpen(false); });
-        li.append(a); list.append(li); dots.append(el('i'));
+        li.append(a); list.append(li); dots.append(el('i', 'd' + it.lv));
       });
       cur = -1; now();
     }

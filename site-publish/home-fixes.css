@@ -3011,14 +3011,22 @@ html[data-appearance="light"] .lk-shelf { --sh-ink: #2a251d; --sh-soft: rgba(42,
   background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 1px, transparent 1px 3px); box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
 .lk-bookfly span { writing-mode: vertical-rl; white-space: nowrap; font: 600 14px/1 var(--font-body); letter-spacing: .3em; }
 
-/* 44 — contents beside the text (home-fixes.js 44; 傳記 pages, or ?toc=v2): text only, always shown, indented by heading level;
-   the heading being read is brighter and bold */
+/* 44 — contents beside the text (home-fixes.js 44; 傳記 pages, or ?toc=v2): collapsed = short hairlines (one per heading, longer for
+   higher levels, the one being read brighter); pointing at it opens a plain-text list indented by heading level */
 .lt-toc { display: none; }
-html.lt-on .lt-toc { --lt-ink: var(--lk-ink, #ece6d6); position: fixed; z-index: 60; top: 136px; left: calc(50% + 434px); display: block; width: min(240px, calc(50vw - 460px));
+html.lt-on .lt-toc { --lt-ink: var(--lk-ink, #ece6d6); position: fixed; z-index: 60; top: 136px; left: calc(50% + 434px); display: block; width: 240px;
   font-family: var(--font-body); }
 html.lt-on .luliy-mascot .lk-card { display: none !important; }
-.lt-head, .lt-cap { display: none !important; }
-.lt-list { display: block; margin: 0; padding: 0; list-style: none; max-height: calc(100vh - 220px); overflow: auto; scrollbar-width: none; }
+.lt-cap, .lt-mark { display: none !important; }
+.lt-head { display: block; width: 44px; padding: 6px 0 10px; border: 0; background: none; color: var(--lt-ink); cursor: pointer; }
+.lt-dots { display: flex; flex-direction: column; gap: 7px; align-items: flex-start; }
+.lt-dots i { display: block; height: 1px; background: currentColor; opacity: .32; transition: opacity .15s, width .15s; }
+.lt-dots .d0 { width: 26px; } .lt-dots .d1 { width: 17px; } .lt-dots .d2 { width: 10px; }
+.lt-dots i.on { opacity: .95; }
+.lt-dots i.hov { opacity: .95; }
+.lt-toc.open .lt-head { visibility: hidden; }
+.lt-list { display: none; position: absolute; top: 0; left: 0; width: 100%; margin: 0; padding: 0; list-style: none; max-height: calc(100vh - 200px); overflow: auto; scrollbar-width: none; }
+.lt-toc.open .lt-list { display: block; }
 .lt-list a { display: block; padding: 4px 0; color: color-mix(in srgb, var(--lt-ink) 48%, transparent); font-size: 13px; line-height: 1.5; text-decoration: none; transition: color .15s; }
 .lt-list a b { display: none; }
 .lt-list .lt-l1 a { padding-left: 14px; font-size: 12.5px; }
