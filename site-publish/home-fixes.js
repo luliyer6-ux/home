@@ -463,7 +463,7 @@
      dark -> light -> cc) opens a small window with seven colour circles: 暗黑, 白天, CC and four dark palettes,
      墨綠 / 暖墨 / 夜藍 / 酒紅 (design-tokens.css, skies in home-fixes.css). A palette is the dark appearance plus
      <html data-palette>, saved as localStorage luliy-palette; home-early.js restores it before the first paint
-     (default 夜藍 midnight when nothing saved; base dark 暗黑 saves 'dark').
+     (nothing saved = 暗黑, base dark, since 2026-11-07; it was 夜藍 midnight; 暗黑 saves 'dark').
      A circle applies its theme at once (a short cross-fade where view transitions exist) and the window stays
      open, so themes can be compared; tap outside, Esc or the theme button closes it. */
   (() => {
@@ -4069,7 +4069,8 @@
       // kicker
       let kick = shell.querySelector(':scope > .lk-kick');
       if (!kick) { kick = el('p', 'lk-kick'); h1.before(kick); }
-      kick.textContent = root.classList.contains('lk-study') ? L('学习', 'STUDY', '学習') : root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY' + (no ? ' · ' + L('第 ' + no + ' 期', 'No. ' + no, '第 ' + no + ' 号') : '');
+      // 2026-11-07: the kicker names the post's own GitHub labels (all of them, as written; pinned is internal); an issue adds its number
+      kick.textContent = (labelLine(id, shell) || (root.classList.contains('lk-study') ? L('学习', 'STUDY', '学習') : root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY')) + (no ? ' · ' + L('第 ' + no + ' 期', 'No. ' + no, '第 ' + no + ' 号') : '');
       // cover (2026-11-06): an image that opens the article (no text before it) becomes a full-width cover above the
       // issue line; the image leaves the body. No such image: nothing is added and the page is as before.
       (() => {
@@ -4252,6 +4253,12 @@
     /* 2026-11-07: the weekly panel for every piece of writing. Articles whose labels are not ones that keep their own
        layout (AI, Study, Doc, Guidebook — sections 37/38 — and the data posts) get the same magazine page, without the
        issue parts (no number, no issue switcher, no neighbouring issues). html.lk-essay marks them. */
+    function labelLine(id, shell) {
+      let ls = null;
+      try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id]; } catch (e) {}
+      if (!Array.isArray(ls)) { const c = shell && shell.querySelector('.source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; }
+      return ls.filter(l => l && !/^pinned$/i.test(l)).join(' · ');
+    }
     const OWN = /^(ai|doc|guidebook|chronicle-data|timeline)$/i;   // 2026-11-07: Study joins (its notebook parts stay, section 37)
     function essay(id, shell) {
       let ls = null;
@@ -4290,7 +4297,7 @@
         series(shell, m[1]); stack(shell, m[1]);
         drawer.querySelector('header b').textContent = shell.querySelector(':scope > h1').textContent.trim();
         const pos = index.findIndex(x => x.id === m[1]);
-        drawer.querySelector('header span').textContent = (root.classList.contains('lk-study') ? L('学习', 'STUDY', '学習') : root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY') + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
+        drawer.querySelector('header span').textContent = (labelLine(curIssue, main.querySelector('.source-reading')) || (root.classList.contains('lk-study') ? L('学习', 'STUDY', '学習') : root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY')) + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
         done = key;
       }
       glow();
@@ -5148,7 +5155,7 @@
   /* 41. 首頁（2026-11-07 起為預設）。The old home (galaxy opening, 作品, 文章, 唱片) stays in the page, hidden by html.lh-on;
      .lh comes first: Luliy's avatar (no frame) and the brand (the header's L mark + ULIY, which the header hides here, so
      the page has one Luliy) with the line 「一個傻子，幻想找到自己，爲之堅持。」; on its right three stacked-card entrances
-     「姚說」(the weekly archive) 「短札」(the journal) 「學習」(Study writing), each three small pictures fanned out (taken
+     「姚說」(the weekly archive) 「短札」(the journal) 「學習」(Study) 「讀書」(reading notes: label Reading, 讀書/读书 also count — not `book`, which Gmeek keeps for the book.html single page; three spines) 「教程」(Doc + Guidebook). 姚說 shows three issue covers fanned out; 短札 / 學習 / 教程 are drawn objects (slips, a squared notebook with a pencil, a ring binder with index tabs) (taken
      from the posts, cached in localStorage lh-thumb-v1; a post without a picture gets a paper card with its first
      character); then the latest 姚說 issue as a magazine card and the five most recent pieces (from the site's own home
      list, so hidden labels stay hidden). The old home: directory → 其他 → 舊版首頁, or ?home=v1, for that visit only. */
@@ -5207,6 +5214,22 @@
       a.append(pile, el('span', 'lh-sl', '「 ' + label + ' 」'));
       return a;
     }
+    function spines(label, href) { // 讀書: three book spines on a shelf (decorative), not pictures
+      const a = el('a', 'lh-st lh-books'); a.href = href;
+      const shelf = el('span', 'lh-pile lh-shelf'); shelf.setAttribute('aria-hidden', 'true');
+      [0, 1, 2].forEach(i => { const b = el('span', 'lh-spine lh-sp' + i); b.append(el('i'), el('i')); shelf.append(b); });
+      a.append(shelf, el('span', 'lh-sl', '「 ' + label + ' 」'));
+      return a;
+    }
+    function thing(kind, label, href) { // 短札 slips · 學習 notebook · 教程 binder: drawn objects, no pictures needed
+      const a = el('a', 'lh-st lh-obj lh-k-' + kind); a.href = href;
+      const box = el('span', 'lh-pile'); box.setAttribute('aria-hidden', 'true');
+      if (kind === 'notes') [0, 1, 2].forEach(i => { const n = el('span', 'lh-slip lh-slip' + i); n.append(el('i'), el('i'), el('i')); box.append(n); });
+      if (kind === 'book') { const pg = el('span', 'lh-page'); pg.append(el('i', 'lh-margin')); box.append(pg, el('span', 'lh-pencil')); }
+      if (kind === 'binder') { const b = el('span', 'lh-binder'); b.append(el('i', 'lh-rings'), el('i', 'lh-label')); box.append(el('span', 'lh-tab lh-tab0'), el('span', 'lh-tab lh-tab1'), el('span', 'lh-tab lh-tab2'), b); }
+      a.append(box, el('span', 'lh-sl', '「 ' + label + ' 」'));
+      return a;
+    }
     function brand() {
       const b = el('a', 'lh-brand'); b.href = '#/about'; b.setAttribute('aria-label', 'Luliy');
       const mark = document.querySelector('#header .brand-mark svg');
@@ -5245,8 +5268,11 @@
       const journal = window.LuliyJournal && window.LuliyJournal.items && window.LuliyJournal.items.length ? window.LuliyJournal.items.map(it => ({ id: it.id, title: it.title, url: it.bodyUrl ? it.bodyUrl.split('/').pop() : '' })) : pick(/^journal$/i);
       const stacks = el('nav', 'lh-stacks'); stacks.setAttribute('aria-label', L('栏目', 'Sections'));
       stacks.append(stack(L('姚说', 'Yao Says'), '#/posts?view=archive&group=weekly', pick(WEEKLY)),
-        stack(L('短札', 'Journal'), '#/posts?view=journal', journal),
-        stack(L('学习', 'Study'), '#/posts?view=archive&tag=Study', pick(/^study$/i)));
+        thing('notes', L('短札', 'Journal'), '#/posts?view=journal'),
+        thing('book', L('学习', 'Study'), '#/posts?view=archive&tags=Study'),
+        spines(L('读书', 'Reading'), '#/posts?view=archive&tags=Reading'), // the GitHub label is Reading
+        thing('binder', L('教程', 'Guides'), '#/posts?view=archive&tags=Doc,Guidebook'));
+      void journal;
       top.append(intro, stacks);
       box.append(top);
       // b) the latest issue
@@ -5287,6 +5313,82 @@
     addEventListener('hashchange', () => { if (!isHome()) classic = false; build(); });
     addEventListener('luliy-journal-feed', () => { sig = ''; build(); });
     dirLink(); build();
+  })();
+
+  /* 42. 歸檔頁多選篩選（2026-11-07）. The site's archive (#/posts?view=archive) filters by one tag (?tag=). Here
+     ?tags=a,b (any of them) is added on top: the router ignores it and lists everything, this hides the rest, renumbers,
+     drops empty years and rewrites the filter line (one × chip per tag, the count). In the 篩選 drawer every 分類 link
+     now toggles its tag in the set (several can be on), 全部分類 clears it, and the 類型 / 年份 links keep the set.
+     Old ?tag= links still work (they become part of the set). Labels come from luliy-label-map-v1 (section 37). */
+  (() => {
+    const root = document.documentElement;
+    const S2 = { '讀': '读', '書': '书', '長': '长', '學': '学', '習': '习', '說': '说', '創': '创', '記': '记', '週': '周', '隨': '随', '筆': '笔', '檔': '档', '程': '程' };
+    const norm = x => String(x || '').trim().toLowerCase().replace(/[讀書長學習說創記週隨筆檔]/g, c => S2[c] || c);
+    const route = () => { const h = location.hash; if (!/^#\/posts(\?|$)/.test(h)) return null; const q = new URLSearchParams(h.split('?')[1] || ''); const v = q.get('view'); return v && v !== 'archive' ? null : q; };
+    const setOf = q => { const out = []; (q.get('tags') || '').split(',').concat(q.get('tag') || '').map(x => x.trim()).filter(Boolean).forEach(x => { if (!out.some(y => norm(y) === norm(x))) out.push(x); }); return out; };
+    const href = (q, tags) => { const n = new URLSearchParams(q); n.delete('tag'); n.delete('tags'); n.set('view', 'archive'); if (tags.length) n.set('tags', tags.join(',')); return '#/posts?' + n.toString().replace(/%2C/gi, ','); };
+    const labelsOf = a => {
+      let m = null; try { m = JSON.parse(localStorage.getItem('luliy-label-map-v1') || 'null'); } catch (e) {}
+      const id = a.dataset.postId;
+      if (m && id && Array.isArray(m[id])) return m[id];
+      const sm = a.querySelector('small'); return sm ? sm.textContent.split('·').map(x => x.trim()) : [];
+    };
+    let sig = '';
+    function run() {
+      const q = route(); const box = document.querySelector('#main .post-archive');
+      if (!q || !box) return;
+      const tags = setOf(q), want = tags.map(norm);
+      const entries = [...box.querySelectorAll('.study-entry')];
+      const now = location.hash + '|' + entries.length + '|' + (box.dataset.lkMulti || '');
+      if (now === sig && box.dataset.lkMulti === location.hash) return;
+      sig = now; box.dataset.lkMulti = location.hash;
+      // a) filter (only needed for ?tags=; ?tag= alone the router already did)
+      let shown = 0;
+      if (q.get('tags')) {
+        entries.forEach(a => { const ok = !want.length || labelsOf(a).some(l => want.includes(norm(l))); a.hidden = !ok; if (ok) shown++; });
+        box.querySelectorAll('.post-year').forEach(y => { y.hidden = !y.querySelector('.study-entry:not([hidden])'); });
+        let i = 0; entries.forEach(a => { if (a.hidden) return; const n = a.querySelector('.study-index'); if (n) n.textContent = String(++i).padStart(2, '0'); });
+      } else shown = entries.length;
+      // b) the filter line
+      const cur = box.querySelector('.article-filter-current');
+      if (cur) {
+        cur.querySelectorAll('.article-filter-condition').forEach(c => { // the router's chip for ?tag= and our old ones make way for one chip per tag
+          const lab = (c.getAttribute('aria-label') || '').replace(/^[^：:]*[：:]\s*/, '').trim();
+          if (c.classList.contains('lk-mc') || tags.some(t => norm(t) === norm(lab))) c.remove();
+        });
+        const small = cur.querySelector('small');
+        tags.forEach(t => { const c = document.createElement('a'); c.className = 'article-filter-condition lk-mc'; c.href = href(q, tags.filter(x => x !== t)); c.setAttribute('aria-label', '清除篩選：' + t); c.textContent = t; const x = document.createElement('span'); x.setAttribute('aria-hidden', 'true'); x.textContent = '×'; c.append(x); small ? small.before(c) : cur.append(c); });
+        if (tags.length) cur.querySelectorAll('.article-filter-condition:not(.lk-mc)').forEach(c => { // e.g. the year chip: clearing it keeps the tags
+          const raw = c.dataset.lkHref || c.getAttribute('href') || ''; c.dataset.lkHref = raw; const lq = new URLSearchParams(raw.split('?')[1] || '');
+          lq.delete('tag'); lq.set('tags', tags.join(',')); c.href = '#/posts?' + lq.toString().replace(/%2C/gi, ','); });
+        if (small) small.textContent = small.textContent.replace(/\d+/, String(shown));
+      }
+      // c) the drawer: 分類 toggles, others keep the set
+      box.querySelectorAll('.article-filter-section').forEach(sec => {
+        const h = (sec.querySelector('h3') || {}).textContent || '';
+        const cat = /分類|分类|Categor|カテゴリ/.test(h);
+        sec.querySelectorAll('nav a').forEach(a => {
+          const raw = a.dataset.lkHref || a.getAttribute('href'); a.dataset.lkHref = raw;
+          const lq = new URLSearchParams((raw.split('?')[1] || ''));
+          if (cat) {
+            const t = lq.get('tag');
+            if (!t) { a.href = href(q, []); if (tags.length) a.removeAttribute('aria-current'); else a.setAttribute('aria-current', 'page'); return; }
+            const on = tags.some(x => norm(x) === norm(t));
+            a.href = href(q, on ? tags.filter(x => norm(x) !== norm(t)) : tags.concat(t));
+            if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+            a.classList.add('lk-multi');
+          } else if (tags.length) {
+            lq.delete('tag'); lq.delete('tags'); lq.set('tags', tags.join(','));
+            a.href = '#/posts?' + lq.toString().replace(/%2C/gi, ',');
+          }
+        });
+        if (cat && !sec.querySelector('.lk-multi-hint')) { const sm = document.createElement('small'); sm.className = 'lk-multi-hint'; sm.textContent = '可多選'; const hh = sec.querySelector('h3'); if (hh) hh.append(sm); }
+      });
+    }
+    let t = 0;
+    new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 120); }).observe(document.body, { childList: true, subtree: true });
+    addEventListener('hashchange', () => { sig = ''; setTimeout(run, 60); });
+    run();
   })();
 
 })();

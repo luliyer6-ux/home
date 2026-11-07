@@ -2782,7 +2782,8 @@ html.lh-on .lh { --lh-ink: #ece6d6; --lh-soft: rgba(236, 230, 214, .72); --lh-mu
   display: block; position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 120px 24px 96px; color: var(--lh-ink); font-family: var(--font-body); }
 html[data-appearance="light"].lh-on .lh { --lh-ink: #23201a; --lh-soft: rgba(35, 32, 26, .74); --lh-mute: rgba(35, 32, 26, .52); --lh-rule: rgba(35, 32, 26, .14); --lh-acc: #93661e; --lh-paper: #fbf7ef; --lh-card: #ffffff; }
 .lh a { color: inherit; text-decoration: none; }
-.lh-top { display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+.lh-top { display: flex; align-items: center; justify-content: center; gap: clamp(32px, 6vw, 88px);
+  width: min(1180px, calc(100vw - 48px)); margin-left: 50%; transform: translateX(-50%); } /* wider than the column, centred on the page */
 .lh-intro { display: flex; align-items: center; gap: 20px; min-width: 0; }
 .lh-face { flex: none; height: 96px; width: auto; max-width: 120px; object-fit: contain; }
 .lh-brand { display: inline-flex; align-items: center; gap: 2px; color: var(--lh-ink); }
@@ -2790,7 +2791,7 @@ html[data-appearance="light"].lh-on .lh { --lh-ink: #23201a; --lh-soft: rgba(35,
 .lh-mark svg { display: block; width: 100%; height: 100%; }
 .lh-word { font: 600 32px/1 var(--lh-brand-font, var(--font-body)); letter-spacing: .08em; transform: translateY(4px); }
 .lh-who p { margin: 10px 0 0; font-size: 15.5px; line-height: 1.6; color: var(--lh-soft); }
-.lh-stacks { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); }
+.lh-stacks { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); }
 .lh-st { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 4px 20px; }
 .lh-st + .lh-st { border-left: 1px solid var(--lh-rule); }
 .lh-pile { position: relative; display: block; width: 84px; height: 62px; }
@@ -2828,13 +2829,55 @@ html[data-appearance="light"] .lh-issue { box-shadow: 0 18px 40px rgba(60, 45, 2
 .lh-t { font-size: 17px; line-height: 1.5; }
 .lh-recent time { font: 12px/1 var(--font-mono); color: var(--lh-mute); }
 .lh-recent li a:hover .lh-t, .lh-recent li a:focus-visible .lh-t { color: var(--lh-acc); }
-@media (max-width: 860px) {
-  .lh-top { flex-direction: column; align-items: stretch; gap: 26px; }
-  .lh-st { padding: 4px 8px; }
+/* 讀書: three spines */
+.lh-shelf { display: flex; align-items: flex-end; justify-content: center; gap: 3px; padding-bottom: 2px; border-bottom: 2px solid var(--lh-rule); }
+.lh-spine { position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 7px 0; width: 15px; border-radius: 2px 2px 0 0; box-shadow: inset -2px 0 0 rgba(0, 0, 0, .18), 0 3px 8px rgba(0, 0, 0, .3); transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.lh-spine i { display: block; height: 2px; margin: 0 3px; background: currentColor; opacity: .55; }
+.lh-sp0 { height: 50px; background: #6b2f2a; color: #e2c27e; }
+.lh-sp1 { height: 58px; width: 17px; background: var(--lh-card); color: #93661e; }
+.lh-sp2 { height: 46px; background: #2c3a33; color: #e2c27e; transform-origin: bottom left; transform: rotate(8deg) translateX(2px); }
+.lh-books:hover .lh-sp0, .lh-books:focus-visible .lh-sp0 { transform: translateY(-5px); }
+.lh-books:hover .lh-sp1, .lh-books:focus-visible .lh-sp1 { transform: translateY(-9px); }
+.lh-books:hover .lh-sp2, .lh-books:focus-visible .lh-sp2 { transform: rotate(14deg) translateX(4px); }
+/* 短札 · 學習 · 教程: drawn objects in the same palette as the spines (paper, gold, oxblood, green) */
+.lh-obj .lh-pile { display: block; }
+.lh-obj .lh-pile > * { transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.lh-slip { position: absolute; width: 44px; height: 34px; padding: 8px 6px 0; display: flex; flex-direction: column; gap: 5px; background: var(--lh-card); border-radius: 1px; box-shadow: 0 4px 10px rgba(0, 0, 0, .32); }
+.lh-slip i { display: block; height: 1.5px; background: rgba(35, 32, 26, .35); }
+.lh-slip i:last-child { width: 60%; }
+.lh-slip0 { left: 6px; top: 20px; transform: rotate(-9deg); }
+.lh-slip1 { left: 30px; top: 22px; transform: rotate(7deg); background: #efe2bf; }
+.lh-slip2 { left: 18px; top: 4px; transform: rotate(-2deg); z-index: 2; }
+.lh-slip2::before { content: ""; position: absolute; left: 14px; top: -4px; width: 16px; height: 7px; background: rgba(226, 194, 126, .75); transform: rotate(-4deg); }
+.lh-k-notes:hover .lh-slip2, .lh-k-notes:focus-visible .lh-slip2 { transform: translateY(-6px) rotate(-4deg); }
+.lh-k-notes:hover .lh-slip0, .lh-k-notes:focus-visible .lh-slip0 { transform: translateX(-4px) rotate(-13deg); }
+.lh-k-notes:hover .lh-slip1, .lh-k-notes:focus-visible .lh-slip1 { transform: translateX(4px) rotate(11deg); }
+.lh-page { position: absolute; left: 18px; top: 2px; width: 44px; height: 58px; border-radius: 1px 3px 3px 1px; box-shadow: inset 4px 0 0 #2c3a33, 0 4px 10px rgba(0, 0, 0, .32);
+  background-color: var(--lh-card); background-image: repeating-linear-gradient(0deg, transparent 0 7px, rgba(60, 90, 120, .2) 7px 8px), repeating-linear-gradient(90deg, transparent 0 7px, rgba(60, 90, 120, .2) 7px 8px); }
+.lh-margin { position: absolute; left: 12px; top: 0; bottom: 0; width: 1.5px; background: #b5473e; opacity: .8; }
+.lh-pencil { position: absolute; left: 50px; top: 10px; width: 6px; height: 46px; border-radius: 1px; background: linear-gradient(180deg, #e2c27e 0 82%, #d9c3a0 82% 92%, #3a3328 92%); transform: rotate(16deg); box-shadow: 0 3px 6px rgba(0, 0, 0, .3); }
+.lh-k-book:hover .lh-page, .lh-k-book:focus-visible .lh-page { transform: translateY(-5px) rotate(-3deg); }
+.lh-k-book:hover .lh-pencil, .lh-k-book:focus-visible .lh-pencil { transform: translate(4px, -2px) rotate(24deg); }
+.lh-binder { position: absolute; left: 16px; top: 2px; width: 46px; height: 58px; border-radius: 2px 4px 4px 2px; background: #6b2f2a; box-shadow: 0 4px 10px rgba(0, 0, 0, .35); }
+.lh-rings { position: absolute; left: 5px; top: 9px; bottom: 9px; width: 5px; background: radial-gradient(circle, #e2c27e 0 2px, transparent 2.5px) 0 0 / 5px 14px repeat-y; }
+.lh-label { position: absolute; left: 16px; right: 7px; top: 14px; height: 14px; background: var(--lh-card); border-radius: 1px; box-shadow: inset 0 -4px 0 rgba(35, 32, 26, .1); }
+.lh-tab { position: absolute; left: 56px; width: 10px; height: 10px; border-radius: 0 2px 2px 0; }
+.lh-tab0 { top: 10px; background: #e2c27e; }
+.lh-tab1 { top: 25px; background: #2c3a33; }
+.lh-tab2 { top: 40px; background: var(--lh-card); }
+a.lh-k-binder:hover .lh-binder, a.lh-k-binder:focus-visible .lh-binder { transform: translateY(-5px) rotate(-2deg); }
+a.lh-k-binder:hover .lh-tab, a.lh-k-binder:focus-visible .lh-tab { transform: translateX(3px); }
+@media (max-width: 1100px) {
+  .lh-top { flex-direction: column; align-items: stretch; gap: 26px; width: auto; margin-left: 0; transform: none; }
+  .lh-stacks { grid-template-columns: repeat(5, 1fr); }
+  .lh-st { padding: 4px 6px; }
 }
 @media (max-width: 680px) {
   html.lh-on .lh { padding: 88px 20px 72px; }
   .lh-face { height: 72px; }
+  .lh-st { padding: 2px 0; gap: 6px; }
+  .lh-pile { transform: scale(.74); margin: -8px -11px; }
+  .lh-sl { font-size: 12px; letter-spacing: 0; }
   .lh-mark { width: 32px; height: 36px; }
   .lh-word { font-size: 26px; }
   .lh-title { font-size: 24px; }
@@ -2852,3 +2895,8 @@ html[data-appearance="light"] .lh-issue { box-shadow: 0 18px 40px rgba(60, 45, 2
 /* 短札: the same avatar as the home page, without a frame */
 .lj-avatar, .lj-card-avatar { border-radius: 0 !important; box-shadow: none !important; object-fit: contain !important; background: none !important; }
 .lj-avatar-link, .lj-card-avatar-link { border-radius: 0 !important; }
+
+/* 42 — archive: several tags at once (home-fixes.js 42) */
+#main .post-archive :is(.study-entry, .post-year)[hidden] { display: none !important; }
+#main .post-archive .lk-multi-hint { display: block; margin: 4px 0 0; white-space: nowrap; font-size: 11px; font-weight: 400; letter-spacing: .06em; opacity: .55; }
+#main .post-archive .article-filter-section a.lk-multi[aria-current]::before { content: "✓ "; }
