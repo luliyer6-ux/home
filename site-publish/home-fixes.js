@@ -104,7 +104,8 @@
     // Same phone test as home-early.js.
     const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
     const brand = document.querySelector('#header a.brand');
-    if (phone && brand && brand.getAttribute('href') === '#/') brand.setAttribute('href', '#/posts');
+    // 2026-11-07: the new home is short and made for phones too, so the brand keeps '#/'.
+    void phone; void brand;
   })();
 
   /* 4. Phones, every page: one header. It steps aside while scrolling down (on articles together with the two
@@ -3147,7 +3148,7 @@
     const tagsOf = item => item.labels.filter(l => l.toLowerCase() !== 'journal' && !isPin(l));
     const buildNote = (item, single) => {
       const a = el('article', 'lj-note'); a.id = 'note-' + item.id; a.dataset.id = item.id; a.setAttribute('aria-busy', 'true');
-      const avatar = el('a', 'lj-avatar-link'); avatar.href = '#/about'; avatar.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); avatar.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-avatar'); im.src = '/assets/avatar/luliy.webp?v=5'; im.alt = ''; im.width = 40; im.height = 40; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; avatar.append(im); }
+      const avatar = el('a', 'lj-avatar-link'); avatar.href = '#/about'; avatar.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); avatar.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-avatar'); im.src = 'https://cloud.luliy.me/api/image?path=shared%2Fluliy.png'; im.alt = ''; im.width = 40; im.height = 40; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; avatar.append(im); }
       const col = el('div', 'lj-col');
       const head = el('header', 'lj-head');
       head.append(el('strong', 'lj-name', 'Luliy'));
@@ -3320,7 +3321,7 @@
 
         /* side: profile card, activity grid, search, tags */
         const card = el('div', 'lj-card');
-        const av = el('a', 'lj-card-avatar-link'); av.href = '#/about'; av.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); av.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-card-avatar'); im.src = '/assets/avatar/luliy.webp?v=5'; im.alt = ''; im.width = 84; im.height = 84; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; av.append(im); }
+        const av = el('a', 'lj-card-avatar-link'); av.href = '#/about'; av.setAttribute('aria-label', L('关于 Luliy', 'About Luliy', 'Luliy について')); av.title = L('关于', 'About', 'About'); { const im = el('img', 'lj-card-avatar'); im.src = 'https://cloud.luliy.me/api/image?path=shared%2Fluliy.png'; im.alt = ''; im.width = 84; im.height = 84; im.decoding = 'async'; im.referrerPolicy = 'no-referrer'; av.append(im); }
         const stats = el('dl', 'lj-stats');
         [[L('短札', 'Notes', '短札'), items.length], [L('标签', 'Tags', 'タグ'), counts.size], [L('天', 'Days', '日'), days.size]].forEach(([k, v]) => { const d = el('div'); d.append(el('dt', null, k), el('dd', null, String(v))); stats.append(d); });
         const social = el('div', 'lj-social');
@@ -5144,41 +5145,87 @@
     addEventListener('resize', () => { const b = box().querySelector('.source-body'); if (b) wide(b); }, { passive: true });
   })();
 
-  /* 41. 首頁簡潔版（預覽，2026-11-07）。開啟：網址加 ?home=v2，或 localStorage luliy-home-v2 = '1'。
-     Old home (galaxy opening, 作品, 文章, 唱片) stays in the page untouched; html.lh-on hides it and puts .lh first:
-     avatar + Luliy + one line, the latest 姚說 issue as a magazine card (cover, issue number, summary),
-     then the recent writing (from the site's own home list, so hidden labels stay hidden). 「舊版首頁」 shows the old one
-     again for this visit (html.lh-classic). */
+  /* 41. 首頁（2026-11-07 起為預設）。The old home (galaxy opening, 作品, 文章, 唱片) stays in the page, hidden by html.lh-on;
+     .lh comes first: Luliy's avatar (no frame) and the brand (the header's L mark + ULIY, which the header hides here, so
+     the page has one Luliy) with the line 「一個傻子，幻想找到自己，爲之堅持。」; on its right three stacked-card entrances
+     「姚說」(the weekly archive) 「短札」(the journal) 「學習」(Study writing), each three small pictures fanned out (taken
+     from the posts, cached in localStorage lh-thumb-v1; a post without a picture gets a paper card with its first
+     character); then the latest 姚說 issue as a magazine card and the five most recent pieces (from the site's own home
+     list, so hidden labels stay hidden). The old home: directory → 其他 → 舊版首頁, or ?home=v1, for that visit only. */
   (() => {
     const root = document.documentElement;
-    let on = false;
-    try { const q = new URLSearchParams(location.search).get('home'); if (q === 'v2') localStorage.setItem('luliy-home-v2', '1'); if (q === 'v1') localStorage.removeItem('luliy-home-v2'); on = localStorage.getItem('luliy-home-v2') === '1'; } catch (e) {}
-    if (!on) return;
+    let classic = false;
+    try { const q = new URLSearchParams(location.search).get('home'); if (q === 'v1' || q === 'classic') classic = true; localStorage.removeItem('luliy-home-v2'); } catch (e) {}
     const FEED = 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/postList.json';
     const WEEKLY = /(^|[^a-z])weekly([^a-z]|$)|周[记記]|週記/i;
+    const AVATAR = 'https://cloud.luliy.me/api/image?path=shared%2Fluliy.png';
     const T = s => (typeof window.LuliyInterfaceText === 'function' ? window.LuliyInterfaceText(s) : s);
     const L = (zh, en) => (/^en/.test(root.lang) ? en : root.lang === 'zh-Hant' ? T(zh) : zh);
     const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
     const isHome = () => { const h = location.hash.replace(/^#\/?/, ''); return h === '' || h === '/'; };
-    let issues = null;
-    try { const c = JSON.parse(localStorage.getItem('luliy-weekly-index-v1') || 'null'); if (Array.isArray(c)) issues = c; } catch (e) {}
+    const names = it => (Array.isArray(it.labels) ? it.labels : []).map(l => String(l && l.name !== undefined ? l.name : l).trim());
+    let feed = null;
     if (typeof fetch === 'function') fetch(FEED).then(r => r.ok ? r.json() : null).then(j => {
       if (!j) return;
-      const names = it => (Array.isArray(it.labels) ? it.labels : []).map(l => String(l && l.name !== undefined ? l.name : l));
-      issues = Object.keys(j).filter(k => /^P\d+$/.test(k) && j[k] && names(j[k]).some(l => WEEKLY.test(l)))
-        .map(k => ({ id: k, title: String(j[k].postTitle || ''), date: String(j[k].createdDate || ''), ts: Number(j[k].createdAt) || 0 }))
-        .sort((a, b) => a.ts - b.ts || a.date.localeCompare(b.date));
+      feed = Object.keys(j).filter(k => /^P\d+$/.test(k) && j[k] && typeof j[k] === 'object')
+        .map(k => ({ id: k, title: String(j[k].postTitle || ''), date: String(j[k].createdDate || ''), ts: Number(j[k].createdAt) || 0, url: String(j[k].postUrl || ''), labels: names(j[k]) }));
       sig = ''; build();
     }).catch(() => {});
+    // pictures for the stacks: the first image in a post (cached; '' = none)
+    let thumbs = {}; try { thumbs = JSON.parse(localStorage.getItem('lh-thumb-v1') || '{}') || {}; } catch (e) {}
+    const asked = {};
+    function thumb(it) {
+      if (it.id in thumbs) return Promise.resolve(thumbs[it.id]);
+      if (asked[it.id]) return asked[it.id];
+      const name = (it.url || '').split(/[?#]/)[0].split('/').pop();
+      if (!/\.html$/i.test(name) || typeof fetch !== 'function') return Promise.resolve('');
+      return (asked[it.id] = fetch(FEED.replace(/postList\.json$/, 'post/' + name)).then(r => r.ok ? r.text() : '').then(html => {
+        const doc = new DOMParser().parseFromString(html || '', 'text/html');
+        const img = (doc.querySelector('#postBody') || doc.body || doc).querySelector('img');
+        let src = img ? img.getAttribute('src') || '' : '';
+        if (!/^https?:\/\//.test(src)) src = '';
+        src = src.replace(/^https:\/\/camo\.githubusercontent\.com\/(?=[0-9a-f]{20})/i, location.origin + '/gh/camo/');
+        thumbs[it.id] = src; try { localStorage.setItem('lh-thumb-v1', JSON.stringify(thumbs)); } catch (e) {}
+        return src;
+      }).catch(() => ''));
+    }
+    function stack(label, href, items) { // the latest posts with a picture come first; the rest are paper cards
+      const a = el('a', 'lh-st'); a.href = href;
+      const pile = el('span', 'lh-pile'); pile.setAttribute('aria-hidden', 'true');
+      const cards = [0, 1, 2].map(i => { const c = el('span', 'lh-c lh-c' + i); pile.append(c); return c; });
+      const blank = (c, it) => { c.classList.add('lh-blank'); c.textContent = it && it.title ? it.title.replace(/^[\s「『"“《【\-—0-9.、]+/, '').charAt(0) : ''; };
+      const pool = items.slice(0, 8);
+      Promise.all(pool.map(it => thumb(it).then(src => ({ it, src })))).then(got => {
+        const order = got.filter(g => g.src).concat(got.filter(g => !g.src));
+        [cards[1], cards[0], cards[2]].forEach((c, i) => { // the front card (middle) gets the first picture
+          const g = order[i];
+          if (!g || !g.src) return blank(c, g && g.it);
+          const im = el('img'); im.src = g.src; im.alt = ''; im.loading = 'lazy'; im.decoding = 'async';
+          im.addEventListener('error', () => { im.remove(); blank(c, g.it); }, { once: true }); c.append(im);
+        });
+      });
+      a.append(pile, el('span', 'lh-sl', '「 ' + label + ' 」'));
+      return a;
+    }
+    function brand() {
+      const b = el('a', 'lh-brand'); b.href = '#/about'; b.setAttribute('aria-label', 'Luliy');
+      const mark = document.querySelector('#header .brand-mark svg');
+      if (mark) { const m = el('span', 'lh-mark'); m.append(mark.cloneNode(true)); m.setAttribute('aria-hidden', 'true'); b.append(m); }
+      const w = el('span', 'lh-word', mark ? 'ULIY' : 'Luliy'), hb = document.querySelector('#header .brand');
+      if (hb) w.style.fontFamily = getComputedStyle(hb).fontFamily; // the header's wordmark face
+      b.append(w);
+      return b;
+    }
     let box = null, sig = '';
     function build() {
       const home = isHome();
-      root.classList.toggle('lh-on', home && !root.classList.contains('lh-classic'));
-      if (!home) return;
+      root.classList.toggle('lh-on', home && !classic);
+      root.classList.toggle('lh-classic', home && classic);
+      if (!home || classic) return;
       const ent = document.querySelector('.entrance');
       const entries = [...document.querySelectorAll('.home-articles .study-entry')];
       if (!ent || !entries.length) return;
-      const now = entries.map(a => a.getAttribute('href') + ((a.querySelector('.home-article-summary') || {}).textContent || '').length + ((a.querySelector('.study-entry-cover img') || {}).src || '')).join('|') + '#' + (issues ? issues.length : 0); // summaries and covers arrive late
+      const now = entries.map(a => a.getAttribute('href') + ((a.querySelector('.home-article-summary') || {}).textContent || '').length + ((a.querySelector('.study-entry-cover img') || {}).src || '')).join('|') + '#' + (feed ? feed.length : 0) + (window.LuliyJournal && window.LuliyJournal.items ? window.LuliyJournal.items.length : '');
       if (box && box.isConnected && now === sig) return;
       sig = now;
       if (!box || !box.isConnected) { box = el('section', 'lh'); box.setAttribute('aria-label', L('首页', 'Home')); ent.parentElement.insertBefore(box, ent); }
@@ -5186,17 +5233,26 @@
       const read = a => ({ href: a.getAttribute('href'), id: a.dataset.postId || '', label: (a.querySelector('small') || {}).textContent || '', title: (a.querySelector('strong') || {}).textContent || '',
         sum: (a.querySelector('.home-article-summary') || {}).textContent || '', date: (a.querySelector('time') || {}).textContent || '', cover: (a.querySelector('.study-entry-cover img') || {}).src || '' });
       const all = entries.map(read);
-      // a) who
+      // a) who, and the three stacks
+      const top = el('div', 'lh-top');
       const intro = el('div', 'lh-intro');
-      const face = el('img', 'lh-face'); face.src = 'https://cloud.luliy.me/api/image?path=shared%2Fluliy.png'; face.alt = ''; face.decoding = 'async'; face.setAttribute('aria-hidden', 'true');
+      const face = el('img', 'lh-face'); face.src = AVATAR; face.alt = ''; face.decoding = 'async'; face.setAttribute('aria-hidden', 'true');
       face.addEventListener('error', () => face.remove(), { once: true });
-      const who = el('div', 'lh-who'); who.append(el('h1', '', 'Luliy'), el('p', '', L('一個傻子，幻想找到自己，爲之堅持。', 'A fool, dreaming of finding myself, and holding on.')));
+      const who = el('div', 'lh-who'); who.append(brand(), el('p', '', L('一個傻子，幻想找到自己，爲之堅持。', 'A fool, dreaming of finding myself, and holding on.')));
       intro.append(face, who);
-      box.append(intro);
+      const byTs = (x, y) => (y.ts - x.ts) || String(y.date).localeCompare(String(x.date));
+      const pick = re => (feed || []).filter(it => it.labels.some(l => re.test(l))).sort(byTs);
+      const journal = window.LuliyJournal && window.LuliyJournal.items && window.LuliyJournal.items.length ? window.LuliyJournal.items.map(it => ({ id: it.id, title: it.title, url: it.bodyUrl ? it.bodyUrl.split('/').pop() : '' })) : pick(/^journal$/i);
+      const stacks = el('nav', 'lh-stacks'); stacks.setAttribute('aria-label', L('栏目', 'Sections'));
+      stacks.append(stack(L('姚说', 'Yao Says'), '#/posts?view=archive&group=weekly', pick(WEEKLY)),
+        stack(L('短札', 'Journal'), '#/posts?view=journal', journal),
+        stack(L('学习', 'Study'), '#/posts?view=archive&tag=Study', pick(/^study$/i)));
+      top.append(intro, stacks);
+      box.append(top);
       // b) the latest issue
       const wk = all.find(x => WEEKLY.test(x.label));
       if (wk) {
-        const pos = issues ? issues.findIndex(x => x.id === wk.id) + 1 : 0;
+        const issues = pick(WEEKLY).reverse(), pos = issues.findIndex(x => x.id === wk.id) + 1;
         const card = el('a', 'lh-issue' + (wk.cover ? ' has-cover' : '')); card.href = wk.href;
         if (wk.cover) { const f = el('span', 'lh-cover'); const im = el('img'); im.src = wk.cover; im.alt = ''; im.decoding = 'async'; f.append(im); card.append(f); }
         const b = el('span', 'lh-ib');
@@ -5216,16 +5272,21 @@
           a.append(el('span', 'lh-lab', x.label.split('·')[0].trim()), el('span', 'lh-t', x.title), el('time', '', x.date)); li.append(a); ol.append(li); });
         sec.append(ol); box.append(sec);
       }
-      // the old home, one small link at the very end
-      const old = el('button', 'lh-old', L('旧版首页 ↗', 'Old home ↗')); old.type = 'button';
-      old.addEventListener('click', () => { root.classList.add('lh-classic'); root.classList.remove('lh-on'); scrollTo(0, 0); });
-      const foot = el('div', 'lh-foot'); foot.append(old); box.append(foot);
+    }
+    // directory → 其他 → 舊版首頁 (shows the old home for this visit)
+    function dirLink() {
+      const home = document.querySelector('#directory .directory-other-home');
+      if (!home || document.querySelector('#directory .directory-other-classic')) return;
+      const a = el('a', 'directory-other-classic', L('旧版首页', 'Old home')); a.href = '#/';
+      a.addEventListener('click', () => { classic = true; setTimeout(build, 0); });
+      home.after(a);
     }
     let t = 0;
-    const tick = () => { if (!t) t = setTimeout(() => { t = 0; build(); }, 200); };
+    const tick = () => { if (!t) t = setTimeout(() => { t = 0; dirLink(); build(); }, 200); };
     new MutationObserver(tick).observe(document.body, { childList: true, subtree: true });
-    addEventListener('hashchange', () => { root.classList.remove('lh-classic'); build(); });
-    build();
+    addEventListener('hashchange', () => { if (!isHome()) classic = false; build(); });
+    addEventListener('luliy-journal-feed', () => { sig = ''; build(); });
+    dirLink(); build();
   })();
 
 })();

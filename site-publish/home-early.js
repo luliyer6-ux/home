@@ -1,5 +1,5 @@
 /* LULIY early routing, inlined at the very top of <head> by optimize-home.py (runs before the router).
-   Phones open on the article list: a bare https://luliy.me/ becomes #/posts, and the prologue is skipped on phones.
+   Phones: the prologue is skipped (they used to open on #/posts; since 2026-11-07 they get the new home).
    The full home stays one tap away (directory -> 首頁) and is kept for ?home, ?intro=1 and every deep link. */
 (function () {
   // Data saver (Android "Lite mode" / Save-Data): CSS and home-fixes.js skip decorative downloads.
@@ -15,7 +15,7 @@
     var path = location.pathname.replace(/\/+$/, '');
     if (path !== '' && !/^\/index\.html$/i.test(path)) return;
     if (location.hash && !/^#\/?(?:\?|$)/.test(location.hash)) return;
-    history.replaceState(history.state, '', location.pathname + location.search + '#/posts');
+    // 2026-11-07: phones open on the new home too (home-fixes.js 41); no more jump to #/posts.
   } catch (e) {}
 })();
 

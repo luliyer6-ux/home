@@ -2774,25 +2774,42 @@ html.lk-weekly.lk-weekly .lk-cur { width: max-content; max-width: 62vw; white-sp
   html.lk-weekly #main .source-body img.lk-wide { width: 100vw; max-width: none; margin-inline: calc(50% - 50vw); }
 }
 
-/* 41 — 首頁簡潔版（預覽，?home=v2）: the old home stays in the page, hidden; .lh is the first screen */
+/* 41 — 首頁（預設，home-fixes.js 41）: the old home stays in the page, hidden; .lh is the first screen */
 html.lh-on .entrance, html.lh-on .home-wide-section, html.lh-on .project-exhibition { display: none !important; }
+html.lh-on #header :is(.brand-mark, .brand) { visibility: hidden; } /* the one Luliy is beside the avatar */
 .lh { display: none; }
-html.lh-on .lh { --lh-ink: #ece6d6; --lh-soft: rgba(236, 230, 214, .72); --lh-mute: rgba(236, 230, 214, .5); --lh-rule: rgba(236, 230, 214, .14); --lh-acc: #e2c27e; --lh-paper: #161513;
-  display: block; position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 132px 24px 96px; color: var(--lh-ink); font-family: var(--font-body); }
-html[data-appearance="light"].lh-on .lh { --lh-ink: #23201a; --lh-soft: rgba(35, 32, 26, .74); --lh-mute: rgba(35, 32, 26, .52); --lh-rule: rgba(35, 32, 26, .14); --lh-acc: #93661e; --lh-paper: #fbf7ef; }
+html.lh-on .lh { --lh-ink: #ece6d6; --lh-soft: rgba(236, 230, 214, .72); --lh-mute: rgba(236, 230, 214, .5); --lh-rule: rgba(236, 230, 214, .14); --lh-acc: #e2c27e; --lh-paper: #161513; --lh-card: #e9e3d6;
+  display: block; position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 120px 24px 96px; color: var(--lh-ink); font-family: var(--font-body); }
+html[data-appearance="light"].lh-on .lh { --lh-ink: #23201a; --lh-soft: rgba(35, 32, 26, .74); --lh-mute: rgba(35, 32, 26, .52); --lh-rule: rgba(35, 32, 26, .14); --lh-acc: #93661e; --lh-paper: #fbf7ef; --lh-card: #ffffff; }
 .lh a { color: inherit; text-decoration: none; }
-.lh-intro { display: flex; align-items: center; gap: 20px; }
-.lh-face { flex: none; width: 84px; height: 84px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px var(--lh-rule), 0 8px 22px rgba(0, 0, 0, .25); }
-.lh-who h1 { margin: 0; font: 600 34px/1.1 var(--font-body); letter-spacing: .02em; color: var(--lh-ink); }
-.lh-who p { margin: 8px 0 0; font-size: 15.5px; line-height: 1.6; color: var(--lh-soft); }
-.lh-foot { margin: 40px 0 0; text-align: right; }
-.lh-old { padding: 0; border: 0; background: none; font: 500 12px/1 var(--font-mono); letter-spacing: .12em; color: var(--lh-mute); cursor: pointer; }
-.lh-old:hover, .lh-old:focus-visible { color: var(--lh-acc); outline: none; }
-.lh-issue { display: block; margin: 40px 0 0; background: var(--lh-paper); border: 1px solid var(--lh-rule); box-shadow: 0 18px 44px rgba(0, 0, 0, .28); overflow: hidden; transition: transform .25s, box-shadow .25s; }
+.lh-top { display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+.lh-intro { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.lh-face { flex: none; height: 96px; width: auto; max-width: 120px; object-fit: contain; }
+.lh-brand { display: inline-flex; align-items: center; gap: 2px; color: var(--lh-ink); }
+.lh-mark { display: block; width: 40px; height: 44px; }
+.lh-mark svg { display: block; width: 100%; height: 100%; }
+.lh-word { font: 600 32px/1 var(--lh-brand-font, var(--font-body)); letter-spacing: .08em; transform: translateY(4px); }
+.lh-who p { margin: 10px 0 0; font-size: 15.5px; line-height: 1.6; color: var(--lh-soft); }
+.lh-stacks { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); }
+.lh-st { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 4px 20px; }
+.lh-st + .lh-st { border-left: 1px solid var(--lh-rule); }
+.lh-pile { position: relative; display: block; width: 84px; height: 62px; }
+.lh-c { position: absolute; top: 4px; width: 40px; height: 54px; display: grid; place-items: center; overflow: hidden; background: var(--lh-card); border: 2px solid var(--lh-card); border-radius: 2px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .35); transition: transform .3s cubic-bezier(.2, .8, .2, 1); font: 700 17px/1 var(--font-body); color: rgba(35, 32, 26, .6); }
+.lh-c img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lh-c0 { left: 2px; transform: rotate(-10deg); z-index: 1; }
+.lh-c1 { left: 22px; transform: translateY(-3px); z-index: 3; }
+.lh-c2 { left: 42px; transform: rotate(9deg); z-index: 2; }
+.lh-st:hover .lh-c0, .lh-st:focus-visible .lh-c0 { transform: translateX(-8px) rotate(-15deg); }
+.lh-st:hover .lh-c1, .lh-st:focus-visible .lh-c1 { transform: translateY(-8px); }
+.lh-st:hover .lh-c2, .lh-st:focus-visible .lh-c2 { transform: translateX(8px) rotate(14deg); }
+.lh-sl { font-size: 14px; letter-spacing: .04em; color: var(--lh-soft); white-space: nowrap; transition: color .2s; }
+.lh-st:hover .lh-sl, .lh-st:focus-visible .lh-sl { color: var(--lh-acc); }
+.lh-st:focus-visible { outline: 2px solid var(--lh-acc); outline-offset: 2px; }
+.lh-issue { display: block; margin: 44px 0 0; background: var(--lh-paper); border: 1px solid var(--lh-rule); box-shadow: 0 18px 44px rgba(0, 0, 0, .28); overflow: hidden; transition: transform .25s, box-shadow .25s; }
 html[data-appearance="light"] .lh-issue { box-shadow: 0 18px 40px rgba(60, 45, 20, .14); }
 .lh-issue:hover, .lh-issue:focus-visible { transform: translateY(-2px); outline: none; }
 .lh-cover { display: block; aspect-ratio: 3 / 1; overflow: hidden; }
-@media (max-width: 680px) { .lh-cover { aspect-ratio: 16 / 9; } }
 .lh-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .lh-ib { position: relative; display: block; padding: 24px 28px 26px; }
 .lh-ib[data-no]::after { content: attr(data-no); position: absolute; right: 24px; top: 14px; font: 700 92px/1 var(--font-body); color: var(--lh-ink); opacity: .1; pointer-events: none; }
@@ -2811,14 +2828,23 @@ html[data-appearance="light"] .lh-issue { box-shadow: 0 18px 40px rgba(60, 45, 2
 .lh-t { font-size: 17px; line-height: 1.5; }
 .lh-recent time { font: 12px/1 var(--font-mono); color: var(--lh-mute); }
 .lh-recent li a:hover .lh-t, .lh-recent li a:focus-visible .lh-t { color: var(--lh-acc); }
+@media (max-width: 860px) {
+  .lh-top { flex-direction: column; align-items: stretch; gap: 26px; }
+  .lh-st { padding: 4px 8px; }
+}
 @media (max-width: 680px) {
-  html.lh-on .lh { padding: 92px 20px 72px; }
-  .lh-face { width: 64px; height: 64px; }
-  .lh-who h1 { font-size: 28px; }
+  html.lh-on .lh { padding: 88px 20px 72px; }
+  .lh-face { height: 72px; }
+  .lh-mark { width: 32px; height: 36px; }
+  .lh-word { font-size: 26px; }
   .lh-title { font-size: 24px; }
+  .lh-cover { aspect-ratio: 16 / 9; }
   .lh-ib { padding: 20px 20px 22px; }
   .lh-ib[data-no]::after { font-size: 64px; top: 12px; right: 16px; }
   .lh-recent li a { grid-template-columns: 1fr auto; gap: 4px 12px; }
   .lh-lab { grid-column: 1 / -1; }
 }
-@media (prefers-reduced-motion: reduce) { .lh-issue { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .lh-issue, .lh-c { transition: none; } }
+/* 短札: the same avatar as the home page, without a frame */
+.lj-avatar, .lj-card-avatar { border-radius: 0 !important; box-shadow: none !important; object-fit: contain !important; background: none !important; }
+.lj-avatar-link, .lj-card-avatar-link { border-radius: 0 !important; }
