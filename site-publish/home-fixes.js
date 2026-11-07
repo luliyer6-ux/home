@@ -3884,11 +3884,7 @@
         if (tw) { e.preventDefault(); e.stopPropagation(); const li = tw.parentElement, k = +li.dataset.ch; cardOpen.set(k, !li.classList.contains('lk-opened')); cardSubs(); return; }
         const a = e.target.closest('a[data-i]'); if (!a) return;
         e.preventDefault(); e.stopPropagation(); cardToggle(false); jump(+a.dataset.i);
-        const name = a.querySelector('span') ? a.querySelector('span').textContent.trim() : '';
-        const say = window.LuliyLoonSay; // she answers in her bubble (the ribbon steps aside while she talks)
-        const k = Math.floor(Math.random() * 3);
-        const zh = ['去「' + name + '」看看。', '翻到「' + name + '」了。', '「' + name + '」，慢慢读。'][k], en = ['To “' + name + '”.', 'Turning to “' + name + '”.', '“' + name + '” — take your time.'][k], ja = ['「' + name + '」へ。', '「' + name + '」を開きました。', '「' + name + '」、ゆっくりどうぞ。'][k];
-        if (say && name) setTimeout(() => say(L(zh, en, ja), 2800), 350);
+        // 2026-11-07: she no longer echoes the heading that was clicked (「…」，慢慢读。)
       });
       card.addEventListener('pointerdown', e => e.stopPropagation());
       const bub = box.querySelector('.luliy-mascot-bubble'); // clicking what she is saying also opens the contents
@@ -3909,7 +3905,6 @@
       const rowH = (card.querySelector('.lk-card-row') || {}).offsetHeight || 56;
       card.style.setProperty('--lk-card-max', Math.max(160, Math.round(top - hb - rowH - 40)) + 'px'); // the open page stops below the top bar
     }
-    const sayCard = (zh, en, ja) => { const say = window.LuliyLoonSay; if (say) say(L(zh, en, ja), 2800); };
     function cardToggle(open) {
       if (!card) return;
       if (open === undefined) open = !card.classList.contains('open');
@@ -3929,7 +3924,7 @@
         const n = index.indexOf(it) + 1, li = el('li'), a = el('a');
         a.href = '#/article/' + it.id; if (it.id === curIssue) a.setAttribute('aria-current', 'true');
         a.append(el('b', 'lk-in', issueName(n)), el('span', '', it.title || it.id));
-        a.addEventListener('click', () => { cardToggle(false); if (it.id !== curIssue) setTimeout(() => sayCard('翻到' + issueName(n) + '了。', 'Issue ' + n + '.', '第' + n + '号へ。'), 600); });
+        a.addEventListener('click', () => cardToggle(false)); // no 「翻到第N期了」 either
         li.append(a); cardIss.append(li);
       });
     }
@@ -4211,10 +4206,7 @@
         const tab = el('span', 'lk-tab'); tab.append(el('b', '', String(n).padStart(2, '0')));
         const tip = el('span', 'lk-tip'); tip.append(el('small', '', lab), el('span', '', it.title || it.id));
         a.append(tab, tip);
-        let said = 0;
-        a.addEventListener('pointerenter', () => {
-          if (window.LuliyLoonSay && Date.now() - said > 4000) { said = Date.now(); window.LuliyLoonSay(lab + L('：《', ': “', '：「') + (it.title || it.id) + L('》', '”', '」'), 2400); }
-        });
+        // the tip beside the tab already names the issue; Loon does not read it out too
         return a;
       };
       if (pos > 0) st.append(mk(index[pos - 1], pos, 'pv'));
