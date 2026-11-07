@@ -5686,4 +5686,84 @@
     run();
   })();
 
+  /* 44. 目錄（aresluna 式，2026-11-07，先做好、預設關閉）. A black panel at the top right of an article: a header row (a book
+     mark on the left, one dot per entry on the right — the chapter being read is lit in the accent colour, the one under
+     the pointer in white); hover or focus opens the list below it (a tap pins it on touch screens): 「開頭」 unnumbered,
+     then the chapters numbered 1, 2, 3…, the current one in the accent colour, the hovered row on a grey ground.
+     Turn on: ?toc=v2 (remembered in localStorage luliy-toc-v2; ?toc=v1 turns it off), or window.LuliyToc.enable().
+     While it is on, Loon's contents bubble steps aside. Chapters: the article's top headings (data-lk-level 1 from
+     section 36), otherwise the highest heading level used. */
+  (() => {
+    const root = document.documentElement;
+    const KEY = 'luliy-toc-v2';
+    let on = false;
+    try { const q = new URLSearchParams(location.search).get('toc'); if (q === 'v2') localStorage.setItem(KEY, '1'); if (q === 'v1') localStorage.removeItem(KEY); on = localStorage.getItem(KEY) === '1'; } catch (e) {}
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const name = h => { const c = h.cloneNode(true); c.querySelectorAll('button, .reader-heading-link, svg').forEach(n => n.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+    let box = null, list = null, dots = null, heads = [], sig = '', pinned = false, cur = -1;
+    function chapters(body) {
+      const all = [...body.querySelectorAll('h1, h2, h3')];
+      if (all.some(h => h.dataset.lkLevel)) { const one = all.filter(h => h.dataset.lkLevel === '1'); return one.length >= 2 ? one : all.filter(h => h.dataset.lkLevel === '2').length >= 2 ? all.filter(h => h.dataset.lkLevel === '2') : one; }
+      for (const t of ['H1', 'H2', 'H3']) { const x = all.filter(h => h.tagName === t); if (x.length >= 2) return x; }
+      return all;
+    }
+    function build(body) {
+      heads = chapters(body);
+      const s2 = heads.map(name).join('|');
+      if (box && box.isConnected && s2 === sig) return;
+      sig = s2;
+      if (!box) {
+        box = el('nav', 'lt-toc'); box.setAttribute('aria-label', '目錄');
+        const head = el('button', 'lt-head'); head.type = 'button'; head.setAttribute('aria-expanded', 'false');
+        head.innerHTML = '<svg class="lt-mark" viewBox="0 0 20 16" aria-hidden="true"><path d="M10 3.2C8.2 1.9 5.6 1.4 2 1.5v11.6c3.6-.1 6.2.4 8 1.7 1.8-1.3 4.4-1.8 8-1.7V1.5c-3.6-.1-6.2.4-8 1.7Zm0 0v11.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+        dots = el('span', 'lt-dots'); dots.setAttribute('aria-hidden', 'true'); head.append(dots);
+        list = el('ol', 'lt-list');
+        box.append(head, list);
+        head.addEventListener('click', () => { pinned = !box.classList.contains('open') || !pinned; setOpen(pinned); });
+        box.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') setOpen(true); });
+        box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !pinned) setOpen(false); });
+        box.addEventListener('focusin', () => setOpen(true));
+        box.addEventListener('focusout', e => { if (!box.contains(e.relatedTarget) && !pinned) setOpen(false); });
+        addEventListener('keydown', e => { if (e.key === 'Escape' && box.classList.contains('open')) { pinned = false; setOpen(false); } });
+        document.addEventListener('pointerdown', e => { if (pinned && !box.contains(e.target)) { pinned = false; setOpen(false); } });
+        list.addEventListener('pointerover', e => { const li = e.target.closest('li'); hover(li ? +li.dataset.i : -1); });
+        list.addEventListener('pointerleave', () => hover(-1));
+      }
+      document.body.append(box);
+      list.innerHTML = ''; dots.innerHTML = '';
+      const entries = [{ label: '開頭', go: () => scrollTo({ top: 0, behavior: smooth() }) }].concat(heads.map((h, i) => ({ label: name(h), n: i + 1, go: () => jump(h) })));
+      entries.forEach((it, i) => {
+        const li = el('li'); li.dataset.i = i;
+        const a = el('a'); a.href = '#'; a.append(el('b', '', it.n ? String(it.n) : ''), el('span', '', it.label));
+        a.addEventListener('click', e => { e.preventDefault(); it.go(); pinned = false; setOpen(false); });
+        li.append(a); list.append(li); dots.append(el('i'));
+      });
+      cur = -1; now();
+    }
+    const smooth = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    function jump(h) { const y = h.getBoundingClientRect().top + scrollY - (innerWidth <= 700 ? 84 : 110); scrollTo({ top: Math.max(0, y), behavior: smooth() }); }
+    function setOpen(o) { if (!box) return; box.classList.toggle('open', o); box.querySelector('.lt-head').setAttribute('aria-expanded', String(o)); if (!o) hover(-1); }
+    function hover(i) { if (!dots) return; [...dots.children].forEach((d, k) => d.classList.toggle('hov', k === i)); }
+    function now() {
+      if (!box || !box.isConnected) return;
+      let c = 0; heads.forEach((h, i) => { if (h.getBoundingClientRect().top < innerHeight * .3) c = i + 1; });
+      if (c === cur) return; cur = c;
+      [...list.children].forEach((li, k) => { const a = li.firstChild; if (k === c) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+      [...dots.children].forEach((d, k) => d.classList.toggle('on', k === c));
+    }
+    function run() {
+      const m = /^#\/article\/P\d+/.test(location.hash) && on;
+      root.classList.toggle('lt-on', m);
+      const body = m && document.querySelector('#main .source-reading .source-body');
+      if (!body || !body.textContent.trim()) { if (box) box.remove(); return; }
+      build(body);
+    }
+    let t = 0;
+    new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 250); }).observe(document.body, { childList: true, subtree: true });
+    addEventListener('scroll', () => requestAnimationFrame(now), { passive: true });
+    addEventListener('hashchange', () => { sig = ''; setTimeout(run, 80); });
+    window.LuliyToc = { enable() { on = true; try { localStorage.setItem(KEY, '1'); } catch (e) {} sig = ''; run(); }, disable() { on = false; try { localStorage.removeItem(KEY); } catch (e) {} run(); } };
+    run();
+  })();
+
 })();
