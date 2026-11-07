@@ -2944,6 +2944,7 @@ html.lk-study #main .source-body .lk-maskbtn { display: block; margin: 1em 0 -.6
 html.lk-study #main .source-body .lk-maskbtn[aria-pressed="true"] { background: var(--lk-acc); color: var(--lk-bg); }
 html.lk-study #main .source-body table.lk-masked td.lk-mcol:not(.lk-peek) { color: transparent; background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--lk-acc) 22%, transparent) 0 6px, color-mix(in srgb, var(--lk-acc) 12%, transparent) 6px 12px) !important; cursor: pointer; user-select: none; }
 html.lk-study #main .source-body table.lk-masked td.lk-mcol:not(.lk-peek) * { visibility: hidden; }
+html.lk-study #main .source-body .lk-tw tbody tr:nth-child(even) > td { background-color: color-mix(in srgb, var(--lk-ink) 5%, transparent); } /* stripes kept; no sticky head, no sideways scroll */
 html.lk-study #main .source-body pre { position: relative; }
 html.lk-study #main .source-body .lk-copy { position: absolute; top: 8px; right: 8px; padding: 4px 8px; font: 11.5px/1 var(--font-mono); color: var(--lk-mute); background: var(--lk-bg); border: 1px solid var(--lk-rule); border-radius: 3px; cursor: pointer; opacity: 0; transition: opacity .2s; }
 html.lk-study #main .source-body pre:hover .lk-copy, html.lk-study #main .source-body .lk-copy:focus-visible { opacity: 1; }
