@@ -2838,8 +2838,12 @@ html[data-appearance="light"] .lh-issue { box-shadow: 0 18px 40px rgba(60, 45, 2
   .lh-mark { width: 32px; height: 36px; }
   .lh-word { font-size: 26px; }
   .lh-title { font-size: 24px; }
-  .lh-cover { aspect-ratio: 16 / 9; }
-  .lh-ib { padding: 20px 20px 22px; }
+  /* phones: the latest issue is not boxed in: no frame, the cover runs to the screen edges at its own shape */
+  .lh-issue { margin-inline: -20px; background: none; border: 0; box-shadow: none; overflow: visible; }
+  .lh-issue:hover, .lh-issue:focus-visible { transform: none; }
+  .lh-cover { aspect-ratio: auto; max-height: 78vh; }
+  .lh-cover img { height: auto; max-height: 78vh; }
+  .lh-ib { padding: 18px 20px 4px; }
   .lh-ib[data-no]::after { font-size: 64px; top: 12px; right: 16px; }
   .lh-recent li a { grid-template-columns: 1fr auto; gap: 4px 12px; }
   .lh-lab { grid-column: 1 / -1; }
