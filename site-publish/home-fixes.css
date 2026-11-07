@@ -3044,12 +3044,13 @@ html.lt-on .luliy-mascot .lk-card { display: none !important; }
    scrolling); Loon steps aside for the aresluna-style contents (section 44); 標記 · 返回 · 頂部 buttons at the bottom right */
 .lk-bio-side, .lk-bio-tools { display: none; }
 @media (min-width: 1001px) {
-  /* 2026-11-07: a wider sheet on 傳記 pages: text up to 820px (700px at 1400px wide), plus 64px of paper on each side */
-  html.lk-bio { --bio-text: clamp(700px, calc(100vw - 700px), 820px); --bio-w: max(0px, calc((100vw - var(--bio-text) - 128px) / 2)); --bio-rail: calc(50% + var(--bio-text) / 2 + 84px); }
-  html.lk-weekly.lk-bio #main .source-reading { max-width: var(--bio-text); }
+  /* 2026-11-07: a wider sheet on 傳記 pages that grows to the right only: its left edge and the portrait stay where they were
+     (700px of text centred, plus 64px of paper); the text widens into the empty space on the right, up to 820px */
+  html.lk-bio { --bio-text: clamp(700px, calc(50vw + 6px), 820px); --bio-w: max(0px, calc((100vw - 828px) / 2)); --bio-rail: calc(50% + var(--bio-text) - 266px); }
+  html.lk-weekly.lk-bio #main .source-reading { position: relative; left: calc((var(--bio-text) - 700px) / 2); max-width: var(--bio-text); }
   /* contents and the three buttons share one left edge, 20px right of the paper */
   html.lk-bio.lt-on .lt-toc { left: var(--bio-rail); width: 56px; }
-  html.lk-bio .lt-list { width: min(240px, calc(50vw - var(--bio-text) / 2 - 104px)); }
+  html.lk-bio .lt-list { width: min(240px, calc(50vw - var(--bio-text) + 246px)); }
   /* less empty space between parts: the · · · break and the headings sit closer to the text around them */
   html.lk-bio #main .source-body hr { display: none; } /* no · · · break on 傳記 pages */
   html.lk-essay.lk-bio #main .source-body h2 { margin-top: 1.6em; padding-top: 0; border-top: 0; } /* no rule above the big headings either */
