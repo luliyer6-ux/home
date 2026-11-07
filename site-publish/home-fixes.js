@@ -5144,4 +5144,88 @@
     addEventListener('resize', () => { const b = box().querySelector('.source-body'); if (b) wide(b); }, { passive: true });
   })();
 
+  /* 41. 首頁簡潔版（預覽，2026-11-07）。開啟：網址加 ?home=v2，或 localStorage luliy-home-v2 = '1'。
+     Old home (galaxy opening, 作品, 文章, 唱片) stays in the page untouched; html.lh-on hides it and puts .lh first:
+     avatar + Luliy + one line, the latest 姚說 issue as a magazine card (cover, issue number, summary),
+     then the recent writing (from the site's own home list, so hidden labels stay hidden). 「舊版首頁」 shows the old one
+     again for this visit (html.lh-classic). */
+  (() => {
+    const root = document.documentElement;
+    let on = false;
+    try { const q = new URLSearchParams(location.search).get('home'); if (q === 'v2') localStorage.setItem('luliy-home-v2', '1'); if (q === 'v1') localStorage.removeItem('luliy-home-v2'); on = localStorage.getItem('luliy-home-v2') === '1'; } catch (e) {}
+    if (!on) return;
+    const FEED = 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/postList.json';
+    const WEEKLY = /(^|[^a-z])weekly([^a-z]|$)|周[记記]|週記/i;
+    const T = s => (typeof window.LuliyInterfaceText === 'function' ? window.LuliyInterfaceText(s) : s);
+    const L = (zh, en) => (/^en/.test(root.lang) ? en : root.lang === 'zh-Hant' ? T(zh) : zh);
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const isHome = () => { const h = location.hash.replace(/^#\/?/, ''); return h === '' || h === '/'; };
+    let issues = null;
+    try { const c = JSON.parse(localStorage.getItem('luliy-weekly-index-v1') || 'null'); if (Array.isArray(c)) issues = c; } catch (e) {}
+    if (typeof fetch === 'function') fetch(FEED).then(r => r.ok ? r.json() : null).then(j => {
+      if (!j) return;
+      const names = it => (Array.isArray(it.labels) ? it.labels : []).map(l => String(l && l.name !== undefined ? l.name : l));
+      issues = Object.keys(j).filter(k => /^P\d+$/.test(k) && j[k] && names(j[k]).some(l => WEEKLY.test(l)))
+        .map(k => ({ id: k, title: String(j[k].postTitle || ''), date: String(j[k].createdDate || ''), ts: Number(j[k].createdAt) || 0 }))
+        .sort((a, b) => a.ts - b.ts || a.date.localeCompare(b.date));
+      sig = ''; build();
+    }).catch(() => {});
+    let box = null, sig = '';
+    function build() {
+      const home = isHome();
+      root.classList.toggle('lh-on', home && !root.classList.contains('lh-classic'));
+      if (!home) return;
+      const ent = document.querySelector('.entrance');
+      const entries = [...document.querySelectorAll('.home-articles .study-entry')];
+      if (!ent || !entries.length) return;
+      const now = entries.map(a => a.getAttribute('href') + ((a.querySelector('.home-article-summary') || {}).textContent || '').length + ((a.querySelector('.study-entry-cover img') || {}).src || '')).join('|') + '#' + (issues ? issues.length : 0); // summaries and covers arrive late
+      if (box && box.isConnected && now === sig) return;
+      sig = now;
+      if (!box || !box.isConnected) { box = el('section', 'lh'); box.setAttribute('aria-label', L('首页', 'Home')); ent.parentElement.insertBefore(box, ent); }
+      box.innerHTML = '';
+      const read = a => ({ href: a.getAttribute('href'), id: a.dataset.postId || '', label: (a.querySelector('small') || {}).textContent || '', title: (a.querySelector('strong') || {}).textContent || '',
+        sum: (a.querySelector('.home-article-summary') || {}).textContent || '', date: (a.querySelector('time') || {}).textContent || '', cover: (a.querySelector('.study-entry-cover img') || {}).src || '' });
+      const all = entries.map(read);
+      // a) who
+      const intro = el('div', 'lh-intro');
+      const face = el('img', 'lh-face'); face.src = 'https://cloud.luliy.me/api/image?path=shared%2Fluliy.png'; face.alt = ''; face.decoding = 'async'; face.setAttribute('aria-hidden', 'true');
+      face.addEventListener('error', () => face.remove(), { once: true });
+      const who = el('div', 'lh-who'); who.append(el('h1', '', 'Luliy'), el('p', '', L('一個傻子，幻想找到自己，爲之堅持。', 'A fool, dreaming of finding myself, and holding on.')));
+      intro.append(face, who);
+      box.append(intro);
+      // b) the latest issue
+      const wk = all.find(x => WEEKLY.test(x.label));
+      if (wk) {
+        const pos = issues ? issues.findIndex(x => x.id === wk.id) + 1 : 0;
+        const card = el('a', 'lh-issue' + (wk.cover ? ' has-cover' : '')); card.href = wk.href;
+        if (wk.cover) { const f = el('span', 'lh-cover'); const im = el('img'); im.src = wk.cover; im.alt = ''; im.decoding = 'async'; f.append(im); card.append(f); }
+        const b = el('span', 'lh-ib');
+        if (pos) b.dataset.no = String(pos).padStart(2, '0');
+        b.append(el('small', 'lh-kick', L('最新一期', 'Latest issue') + ' · ' + wk.date));
+        b.append(el('strong', 'lh-title', wk.title), el('span', 'lh-sum', wk.sum), el('span', 'lh-go', L('读这一期 →', 'Read this issue →')));
+        card.append(b); box.append(card);
+      }
+      // c) recent writing
+      const rest = all.filter(x => x !== wk).slice(0, 5);
+      if (rest.length) {
+        const sec = el('div', 'lh-recent');
+        const hd = el('div', 'lh-rh'); const more = el('a', '', L('全部文章 →', 'All writing →')); more.href = '#/posts';
+        hd.append(el('h2', '', L('最近', 'Recent')), more); sec.append(hd);
+        const ol = el('ol');
+        rest.forEach(x => { const li = el('li'), a = el('a'); a.href = x.href;
+          a.append(el('span', 'lh-lab', x.label.split('·')[0].trim()), el('span', 'lh-t', x.title), el('time', '', x.date)); li.append(a); ol.append(li); });
+        sec.append(ol); box.append(sec);
+      }
+      // the old home, one small link at the very end
+      const old = el('button', 'lh-old', L('旧版首页 ↗', 'Old home ↗')); old.type = 'button';
+      old.addEventListener('click', () => { root.classList.add('lh-classic'); root.classList.remove('lh-on'); scrollTo(0, 0); });
+      const foot = el('div', 'lh-foot'); foot.append(old); box.append(foot);
+    }
+    let t = 0;
+    const tick = () => { if (!t) t = setTimeout(() => { t = 0; build(); }, 200); };
+    new MutationObserver(tick).observe(document.body, { childList: true, subtree: true });
+    addEventListener('hashchange', () => { root.classList.remove('lh-classic'); build(); });
+    build();
+  })();
+
 })();

@@ -2773,3 +2773,52 @@ html.lk-weekly.lk-weekly .lk-cur { width: max-content; max-width: 62vw; white-sp
 @media (max-width: 680px) {
   html.lk-weekly #main .source-body img.lk-wide { width: 100vw; max-width: none; margin-inline: calc(50% - 50vw); }
 }
+
+/* 41 — 首頁簡潔版（預覽，?home=v2）: the old home stays in the page, hidden; .lh is the first screen */
+html.lh-on .entrance, html.lh-on .home-wide-section, html.lh-on .project-exhibition { display: none !important; }
+.lh { display: none; }
+html.lh-on .lh { --lh-ink: #ece6d6; --lh-soft: rgba(236, 230, 214, .72); --lh-mute: rgba(236, 230, 214, .5); --lh-rule: rgba(236, 230, 214, .14); --lh-acc: #e2c27e; --lh-paper: #161513;
+  display: block; position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 132px 24px 96px; color: var(--lh-ink); font-family: var(--font-body); }
+html[data-appearance="light"].lh-on .lh { --lh-ink: #23201a; --lh-soft: rgba(35, 32, 26, .74); --lh-mute: rgba(35, 32, 26, .52); --lh-rule: rgba(35, 32, 26, .14); --lh-acc: #93661e; --lh-paper: #fbf7ef; }
+.lh a { color: inherit; text-decoration: none; }
+.lh-intro { display: flex; align-items: center; gap: 20px; }
+.lh-face { flex: none; width: 84px; height: 84px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px var(--lh-rule), 0 8px 22px rgba(0, 0, 0, .25); }
+.lh-who h1 { margin: 0; font: 600 34px/1.1 var(--font-body); letter-spacing: .02em; color: var(--lh-ink); }
+.lh-who p { margin: 8px 0 0; font-size: 15.5px; line-height: 1.6; color: var(--lh-soft); }
+.lh-foot { margin: 40px 0 0; text-align: right; }
+.lh-old { padding: 0; border: 0; background: none; font: 500 12px/1 var(--font-mono); letter-spacing: .12em; color: var(--lh-mute); cursor: pointer; }
+.lh-old:hover, .lh-old:focus-visible { color: var(--lh-acc); outline: none; }
+.lh-issue { display: block; margin: 40px 0 0; background: var(--lh-paper); border: 1px solid var(--lh-rule); box-shadow: 0 18px 44px rgba(0, 0, 0, .28); overflow: hidden; transition: transform .25s, box-shadow .25s; }
+html[data-appearance="light"] .lh-issue { box-shadow: 0 18px 40px rgba(60, 45, 20, .14); }
+.lh-issue:hover, .lh-issue:focus-visible { transform: translateY(-2px); outline: none; }
+.lh-cover { display: block; aspect-ratio: 3 / 1; overflow: hidden; }
+@media (max-width: 680px) { .lh-cover { aspect-ratio: 16 / 9; } }
+.lh-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lh-ib { position: relative; display: block; padding: 24px 28px 26px; }
+.lh-ib[data-no]::after { content: attr(data-no); position: absolute; right: 24px; top: 14px; font: 700 92px/1 var(--font-body); color: var(--lh-ink); opacity: .1; pointer-events: none; }
+.lh-kick { display: block; font: 600 11.5px/1 var(--font-mono); letter-spacing: .24em; color: var(--lh-acc); }
+.lh-title { display: block; margin: 14px 0 0; font: 700 30px/1.25 var(--font-body); letter-spacing: .02em; }
+.lh-sum { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 12px 0 0; font-size: 15.5px; line-height: 1.75; color: var(--lh-soft); }
+.lh-go { display: inline-block; margin: 14px 0 0; font: 500 12.5px/1 var(--font-mono); letter-spacing: .14em; color: var(--lh-acc); }
+.lh-recent { margin: 46px 0 0; }
+.lh-rh { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--lh-ink); }
+.lh-rh h2 { margin: 0; font: 600 12px/1 var(--font-mono); letter-spacing: .26em; color: var(--lh-ink); }
+.lh-rh a { font: 500 12px/1 var(--font-mono); letter-spacing: .12em; color: var(--lh-mute); }
+.lh-rh a:hover { color: var(--lh-acc); }
+.lh-recent ol { margin: 0; padding: 0; list-style: none; }
+.lh-recent li a { display: grid; grid-template-columns: 96px 1fr auto; gap: 16px; align-items: baseline; padding: 15px 0; border-bottom: 1px solid var(--lh-rule); }
+.lh-lab { font: 500 11px/1.4 var(--font-mono); letter-spacing: .12em; color: var(--lh-mute); text-transform: uppercase; }
+.lh-t { font-size: 17px; line-height: 1.5; }
+.lh-recent time { font: 12px/1 var(--font-mono); color: var(--lh-mute); }
+.lh-recent li a:hover .lh-t, .lh-recent li a:focus-visible .lh-t { color: var(--lh-acc); }
+@media (max-width: 680px) {
+  html.lh-on .lh { padding: 92px 20px 72px; }
+  .lh-face { width: 64px; height: 64px; }
+  .lh-who h1 { font-size: 28px; }
+  .lh-title { font-size: 24px; }
+  .lh-ib { padding: 20px 20px 22px; }
+  .lh-ib[data-no]::after { font-size: 64px; top: 12px; right: 16px; }
+  .lh-recent li a { grid-template-columns: 1fr auto; gap: 4px 12px; }
+  .lh-lab { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) { .lh-issue { transition: none; } }
