@@ -5507,7 +5507,7 @@
       const head = document.querySelector('#header'); if (head) root.style.setProperty('--lk-head-h', Math.round(head.getBoundingClientRect().height) + 'px');
     }
     function run() {
-      const READ_ON = false; // 2026-11-07: the 讀書 parts are still being decided; the 學習 parts are live
+      const READ_ON = true; // 2026-11-07: 讀書 parts on (set false to switch them off)
       const read = READ_ON && root.classList.contains('lk-read'), st = root.classList.contains('lk-study');
       if (!read) root.classList.remove('lk-has-book');
       if (!read && !st) return;
