@@ -3880,6 +3880,8 @@
       card.addEventListener('lk-unpin', () => { pin = false; }); // the strip around the ribbon (its tail, its padding) counts too
       ih.addEventListener('click', e => { e.stopPropagation(); const o = cardIss.hidden; cardIss.hidden = !o; ih.setAttribute('aria-expanded', String(o)); });
       cardList.addEventListener('click', e => {
+        const tw = e.target.closest('.lk-twist');
+        if (tw) { e.preventDefault(); e.stopPropagation(); const li = tw.parentElement, k = +li.dataset.ch; cardOpen.set(k, !li.classList.contains('lk-opened')); cardSubs(); return; }
         const a = e.target.closest('a[data-i]'); if (!a) return;
         e.preventDefault(); e.stopPropagation(); cardToggle(false); jump(+a.dataset.i);
         const name = a.querySelector('span') ? a.querySelector('span').textContent.trim() : '';
@@ -3914,7 +3916,7 @@
       if (open) { cardIssues(); cardFill(); cardFit(); }
       card.classList.toggle('open', open);
       cardLine.setAttribute('aria-expanded', String(open));
-      if (!open) { cardIss.hidden = true; card.querySelector('.lk-card-ib').setAttribute('aria-expanded', 'false'); card.dispatchEvent(new Event('lk-unpin')); }
+      if (!open) { cardOpen.clear(); cardIss.hidden = true; card.querySelector('.lk-card-ib').setAttribute('aria-expanded', 'false'); card.dispatchEvent(new Event('lk-unpin')); }
       else { const c = cardList.querySelector('[aria-current]'); if (c) c.scrollIntoView({ block: 'nearest' }); }
     }
     window.LuliyWeeklyCard = { toggle: () => { if (cardMount()) cardToggle(); } };
@@ -3931,19 +3933,40 @@
         li.append(a); cardIss.append(li);
       });
     }
+    // The row shows its own "01", so a leading "一、" / "第一章" / "1." in the chapter name is dropped (display only).
+    const tName = h => hText(h); // 2026-11-07: names stay whole (no trimming of 一、/1.)
+    const cardOpen = new Map(); // chapter → true/false when the reader opened or shut it by hand
+    function cardSubs() { // sub-sections show only under the chapter being read, or under one opened by hand
+      if (!cardList) return;
+      const c = current(); let ch = c; while (ch > 0 && heads[ch] && heads[ch].dataset.lkLevel !== '1') ch--;
+      let num = 0; for (let i = 0; i <= ch && i < heads.length; i++) if (heads[i].dataset.lkLevel === '1') num++;
+      ch = num; // the chapter's number (the rows are keyed by it)
+      cardList.querySelectorAll('li').forEach(li => {
+        if (!li.classList.contains('lk-child')) return;
+        const k = +li.dataset.ch, on = k === -1 || (cardOpen.has(k) ? cardOpen.get(k) : k === ch);
+        li.classList.toggle('lk-show', on);
+      });
+      cardList.querySelectorAll('li.lk-has-sub').forEach(li => {
+        const k = +li.dataset.ch, on = cardOpen.has(k) ? cardOpen.get(k) : k === ch, b = li.querySelector('.lk-twist');
+        li.classList.toggle('lk-opened', on); if (b) b.setAttribute('aria-expanded', String(on));
+      });
+    }
     function cardFill() {
       if (!card) return;
       const sig = heads.map(h => h.dataset.lkLevel + hText(h)).join('|');
       if (sig !== cardSig) {
-        cardSig = sig; cardList.innerHTML = ''; let n = 0;
+        cardSig = sig; cardList.innerHTML = ''; cardOpen.clear(); let n = 0, last = null;
         heads.forEach((h, i) => {
           const one = h.dataset.lkLevel === '1', li = el('li'), a = el('a', one ? '' : 'l2');
           a.href = '#'; a.dataset.i = i;
-          if (one) a.append(el('b', '', String(++n).padStart(2, '0')));
-          a.append(el('span', '', hText(h))); li.style.setProperty('--i', i); li.append(a); cardList.append(li);
+          if (one) { a.append(el('b', '', String(++n).padStart(2, '0'))); li.dataset.ch = n; last = li; }
+          else { li.classList.add('lk-child'); li.dataset.ch = last ? last.dataset.ch : -1; if (last && !last.classList.contains('lk-has-sub')) {
+            last.classList.add('lk-has-sub'); const b = el('button', 'lk-twist'); b.type = 'button'; b.setAttribute('aria-label', L('展开小节', 'Show sections', '小見出しを開く')); b.setAttribute('aria-expanded', 'false'); b.textContent = '⌄'; last.append(b); } }
+          a.append(el('span', '', tName(h))); li.style.setProperty('--i', i); li.prepend(a); cardList.append(li);
         });
         if (!heads.length) cardList.append(el('li', 'lk-none', L('这篇没有小标题', 'No headings in this article', '見出しはありません')));
       }
+      cardSubs();
     }
     function cardNow() {
       if (!cardMount()) return;
@@ -3951,21 +3974,22 @@
       let ch = c; while (ch > 0 && heads[ch] && heads[ch].dataset.lkLevel !== '1') ch--;
       let num = 0; for (let i = 0; i <= ch && i < heads.length; i++) if (heads[i].dataset.lkLevel === '1') num++;
       const ipos = index.findIndex(x => x.id === curIssue);
-      const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? hText(heads[ch]) : '';
+      const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? tName(heads[ch]) : '';
       const hc = heads[c], subName = hc && hc.dataset.lkLevel === '2' ? hText(hc) : '';
       // 2026-11-07: the closed bubble is a row of ticks (one per heading, the current one lit) over "02 章名 · 小节".
       cardLine.innerHTML = '';
       const tk = el('span', 'lk-tk');
-      heads.forEach((h, i) => tk.append(el('i', (h.dataset.lkLevel === '1' ? 'l1' : 'l2') + (i === c ? ' on' : ''))));
+      // many headings → chapters only (one tick each), so the row stays short; the lit one is the chapter being read
+      const many = heads.length > 10 && heads.some(h => h.dataset.lkLevel === '1');
+      heads.forEach((h, i) => { const one = h.dataset.lkLevel === '1'; if (many && !one) return; tk.append(el('i', (one ? 'l1' : 'l2') + ((many ? i === ch : i === c) ? ' on' : ''))); });
       if (heads.length) cardLine.append(tk);
+      // only the heading being read, written out in full (it may wrap)
       const now = el('span', 'lk-now');
-      if (chName) now.append(el('b', '', String(num).padStart(2, '0')));
-      now.append(el('span', 'lk-cl-ch', chName || L('目录', 'Contents', '目次')));
-      if (subName) now.append(el('span', 'lk-cl-sub', subName));
+      now.append(el('span', 'lk-cl-ch', hc ? hText(hc) : L('目录', 'Contents', '目次')));
       cardLine.append(now);
       cardLine.setAttribute('aria-label', issueName(ipos + 1) + ' · ' + L('目录：', 'Contents: ', '目次：') + (chName || '') + (subName ? ' › ' + subName : ''));
       cardList.querySelectorAll('a[data-i]').forEach(a => { if (+a.dataset.i === c) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
-      if (!card.classList.contains('open')) cardFit();
+      if (!card.classList.contains('open')) { cardSubs(); cardFit(); }
     }
     const lcToggle = h => { const sec = h.parentElement, o = !sec.classList.contains('lc-open'); sec.classList.toggle('lc-open', o); h.setAttribute('aria-expanded', String(o)); };
     document.addEventListener('click', e => { const h = e.target.closest && e.target.closest('html.lk-weekly .luliy-comments > h2'); if (h) lcToggle(h); });
@@ -4002,8 +4026,8 @@
       const hc = heads[c], isSub = hc && hc.dataset.lkLevel === '2';
       const actA = bar.querySelector('.lk-chs a.act'); if (actA && sub.parentNode !== actA) actA.append(sub); // inside the coloured pill, after the chapter name
       sub.textContent = isSub ? hText(hc) : ''; sub.classList.toggle('on', !!isSub);
-      const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? hText(heads[ch]) : '';
-      cur.textContent = chName ? String(num).padStart(2, '0') + ' ' + chName : L('目录', 'Contents', '目次');
+      const chName = heads[ch] && heads[ch].dataset.lkLevel === '1' ? tName(heads[ch]) : '';
+      cur.textContent = hc ? hText(hc) : (chName || L('目录', 'Contents', '目次')); // the heading being read, in full
     }
     let heads = [];
     function toggle(open, noFocus) {
@@ -5023,6 +5047,108 @@
       if (key === lastTheme) e.stopImmediatePropagation();
       lastTheme = key;
     }, true);
+  })();
+
+  /* 40. Typesetting on every article (2026-11-07): space between Chinese and Latin/digits, squeezed runs of
+     full-width punctuation, and landscape photos a little wider than the column (on the magazine sheet only).
+     - Spacing: CSS text-autospace where the browser has it (Chrome 140+, Safari 18.4+); elsewhere the Latin run is
+       wrapped in <span class="lk-as"> with a quarter-em margin on its Chinese side (nothing is typed into the text,
+       so copying gives the original).
+     - Squeeze: the site's Chinese face has no halt/chws, so text-spacing-trim does nothing. For two punctuation
+       marks in a row, the blank between their inks is measured once (canvas) and the first mark is pulled closer by
+       at most half an em: <span class="lk-sq" style="--sq:.5em">」</span>。
+     - Wide photos: an image wider than 1.3:1 and at least as wide as the target, alone in its paragraph, gets
+       .lk-wide (CSS bleeds it to the sheet's edges; on phones to the screen's).
+     Code, pre, kbd, maths and buttons are left alone. Each .source-body is done once (data-lk-ty). */
+  (() => {
+    const box = () => document.getElementById('main') || document.body; // #main is swapped by the router, so it is looked up each time
+    const AUTO = !!(window.CSS && CSS.supports && CSS.supports('text-autospace', 'normal'));
+    const CJK = '⺀-⿿぀-ヿ㄀-ㄯㆠ-ㆿ㐀-䶿一-鿿豈-﫿';
+    const PUNCT = '，。、；：！？「」『』（）《》〈〉【】〔〕“”‘’';
+    const SKIP = 'pre, code, kbd, samp, script, style, textarea, svg, button, .katex, .MathJax, .lk-sq, .lk-as, .reader-heading-link';
+    const rePair = new RegExp('[' + PUNCT + '](?=[' + PUNCT + '])', 'g');
+    let ink = null, inkFont = '';
+    function measure(font) { // blank before (lead) and after (trail) each mark's ink, in em
+      if (ink && inkFont === font) return ink;
+      const c = document.createElement('canvas').getContext('2d'); c.font = '100px ' + font; ink = {}; inkFont = font;
+      for (const ch of PUNCT) {
+        const m = c.measureText(ch), w = m.width || 100;
+        ink[ch] = { lead: Math.max(0, -m.actualBoundingBoxLeft) / 100, trail: Math.max(0, w - m.actualBoundingBoxRight) / 100, w: w / 100 };
+      }
+      return ink;
+    }
+    function texts(root) {
+      const out = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.parentElement && n.parentElement.closest(SKIP)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+      let n; while ((n = w.nextNode())) out.push(n);
+      return out;
+    }
+    function squeeze(node, m) {
+      const t = node.nodeValue; rePair.lastIndex = 0;
+      if (!rePair.test(t)) return;
+      rePair.lastIndex = 0;
+      const frag = document.createDocumentFragment(); let last = 0, hit = false, r;
+      while ((r = rePair.exec(t))) {
+        const a = m[t[r.index]], b = m[t[r.index + 1]];
+        if (!a || !b || a.w < .8 || b.w < .8) continue; // only full-width marks
+        const sq = Math.min(.5, Math.round(Math.max(0, a.trail + b.lead - .12) * 20) / 20);
+        if (sq < .15) continue;
+        frag.append(t.slice(last, r.index)); const sp = document.createElement('span'); sp.className = 'lk-sq'; sp.style.setProperty('--sq', sq + 'em'); sp.textContent = t[r.index];
+        frag.append(sp); last = r.index + 1; hit = true;
+      }
+      if (!hit) return; frag.append(t.slice(last)); node.replaceWith(frag);
+    }
+    function space(node) {
+      const t = node.nodeValue; if (!/[A-Za-z0-9]/.test(t)) return;
+      // runs of Latin/digits inside Chinese: wrap each run, mark which side touches Chinese
+      const re = new RegExp('[A-Za-z0-9][A-Za-z0-9@#%&+.,/\'’\\-]*[A-Za-z0-9%]|[A-Za-z0-9]', 'g'), cjk = new RegExp('[' + CJK + ']');
+      const frag = document.createDocumentFragment(); let last = 0, hit = false, r;
+      while ((r = re.exec(t))) {
+        const L = cjk.test(t[r.index - 1] || ''), R = cjk.test(t[r.index + r[0].length] || '');
+        if (!L && !R) continue;
+        frag.append(t.slice(last, r.index)); const sp = document.createElement('span'); sp.className = 'lk-as' + (L ? ' l' : '') + (R ? ' r' : ''); sp.textContent = r[0];
+        frag.append(sp); last = r.index + r[0].length; hit = true;
+      }
+      if (!hit) return; frag.append(t.slice(last)); node.replaceWith(frag);
+    }
+    function wide(body) {
+      if (!root.classList.contains('lk-weekly')) return;
+      body.querySelectorAll('img').forEach(img => {
+        if (img.closest('td, th, li, blockquote, .markdown-alert, figure.lk-cover, a.lk-under') || img.classList.contains('lk-cover-src')) return;
+        const p = img.closest('p'); if (p && p.textContent.trim()) return; // a photo with words beside it stays in the column
+        const test = () => { const w = img.naturalWidth, h = img.naturalHeight, col = body.clientWidth;
+          img.classList.toggle('lk-wide', !!(w && h && w / h >= 1.3 && w >= col + 60)); };
+        if (img.complete) test(); else img.addEventListener('load', test, { once: true });
+      });
+    }
+    // The squeeze only shows while the marks really are full width as rendered (a late web font may bring narrow ones):
+    // a hidden 。 is measured in the text itself, again whenever fonts finish loading.
+    function sqCheck(body) {
+      if (!body || !body.querySelector('.lk-sq')) return;
+      const s = document.createElement('span'); s.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font-size:100px;letter-spacing:0;text-indent:0';
+      s.textContent = '。'; body.append(s); const w = s.getBoundingClientRect().width; s.remove();
+      body.classList.toggle('lk-sq-on', w >= 80);
+    }
+    if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => sqCheck(box().querySelector('.source-body')));
+    const root = document.documentElement;
+    function run() {
+      const body = box().querySelector('.source-body');
+      if (!body || body.dataset.lkTy === '1' || !body.textContent.trim()) return;
+      body.dataset.lkTy = '1';
+      const go = () => {
+        try {
+          const m = measure(getComputedStyle(body).fontFamily);
+          texts(body).forEach(n => { if (!AUTO) space(n); });
+          texts(body).forEach(n => squeeze(n, m));
+          wide(body);
+          sqCheck(body);
+        } catch (e) { /* typesetting is decoration; never break the page */ }
+      };
+      (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(go));
+    }
+    let t = 0;
+    new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 150); }).observe(document.body, { childList: true, subtree: true }); // a throttle, not a debounce: the page never stops moving
+    run();
+    addEventListener('resize', () => { const b = box().querySelector('.source-body'); if (b) wide(b); }, { passive: true });
   })();
 
 })();

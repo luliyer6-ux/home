@@ -2737,3 +2737,39 @@ html body .lr-album-popup:popover-open .lm-queue-artist { align-self: flex-start
 html body .lr-album-popup:popover-open {
   width: 100% !important; max-width: none !important; box-sizing: border-box !important;
 }
+
+/* 36 o — writing pages (not an issue): no double rule over the byline; the contents list folds sub-sections under their chapter */
+html.lk-essay #main .lk-by::before { display: none; }
+html.lk-essay #main .lk-by { padding-top: 12px; }
+.lk-card-list li { position: relative; }
+.lk-card-list li.lk-child:not(.lk-show) { display: none; }
+.lk-card .lk-twist { position: absolute; right: 4px; top: 3px; width: 26px; height: 26px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 6px; background: none; color: inherit; opacity: .55; font: 14px/1 var(--font-ui); cursor: pointer; transition: transform .2s, opacity .2s; }
+.lk-card .lk-twist:hover, .lk-card .lk-twist:focus-visible { opacity: 1; }
+.lk-card li.lk-opened > .lk-twist { transform: rotate(180deg); }
+.lk-card li.lk-has-sub > a { padding-right: 34px; }
+/* the ladder (writing pages only; an issue keeps its own headings): h2 = chapter (big, a hairline above); h3 = section (an accent bar at its left); h4 = a run-in label */
+html.lk-essay #main .source-body h1 { margin: 2.6em 0 .8em; font-size: 1.5em; line-height: 1.3; font-weight: 700; }
+html.lk-essay #main .source-body h2 { margin: 2.2em 0 .7em; padding-top: .85em; border-top: 1px solid var(--lk-rule); font-size: 1.32em; line-height: 1.4; font-weight: 700; }
+html.lk-essay #main .source-body h3 { margin: 1.9em 0 .55em; padding-left: .62em; border-left: 3px solid var(--lk-acc); font-size: 1.05em; line-height: 1.45; font-weight: 700; }
+html.lk-essay #main .source-body h4 { margin: 1.5em 0 .4em; font-size: 1em; line-height: 1.5; font-weight: 600; color: var(--lk-soft); }
+html.lk-essay #main .source-body :is(h2, h3):is(:first-child, .markdown-body > :first-child) { margin-top: 0; padding-top: 0; border-top: 0; }
+/* contents: the closed bubble names only the heading being read, whole (it may wrap to two lines); the phone capsule too */
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now { white-space: normal; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now .lk-cl-ch { overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.45; text-align: left; text-wrap: balance; }
+html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .luliy-mascot .lk-card { width: max-content; } /* as wide as the name needs, up to --lk-card-w; it wraps only past that */
+.lk-card .lk-card-list a span { white-space: normal; overflow-wrap: anywhere; }
+html.lk-weekly.lk-weekly .lk-cur { width: max-content; max-width: 62vw; white-space: normal; text-wrap: balance; line-height: 1.3; text-align: left; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; padding-block: 6px; }
+@media (min-width: 681px) { html.lk-weekly.lk-weekly .lk-cur { display: none; } }
+@media (max-width: 680px) { html.lk-weekly.lk-weekly .lk-bar { width: max-content; } } /* it sits at left:50%, so without this it may only use half the screen and the name wraps early */
+
+/* 40 — typesetting on every article (home-fixes.js 40): Chinese–Latin spacing, squeezed punctuation pairs, wide photos */
+#main :is(.source-body, .source-reading > h1, .lk-stand) { text-autospace: normal; }
+#main .source-body .lk-as.l { margin-left: .25em; }
+#main .source-body .lk-as.r { margin-right: .25em; }
+#main .source-body.lk-sq-on .lk-sq { letter-spacing: calc(-1 * var(--sq, .5em)); } /* .lk-sq-on: only while the marks are full width as rendered */
+@media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
+  html.lk-weekly #main .source-body img.lk-wide { width: calc(100% + 128px); max-width: none; margin-inline: -64px; }
+}
+@media (max-width: 680px) {
+  html.lk-weekly #main .source-body img.lk-wide { width: 100vw; max-width: none; margin-inline: calc(50% - 50vw); }
+}
