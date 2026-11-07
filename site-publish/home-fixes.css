@@ -2949,3 +2949,64 @@ html.lk-study #main .source-body pre { position: relative; }
 html.lk-study #main .source-body .lk-copy { position: absolute; top: 8px; right: 8px; padding: 4px 8px; font: 11.5px/1 var(--font-mono); color: var(--lk-mute); background: var(--lk-bg); border: 1px solid var(--lk-rule); border-radius: 3px; cursor: pointer; opacity: 0; transition: opacity .2s; }
 html.lk-study #main .source-body pre:hover .lk-copy, html.lk-study #main .source-body .lk-copy:focus-visible { opacity: 1; }
 @media (hover: none) { html.lk-study #main .source-body .lk-copy { opacity: 1; } }
+
+/* 42 b — 讀書 as a quiet reading-room shelf (?tags=Library alone; home-fixes.js 42): six open shelves on one page,
+   a vertical label with the count in 冊, linen-coloured spines with vertical titles, a ribbon on the book being read */
+#main .post-archive.lk-shelf-on .post-year { display: none !important; }
+.lk-shelf { --sh-ink: #e9e2d2; --sh-soft: rgba(233, 226, 210, .62); --sh-mute: rgba(233, 226, 210, .38); --sh-rule: rgba(233, 226, 210, .12); --sh-board: #6b5a43; --sh-seal: #a8433a;
+  margin: 10px 0 48px; color: var(--sh-ink); font-family: var(--font-body); }
+html[data-appearance="light"] .lk-shelf { --sh-ink: #2a251d; --sh-soft: rgba(42, 37, 29, .66); --sh-mute: rgba(42, 37, 29, .42); --sh-rule: rgba(42, 37, 29, .14); --sh-board: #9c8461; }
+.lk-sh-head { display: flex; align-items: baseline; gap: 18px; margin: 0 0 30px; padding-bottom: 14px; border-bottom: 1px solid var(--sh-rule); }
+.lk-sh-head strong { font: 600 26px/1.2 var(--font-body); letter-spacing: .32em; }
+.lk-sh-head span { font-size: 13.5px; letter-spacing: .12em; color: var(--sh-mute); }
+.lk-sh-case { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 0; row-gap: 36px; }
+.lk-sh-cell { display: grid; grid-template-columns: 40px 1fr; gap: 12px; padding: 0 22px; min-height: 172px; }
+.lk-sh-cell + .lk-sh-cell:not(:nth-child(3n + 1)) { border-left: 1px solid var(--sh-rule); }
+.lk-sh-label { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 4px; }
+.lk-sh-label b { writing-mode: vertical-rl; font: 600 17px/1 var(--font-body); letter-spacing: .4em; color: var(--sh-ink); }
+.lk-sh-label small { writing-mode: vertical-rl; font-size: 12px; letter-spacing: .24em; color: var(--sh-mute); }
+.lk-sh-label::before { content: ""; width: 7px; height: 7px; background: var(--sh-seal); border-radius: 1px; opacity: .85; } /* a small seal mark */
+.lk-sh-books { display: flex; align-items: flex-end; gap: 3px; padding: 0 4px; border-bottom: 3px solid var(--sh-board); box-shadow: 0 6px 10px -8px rgba(0, 0, 0, .55); }
+.lk-sh-empty { align-self: center; margin: auto; writing-mode: vertical-rl; font-size: 12.5px; letter-spacing: .5em; color: var(--sh-mute); }
+.lk-spine { position: relative; display: flex; justify-content: center; width: var(--w); height: var(--h); padding: 14px 0 10px; color: var(--fg); text-decoration: none; border-radius: 1px 1px 0 0;
+  background: var(--bg) repeating-linear-gradient(0deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 3px); background-color: var(--bg);
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 1px, transparent 1px 3px), linear-gradient(90deg, rgba(0, 0, 0, .18), transparent 30%, transparent 75%, rgba(0, 0, 0, .22));
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .3); transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+.lk-sp-title { writing-mode: vertical-rl; white-space: nowrap; font: 500 12.5px/1 var(--font-body); letter-spacing: .22em; overflow: hidden; text-overflow: ellipsis; max-height: 100%; }
+.lk-spine.is-reading::after { content: ""; position: absolute; right: 5px; top: 100%; width: 4px; height: 16px; background: var(--sh-seal); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%); } /* a ribbon */
+.lk-sp-tip { position: absolute; left: 50%; bottom: calc(100% + 10px); z-index: 5; width: max-content; max-width: 220px; padding: 8px 12px; transform: translate(-50%, 4px); opacity: 0; pointer-events: none;
+  background: #f3ecdd; color: #2a251d; border-radius: 1px; box-shadow: 0 8px 22px rgba(0, 0, 0, .35); transition: opacity .2s, transform .2s; text-align: left; }
+.lk-sp-tip strong { display: block; font: 600 13.5px/1.45 var(--font-body); }
+.lk-sp-tip small { display: block; margin-top: 2px; font-size: 11.5px; letter-spacing: .06em; color: rgba(42, 37, 29, .6); }
+.lk-spine:hover, .lk-spine:focus-visible { transform: translateY(-9px); outline: none; z-index: 3; }
+.lk-spine:hover .lk-sp-tip, .lk-spine:focus-visible .lk-sp-tip { opacity: 1; transform: translate(-50%, 0); }
+.lk-sh-books { min-width: 0; }
+.lk-sh-books.is-tight .lk-spine { width: calc(var(--w) * .78); }
+.lk-sh-books.is-tight .lk-sp-title { font-size: 11px; letter-spacing: .12em; }
+.lk-pile { flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-left: auto; padding: 0 0 2px; background: none; border: 0; color: var(--sh-mute); cursor: pointer; font: inherit; }
+.lk-pile-bars { display: flex; flex-direction: column; gap: 1px; }
+.lk-pile-bars i { display: block; height: 11px; border-radius: 1px; box-shadow: 0 2px 4px rgba(0, 0, 0, .3); background-image: linear-gradient(180deg, rgba(255, 255, 255, .06), transparent 40%, rgba(0, 0, 0, .18)); }
+.lk-pile-label { font-size: 11.5px; letter-spacing: .18em; white-space: nowrap; transition: color .2s; }
+.lk-pile:hover .lk-pile-label, .lk-pile:focus-visible .lk-pile-label { color: var(--sh-ink); }
+.lk-pile:focus-visible { outline: 1px solid var(--sh-mute); outline-offset: 3px; }
+.lk-pile.is-open { align-self: flex-start; margin-top: 6px; }
+/* an opened shelf takes the whole width and becomes several shelves */
+.lk-sh-cell.is-open { grid-column: 1 / -1; border-left: 0 !important; }
+.lk-sh-cell.is-open .lk-sh-books { display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, max-content)); grid-auto-rows: 158px; align-items: end; gap: 0 4px; border-bottom: 0; box-shadow: none;
+  background: repeating-linear-gradient(180deg, transparent 0 155px, var(--sh-board) 155px 158px); }
+.lk-sh-cell.is-open .lk-pile { grid-column: -2 / -1; grid-row: 1; justify-self: end; }
+@media (max-width: 900px) { .lk-sh-case { grid-template-columns: repeat(2, 1fr); } .lk-sh-case > .lk-sh-cell { border-left: 0 !important; } .lk-sh-case > .lk-sh-cell:nth-child(2n) { border-left: 1px solid var(--sh-rule) !important; } }
+@media (max-width: 680px) {
+  .lk-sh-head strong { font-size: 22px; }
+  .lk-sh-case { row-gap: 26px; }
+  .lk-sh-cell { grid-template-columns: 26px 1fr; gap: 6px; padding: 0 10px; min-height: 150px; }
+  .lk-sh-label b { font-size: 15px; }
+  .lk-spine { height: calc(var(--h) * .86); width: calc(var(--w) * .86); }
+  .lk-sp-title { font-size: 11.5px; letter-spacing: .16em; }
+}
+@media (prefers-reduced-motion: reduce) { .lk-spine, .lk-sp-tip { transition: none; } }
+
+/* 42 c — opening a book from the shelf (home-fixes.js 42): the spine grows to the whole screen, then fades over the article */
+.lk-bookfly { position: fixed; z-index: 9000; display: grid; place-items: center; overflow: hidden; pointer-events: none; border-radius: 2px;
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 1px, transparent 1px 3px); box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
+.lk-bookfly span { writing-mode: vertical-rl; white-space: nowrap; font: 600 14px/1 var(--font-body); letter-spacing: .3em; }

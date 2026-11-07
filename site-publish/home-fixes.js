@@ -4265,7 +4265,7 @@
       try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id]; } catch (e) {}
       if (!Array.isArray(ls)) { const c = shell.querySelector('.source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; }
       if (ls.some(l => OWN.test(l))) return '';
-      return ls.some(l => /^study$/i.test(l)) ? 'study' : ls.some(l => /^(reading|讀書|读书)$/i.test(l)) ? 'read' : 'essay'; // 2026-11-07: Reading = 讀書 (reading notes)
+      return ls.some(l => /^study$/i.test(l)) ? 'study' : ls.some(l => /^(library|讀書|读书)$/i.test(l)) ? 'read' : 'essay'; // 2026-11-07: 讀書 = Library (the book posts; 書房 and the blog's bookshelf use the same label)
     }
     function apply() {
       frame = 0;
@@ -5156,7 +5156,7 @@
   /* 41. 首頁（2026-11-07 起為預設）。The old home (galaxy opening, 作品, 文章, 唱片) stays in the page, hidden by html.lh-on;
      .lh comes first: Luliy's avatar (no frame) and the brand (the header's L mark + ULIY, which the header hides here, so
      the page has one Luliy) with the line 「一個傻子，幻想找到自己，爲之堅持。」; on its right three stacked-card entrances
-     「姚說」(the weekly archive) 「短札」(the journal) 「學習」(Study) 「讀書」(reading notes: label Reading, 讀書/读书 also count — not `book`, which Gmeek keeps for the book.html single page; three spines) 「教程」(Doc + Guidebook). 姚說 shows three issue covers fanned out; 短札 / 學習 / 教程 are drawn objects (slips, a squared notebook with a pencil, a ring binder with index tabs) (taken
+     「姚說」(the weekly archive) 「短札」(the journal) 「學習」(Study) 「讀書」(reading notes: label Library, as in 書房 and the blog's bookshelf — not `book`, which Gmeek keeps for the book.html single page; three spines) 「教程」(Doc + Guidebook). 姚說 shows three issue covers fanned out; 短札 / 學習 / 教程 are drawn objects (slips, a squared notebook with a pencil, a ring binder with index tabs) (taken
      from the posts, cached in localStorage lh-thumb-v1; a post without a picture gets a paper card with its first
      character); then the latest 姚說 issue as a magazine card and the five most recent pieces (from the site's own home
      list, so hidden labels stay hidden). The old home: directory → 其他 → 舊版首頁, or ?home=v1, for that visit only. */
@@ -5271,7 +5271,7 @@
       stacks.append(stack(L('姚说', 'Yao Says'), '#/posts?view=archive&group=weekly', pick(WEEKLY)),
         thing('notes', L('短札', 'Journal'), '#/posts?view=journal'),
         thing('book', L('学习', 'Study'), '#/posts?view=archive&tags=Study'),
-        spines(L('读书', 'Reading'), '#/posts?view=archive&tags=Reading'), // the GitHub label is Reading
+        spines(L('读书', 'Reading'), '#/posts?view=archive&tags=Library'), // 讀書 = Library posts (section 42 lists them; the router keeps books out of the archive)
         thing('binder', L('教程', 'Guides'), '#/posts?view=archive&tags=Doc,Guidebook'));
       void journal;
       top.append(intro, stacks);
@@ -5334,6 +5334,146 @@
       if (m && id && Array.isArray(m[id])) return m[id];
       const sm = a.querySelector('small'); return sm ? sm.textContent.split('·').map(x => x.trim()) : [];
     };
+    let feed = null, asked = false;
+    function loadFeed() {
+      if (asked || typeof fetch !== 'function') return; asked = true;
+      fetch('https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/postList.json').then(r => r.ok ? r.json() : null).then(j => {
+        if (!j) return;
+        feed = Object.keys(j).filter(k => /^P\d+$/.test(k) && j[k] && typeof j[k] === 'object').map(k => ({ id: k, title: String(j[k].postTitle || ''), date: String(j[k].createdDate || ''), ts: Number(j[k].createdAt) || 0,
+          labels: (j[k].labels || []).map(l => String(l && l.name !== undefined ? l.name : l).trim()) }));
+        sig = ''; run();
+      }).catch(() => {});
+    }
+    function inject(box, q) {
+      if (box.querySelector('.lk-inj')) return;
+      if (!feed) { loadFeed(); return; }
+      const year = q.get('year');
+      const books = feed.filter(it => it.labels.some(l => /^library$/i.test(l)) && (!year || it.date.slice(0, 4) === year))
+        .sort((a, b) => (b.ts - a.ts) || b.date.localeCompare(a.date));
+      if (!books.length) return;
+      const anchor = box.querySelector('.post-year, .section-more, .study-empty');
+      const byYear = {}; books.forEach(b => { const y = b.date.slice(0, 4) || '—'; (byYear[y] = byYear[y] || []).push(b); });
+      Object.keys(byYear).sort().reverse().forEach(y => {
+        const sec = document.createElement('section'); sec.className = 'post-year lk-inj';
+        const h = document.createElement('h2'); h.textContent = y; sec.append(h);
+        const list = document.createElement('div'); list.className = 'study-list article-list';
+        byYear[y].forEach(b => {
+          const a = document.createElement('a'); a.className = 'study-entry ruic-card'; a.href = '#/article/' + b.id; a.dataset.postId = b.id;
+          const shown = b.labels.filter(l => !/^(library|pinned|在读|在讀|reading|读完|讀完|已读|已讀|finished|read|想读|想讀|待读|待讀|to read)$/i.test(l));
+          a.innerHTML = '<span class="study-index">01</span><span class="study-entry-copy"><small></small><strong></strong></span><time></time><span class="study-arrow" aria-hidden="true">→</span>';
+          a.querySelector('small').textContent = ['Library'].concat(shown).join(' · '); a.querySelector('strong').textContent = b.title; a.querySelector('time').textContent = b.date;
+          list.append(a);
+        });
+        sec.append(list);
+        const same = [...box.querySelectorAll('.post-year:not(.lk-inj)')].find(x => ((x.querySelector('h2') || {}).textContent || '').trim() === y);
+        if (same) { // the year already has a section: merge, newest first
+          const host = same.querySelector('.study-list') || same; [...list.children].forEach(a => { a.classList.add('lk-inj-e'); host.append(a); });
+          [...host.querySelectorAll('.study-entry')].sort((a, b) => ((b.querySelector('time') || {}).textContent || '').localeCompare((a.querySelector('time') || {}).textContent || '')).forEach(a => host.append(a));
+          sec.classList.add('lk-inj-empty'); same.classList.add('lk-inj'); return;
+        }
+        anchor ? anchor.before(sec) : box.append(sec);
+      });
+    }
+    // 讀書 (?tags=Library alone): the books stand on shelves, one per kind (the blog's bookshelf, in this site's colours)
+    const STATE = /^(library|pinned|在读|在讀|reading|currently reading|读完|讀完|已读|已讀|finished|read|想读|想讀|待读|待讀|to read|want to read)$/i;
+    const KINDS = ['小说', '成长', '投资', '传记', '现实', '杂项']; // six compartments, one page; anything else goes to 杂项
+    const SPINE = [['#3d4a5c', '#efe6d2'], ['#8a5a3b', '#f3e9d4'], ['#66735f', '#f1eadb'], ['#2e2b27', '#d9c49a'], ['#cbb88f', '#3a2f22'], ['#7a3b34', '#f0e2cc'], ['#a7905f', '#2b241a']]; // linen, indigo, ochre, celadon, ink, rouge
+    const hash = t => { let h = 0; for (const c of String(t)) { h = (h << 5) - h + c.charCodeAt(0); h |= 0; } return Math.abs(h); };
+    function shelf(box, q) {
+      if (box.querySelector('.lk-shelf')) return;
+      const year = q.get('year');
+      const books = feed.filter(it => it.labels.some(l => /^library$/i.test(l)) && (!year || it.date.slice(0, 4) === year)).sort((a, b) => (b.ts - a.ts) || b.date.localeCompare(a.date));
+      const norm2 = x => norm(x);
+      const kindOf = b => { const tags = b.labels.filter(l => !STATE.test(l)); return KINDS.find(k => tags.some(t => norm2(t) === norm2(k))) || '杂项'; };
+      const stateOf = b => { const l = b.labels.map(x => x.toLowerCase()); return l.some(x => ['在读', '在讀', 'reading', 'currently reading'].includes(x)) ? 'reading' : l.some(x => ['读完', '讀完', '已读', '已讀', 'finished', 'read'].includes(x)) ? 'done' : l.some(x => ['想读', '想讀', '待读', '待讀', 'to read', 'want to read'].includes(x)) ? 'want' : ''; };
+      const kinds = KINDS.slice();
+      const wrap = document.createElement('div'); wrap.className = 'lk-shelf';
+      const head = document.createElement('div'); head.className = 'lk-sh-head';
+      head.innerHTML = '<strong></strong><span></span>'; head.querySelector('strong').textContent = '我的書架'; head.querySelector('span').textContent = '共 ' + books.length + ' 本 · 點書脊打開讀後感';
+      wrap.append(head);
+      // one page, six open shelves (小說 成長 投資 傳記 現實 雜項): a vertical label with the count in 冊, linen spines, a ribbon on the one being read
+      const CN = n => { const d = '〇一二三四五六七八九'; if (n < 10) return d[n]; if (n < 20) return '十' + (n % 10 ? d[n % 10] : ''); if (n < 100) return d[Math.floor(n / 10)] + '十' + (n % 10 ? d[n % 10] : ''); return String(n); };
+      const spine = b => {
+        const h = hash(b.title), [bg, fg] = SPINE[h % SPINE.length], st = stateOf(b);
+        const a = document.createElement('a'); a.className = 'lk-spine' + (st === 'reading' ? ' is-reading' : ''); a.href = '#/article/' + b.id;
+        a.style.cssText = '--w:' + (28 + h % 12) + 'px;--h:' + (112 + h % 30) + 'px;--bg:' + bg + ';--fg:' + fg;
+        a.setAttribute('aria-label', b.title + (b.date ? '，' + b.date : '') + (st === 'reading' ? '，在讀' : ''));
+        const t = document.createElement('span'); t.className = 'lk-sp-title'; t.textContent = b.title;
+        const tip = document.createElement('span'); tip.className = 'lk-sp-tip'; tip.innerHTML = '<strong></strong><small></small>';
+        tip.querySelector('strong').textContent = '《' + b.title + '》'; tip.querySelector('small').textContent = [b.date, st === 'reading' ? '在讀' : st === 'done' ? '讀完' : st === 'want' ? '想讀' : ''].filter(Boolean).join(' · ');
+        a.append(t, tip); a.addEventListener('click', e => openBook(e, a)); return a;
+      };
+      // opening a book: the spine grows to fill the screen, turns into the page colour, the article comes up underneath and the cover fades away
+      const openBook = (e, a) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0 || matchMedia('(prefers-reduced-motion: reduce)').matches || !document.body.animate) return;
+        e.preventDefault();
+        const r = a.getBoundingClientRect(), dark = (root.dataset.appearance || 'dark') !== 'light' && root.dataset.appearance !== 'day';
+        const page = dark ? '#0b0b0a' : '#f6f1e7';
+        const fly = document.createElement('div'); fly.className = 'lk-bookfly'; fly.setAttribute('aria-hidden', 'true');
+        fly.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px;background-color:' + a.style.getPropertyValue('--bg') + ';color:' + a.style.getPropertyValue('--fg');
+        const tt = document.createElement('span'); tt.textContent = a.querySelector('.lk-sp-title').textContent; fly.append(tt);
+        document.body.append(fly);
+        const W = innerWidth, H = innerHeight, cw = Math.min(260, W * .6), ch = cw * 1.45;
+        const mid = { left: (W - cw) / 2 + 'px', top: (H - ch) / 2 + 'px', width: cw + 'px', height: ch + 'px' };
+        const anim = fly.animate([
+          { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: '2px', offset: 0 },
+          { ...mid, borderRadius: '3px', offset: .45 },
+          { left: '0px', top: '0px', width: W + 'px', height: H + 'px', borderRadius: '0px', backgroundColor: page, offset: 1 }
+        ], { duration: 820, easing: 'cubic-bezier(.65, 0, .25, 1)', fill: 'forwards' });
+        tt.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(1.6)', offset: .45 }, { opacity: 0, transform: 'scale(2)' }], { duration: 820, easing: 'ease-in-out', fill: 'forwards' });
+        anim.onfinish = () => {
+          location.hash = a.getAttribute('href');
+          const t0 = Date.now();
+          const wait = () => { // until the article is on the page (or a second has gone by), then the cover lifts
+            if (document.querySelector('#main .source-reading .lk-by') || Date.now() - t0 > 1400) {
+              fly.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: 'ease-out', fill: 'forwards' }).onfinish = () => fly.remove();
+            } else requestAnimationFrame(wait);
+          };
+          requestAnimationFrame(wait);
+        };
+      };
+      head.querySelector('strong').textContent = '書架'; head.querySelector('span').textContent = '共' + CN(books.length) + '冊 · 點書脊，翻開讀後感';
+      const kase = document.createElement('div'); kase.className = 'lk-sh-case';
+      kinds.forEach(k => {
+        const list = books.filter(b => kindOf(b) === k);
+        const sec = document.createElement('section'); sec.className = 'lk-sh-cell' + (list.length ? '' : ' is-empty');
+        const lab = document.createElement('div'); lab.className = 'lk-sh-label'; lab.innerHTML = '<b></b><small></small>';
+        lab.querySelector('b').textContent = k; lab.querySelector('small').textContent = CN(list.length) + '冊';
+        const row = document.createElement('div'); row.className = 'lk-sh-books';
+        if (!list.length) { const e = document.createElement('span'); e.className = 'lk-sh-empty'; e.textContent = '虛位以待'; row.append(e); }
+        sec._sp = list.map(b => { const el = spine(b); el._b = b; return el; }); sec._sp.forEach(x => row.append(x));
+        sec.append(lab, row); kase.append(sec);
+      });
+      wrap.append(kase);
+      // full shelves: spines first get thinner; what still does not fit lies flat in a pile (「另有 N 冊」); the pile opens the shelf
+      const fit = sec => {
+        const row = sec.querySelector('.lk-sh-books'), all = sec._sp || [];
+        if (!all.length) return;
+        row.querySelectorAll('.lk-pile').forEach(x => x.remove());
+        row.classList.remove('is-tight'); all.forEach(x => row.append(x));
+        if (sec.classList.contains('is-open')) { const p = pile(sec, [], true); row.append(p); return; }
+        const avail = row.clientWidth - 10, width = list => list.reduce((t, x) => t + x.offsetWidth + 3, 0);
+        if (width(all) <= avail) return;
+        row.classList.add('is-tight');
+        if (width(all) <= avail) return;
+        const keep = []; let used = 0; const PW = 78;
+        for (const x of all) { if (used + x.offsetWidth + 3 + PW > avail) break; keep.push(x); used += x.offsetWidth + 3; }
+        const rest = all.filter(x => !keep.includes(x)); rest.forEach(x => x.remove());
+        row.append(pile(sec, rest, false));
+      };
+      const pile = (sec, rest, open) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'lk-pile' + (open ? ' is-open' : '');
+        const bars = document.createElement('span'); bars.className = 'lk-pile-bars'; bars.setAttribute('aria-hidden', 'true');
+        (open ? [] : rest.slice(0, 4)).forEach((x, i) => { const i2 = document.createElement('i'); i2.style.cssText = 'background:' + x.style.getPropertyValue('--bg') + ';width:' + (58 + (hash(x._b.title) % 14)) + 'px;margin-left:' + ((i % 2) * 5) + 'px'; bars.prepend(i2); });
+        const t = document.createElement('span'); t.className = 'lk-pile-label'; t.textContent = open ? '收起' : '另有' + CN(rest.length) + '冊';
+        b.append(bars, t); b.setAttribute('aria-expanded', String(open));
+        b.addEventListener('click', () => { sec.classList.toggle('is-open', !open); fit(sec); if (!open) sec.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
+        return b;
+      };
+      requestAnimationFrame(() => kase.querySelectorAll('.lk-sh-cell').forEach(fit));
+      let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (kase.isConnected) kase.querySelectorAll('.lk-sh-cell').forEach(fit); }, 150); }, { passive: true });
+      const anchor = box.querySelector('.section-more'); anchor ? anchor.before(wrap) : box.append(wrap);
+    }
     let sig = '';
     function run() {
       const q = route(); const box = document.querySelector('#main .post-archive');
@@ -5343,6 +5483,11 @@
       const now = location.hash + '|' + entries.length + '|' + (box.dataset.lkMulti || '');
       if (now === sig && box.dataset.lkMulti === location.hash) return;
       sig = now; box.dataset.lkMulti = location.hash;
+      // a0) Library posts are books: the router keeps them out of the archive, so they are added here (from the feed)
+      if (want.some(w => w === 'library')) inject(box, q);
+      box.classList.toggle('lk-shelf-on', want.length === 1 && want[0] === 'library' && !!feed);
+      if (want.length === 1 && want[0] === 'library' && feed) shelf(box, q);
+      const all2 = [...box.querySelectorAll('.study-entry')]; entries.length = 0; all2.forEach(x => entries.push(x));
       // a) filter (only needed for ?tags=; ?tag= alone the router already did)
       let shown = 0;
       if (q.get('tags')) {
@@ -5393,7 +5538,7 @@
   })();
 
   /* 43. 讀書頁與學習頁（2026-11-07）. Both keep the weekly sheet (section 36); each gets its own parts.
-     讀書 (html.lk-read, label Reading): a book card under the byline, built from the first quote when it reads
+     讀書 (html.lk-read, label Library): a book card under the byline, built from the first quote when it reads
        > 《書名》 作者 / > 讀完：2026-06 / > 評分：4   (lines in one quote) — with the post's first picture as the cover
        (the big cover is not used here). Other quotes become book excerpts; “——p.32” at the end becomes a page number;
        a quote starting with ★ is the one pulled out big. At the end 「本篇書摘」 collects every excerpt.
