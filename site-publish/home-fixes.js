@@ -5560,6 +5560,7 @@
        > 《書名》 作者 / > 讀完：2026-06 / > 評分：4   (lines in one quote) — with the post's first picture as the cover
        (the big cover is not used here). Other quotes become book excerpts; “——p.32” at the end becomes a page number;
        a quote starting with ★ is the one pulled out big. At the end 「本篇書摘」 collects every excerpt.
+     傳記 (Library + 传记): on wide screens the portrait stands full height on the left (html.lk-bio, aside.lk-bio-side).
      學習 (html.lk-study): a line under the byline (N 章 · N 條重點 from 本篇要點 · 已讀 x／n; chapters = the top headings, or the second level when there is only one top heading); each chapter heading gets a
        circle to tick when read (localStorage lk-done-v1); a table with a Chinese column and a Latin column gets 「遮住中文」 for self-testing (tap a cell to see
        it); code blocks get 「複製」. Each page is done once (data-lk-x). */
@@ -5668,10 +5669,48 @@
       });
       const head = document.querySelector('#header'); if (head) root.style.setProperty('--lk-head-h', Math.round(head.getBoundingClientRect().height) + 'px');
     }
+    // 傳記 (Library + 传记/傳記): on wide screens the portrait (the post's first picture) stands in a full-height column on the left
+    // and the sheet sits in the rest of the page (as on wangyurui.com's newsletter pages); phones keep the cover on top.
+    let side = null;
+    let tools = null;
+    function bioOff() { root.classList.remove('lk-bio'); if (side) { side.remove(); side = null; } if (tools) { tools.remove(); tools = null; } }
+    // the side buttons (bottom right): 標記 (remember where I am; again: go back there, or clear it when already there) · 返回 · 頂部
+    function bioTools(id) {
+      if (tools && tools.dataset.id === id) return;
+      if (tools) tools.remove();
+      tools = el('div', 'lk-bio-tools'); tools.dataset.id = id;
+      const KEYM = 'lk-mark-v1';
+      const marks = () => { try { return JSON.parse(localStorage.getItem(KEYM) || '{}') || {}; } catch (e) { return {}; } };
+      const btn = (cls, label, svg, text) => { const b = el('button', 'lk-bt ' + cls); b.type = 'button'; b.title = label; b.setAttribute('aria-label', label); b.innerHTML = svg; if (text) b.append(el('span', '', text)); tools.append(b); return b; };
+      const mark = btn('lk-bt-mark', '標記讀到這裡', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14M14.5 4.5l3 3L9 16H6v-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>');
+      const back = btn('lk-bt-back', '返回', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5.5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+      const top = btn('lk-bt-top', '回到頂部', '<svg viewBox="0 0 24 10" aria-hidden="true"><path d="M5 8l7-6 7 6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>', '頂');
+      const paint = () => { const m = marks()[id]; mark.classList.toggle('on', m != null); mark.title = m != null ? '回到標記處（已在標記處時再按一次取消）' : '標記讀到這裡'; };
+      const smooth = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+      mark.addEventListener('click', () => {
+        const all = marks(), m = all[id], y = Math.round(scrollY);
+        if (m == null) all[id] = y; else if (Math.abs(m - y) < 200) delete all[id]; else { scrollTo({ top: m, behavior: smooth() }); return; }
+        try { localStorage.setItem(KEYM, JSON.stringify(all)); } catch (e) {} paint();
+      });
+      back.addEventListener('click', () => { if (history.length > 1) history.back(); else location.hash = '#/posts?view=archive&tags=Library'; });
+      top.addEventListener('click', () => scrollTo({ top: 0, behavior: smooth() }));
+      document.body.append(tools); paint();
+    }
+    function bio(id) {
+      let ls = []; try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id] || []; } catch (e) {}
+      if (!ls.some(l => /^(传记|傳記|biography)$/i.test(l))) { bioOff(); return; }
+      const img = document.querySelector('#main .lk-cover img') || document.querySelector('#main .source-body img:not(.lk-bc-used)');
+      if (!img) { bioOff(); return; }
+      const src = img.currentSrc || img.src;
+      if (!side) { side = el('aside', 'lk-bio-side'); side.setAttribute('aria-hidden', 'true'); side.append(el('img')); document.body.append(side); }
+      const im = side.querySelector('img'); if (im.getAttribute('src') !== src) { im.src = src; im.alt = ''; }
+      side.dataset.id = id; root.classList.add('lk-bio'); bioTools(id);
+    }
     function run() {
       const READ_ON = true; // 2026-11-07: 讀書 parts on (set false to switch them off)
       const read = READ_ON && root.classList.contains('lk-read'), st = root.classList.contains('lk-study');
       if (!read) root.classList.remove('lk-has-book');
+      if (!read) bioOff(); else if (idNow() && document.querySelector('#main .source-reading .lk-by')) bio(idNow());
       if (!read && !st) return;
       const shell = document.querySelector('#main .source-reading'), body = shell && shell.querySelector('.source-body');
       const id = idNow();
@@ -5701,7 +5740,9 @@
     const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
     const name = h => { const c = h.cloneNode(true); c.querySelectorAll('button, .reader-heading-link, svg').forEach(n => n.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
     let box = null, list = null, dots = null, heads = [], sig = '', pinned = false, cur = -1;
-    function chapters(body) {
+    function chapters(body) { // all headings (h1–h3) in reading order
+      const hs = [...body.querySelectorAll('h1, h2, h3')].filter(h => name(h));
+      if (hs.length) return hs;
       const all = [...body.querySelectorAll('h1, h2, h3')];
       if (all.some(h => h.dataset.lkLevel)) { const one = all.filter(h => h.dataset.lkLevel === '1'); return one.length >= 2 ? one : all.filter(h => h.dataset.lkLevel === '2').length >= 2 ? all.filter(h => h.dataset.lkLevel === '2') : one; }
       for (const t of ['H1', 'H2', 'H3']) { const x = all.filter(h => h.tagName === t); if (x.length >= 2) return x; }
@@ -5713,12 +5754,13 @@
       if (box && box.isConnected && s2 === sig) return;
       sig = s2;
       if (!box) {
-        box = el('nav', 'lt-toc'); box.setAttribute('aria-label', '目錄');
+        box = el('nav', 'lt-toc'); box.setAttribute('aria-label', '目錄'); // 2026-11-07: drawn as Maggie Appleton's contents (lines that open into titles)
         const head = el('button', 'lt-head'); head.type = 'button'; head.setAttribute('aria-expanded', 'false');
         head.innerHTML = '<svg class="lt-mark" viewBox="0 0 20 16" aria-hidden="true"><path d="M10 3.2C8.2 1.9 5.6 1.4 2 1.5v11.6c3.6-.1 6.2.4 8 1.7 1.8-1.3 4.4-1.8 8-1.7V1.5c-3.6-.1-6.2.4-8 1.7Zm0 0v11.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
         dots = el('span', 'lt-dots'); dots.setAttribute('aria-hidden', 'true'); head.append(dots);
         list = el('ol', 'lt-list');
-        box.append(head, list);
+        const cap = el('p', 'lt-cap', '目錄');
+        box.append(head, cap, list);
         head.addEventListener('click', () => { pinned = !box.classList.contains('open') || !pinned; setOpen(pinned); });
         box.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') setOpen(true); });
         box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !pinned) setOpen(false); });
@@ -5731,9 +5773,12 @@
       }
       document.body.append(box);
       list.innerHTML = ''; dots.innerHTML = '';
-      const entries = [{ label: '開頭', go: () => scrollTo({ top: 0, behavior: smooth() }) }].concat(heads.map((h, i) => ({ label: name(h), n: i + 1, go: () => jump(h) })));
+      // 2026-11-07: every heading, as text only, indented by level; the writer's 一、/1./(2) numbering is dropped
+      const strip = t => t.replace(/^(?:第?[一二三四五六七八九十百零〇]+[、.．:：章节節部]|[（(]?\d{1,2}[)）]|\d{1,2}(?:\.\d{1,2})+(?:[、.．:：)）]|(?=\s))|\d{1,2}[、.．:：)）](?!\d))\s*/, '') || t;
+      const levels = [...new Set(heads.map(h => h.tagName))].sort();
+      const entries = heads.map(h => ({ label: strip(name(h)), lv: Math.min(2, levels.indexOf(h.tagName)), go: () => jump(h) }));
       entries.forEach((it, i) => {
-        const li = el('li'); li.dataset.i = i;
+        const li = el('li'); li.dataset.i = i; li.className = 'lt-l' + it.lv;
         const a = el('a'); a.href = '#'; a.append(el('b', '', it.n ? String(it.n) : ''), el('span', '', it.label));
         a.addEventListener('click', e => { e.preventDefault(); it.go(); pinned = false; setOpen(false); });
         li.append(a); list.append(li); dots.append(el('i'));
@@ -5746,13 +5791,14 @@
     function hover(i) { if (!dots) return; [...dots.children].forEach((d, k) => d.classList.toggle('hov', k === i)); }
     function now() {
       if (!box || !box.isConnected) return;
-      let c = 0; heads.forEach((h, i) => { if (h.getBoundingClientRect().top < innerHeight * .3) c = i + 1; });
+      let c = 0; heads.forEach((h, i) => { if (h.getBoundingClientRect().top < innerHeight * .3) c = i; });
       if (c === cur) return; cur = c;
       [...list.children].forEach((li, k) => { const a = li.firstChild; if (k === c) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
       [...dots.children].forEach((d, k) => d.classList.toggle('on', k === c));
     }
     function run() {
-      const m = /^#\/article\/P\d+/.test(location.hash) && on;
+      const wide = matchMedia('(min-width: 1001px)').matches;
+      const m = /^#\/article\/P\d+/.test(location.hash) && (on || (wide && root.classList.contains('lk-bio'))); // 傳記 pages use it in place of Loon
       root.classList.toggle('lt-on', m);
       const body = m && document.querySelector('#main .source-reading .source-body');
       if (!body || !body.textContent.trim()) { if (box) box.remove(); return; }
