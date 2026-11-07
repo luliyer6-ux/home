@@ -4048,7 +4048,7 @@
       // kicker
       let kick = shell.querySelector(':scope > .lk-kick');
       if (!kick) { kick = el('p', 'lk-kick'); h1.before(kick); }
-      kick.textContent = root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY' + (no ? ' · ' + L('第 ' + no + ' 期', 'No. ' + no, '第 ' + no + ' 号') : '');
+      kick.textContent = root.classList.contains('lk-study') ? L('学习', 'STUDY', '学習') : root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY' + (no ? ' · ' + L('第 ' + no + ' 期', 'No. ' + no, '第 ' + no + ' 号') : '');
       // cover (2026-11-06): an image that opens the article (no text before it) becomes a full-width cover above the
       // issue line; the image leaves the body. No such image: nothing is added and the page is as before.
       (() => {
@@ -4234,12 +4234,13 @@
     /* 2026-11-07: the weekly panel for every piece of writing. Articles whose labels are not ones that keep their own
        layout (AI, Study, Doc, Guidebook — sections 37/38 — and the data posts) get the same magazine page, without the
        issue parts (no number, no issue switcher, no neighbouring issues). html.lk-essay marks them. */
-    const OWN = /^(ai|study|doc|guidebook|chronicle-data|timeline)$/i;
+    const OWN = /^(ai|doc|guidebook|chronicle-data|timeline)$/i;   // 2026-11-07: Study joins (its notebook parts stay, section 37)
     function essay(id, shell) {
       let ls = null;
       try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id]; } catch (e) {}
       if (!Array.isArray(ls)) { const c = shell.querySelector('.source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; }
-      return !ls.some(l => OWN.test(l));
+      if (ls.some(l => OWN.test(l))) return '';
+      return ls.some(l => /^study$/i.test(l)) ? 'study' : 'essay';
     }
     function apply() {
       frame = 0;
@@ -4248,7 +4249,9 @@
       const cat = shell && shell.querySelector('.source-category');
       const issue = !!(shell && ((cat && WEEKLY.test(cat.textContent)) || index.some(x => x.id === m[1])));
       const on = issue || !!(shell && essay(m[1], shell));
+      const kind = !issue && shell ? essay(m[1], shell) : '';
       root.classList.toggle('lk-essay', on && !issue);
+      root.classList.toggle('lk-study', on && kind === 'study');
       if (!on) {
         if (root.classList.contains('lk-weekly')) { root.classList.remove('lk-weekly'); toggle(false, true); }
         paperButton(false); glow();
@@ -4269,7 +4272,7 @@
         series(shell, m[1]); stack(shell, m[1]);
         drawer.querySelector('header b').textContent = shell.querySelector(':scope > h1').textContent.trim();
         const pos = index.findIndex(x => x.id === m[1]);
-        drawer.querySelector('header span').textContent = (root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY') + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
+        drawer.querySelector('header span').textContent = (root.classList.contains('lk-study') ? L('学习', 'STUDY', '学習') : root.classList.contains('lk-essay') ? L('随笔', 'ESSAY', '随筆') : 'WEEKLY') + (pos >= 0 ? ' · ' + L('第 ' + (pos + 1) + ' 期', 'No. ' + (pos + 1), '第 ' + (pos + 1) + ' 号') : '') + ' · LULIY';
         done = key;
       }
       glow();
@@ -4610,9 +4613,13 @@
       const m = /^#\/article\/(P\d+)(?:[?#/]|$)/.exec(location.hash || '');
       const shell = m && main.querySelector('.source-reading');
       if (shell) loadMap();
-      const style = shell && !root.classList.contains('lk-weekly') ? styleOf(m[1], shell) : '';
-      ['musings', 'growth', 'study', 'ai', 'doc', 'guide'].forEach(s => root.classList.toggle('ls-' + s, s === style));
-      root.classList.toggle('ls-on', !!style);
+      const mag = root.classList.contains('lk-weekly');
+      let style = shell ? styleOf(m[1], shell) : '';
+      if (mag && style !== 'study') style = '';
+      // 2026-11-07: on the magazine page (section 36) a study article keeps only its notebook parts: html.lsm-study.
+      ['musings', 'growth', 'study', 'ai', 'doc', 'guide'].forEach(s => root.classList.toggle('ls-' + s, !mag && s === style));
+      root.classList.toggle('ls-on', !mag && !!style);
+      root.classList.toggle('lsm-study', mag && style === 'study');
       if (!style) { if (state.id) { state = { id: '', style: '', quote: '', keys: [], ki: 0, prompts: [], ended: false }; clearTimeout(quoteT); } return; }
       loadMap();
       if (state.id !== m[1]) {
@@ -4622,7 +4629,7 @@
       }
       state.style = style;
       if (style === 'doc' || style === 'guide') return;   // section 38 builds these
-      head(shell, style); readingTime(shell);
+      if (!mag) { head(shell, style); readingTime(shell); }
       const body = shell.querySelector('.source-body');
       if (!body || !body.textContent.trim()) return;
       const sig = style + ':' + body.childElementCount + ':' + body.textContent.length;
@@ -4637,7 +4644,7 @@
     addEventListener('hashchange', schedule);
     addEventListener('scroll', onEnd, { passive: true });
     let rt = 0;
-    addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { const b = main.querySelector('.source-body'); if (b && root.classList.contains('ls-study')) sidenotes(b); }, 200); });
+    addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { const b = main.querySelector('.source-body'); if (b && root.classList.contains('ls-study') || b && root.classList.contains('lsm-study')) sidenotes(b); }, 200); });
     schedule();
   })();
 

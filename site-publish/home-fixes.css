@@ -2299,6 +2299,37 @@ html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-list li { an
    away (no issue icon in the capsule, no issue switcher in Loon's contents). */
 html.lk-essay .lk-bar .lk-no, html.lk-essay .lk-card .lk-card-ib, html.lk-essay .lk-card .lk-card-iss { display: none !important; }
 
+/* 36 n) 學習 on the magazine page (2026-11-07). Study articles use the weekly page; section 37 keeps their notebook parts
+   (GitHub alert boxes, bold as highlighter, 本篇要点 with review cards, footnotes in the margin) under html.lsm-study —
+   the same rules as html.ls-study, without its framed squared-paper box. The kicker reads 學習. */
+html.lk-weekly.lsm-study { --ls-gold: var(--lk-acc); --ls-gold2: color-mix(in srgb, var(--lk-acc) 75%, var(--lk-ink)); --ls-mono: var(--font-mono); }
+html.lk-weekly.lsm-study #main .source-body :is(strong, b):not(.markdown-alert-title *) { font-weight: 600; background: linear-gradient(transparent 55%, color-mix(in srgb, var(--accent) 34%, transparent) 55% 92%, transparent 92%); padding: 0 .1em; }
+html.lk-weekly.lsm-study #main .source-body .ls-box { margin: 1.5em 0; padding: .9em 1.1em; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); border-left-width: 1px; border-radius: 6px;
+  background: color-mix(in srgb, var(--c) 9%, transparent); color: inherit; }
+html.lk-weekly.lsm-study #main .source-body .ls-note { --c: #7fa6d6; }
+html.lk-weekly.lsm-study #main .source-body .ls-important { --c: var(--accent); }
+html.lk-weekly.lsm-study #main .source-body .ls-box > p { margin: 0; text-indent: 0; }
+html.lk-weekly.lsm-study #main .source-body .ls-box > p + p { margin-top: .4em; }
+html.lk-weekly.lsm-study #main .source-body .ls-box .ls-box-title { margin: 0 0 .35em; font: 600 11.5px/1 var(--ls-mono); letter-spacing: .2em; color: var(--c); }
+html.lk-weekly.lsm-study #main .source-body .ls-keys { margin: 2.6em 0 0; padding: 22px 24px; border: 1px solid var(--accent); border-radius: 6px; background: color-mix(in srgb, var(--accent) 6%, transparent); }
+html.lk-weekly.lsm-study #main .source-body .ls-keys h3 { margin: 0 0 10px; font: 600 12px/1 var(--ls-mono); letter-spacing: .24em; color: var(--ls-gold); }
+html.lk-weekly.lsm-study #main .source-body .ls-keys ol { margin: 0; padding-left: 1.4em; font-size: .92em; line-height: 1.85; }
+html.lk-weekly.lsm-study #main .source-body .ls-keys li::marker { color: var(--ls-gold); font-family: var(--ls-mono); }
+html.lk-weekly.lsm-study #main .source-body .ls-go { margin-top: 14px; font: 12.5px var(--ls-mono); color: var(--bg); background: var(--accent); border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; }
+html.lk-weekly.lsm-study #main .source-body .ls-fc { margin-top: 14px; padding: 14px 16px; border: 1px dashed var(--accent); border-radius: 6px; }
+html.lk-weekly.lsm-study #main .source-body .ls-fc small { display: block; font: 11px var(--ls-mono); color: var(--muted); margin-bottom: 6px; }
+html.lk-weekly.lsm-study #main .source-body .ls-fc p { margin: 0; }
+html.lk-weekly.lsm-study #main .source-body .ls-fc .ls-q { color: var(--ls-gold2); }
+html.lk-weekly.lsm-study #main .source-body .ls-row { display: flex; gap: 8px; margin-top: 10px; }
+html.lk-weekly.lsm-study #main .source-body .ls-row button { flex: 1; font: 12.5px var(--font-ui); color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 7px; cursor: pointer; }
+html.lk-weekly.lsm-study #main .source-body .ls-row button:hover, html.lk-weekly.lsm-study #main .source-body .ls-row button:focus-visible { border-color: var(--accent); color: var(--ls-gold); outline: none; }
+html.lk-weekly.lsm-study #main .source-body .ls-sn { position: absolute; left: calc(100% + 28px); width: 210px; padding-left: 12px; border-left: 1px solid var(--accent); font: 13px/1.65 var(--font-body); color: var(--muted); }
+html.lk-weekly.lsm-study #main .source-body .ls-sn { display: none; } /* on the sheet, footnotes stay at the end */
+html.lk-weekly.lsm-study #main .source-body { position: relative; }
+html.lk-weekly.lsm-study #main .source-body .ls-sn b { margin-right: 6px; font: 600 11px var(--ls-mono); color: var(--ls-gold); }
+html.lk-weekly.lsm-study #main .source-body .ls-tip { --c: #7fbf9a; }
+html.lk-weekly.lsm-study #main .source-body :is(.ls-warning, .ls-caution) { --c: #e0956a; }
+
 /* 37. Article styles by label (2026-11-01; home-fixes.js 37): 隨筆 / 成長 (夜讀手稿), 學習 (夜間筆記本), AI (提示詞工作台).
    Scoped to html.ls-on + ls-<style>. Colours come from the site theme (--ink, --muted, --line, --accent), so light
    appearance works too. Loon stays; the article artwork and the orange meta row do not. */
