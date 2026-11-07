@@ -2198,6 +2198,7 @@ html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .lk-by[data-lk-no]::after { content: 
 html.lk-weekly .lk-cover { margin: 0 0 0 calc(50% - 50vw); width: 100vw; position: relative; overflow: hidden; z-index: 0; }
 html.lk-weekly .lk-cover img { display: block; width: 100%; height: auto; max-height: 70svh; object-fit: cover; }
 html.lk-weekly .lk-cover-src, html.lk-weekly .lk-cover-src + .lk-cap { display: none !important; }
+html.lk-weekly #main .source-body a:has(> .lk-cover-src), html.lk-weekly #main .source-body a:has(> .lk-cover-src) + br { display: none !important; } /* 2026-11-07: the moved cover left two blank lines */
 html.lk-weekly .lk-cov > .lk-by .lk-date { display: none; }
 html.lk-weekly #main .source-reading.lk-cov { padding-top: 0 !important; }
 html.lk-weekly .lk-cov > .lk-kick { padding-top: 30px !important; }
@@ -3043,7 +3044,16 @@ html.lt-on .luliy-mascot .lk-card { display: none !important; }
    scrolling); Loon steps aside for the aresluna-style contents (section 44); 標記 · 返回 · 頂部 buttons at the bottom right */
 .lk-bio-side, .lk-bio-tools { display: none; }
 @media (min-width: 1001px) {
-  html.lk-bio { --bio-w: max(0px, calc((100vw - 828px) / 2)); } /* the sheet is 700px of text plus 64px of paper on each side */
+  /* 2026-11-07: a wider sheet on 傳記 pages: text up to 820px (700px at 1400px wide), plus 64px of paper on each side */
+  html.lk-bio { --bio-text: clamp(700px, calc(100vw - 700px), 820px); --bio-w: max(0px, calc((100vw - var(--bio-text) - 128px) / 2)); --bio-rail: calc(50% + var(--bio-text) / 2 + 84px); }
+  html.lk-weekly.lk-bio #main .source-reading { max-width: var(--bio-text); }
+  /* contents and the three buttons share one left edge, 20px right of the paper */
+  html.lk-bio.lt-on .lt-toc { left: var(--bio-rail); width: 56px; }
+  html.lk-bio .lt-list { width: min(240px, calc(50vw - var(--bio-text) / 2 - 104px)); }
+  /* less empty space between parts: the · · · break and the headings sit closer to the text around them */
+  html.lk-bio #main .source-body hr { display: none; } /* no · · · break on 傳記 pages */
+  html.lk-essay.lk-bio #main .source-body h2 { margin-top: 1.6em; padding-top: 0; border-top: 0; } /* no rule above the big headings either */
+  html.lk-essay.lk-bio #main .source-body h3 { margin-top: 1.2em; }
   html.lk-bio .lk-bio-side { position: fixed; z-index: 5; left: 0; top: 0; bottom: 0; display: block; width: var(--bio-w); overflow: hidden; background: #000; }
   html.lk-bio .lk-bio-side img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; display: block; }
   html.lk-bio .lk-bio-side::after { content: ""; position: absolute; inset: 0 0 auto; height: 120px; background: linear-gradient(rgba(0, 0, 0, .45), transparent); }
@@ -3051,7 +3061,7 @@ html.lt-on .luliy-mascot .lk-card { display: none !important; }
   html.lk-weekly.lk-bio #main .source-reading.lk-cov { padding-top: 108px !important; }
   html.lk-weekly.lk-bio .lk-cov > .lk-kick { padding-top: 0 !important; }
   html.lk-bio .luliy-mascot { display: none !important; }
-  html.lk-bio .lk-bio-tools { position: fixed; z-index: 40; right: 22px; bottom: 26px; display: flex; flex-direction: column; gap: 10px; }
+  html.lk-bio .lk-bio-tools { position: fixed; z-index: 40; left: var(--bio-rail); bottom: 26px; display: flex; flex-direction: column; gap: 10px; }
   /* black and white only: a dark square, a light line icon; marked = the colours swap */
   .lk-bt { display: grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 1px solid rgba(255, 255, 255, .1); border-radius: 10px; background: #161616; color: #ededed; cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, .35); transition: background .2s, color .2s, transform .2s; }
