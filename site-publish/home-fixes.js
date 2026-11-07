@@ -5432,7 +5432,7 @@
           requestAnimationFrame(wait);
         };
       };
-      head.querySelector('strong').textContent = '書架'; head.querySelector('span').textContent = '共' + CN(books.length) + '冊 · 點書脊，翻開讀後感';
+      head.querySelector('strong').textContent = '書架'; head.querySelector('span').textContent = '共' + CN(books.length) + '冊';
       const kase = document.createElement('div'); kase.className = 'lk-sh-case';
       kinds.forEach(k => {
         const list = books.filter(b => kindOf(b) === k);
@@ -5509,6 +5509,24 @@
           lq.delete('tag'); lq.set('tags', tags.join(',')); c.href = '#/posts?' + lq.toString().replace(/%2C/gi, ','); });
         if (small) small.textContent = small.textContent.replace(/\d+/, String(shown));
       }
+      // c0) the router lists categories from articles only, so Library (the books) is added; the drawer stays open while choosing
+      const drawer = box.querySelector('details.article-filter-drawer');
+      if (drawer) {
+        let keep = false; try { keep = sessionStorage.getItem('lk-filter-open') === '1'; } catch (e) {}
+        if (keep) drawer.open = true;
+        if (!drawer.dataset.lkKeep) {
+          drawer.dataset.lkKeep = '1';
+          drawer.addEventListener('click', e => { if (e.target.closest('.article-filter-panel a')) { window.__lkPick = Date.now(); try { sessionStorage.setItem('lk-filter-open', '1'); } catch (err) {} } }, true);
+          drawer.addEventListener('toggle', () => { if (!drawer.open && Date.now() - (window.__lkPick || 0) > 1500) { try { sessionStorage.removeItem('lk-filter-open'); } catch (err) {} } }); // closed by the reader, not by a pick
+        }
+      }
+      box.querySelectorAll('.article-filter-section').forEach(sec => {
+        const h = (sec.querySelector('h3') || {}).textContent || '';
+        if (!/分類|分类|Categor|カテゴリ/.test(h)) return;
+        const nav = sec.querySelector('nav'); if (!nav || nav.querySelector('[data-lk-lib]')) return;
+        if ([...nav.querySelectorAll('a')].some(a => /[?&]tag=Library(&|$)/i.test(a.dataset.lkHref || a.getAttribute('href') || ''))) return;
+        const a = document.createElement('a'); a.textContent = 'Library'; a.dataset.lkLib = '1'; a.setAttribute('href', '#/posts?view=archive&tag=Library'); nav.append(a);
+      });
       // c) the drawer: 分類 toggles, others keep the set
       box.querySelectorAll('.article-filter-section').forEach(sec => {
         const h = (sec.querySelector('h3') || {}).textContent || '';
