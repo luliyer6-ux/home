@@ -312,7 +312,7 @@
     if (gone) return;
     gone = true; state.reason = 'intro'; state.at = Date.now() - t0;
     clearTimeout(cap);
-    var r = video.getBoundingClientRect(), mark = document.querySelector('.brand-mark svg'), m = mark && mark.getBoundingClientRect();
+    var r = video.getBoundingClientRect(), mark = document.querySelector('html.lh-on .lh-mark svg') || document.querySelector('.brand-mark svg'), m = mark && mark.getBoundingClientRect(); // the new home hides the header logo and shows it beside the avatar (home-fixes.js 41)
     var ok = m && m.width > 4 && m.bottom > 0 && m.top < innerHeight && r.width > 0;
     if (ok) {
       var B = INTRO.box, fly = document.createElement('div'), clone = mark.cloneNode(true);

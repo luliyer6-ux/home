@@ -5224,7 +5224,7 @@
       if (!home || classic) return;
       const ent = document.querySelector('.entrance');
       const entries = [...document.querySelectorAll('.home-articles .study-entry')];
-      if (!ent || !entries.length) return;
+      if (!ent) return; // built at once (the opening's logo flies to .lh-mark); the issue and the list fill in when the home list arrives
       const now = entries.map(a => a.getAttribute('href') + ((a.querySelector('.home-article-summary') || {}).textContent || '').length + ((a.querySelector('.study-entry-cover img') || {}).src || '')).join('|') + '#' + (feed ? feed.length : 0) + (window.LuliyJournal && window.LuliyJournal.items ? window.LuliyJournal.items.length : '');
       if (box && box.isConnected && now === sig) return;
       sig = now;

@@ -314,7 +314,7 @@
     if (gone) return;
     gone = true; state.reason = 'intro'; state.at = Date.now() - t0;
     clearTimeout(cap);
-    var r = video.getBoundingClientRect(), mark = document.querySelector('.brand-mark svg'), m = mark && mark.getBoundingClientRect();
+    var r = video.getBoundingClientRect(), mark = document.querySelector('html.lh-on .lh-mark svg') || document.querySelector('.brand-mark svg'), m = mark && mark.getBoundingClientRect(); // the new home hides the header logo and shows it beside the avatar (home-fixes.js 41)
     var ok = m && m.width > 4 && m.bottom > 0 && m.top < innerHeight && r.width > 0;
     if (ok) {
       var B = INTRO.box, fly = document.createElement('div'), clone = mark.cloneNode(true);
@@ -1565,7 +1565,7 @@ new MutationObserver(schedule).observe(document.querySelector('#main'),{childLis
 })();
 </script><script src="/reading-timeline.js?v=20261022-mobile" defer></script><script id="experience-layer-js" src="/assets/site/home/eda1d076c5f3.js"></script>
 
-<script src="/site-publish/home-fixes.js?v=616bacf5038a" async data-home-fixes></script><style id="directory-add-style">
+<script src="/site-publish/home-fixes.js?v=e2ec71aa8de0" async data-home-fixes></script><style id="directory-add-style">
 /* directory-add v3 */
 #directory .directory-add-view{display:none;flex:1;min-height:0;overflow:auto}
 #directory.directory-add-mode .directory-main{display:none}
