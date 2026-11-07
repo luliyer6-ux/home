@@ -2900,3 +2900,61 @@ a.lh-k-binder:hover .lh-tab, a.lh-k-binder:focus-visible .lh-tab { transform: tr
 #main .post-archive :is(.study-entry, .post-year)[hidden] { display: none !important; }
 #main .post-archive .lk-multi-hint { display: block; margin: 4px 0 0; white-space: nowrap; font-size: 11px; font-weight: 400; letter-spacing: .06em; opacity: .55; }
 #main .post-archive .article-filter-section a.lk-multi[aria-current]::before { content: "✓ "; }
+
+/* 43 — 讀書 (html.lk-read) and 學習 (html.lk-study) pages, home-fixes.js 43 */
+html.lk-read.lk-has-book #main .lk-cover, html.lk-read #main .source-body .lk-bc-src, html.lk-read #main .source-body .lk-bc-used, html.lk-read #main .lk-stand.lk-bc-src { display: none !important; }
+/* the big cover is not shown on 讀書, so the page keeps the usual top space (the cover mode had removed it) */
+html.lk-weekly.lk-read.lk-has-book #main .source-reading.lk-cov { padding-top: 108px !important; }
+html.lk-weekly.lk-read.lk-has-book .lk-cov > .lk-kick { padding-top: 0 !important; }
+@media (max-width: 680px) { html.lk-weekly.lk-read.lk-has-book #main .source-reading.lk-cov { padding-top: 92px !important; } }
+html.lk-read #main .lk-bookcard { display: flex; gap: 22px; align-items: center; margin: -1em 0 2.4em; padding: 18px 20px; background: color-mix(in srgb, var(--lk-ink) 4%, transparent); border: 1px solid var(--lk-rule); }
+html.lk-read #main .lk-bc-cover { flex: none; width: 92px; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 1px 3px 3px 1px; box-shadow: inset 3px 0 0 rgba(0, 0, 0, .25), 0 8px 18px rgba(0, 0, 0, .35); }
+html.lk-read #main .lk-bc-cover img { width: 100%; height: 100%; object-fit: cover; display: block; margin: 0; }
+html.lk-read #main .lk-bc-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+html.lk-read #main .lk-bc-kick { font: 600 11px/1 var(--font-mono); letter-spacing: .22em; color: var(--lk-acc); }
+html.lk-read #main .lk-bc-title { font: 700 22px/1.35 var(--font-body); color: var(--lk-ink); }
+html.lk-read #main .lk-bc-author { font-size: 15px; color: var(--lk-soft); }
+html.lk-read #main .lk-bc-row { display: flex; flex-wrap: wrap; gap: 14px; font: 12px/1.4 var(--font-mono); letter-spacing: .06em; color: var(--lk-mute); }
+html.lk-read #main .lk-bc-rate { color: var(--lk-acc); letter-spacing: .14em; }
+html.lk-read.lk-has-book #main .source-body p + p { margin-top: .45em; }
+html.lk-read #main .source-body blockquote.lk-excerpt { position: relative; margin: 1.6em 0; padding: .9em 1.2em 1em 1.4em; border: 0; border-left: 2px solid var(--lk-acc); background: color-mix(in srgb, var(--lk-acc) 7%, transparent); color: var(--lk-ink); font-size: .97em; line-height: 1.85; }
+html.lk-read #main .source-body blockquote.lk-excerpt { font-weight: 400; text-align: justify; }
+html.lk-read #main .source-body blockquote.lk-rw > :not(.lk-qtext):not(.lk-pg) { display: none; }
+html.lk-read #main .source-body blockquote.lk-star { font-size: 1.28em; } /* the ★ one stays the big pull quote */
+html.lk-read #main .source-body blockquote.lk-star:not(.lk-pull) { margin: 1.8em 0; padding: .9em 0 1em; border: 0; border-top: 2px solid var(--lk-ink); border-bottom: 1px solid var(--lk-rule); background: none; font-weight: 600; line-height: 1.55; }
+html.lk-read #main .source-body blockquote.lk-excerpt::before { content: none; display: none; } /* the weekly page pulls short quotes out; on 讀書 only ★ ones are */
+html.lk-read #main .source-body .lk-pg { display: block; margin-top: .5em; text-align: right; font: 12px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-mute); }
+html.lk-read #main .source-body .lk-quotes { margin: 3.2em 0 0; padding-top: 1.2em; border-top: 2px solid var(--lk-ink); }
+html.lk-read #main .source-body .lk-quotes h3 { margin: 0 0 .8em; padding: 0; border: 0; font: 600 12px/1 var(--font-mono); letter-spacing: .26em; color: var(--lk-ink); }
+html.lk-read #main .source-body .lk-quotes ol { margin: 0; padding: 0; list-style: none; counter-reset: q; }
+html.lk-read #main .source-body .lk-quotes li { counter-increment: q; display: grid; grid-template-columns: 2.2em 1fr auto; gap: 10px; padding: .7em 0; border-bottom: 1px solid var(--lk-rule); font-size: .92em; line-height: 1.7; color: var(--lk-soft); }
+html.lk-read #main .source-body .lk-quotes li::before { content: counter(q, decimal-leading-zero); font: 12px/1.9 var(--font-mono); color: var(--lk-acc); }
+html.lk-read #main .source-body .lk-quotes li small { font: 11.5px/1.9 var(--font-mono); color: var(--lk-mute); }
+@media (max-width: 680px) { html.lk-read #main .lk-bookcard { gap: 16px; padding: 14px; } html.lk-read #main .lk-bc-cover { width: 72px; } html.lk-read #main .lk-bc-title { font-size: 19px; } }
+
+html.lk-study #main .lk-studymeta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: -1.2em 0 2.2em; font: 12px/1.5 var(--font-mono); letter-spacing: .06em; color: var(--lk-mute); }
+html.lk-study #main .lk-studymeta span + span::before { content: "·"; margin-right: 18px; opacity: .6; }
+html.lk-study #main .lk-sm-prog { color: var(--lk-acc); }
+html.lk-study #main .lk-sm-prog.all::after { content: " ✓"; }
+html.lk-study #main .source-body .lk-done { display: inline-block; vertical-align: .08em; width: 16px; height: 16px; margin: 0 10px 0 -26px; padding: 0; border: 1.5px solid var(--lk-mute); border-radius: 50%; background: none; cursor: pointer; transition: background .2s, border-color .2s; }
+html.lk-study #main .source-body .lk-done[aria-pressed="true"] { border-color: var(--lk-acc); background: var(--lk-acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%23111' stroke-width='2'/%3E%3C/svg%3E") center / 12px no-repeat; }
+html.lk-study #main .source-body .lk-done:hover, html.lk-study #main .source-body .lk-done:focus-visible { border-color: var(--lk-acc); outline: none; }
+@media (max-width: 760px) { html.lk-study #main .source-body .lk-done { margin: 0 8px 0 0; } }
+html.lk-study #main .source-body .lk-tw { margin: 1.2em 0 1.6em; }
+html.lk-study #main .source-body .lk-tw table { width: 100%; border-collapse: collapse; font-size: .9em; text-indent: 0; }
+html.lk-study #main .source-body .lk-tw :is(th, td) { padding: .55em .7em; border-bottom: 1px solid var(--lk-rule); text-align: left; vertical-align: top; }
+html.lk-study #main .source-body .lk-tw thead th { position: sticky; top: var(--lk-head-h, 64px); z-index: 2; background: var(--lk-bg); border-bottom: 1.5px solid var(--lk-ink); font-weight: 600; }
+html.lk-study #main .source-body .lk-tw tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--lk-ink) 4%, transparent); }
+html.lk-study #main .source-body .lk-maskbtn { display: block; margin: 1em 0 -.6em auto; padding: 5px 10px; font: 12px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-acc); background: none; border: 1px solid var(--lk-acc); border-radius: 3px; cursor: pointer; }
+html.lk-study #main .source-body .lk-maskbtn[aria-pressed="true"] { background: var(--lk-acc); color: var(--lk-bg); }
+html.lk-study #main .source-body table.lk-masked td.lk-mcol:not(.lk-peek) { color: transparent; background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--lk-acc) 22%, transparent) 0 6px, color-mix(in srgb, var(--lk-acc) 12%, transparent) 6px 12px) !important; cursor: pointer; user-select: none; }
+html.lk-study #main .source-body table.lk-masked td.lk-mcol:not(.lk-peek) * { visibility: hidden; }
+html.lk-study #main .source-body pre { position: relative; }
+html.lk-study #main .source-body .lk-copy { position: absolute; top: 8px; right: 8px; padding: 4px 8px; font: 11.5px/1 var(--font-mono); color: var(--lk-mute); background: var(--lk-bg); border: 1px solid var(--lk-rule); border-radius: 3px; cursor: pointer; opacity: 0; transition: opacity .2s; }
+html.lk-study #main .source-body pre:hover .lk-copy, html.lk-study #main .source-body .lk-copy:focus-visible { opacity: 1; }
+@media (hover: none) { html.lk-study #main .source-body .lk-copy { opacity: 1; } }
+@media (max-width: 680px) {
+  html.lk-study #main .source-body .lk-tw { overflow-x: auto; margin-inline: -20px; padding-inline: 20px; }
+  html.lk-study #main .source-body .lk-tw table { min-width: 520px; }
+  html.lk-study #main .source-body .lk-tw thead th { position: static; }
+}

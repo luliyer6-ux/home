@@ -4265,7 +4265,7 @@
       try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id]; } catch (e) {}
       if (!Array.isArray(ls)) { const c = shell.querySelector('.source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; }
       if (ls.some(l => OWN.test(l))) return '';
-      return ls.some(l => /^study$/i.test(l)) ? 'study' : 'essay';
+      return ls.some(l => /^study$/i.test(l)) ? 'study' : ls.some(l => /^(reading|讀書|读书)$/i.test(l)) ? 'read' : 'essay'; // 2026-11-07: Reading = 讀書 (reading notes)
     }
     function apply() {
       frame = 0;
@@ -4277,6 +4277,7 @@
       const kind = !issue && shell ? essay(m[1], shell) : '';
       root.classList.toggle('lk-essay', on && !issue);
       root.classList.toggle('lk-study', on && kind === 'study');
+      root.classList.toggle('lk-read', on && kind === 'read');
       if (!on) {
         if (root.classList.contains('lk-weekly')) { root.classList.remove('lk-weekly'); toggle(false, true); }
         paperButton(false); glow();
@@ -5388,6 +5389,138 @@
     let t = 0;
     new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 120); }).observe(document.body, { childList: true, subtree: true });
     addEventListener('hashchange', () => { sig = ''; setTimeout(run, 60); });
+    run();
+  })();
+
+  /* 43. 讀書頁與學習頁（2026-11-07）. Both keep the weekly sheet (section 36); each gets its own parts.
+     讀書 (html.lk-read, label Reading): a book card under the byline, built from the first quote when it reads
+       > 《書名》 作者 / > 讀完：2026-06 / > 評分：4   (lines in one quote) — with the post's first picture as the cover
+       (the big cover is not used here). Other quotes become book excerpts; “——p.32” at the end becomes a page number;
+       a quote starting with ★ is the one pulled out big. At the end 「本篇書摘」 collects every excerpt.
+     學習 (html.lk-study): a line under the byline (N 章 · N 條重點 from 本篇要點 · 已讀 x／n; chapters = the top headings, or the second level when there is only one top heading); each chapter heading gets a
+       circle to tick when read (localStorage lk-done-v1); tables get a sticky head and stripes (phones scroll them
+       sideways); a table with a Chinese column and a Latin column gets 「遮住中文」 for self-testing (tap a cell to see
+       it); code blocks get 「複製」. Each page is done once (data-lk-x). */
+  (() => {
+    const root = document.documentElement;
+    const T = s => (typeof window.LuliyInterfaceText === 'function' ? window.LuliyInterfaceText(s) : s);
+    const L = (zh, en) => (/^en/.test(root.lang) ? en : root.lang === 'zh-Hant' ? T(zh) : zh);
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const CJK = /[㐀-鿿]/, LAT = /[A-Za-z]{2}/;
+    const idNow = () => (/^#\/article\/(P\d+)/.exec(location.hash) || [])[1] || '';
+    function reading(shell, body) {
+      // a) the book card (the text is read whole: the site drops <br> in the standfirst copy)
+      const META = /《[^》]+》[\s\S]*(讀完|读完|評分|评分|Finished|Rating)|^\s*《[^》]+》[^。！？]{0,30}$/;
+      const quotes = [...body.querySelectorAll('blockquote')];
+      const metas = quotes.filter(q => META.test(q.textContent.trim()));
+      const stand = shell.querySelector('.lk-stand');
+      const src = metas[0] || (stand && META.test(stand.textContent.trim()) ? stand : null);
+      let info = null;
+      if (src) {
+        const t = src.textContent.replace(/\s+/g, ' ').trim(), m = /《([^》]+)》/.exec(t);
+        info = { title: m[1], author: (t.slice(m.index + m[0].length).split(/讀完|读完|評分|评分|Finished|Rating/i)[0] || '').replace(/^[\s—\-·,，]+|[\s,，。]+$/g, '') };
+        let r; if ((r = /(?:讀完|读完|Finished)[：:]\s*([0-9]{4}(?:[-./年][0-9]{1,2}月?)?)/i.exec(t))) info.done = r[1];
+        if ((r = /(?:評分|评分|Rating)[：:]\s*([0-5](?:\.5)?)/i.exec(t))) info.rate = +r[1];
+        metas.forEach(q => q.classList.add('lk-bc-src'));
+        if (stand && META.test(stand.textContent.trim())) stand.classList.add('lk-bc-src');
+      }
+      const cov = document.querySelector('#main .lk-cover img') || [...body.querySelectorAll('img')].find(i => !i.closest('blockquote, table'));
+      if (info) {
+        const card = el('div', 'lk-bookcard');
+        if (cov) { const f = el('span', 'lk-bc-cover'); const im = el('img'); im.src = cov.currentSrc || cov.src; im.alt = ''; f.append(im); card.append(f); }
+        const tx = el('div', 'lk-bc-text');
+        tx.append(el('small', 'lk-bc-kick', L('这次读的书', 'The book')), el('strong', 'lk-bc-title', '《' + info.title + '》'));
+        if (info.author) tx.append(el('span', 'lk-bc-author', info.author));
+        const row = el('span', 'lk-bc-row');
+        if (info.done) row.append(el('span', '', L('读完 ', 'Finished ') + info.done));
+        if (info.rate) { const st = el('span', 'lk-bc-rate'); st.setAttribute('aria-label', info.rate + ' / 5'); const k = Math.round(info.rate); st.textContent = '★'.repeat(k) + '☆'.repeat(5 - k); row.append(st); }
+        if (row.childNodes.length) tx.append(row);
+        card.append(tx);
+        const by = shell.querySelector('.lk-by'); (by || shell.querySelector('h1')).after(card);
+        root.classList.add('lk-has-book');
+        if (cov) { cov.classList.add('lk-bc-used'); const p = cov.closest('p'); if (p && !p.textContent.trim()) p.classList.add('lk-bc-used'); }
+      }
+      // b) excerpts, page numbers, the ★ one. The text is rewritten into a new <p> (the site's 繁簡 pass restores edited text nodes)
+      const ex = [];
+      quotes.forEach(q => {
+        if (q.classList.contains('lk-bc-src') || q.closest('.markdown-alert, .ls-box')) return;
+        let t = q.textContent.replace(/\s+/g, ' ').trim();
+        const star = /^[★☆＊*]\s*/.test(t); if (star) t = t.replace(/^[★☆＊*]\s*/, '');
+        let page = ''; const r = /\s*(?:——|—|--|－－)\s*(?:p\.?|P\.?|第)\s*(\d+)\s*[頁页]?\s*$/.exec(t); if (r) { page = r[1]; t = t.slice(0, r.index).trim(); }
+        q.classList.toggle('lk-star', star); q.classList.toggle('lk-excerpt', !star);
+        if (star || page) {
+          q.classList.add('lk-rw');
+          const np = el('p', 'lk-qtext', t); q.append(np);
+          if (page) q.append(el('span', 'lk-pg', 'p.' + page));
+        }
+        ex.push({ text: t, page });
+      });
+      // c) 本篇書摘
+      if (ex.length >= 2) {
+        const sec = el('section', 'lk-quotes'); sec.append(el('h3', '', L('本篇书摘', 'Excerpts')));
+        const ol = el('ol'); ex.forEach(x => { const li = el('li'); li.append(el('span', '', x.text)); if (x.page) li.append(el('small', '', 'p.' + x.page)); ol.append(li); });
+        sec.append(ol); body.append(sec);
+      }
+    }
+    function study(shell, body, id) {
+      const all = [...body.querySelectorAll('h1, h2, h3')];
+      let heads = all.filter(h => h.dataset.lkLevel === '1'); if (heads.length < 2) heads = all.filter(h => h.dataset.lkLevel === '2'); // one title on top: its sections are the chapters
+      let done = {}; try { done = JSON.parse(localStorage.getItem('lk-done-v1') || '{}') || {}; } catch (e) {}
+      const mine = new Set(done[id] || []);
+      const bold = body.querySelectorAll('.ls-keys li').length; // the 本篇要點 count (section 37), not every bold word
+      const rt = (shell.querySelector('.lk-rt') || {}).textContent || '';
+      const line = el('div', 'lk-studymeta');
+      const prog = el('span', 'lk-sm-prog');
+      const upd = () => { prog.textContent = heads.length ? L('已读 ', 'Read ') + mine.size + ' / ' + heads.length : ''; prog.classList.toggle('all', heads.length && mine.size === heads.length); };
+      void rt; // the byline already says how long
+      [heads.length ? heads.length + L(' 章', ' chapters') : '', bold ? bold + L(' 条重点', ' key points') : ''].filter(Boolean).forEach(t => line.append(el('span', '', t)));
+      line.append(prog); upd();
+      const by = shell.querySelector('.lk-by'); (by || shell.querySelector('h1')).after(line);
+      heads.forEach((h, i) => {
+        const b = el('button', 'lk-done'); b.type = 'button'; b.setAttribute('aria-pressed', String(mine.has(i))); b.title = L('读完这一章', 'Mark this chapter read');
+        b.setAttribute('aria-label', L('读完这一章', 'Mark this chapter read'));
+        b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (mine.has(i)) mine.delete(i); else mine.add(i); b.setAttribute('aria-pressed', String(mine.has(i)));
+          done[id] = [...mine]; try { localStorage.setItem('lk-done-v1', JSON.stringify(done)); } catch (err) {} upd(); });
+        h.prepend(b);
+      });
+      body.querySelectorAll('table').forEach(tb => {
+        if (tb.closest('.lk-tw')) return;
+        const w = el('div', 'lk-tw'); tb.before(w); w.append(tb);
+        const rows = [...tb.querySelectorAll('tbody tr')]; if (rows.length < 3) return;
+        const n = Math.max(...rows.map(r => r.children.length)); let cjk = -1, lat = -1;
+        for (let c = 0; c < n; c++) { const cells = rows.map(r => (r.children[c] || {}).textContent || '').filter(x => x.trim()); if (!cells.length) continue;
+          const zc = cells.filter(x => CJK.test(x) && !LAT.test(x)).length / cells.length, lc = cells.filter(x => LAT.test(x) && !CJK.test(x)).length / cells.length;
+          if (zc > .6 && cjk < 0) cjk = c; else if (lc > .6 && lat < 0) lat = c; }
+        if (cjk < 0 || lat < 0) return;
+        rows.forEach(r => { const td = r.children[cjk]; if (td) { td.classList.add('lk-mcol'); td.addEventListener('click', () => td.classList.toggle('lk-peek')); } });
+        const bt = el('button', 'lk-maskbtn', L('遮住中文', 'Hide Chinese')); bt.type = 'button'; bt.setAttribute('aria-pressed', 'false');
+        bt.addEventListener('click', () => { const on = !tb.classList.contains('lk-masked'); tb.classList.toggle('lk-masked', on); bt.setAttribute('aria-pressed', String(on)); bt.textContent = on ? L('显示中文', 'Show Chinese') : L('遮住中文', 'Hide Chinese'); tb.querySelectorAll('.lk-peek').forEach(x => x.classList.remove('lk-peek')); });
+        w.before(bt);
+      });
+      body.querySelectorAll('pre').forEach(pre => {
+        if (pre.querySelector('.lk-copy')) return;
+        const b = el('button', 'lk-copy', L('复制', 'Copy')); b.type = 'button';
+        b.addEventListener('click', () => { const t = (pre.querySelector('code') || pre).innerText; const ok = () => { b.textContent = L('已复制 ✓', 'Copied ✓'); setTimeout(() => { b.textContent = L('复制', 'Copy'); }, 1600); };
+          if (navigator.clipboard) navigator.clipboard.writeText(t).then(ok, () => {}); });
+        pre.append(b);
+      });
+      const head = document.querySelector('#header'); if (head) root.style.setProperty('--lk-head-h', Math.round(head.getBoundingClientRect().height) + 'px');
+    }
+    function run() {
+      const READ_ON = false; // 2026-11-07: the 讀書 parts are still being decided; the 學習 parts are live
+      const read = READ_ON && root.classList.contains('lk-read'), st = root.classList.contains('lk-study');
+      if (!read) root.classList.remove('lk-has-book');
+      if (!read && !st) return;
+      const shell = document.querySelector('#main .source-reading'), body = shell && shell.querySelector('.source-body');
+      const id = idNow();
+      if (!body || !id || !shell.querySelector('.lk-by') || !body.textContent.trim()) return;
+      const key = id + (read ? ':r' : ':s');
+      if (body.dataset.lkX === key) return;
+      body.dataset.lkX = key;
+      try { if (read) reading(shell, body); else study(shell, body, id); } catch (e) { /* decoration only */ }
+    }
+    let t = 0;
+    new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 200); }).observe(document.body, { childList: true, subtree: true });
     run();
   })();
 
