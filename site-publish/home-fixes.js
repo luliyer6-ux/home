@@ -5677,7 +5677,7 @@
     // and the sheet sits in the rest of the page (as on wangyurui.com's newsletter pages); phones keep the cover on top.
     let side = null;
     let tools = null;
-    function bioOff() { root.classList.remove('lk-bio'); if (side) { side.remove(); side = null; } if (tools) { tools.remove(); tools = null; } }
+    function bioOff() { root.classList.remove('lk-bio', 'lk-view', 'lk-biog'); if (side) { side.remove(); side = null; } if (tools) { tools.remove(); tools = null; } }
     // the side buttons (bottom right): 標記 (remember where I am; again: go back there, or clear it when already there) · 返回 · 頂部
     function bioTools(id) {
       if (tools && tools.dataset.id === id) return;
@@ -5700,16 +5700,32 @@
       top.addEventListener('click', () => scrollTo({ top: 0, behavior: smooth() }));
       document.body.append(tools); paint();
     }
+    const VIEW = /^(成长|成長|投资|投資)$/;   // 觀點類: the cover and the book's details stand on the left where 傳記 has its portrait
     function bio(id) {
       let ls = []; try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id] || []; } catch (e) {}
       if (!Array.isArray(ls) || !ls.length) { const c = document.querySelector('#main .source-reading .source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; } // before the label map arrives: the category line on the page
-      if (!ls.some(l => /^(传记|傳記|biography)$/i.test(l))) { bioOff(); return; }
-      const img = document.querySelector('#main .lk-cover img') || document.querySelector('#main .source-body img:not(.lk-bc-used)');
-      if (!img) { bioOff(); return; }
-      const src = img.currentSrc || img.src;
-      if (!side) { side = el('aside', 'lk-bio-side'); side.setAttribute('aria-hidden', 'true'); side.append(el('img')); document.body.append(side); }
+      const view = !ls.some(l => /^(传记|傳記|biography)$/i.test(l)) && ls.some(l => VIEW.test(l));
+      const isBio = ls.some(l => /^(传记|傳記|biography)$/i.test(l));
+      root.classList.toggle('lk-biog', isBio); // 傳記 typesetting that also holds on a phone (no portrait there)
+      if (!view && !isBio) { bioOff(); return; }
+      let src = '', text = null;
+      if (view) {
+        const card = document.querySelector('#main .lk-bookcard'), ci = card && card.querySelector('.lk-bc-cover img');
+        if (!card || !ci) { bioOff(); return; }
+        src = ci.currentSrc || ci.src; text = card.querySelector('.lk-bc-text');
+      } else {
+        const img = document.querySelector('#main .lk-cover img') || document.querySelector('#main .source-body img:not(.lk-bc-used)');
+        if (!img) { bioOff(); return; }
+        src = img.currentSrc || img.src;
+      }
+      if (side && side.classList.contains('lk-view-side') !== view) { side.remove(); side = null; }
+      if (!side) { side = el('aside', 'lk-bio-side' + (view ? ' lk-view-side' : '')); side.setAttribute('aria-hidden', 'true'); side.append(el('img')); document.body.append(side); }
       const im = side.querySelector('img'); if (im.getAttribute('src') !== src) { im.src = src; im.alt = ''; }
-      side.dataset.id = id; root.classList.add('lk-bio'); bioTools(id);
+      if (view) { // title, author, finished date and stars under the cover: copied from the book card
+        let cap = side.querySelector('.lk-vs-cap'); if (!cap) { cap = el('div', 'lk-vs-cap'); side.append(cap); }
+        const sig = text ? text.textContent : ''; if (cap.dataset.sig !== sig) { cap.dataset.sig = sig; cap.innerHTML = ''; if (text) [...text.children].filter(c => !c.classList.contains('lk-bc-kick')).forEach(c => cap.append(c.cloneNode(true))); }
+      }
+      side.dataset.id = id; root.classList.add('lk-bio'); root.classList.toggle('lk-view', view); bioTools(id);
     }
     function run() {
       const READ_ON = true; // 2026-11-07: 讀書 parts on (set false to switch them off)
@@ -5723,7 +5739,7 @@
       const key = id + (read ? ':r' : ':s');
       if (body.dataset.lkX === key) return;
       body.dataset.lkX = key;
-      try { if (read) reading(shell, body); else study(shell, body, id); } catch (e) { /* decoration only */ }
+      try { if (read) { reading(shell, body); bio(id); } else study(shell, body, id); } catch (e) { /* decoration only */ }
     }
     let t = 0;
     (window.__lkSettle = window.__lkSettle || []).push(run); // section 45 runs it at once when an article arrives
