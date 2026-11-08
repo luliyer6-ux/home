@@ -5835,6 +5835,106 @@
     run();
   })();
 
+  /* 47. 寫作語法說明（2026-11-08）. On the home page a small circled question mark stands at the right of 「教程」 in the row
+     of five; pointing at it, focusing it from the keyboard or tapping it opens a card of the Markdown that turns into this
+     site's own styles. Esc or a tap outside closes it. */
+  (() => {
+    const root = document.documentElement;
+    const T = s => (typeof window.LuliyInterfaceText === 'function' ? window.LuliyInterfaceText(s) : s);
+    const zh = s => (root.lang === 'zh-Hant' ? T(s) : s);
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const ROWS = [
+      ['全部', [
+        ['> 一句话', '单段、90 字内：放大的引言'],
+        ['第一段', '首字放大'],
+        ['![说明](图片)', '说明文字变成图说'],
+        ['单独一段的横图', '比正文略宽'],
+        ['---', '「· · ·」分隔（传记页不显示）'],
+        ['> [!NOTE] / [!TIP] / [!WARNING]', '提示框'],
+        ['<details><summary>标题</summary>…', '可收合的段落'],
+        ['`<head>`', '写 HTML 标签要用反引号包起来，不然会被吃掉'],
+      ]],
+      ['读书 Library', [
+        ['> 《书名》作者\n> 读完：2026-06\n> 评分：4', '书卡与星星（文内第一张图当封面）'],
+        ['> 原文……——p.32', '摘录，末尾变页码，收进「本篇书摘」'],
+        ['> ★ 一句话', '本篇最重要的一句，放大'],
+        ['+ 传记', '左侧人像（文内要有照片）'],
+        ['+ 成长 / 投资', '左侧封面和书名'],
+      ]],
+      ['学习 Study', [
+        ['## 本篇要点 + 加粗句', '顶部显示「N 条重点」'],
+        ['中文栏 | 英文栏 表格', '「遮住中文」自测'],
+        ['```代码```', '「复制」按钮'],
+      ]],
+    ];
+    let btn = null, card = null, open = false, shut = 0;
+    function set(v) { open = v; if (!btn) return; btn.setAttribute('aria-expanded', String(v)); card.classList.toggle('on', v); }
+    function build() {
+      const box = el('div', 'lk-howto');
+      btn = el('button', 'lk-howto-btn'); btn.type = 'button'; btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', zh('写作语法')); btn.title = zh('写作语法');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.3-2.6 4"/><circle cx="12" cy="17.2" r=".9" class="dot"/></svg>';
+      card = el('div', 'lk-howto-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', zh('写作语法'));
+      card.append(el('div', 'lk-howto-h', zh('怎么写')));
+      ROWS.forEach(([g, rows]) => {
+        card.append(el('div', 'lk-howto-g', zh(g)));
+        const dl = el('dl');
+        rows.forEach(([k, v]) => { dl.append(el('dt', '', k), el('dd', '', zh(v))); });
+        card.append(dl);
+      });
+      card.append(el('div', 'lk-howto-f', zh('中英文之间不用打空格，网站会自动留空隙。')));
+      box.append(card, btn);
+      box.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { clearTimeout(shut); place(); set(true); } });
+      box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { clearTimeout(shut); shut = setTimeout(() => set(false), 200); } });
+      btn.addEventListener('click', () => { place(); set(!open); });
+      box.addEventListener('focusin', () => { if (btn.matches(':focus-visible')) set(true); }); // keyboard only: a tap focuses too, and its click toggles
+      box.addEventListener('focusout', e => { if (!box.contains(e.relatedTarget)) set(false); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) { set(false); btn.focus(); } });
+      document.addEventListener('pointerdown', e => { if (open && !box.contains(e.target)) set(false); });
+      return box;
+    }
+    let box = null;
+    function place() { // the card stays on screen: it opens below the mark, as far left as it needs
+      if (!box || !card) return;
+      const r = btn.getBoundingClientRect(), w = Math.min(380, innerWidth - 32);
+      card.style.left = Math.round(Math.max(16, Math.min(r.right - w, innerWidth - 16 - w)) - r.left) + 'px';
+    }
+    function run() {
+      const cell = document.querySelector('html.lh-on .lh-stacks .lh-k-binder');
+      if (!cell) { if (box) { box.remove(); box = btn = card = null; open = false; } return; }
+      if (!box || !cell.parentElement.contains(box)) { if (box) box.remove(); box = build(); box.classList.add('lk-howto-home'); cell.parentElement.append(box); }
+      const sl = cell.querySelector('.lh-sl'), P = cell.parentElement.getBoundingClientRect(), r = (sl || cell).getBoundingClientRect(), bw = btn.offsetWidth || 30; // just right of the 「教程」 label
+      box.style.left = Math.round(Math.min(r.right - P.left - 2, P.width - bw + 4)) + 'px'; box.style.top = Math.round(r.top - P.top + r.height / 2 - bw / 2) + 'px';
+      place();
+    }
+    (window.__lkSettle = window.__lkSettle || []).push(run);
+    let t = 0;
+    new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; run(); }, 200); }).observe(document.body, { childList: true, subtree: true });
+    addEventListener('hashchange', () => setTimeout(run, 60));
+    addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { t = 0; run(); }, 150); });
+    run();
+  })();
+
+  /* 46. 多餘換行（2026-11-08）. A line break at the very start or end of a paragraph, list item, quote or table cell, and a
+     second break right after another, only add an empty line: they come from how the issue text was typed. They are taken
+     out of article bodies and 短札 entries (code blocks untouched). */
+  (function () {
+    const blank = n => n && n.nodeType === 3 && !n.textContent.trim();
+    function edge(br, dir) { let n = br[dir]; while (blank(n)) n = n[dir]; return !n; }
+    function tidy() {
+      document.querySelectorAll('#main .source-body br, #main .luliy-journal-view br').forEach(br => {
+        const host = br.parentElement;
+        if (!host || host.closest('pre, code, .katex, svg') || !/^(P|LI|BLOCKQUOTE|TD|TH|DIV)$/.test(host.tagName)) return;
+        let n = br.nextSibling; while (blank(n)) n = n.nextSibling;
+        if (edge(br, 'previousSibling') || edge(br, 'nextSibling') || (n && n.nodeName === 'BR' && host.tagName !== 'DIV')) br.remove(); // in a plain block a double break may be a paragraph gap: kept
+      });
+    }
+    (window.__lkSettle = window.__lkSettle || []).push(tidy);
+    let t = 0;
+    new MutationObserver(() => { if (!t) t = setTimeout(() => { t = 0; tidy(); }, 160); }).observe(document.body, { childList: true, subtree: true });
+    tidy();
+  })();
+
   /* 45. 進文章不閃舊樣式（2026-11-07）. The router draws an article in its plain layout first; sections 36–44 then dress it
      (weekly sheet, 讀書／學習 parts, typesetting, 傳記 portrait, contents) a few frames to a few hundred ms later, so a
      click showed the old look for a moment. Now: on the way into #/article/Pxx the sheet is held invisible
