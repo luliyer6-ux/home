@@ -5591,7 +5591,8 @@
         metas.forEach(q => q.classList.add('lk-bc-src'));
         if (stand && META.test(stand.textContent.trim())) stand.classList.add('lk-bc-src');
       }
-      const cov = document.querySelector('#main .lk-cover img') || [...body.querySelectorAll('img')].find(i => !i.closest('blockquote, table'));
+      // the cover: the first picture outside quotes and tables — or one written inside the book-info quote itself (2026-11-09)
+      const cov = document.querySelector('#main .lk-cover img') || [...body.querySelectorAll('img')].find(i => !i.closest('table') && (!i.closest('blockquote') || i.closest('blockquote.lk-bc-src')));
       if (info) {
         const card = el('div', 'lk-bookcard');
         if (cov) { const f = el('span', 'lk-bc-cover'); const im = el('img'); im.src = cov.currentSrc || cov.src; im.alt = ''; f.append(im); card.append(f); }
