@@ -5603,7 +5603,7 @@
       }
       // the cover: the first picture outside quotes and tables — or one written inside the book-info quote itself (2026-11-09)
       const cov = document.querySelector('#main .lk-cover img') || [...body.querySelectorAll('img')].find(i => !i.closest('table') && (!i.closest('blockquote') || i.closest('blockquote.lk-bc-src')));
-      if (info && (info.title || dbId)) {
+      if (info && (info.title || dbId || cov)) {
         const card = el('div', 'lk-bookcard');
         if (cov || dbId) {
           const f = el('span', 'lk-bc-cover'); const im = el('img'); im.alt = '';
