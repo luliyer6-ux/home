@@ -5579,7 +5579,7 @@
       // a) the book card (the text is read whole: the site drops <br> in the standfirst copy)
       // A 豆瓣 link in that quote (2026-11-09) is enough: 「> 豆瓣：https://book.douban.com/subject/36104107/」 —
       // the title, author, publisher and cover come from /douban/<id> (functions/douban/, through NeoDB or the 豆瓣 page,
-      // kept at Cloudflare's edge and in localStorage lk-book-v2). Whatever is written by hand wins.
+      // kept at Cloudflare's edge and in localStorage lk-book-v3). Whatever is written by hand wins.
       const DB = /book\.douban\.com\/subject\/(\d+)/;
       const META = /《[^》]+》[\s\S]*(讀完|读完|評分|评分|Finished|Rating)|^\s*《[^》]+》[^。！？]{0,30}$|book\.douban\.com\/subject\/\d+/;
       const quotes = [...body.querySelectorAll('blockquote')];
@@ -5636,14 +5636,14 @@
           if (bt) { if (!br) { br = el('p', 'lk-bc-brief'); card.append(br); } br.textContent = bt; br.title = bt; card.classList.add('has-brief'); }
           else if (br) { br.remove(); card.classList.remove('has-brief'); }
         };
-        let bk = null; try { bk = (JSON.parse(localStorage.getItem('lk-book-v2') || '{}') || {})[dbId] || null; } catch (e) {}
+        let bk = null; try { bk = (JSON.parse(localStorage.getItem('lk-book-v3') || '{}') || {})[dbId] || null; } catch (e) {}
         paint(bk);
         if (dbId && (!bk || Date.now() - (bk.at || 0) > 30 * 864e5)) {
           const pid = idNow();
-          fetch('/douban/' + dbId, { headers: { Accept: 'application/json' } }).then(r => r.ok ? r.json() : null).then(j => {
+          fetch('/douban/' + dbId + '?v=2', { headers: { Accept: 'application/json' } }).then(r => r.ok ? r.json() : null).then(j => {
             if (!j || !j.title) return;
             j.at = Date.now();
-            try { const all = JSON.parse(localStorage.getItem('lk-book-v2') || '{}') || {}; all[dbId] = j; localStorage.setItem('lk-book-v2', JSON.stringify(all)); } catch (e) {}
+            try { const all = JSON.parse(localStorage.getItem('lk-book-v3') || '{}') || {}; all[dbId] = j; localStorage.setItem('lk-book-v3', JSON.stringify(all)); } catch (e) {}
             if (!card.isConnected || idNow() !== pid) return;
             paint(j); bio(pid);
           }).catch(() => {});
