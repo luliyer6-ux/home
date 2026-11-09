@@ -3193,6 +3193,7 @@ html[data-appearance="light"] { --hl-gold: rgba(240, 195, 70, .5); --hl-blue: rg
 .lk-hl-fab svg { width: 20px; height: 20px; }
 .lk-hl-fab.on { background: #ededed; color: #111; border-color: #ededed; }
 html.lk-read .lk-hl-fab { display: grid; }
+@media (max-width: 1000px), (pointer: coarse) { html .lk-hl-fab, html .lk-hl-panel, html .lk-hl-pop, html .lk-hl-ed { display: none !important; } }
 html.lk-read.lk-bio .lk-hl-fab { display: none; }
 html.lk-read.lk-hl-mode:not(.lk-bio) .luliy-mascot { opacity: 0; pointer-events: none; }
 @media (max-width: 1000px) { html.lk-read.lk-bio .lk-hl-fab { display: grid; } }

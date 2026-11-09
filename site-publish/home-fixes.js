@@ -5711,6 +5711,7 @@
     const hlBlocks = () => { const b = hlBody(); return b ? [...b.querySelectorAll(BLK)].filter(x => !x.querySelector(BLK) && !x.closest('.lk-quotes, .lk-bookcard, .lk-hl-skip')) : []; };
     const hlOff = (blk, node, off) => { const r = document.createRange(); r.selectNodeContents(blk); r.setEnd(node, off); return r.toString().length; };
     const coarse = () => matchMedia('(pointer: coarse)').matches;
+    const hlOn = () => !matchMedia('(max-width: 1000px), (pointer: coarse)').matches; // 2026-11-09: phones and tablets only read — drawing is for the computer
     const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
     // Painted with the CSS Custom Highlight API (::highlight), so the article's text nodes are never split — the site's
     // 繁簡 pass rewrites text nodes from its own copy, and wrapping words in <mark> made it print them twice.
@@ -5819,10 +5820,10 @@
     }
     // 劃線模式
     const hlBtnNow = () => [...hlPens, hlFab].find(b => b && b.isConnected && b.getClientRects().length) || null;
-    const penShown = () => !!hlBtnNow();
+    const penShown = () => hlOn() && !!hlBtnNow();
     const hlSelOk = () => {
       const sel = getSelection(), bd = hlBody();
-      if (!root.classList.contains('lk-read') || !sel || sel.isCollapsed || !sel.rangeCount || !bd) return false;
+      if (!hlOn() || !root.classList.contains('lk-read') || !sel || sel.isCollapsed || !sel.rangeCount || !bd) return false;
       const c = sel.getRangeAt(0).commonAncestorContainer, ce = c.nodeType === 1 ? c : c.parentElement;
       return bd.contains(c) && !(ce && ce.closest('pre, code, .lk-hl-skip')) && !!sel.toString().trim();
     };
@@ -5845,7 +5846,7 @@
       if ((hlPop && hlPop.contains(e.target)) || (hlEd && hlEd.contains(e.target))) return;
       const bd = hlBody(), sel = getSelection(), still = !sel || sel.isCollapsed;
       const h = bd && bd.contains(e.target) && still ? hlHit(e.clientX, e.clientY) : null;
-      if (h && hlMode) { hlEdShow(h); return; }
+      if (h && hlMode && hlOn()) { hlEdShow(h); return; }
       hlEdHide();
       if (h && h.rec.n) { hlTipShow(h); return; } // a tap shows the note too (phones have no hover)
       hlTipHide();
