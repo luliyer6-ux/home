@@ -6038,6 +6038,16 @@
     function chapters(body) { // all headings (h1–h3) in reading order
       const hs = [...body.querySelectorAll('h1, h2, h3')].filter(h => name(h));
       if (hs.length) return hs;
+      // 2026-11-09: reading notes often mark their parts with a bold line (**👍 一、價值體系**) instead of a heading:
+      // a paragraph that is nothing but one short bold run counts as a chapter there
+      if (root.classList.contains('lk-read')) {
+        const bold = [...body.querySelectorAll('p')].filter(p => {
+          if (p.closest('blockquote, li, table, .lk-bc-src, .lk-quotes')) return false;
+          const b = p.querySelector('strong, b'), t = p.textContent.trim();
+          return b && t.length <= 40 && b.textContent.trim().length >= t.length - 1 && t.length >= 2;
+        });
+        if (bold.length >= 2) return bold;
+      }
       const all = [...body.querySelectorAll('h1, h2, h3')];
       if (all.some(h => h.dataset.lkLevel)) { const one = all.filter(h => h.dataset.lkLevel === '1'); return one.length >= 2 ? one : all.filter(h => h.dataset.lkLevel === '2').length >= 2 ? all.filter(h => h.dataset.lkLevel === '2') : one; }
       for (const t of ['H1', 'H2', 'H3']) { const x = all.filter(h => h.tagName === t); if (x.length >= 2) return x; }
@@ -6069,7 +6079,7 @@
       document.body.append(box);
       list.innerHTML = ''; dots.innerHTML = '';
       // 2026-11-07: every heading, as text only, indented by level; the writer's 一、/1./(2) numbering is dropped
-      const strip = t => t.replace(/^(?:第?[一二三四五六七八九十百零〇]+[、.．:：章节節部]|[（(]?\d{1,2}[)）]|\d{1,2}(?:\.\d{1,2})+(?:[、.．:：)）]|(?=\s))|\d{1,2}[、.．:：)）](?!\d))\s*/, '') || t;
+      const strip = t => t.replace(/^[^\p{L}\p{N}（(]+/u, '').replace(/^(?:第?[一二三四五六七八九十百零〇]+[、.．:：章节節部]|[（(]?\d{1,2}[)）]|\d{1,2}(?:\.\d{1,2})+(?:[、.．:：)）]|(?=\s))|\d{1,2}[、.．:：)）](?!\d))\s*/, '') || t;
       const levels = [...new Set(heads.map(h => h.tagName))].sort();
       const entries = heads.map(h => ({ label: strip(name(h)), lv: Math.min(2, levels.indexOf(h.tagName)), go: () => jump(h) }));
       entries.forEach((it, i) => {
