@@ -5577,15 +5577,25 @@
     const idNow = () => (/^#\/article\/(P\d+)/.exec(location.hash) || [])[1] || '';
     function reading(shell, body) {
       // a) the book card (the text is read whole: the site drops <br> in the standfirst copy)
-      const META = /《[^》]+》[\s\S]*(讀完|读完|評分|评分|Finished|Rating)|^\s*《[^》]+》[^。！？]{0,30}$/;
+      // A 豆瓣 link in that quote (2026-11-09) is enough: 「> 豆瓣：https://book.douban.com/subject/36104107/」 —
+      // the title, author, publisher and cover come from /douban/<id> (functions/douban/, through NeoDB or the 豆瓣 page,
+      // kept at Cloudflare's edge and in localStorage lk-book-v1). Whatever is written by hand wins.
+      const DB = /book\.douban\.com\/subject\/(\d+)/;
+      const META = /《[^》]+》[\s\S]*(讀完|读完|評分|评分|Finished|Rating)|^\s*《[^》]+》[^。！？]{0,30}$|book\.douban\.com\/subject\/\d+/;
       const quotes = [...body.querySelectorAll('blockquote')];
-      const metas = quotes.filter(q => META.test(q.textContent.trim()));
+      const metas = quotes.filter(q => META.test(q.textContent.trim()) || [...q.querySelectorAll('a[href]')].some(a => DB.test(a.href)));
       const stand = shell.querySelector('.lk-stand');
       const src = metas[0] || (stand && META.test(stand.textContent.trim()) ? stand : null);
-      let info = null;
+      let info = null, dbId = '';
       if (src) {
         const t = src.textContent.replace(/\s+/g, ' ').trim(), m = /《([^》]+)》/.exec(t);
-        info = { title: m[1], author: (t.slice(m.index + m[0].length).split(/讀完|读完|評分|评分|Finished|Rating/i)[0] || '').replace(/^[\s—\-·,，]+|[\s,，。]+$/g, '') };
+        const lnk = [...src.querySelectorAll('a[href]')].map(a => DB.exec(a.href)).find(Boolean) || DB.exec(t);
+        if (lnk) dbId = lnk[1];
+        const STOP = /讀完|读完|評分|评分|Finished|Rating|豆瓣|douban|https?:/i;
+        info = { title: m ? m[1] : '', author: m ? (t.slice(m.index + m[0].length).split(STOP)[0] || '').replace(/^[\s—\-·,，]+|[\s,，。]+$/g, '') : '', hand: {} };
+        if (/^(作者|author)$/i.test(info.author)) info.author = ''; // the template's placeholder
+        if (/^(書名|书名|title)$/i.test(info.title)) info.title = '';
+        info.hand.title = !!info.title; info.hand.author = !!info.author;
         let r; if ((r = /(?:讀完|读完|Finished)[：:]\s*([0-9]{4}(?:[-./年][0-9]{1,2}月?)?)/i.exec(t))) info.done = r[1];
         if ((r = /(?:評分|评分|Rating)[：:]\s*([0-5](?:\.5)?)/i.exec(t))) info.rate = +r[1];
         metas.forEach(q => q.classList.add('lk-bc-src'));
@@ -5593,17 +5603,43 @@
       }
       // the cover: the first picture outside quotes and tables — or one written inside the book-info quote itself (2026-11-09)
       const cov = document.querySelector('#main .lk-cover img') || [...body.querySelectorAll('img')].find(i => !i.closest('table') && (!i.closest('blockquote') || i.closest('blockquote.lk-bc-src')));
-      if (info) {
+      if (info && (info.title || dbId)) {
         const card = el('div', 'lk-bookcard');
-        if (cov) { const f = el('span', 'lk-bc-cover'); const im = el('img'); im.src = cov.currentSrc || cov.src; im.alt = ''; f.append(im); card.append(f); }
-        const tx = el('div', 'lk-bc-text');
-        tx.append(el('small', 'lk-bc-kick', L('这次读的书', 'The book')), el('strong', 'lk-bc-title', '《' + info.title + '》'));
-        if (info.author) tx.append(el('span', 'lk-bc-author', info.author));
-        const row = el('span', 'lk-bc-row');
-        if (info.done) row.append(el('span', '', L('读完 ', 'Finished ') + info.done));
-        if (info.rate) { const st = el('span', 'lk-bc-rate'); st.setAttribute('aria-label', info.rate + ' / 5'); const k = Math.round(info.rate); st.textContent = '★'.repeat(k) + '☆'.repeat(5 - k); row.append(st); }
-        if (row.childNodes.length) tx.append(row);
+        if (cov || dbId) {
+          const f = el('span', 'lk-bc-cover'); const im = el('img'); im.alt = '';
+          im.src = cov ? (cov.currentSrc || cov.src) : '/douban/' + dbId + '/cover';
+          if (!cov) im.addEventListener('error', () => { f.remove(); bio(idNow()); }, { once: true });
+          f.append(im); card.append(f);
+        }
+        const tx = el('span', 'lk-bc-text');
         card.append(tx);
+        const paint = bk => {
+          const v = Object.assign({}, info);
+          if (bk) { if (!v.hand.title && bk.title) v.title = bk.title; if (!v.hand.author && bk.author) v.author = bk.author; }
+          tx.innerHTML = '';
+          tx.append(el('small', 'lk-bc-kick', L('这次读的书', 'The book')));
+          if (v.title) tx.append(el('strong', 'lk-bc-title', '《' + v.title + '》'));
+          if (v.author) tx.append(el('span', 'lk-bc-author', v.author));
+          const pub = bk ? [bk.publisher, bk.year].filter(Boolean).join(' · ') : '';
+          if (pub) tx.append(el('span', 'lk-bc-pub', pub));
+          const row = el('span', 'lk-bc-row');
+          if (v.done) row.append(el('span', '', L('读完 ', 'Finished ') + v.done));
+          if (v.rate) { const st = el('span', 'lk-bc-rate'); st.setAttribute('aria-label', v.rate + ' / 5'); const k = Math.round(v.rate); st.textContent = '★'.repeat(k) + '☆'.repeat(5 - k); row.append(st); }
+          if (dbId) { const a = el('a', 'lk-bc-db', L('豆瓣', 'Douban')); a.href = 'https://book.douban.com/subject/' + dbId + '/'; a.target = '_blank'; a.rel = 'noopener'; row.append(a); }
+          if (row.childNodes.length) tx.append(row);
+        };
+        let bk = null; try { bk = (JSON.parse(localStorage.getItem('lk-book-v1') || '{}') || {})[dbId] || null; } catch (e) {}
+        paint(bk);
+        if (dbId && (!bk || Date.now() - (bk.at || 0) > 30 * 864e5)) {
+          const pid = idNow();
+          fetch('/douban/' + dbId, { headers: { Accept: 'application/json' } }).then(r => r.ok ? r.json() : null).then(j => {
+            if (!j || !j.title) return;
+            j.at = Date.now();
+            try { const all = JSON.parse(localStorage.getItem('lk-book-v1') || '{}') || {}; all[dbId] = j; localStorage.setItem('lk-book-v1', JSON.stringify(all)); } catch (e) {}
+            if (!card.isConnected || idNow() !== pid) return;
+            paint(j); bio(pid);
+          }).catch(() => {});
+        }
         const by = shell.querySelector('.lk-by'); (by || shell.querySelector('h1')).after(card);
         root.classList.add('lk-has-book');
         if (cov) { cov.classList.add('lk-bc-used'); const p = cov.closest('p'); if (p && !p.textContent.trim()) p.classList.add('lk-bc-used'); }
