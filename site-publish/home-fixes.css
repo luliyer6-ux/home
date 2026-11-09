@@ -3082,10 +3082,10 @@ html.lt-on .luliy-mascot .lk-card { display: none !important; }
   html.lk-view .lk-vs-cap .lk-bc-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; font: 12px/1.4 var(--font-mono); letter-spacing: .06em; color: rgba(233, 227, 211, .5); }
   html.lk-view .lk-vs-cap .lk-bc-rate { color: var(--lk-acc, #c58a5c); letter-spacing: .14em; }
   html.lk-view #main .lk-bookcard { display: none; }
-  /* 2026-11-09: a reading note without a book card — the title, large, in the left panel */
+  /* 2026-11-09: a reading note without a book card — its category, large and upright, in the left panel (the title stays in the article) */
   html.lk-plain .lk-ps-cap { gap: 18px; padding: 0 8px; }
   html.lk-plain .lk-ps-kick { font: 600 11px/1 var(--font-mono); letter-spacing: .28em; color: var(--lk-acc, #c58a5c); text-transform: uppercase; }
-  html.lk-plain .lk-ps-title { font: 700 clamp(30px, 2.6vw, 46px)/1.3 var(--font-display, var(--font-body)); letter-spacing: .08em; color: #ece6d6; text-wrap: balance; }
+  html.lk-plain .lk-ps-title { writing-mode: vertical-rl; font: 700 clamp(44px, 3.6vw, 68px)/1 var(--font-display, var(--font-body)); letter-spacing: .32em; color: rgba(236, 230, 214, .88); }
   html.lk-plain .lk-ps-rule { width: 36px; height: 1px; background: rgba(236, 230, 214, .35); }
   html.lk-weekly.lk-bio #main .source-reading.lk-cov { padding-top: 108px !important; }
   html.lk-weekly.lk-bio .lk-cov > .lk-kick { padding-top: 0 !important; }

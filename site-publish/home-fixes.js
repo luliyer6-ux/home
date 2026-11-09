@@ -5991,12 +5991,11 @@
         const text = card.querySelector('.lk-bc-text');
         if (!cap) { cap = el('div', 'lk-vs-cap'); side.append(cap); }
         const sig = text ? text.textContent : ''; if (cap.dataset.sig !== sig) { cap.dataset.sig = sig; cap.innerHTML = ''; if (text) [...text.children].filter(c => !c.classList.contains('lk-bc-kick')).forEach(c => cap.append(c.cloneNode(true))); }
-      } else if (mode === 'plain') { // the article's title, large, with its labels above
-        const h = document.querySelector('#main .source-reading h1'), t = h ? h.textContent.trim() : '';
-        const kinds = ls.filter(l => !/^(library|讀書|读书)$/i.test(l)).join(' · ');
-        const sig = t + '|' + kinds;
+      } else if (mode === 'plain') { // the category, large and upright like a seal (the title is already on the page)
+        const kinds = ls.filter(l => !/^(library|讀書|读书)$/i.test(l));
+        const big = kinds[0] || L('读书', 'Reading'), sig = big;
         if (!cap) { cap = el('div', 'lk-vs-cap lk-ps-cap'); side.append(cap); }
-        if (cap.dataset.sig !== sig) { cap.dataset.sig = sig; cap.innerHTML = ''; cap.append(el('small', 'lk-ps-kick', L('读书', 'Reading') + (kinds ? ' · ' + kinds : '')), el('strong', 'lk-ps-title', t), el('span', 'lk-ps-rule')); }
+        if (cap.dataset.sig !== sig) { cap.dataset.sig = sig; cap.innerHTML = ''; cap.append(el('small', 'lk-ps-kick', L('读书笔记', 'Reading notes')), el('strong', 'lk-ps-title', T(big)), el('span', 'lk-ps-rule')); }
       }
       side.dataset.id = id; root.classList.add('lk-bio'); root.classList.toggle('lk-view', mode !== 'bio'); root.classList.toggle('lk-plain', mode === 'plain'); bioTools(id);
     }
