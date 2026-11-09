@@ -5686,7 +5686,7 @@
       const KEYM = 'lk-mark-v1';
       const marks = () => { try { return JSON.parse(localStorage.getItem(KEYM) || '{}') || {}; } catch (e) { return {}; } };
       const btn = (cls, label, svg, text) => { const b = el('button', 'lk-bt ' + cls); b.type = 'button'; b.title = label; b.setAttribute('aria-label', label); b.innerHTML = svg; if (text) b.append(el('span', '', text)); tools.append(b); return b; };
-      const pen = btn('lk-bt-pen', '劃線：選取文字即可保存，點此看全部劃線', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14M14.5 4.5l3 3L9 16H6v-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>');
+      const pen = btn('lk-bt-pen', '劃線：按一下開始', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14M14.5 4.5l3 3L9 16H6v-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>');
       const mark = btn('lk-bt-mark', '標記讀到這裡', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16l-5-4-5 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>');
       const back = btn('lk-bt-back', '返回', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5.5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
       const top = btn('lk-bt-top', '回到頂部', '<svg viewBox="0 0 24 10" aria-hidden="true"><path d="M5 8l7-6 7 6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>', '頂');
@@ -5712,18 +5712,40 @@
     const hlBody = () => document.querySelector('#main .source-reading .source-body');
     const hlBlocks = () => { const b = hlBody(); return b ? [...b.querySelectorAll(BLK)].filter(x => !x.querySelector(BLK) && !x.closest('.lk-quotes, .lk-bookcard, .lk-hl-skip')) : []; };
     const hlOff = (blk, node, off) => { const r = document.createRange(); r.selectNodeContents(blk); r.setEnd(node, off); return r.toString().length; };
-    function hlUnwrap() { const b = hlBody(); if (!b) return; b.querySelectorAll('mark.lk-hl').forEach(m => { const p = m.parentNode; while (m.firstChild) p.insertBefore(m.firstChild, m); p.removeChild(m); p.normalize(); }); }
-    function hlWrap(blk, s, e, k) {
-      const w = document.createTreeWalker(blk, NodeFilter.SHOW_TEXT), list = []; let pos = 0, n;
-      while ((n = w.nextNode())) { const len = n.nodeValue.length; if (pos + len > s && pos < e) list.push([n, Math.max(0, s - pos), Math.min(len, e - pos)]); pos += len; }
-      list.forEach(([node, a, z]) => { if (a >= z || !node.nodeValue.slice(a, z).trim()) return; let t = node; if (a > 0) t = t.splitText(a); if (z - a < t.nodeValue.length) t.splitText(z - a); const m = document.createElement('mark'); m.className = 'lk-hl'; m.dataset.k = k; t.parentNode.insertBefore(m, t); m.appendChild(t); });
+    // Painted with the CSS Custom Highlight API (::highlight), so the article's text nodes are never split — the site's
+    // 繁簡 pass rewrites text nodes from its own copy, and wrapping words in <mark> made it print them twice.
+    const HL = !!(window.CSS && CSS.highlights && window.Highlight);
+    let hlRanges = [];
+    function hlRange(blk, s, e) {
+      const w = document.createTreeWalker(blk, NodeFilter.SHOW_TEXT); let pos = 0, n, r = null;
+      while ((n = w.nextNode())) {
+        const len = n.nodeValue.length;
+        if (!r && pos + len > s) { r = document.createRange(); r.setStart(n, s - pos); }
+        if (r && pos + len >= e) { r.setEnd(n, e - pos); return r; }
+        pos += len;
+      }
+      return null;
     }
+    function hlPaint() { if (!HL) return; if (hlRanges.length) CSS.highlights.set('lk-hl', new Highlight(...hlRanges.map(x => x.r))); else CSS.highlights.delete('lk-hl'); }
     function hlApply(id) {
-      hlId = id; hlUnwrap();
-      const bl = hlBlocks(), recs = hlGet(id);
-      recs.forEach(r => { const blk = bl[r.b]; if (!blk) return; const tx = blk.textContent; let s = r.s; if (tx.slice(r.s, r.e) !== r.t) { s = tx.indexOf(r.t); if (s < 0) return; } hlWrap(blk, s, s + r.t.length, r.k); });
-      hlRefresh();
+      hlId = id; hlRanges = [];
+      const bl = hlBlocks();
+      hlGet(id).forEach(r => { const blk = bl[r.b]; if (!blk) return; const tx = blk.textContent; let s = r.s; if (tx.slice(r.s, r.e) !== r.t) { const i = tx.indexOf(r.t); if (i >= 0) s = i; else if (r.e > tx.length) return; } const rg = hlRange(blk, s, s + (r.e - r.s)); if (rg) hlRanges.push({ k: r.k, r: rg }); }); // 繁簡 is one character for one: the offsets still hold
+      hlPaint(); hlRefresh();
     }
+    function hlHit(x, y) { // which highlight is under the pointer
+      for (const h of hlRanges) for (const q of h.r.getClientRects()) if (x >= q.left - 1 && x <= q.right + 1 && y >= q.top - 1 && y <= q.bottom + 1) return h;
+      return null;
+    }
+    let hlMo = 0;
+    new MutationObserver(ms => { // the article was re-rendered or the 繁簡 switch rewrote its text: paint again
+      const id = idNow(); if (!id || !root.classList.contains('lk-read') || !hlGet(id).length) return;
+      const bd = hlBody(); if (!bd) return;
+      const lost = !hlRanges.length || hlRanges.some(x => !x.r.startContainer.isConnected);
+      if (!lost && !ms.some(m => m.type === 'characterData' && bd.contains(m.target))) return;
+      if (!hlMo) hlMo = setTimeout(() => { hlMo = 0; if (root.classList.contains('lk-read') && idNow() === id && hlBlocks().length) hlApply(id); }, 150); // throttled: the page never stops mutating
+    }).observe(document.body, { characterData: true, childList: true, subtree: true });
+    window.addEventListener('hashchange', () => { if (idNow() !== hlId) { hlRanges = []; hlPaint(); } });
     function hlAdd() {
       const sel = getSelection(); if (!sel || sel.isCollapsed || !sel.rangeCount) return;
       const rg = sel.getRangeAt(0), bd = hlBody(); if (!bd || !bd.contains(rg.commonAncestorContainer)) return;
@@ -5757,43 +5779,69 @@
       if (y < 8) y = rect.bottom + 10;
       hlPop.style.left = Math.max(8, Math.min(innerWidth - w - 8, x)) + 'px'; hlPop.style.top = Math.max(8, y) + 'px';
     }
-    function hlCheck() {
-      if (!root.classList.contains('lk-read')) { hlPopHide(); return; }
+    // 劃線模式 (2026-11-09): tap the pen → on (the pen lights up): drag over text and it is highlighted at once; tap a
+    // highlight to erase it. Tap the pen again → off: the highlights stay, nothing reacts to selections any more.
+    // Where the pen is not shown (phones, reading notes without the side buttons) the 「劃線」 pop-up stays as the way in.
+    let hlMode = false, hlOpen = false;
+    const penShown = () => !!(hlBtn && hlBtn.isConnected && hlBtn.offsetParent);
+    const hlSelOk = () => {
       const sel = getSelection(), bd = hlBody();
-      if (!sel || sel.isCollapsed || !sel.rangeCount || !bd || !bd.contains(sel.getRangeAt(0).commonAncestorContainer) || sel.getRangeAt(0).commonAncestorContainer.parentElement.closest('pre, code, .lk-hl-skip')) { if (hlPop && hlPop.dataset.mode === 'add') hlPopHide(); return; }
-      hlPopShow(sel.getRangeAt(0).getBoundingClientRect(), 'add');
+      if (!root.classList.contains('lk-read') || !sel || sel.isCollapsed || !sel.rangeCount || !bd) return false;
+      const c = sel.getRangeAt(0).commonAncestorContainer, ce = c.nodeType === 1 ? c : c.parentElement;
+      return bd.contains(c) && !(ce && ce.closest('pre, code, .lk-hl-skip')) && !!sel.toString().trim();
+    };
+    function hlModeSet(on) {
+      hlMode = !!on && penShown(); root.classList.toggle('lk-hl-mode', hlMode);
+      if (hlBtn) { hlBtn.classList.toggle('on', hlMode); hlBtn.setAttribute('aria-pressed', String(hlMode)); hlBtn.title = hlMode ? '劃線中：拖選文字即高亮，點高亮處擦掉（再按一次筆結束）' : '劃線：按一下開始'; }
+      if (!hlMode) hlOpen = false;
+      if (hlPanel_) hlPanel_.hidden = !hlMode;
+      hlPopHide(); hlRefresh();
     }
-    document.addEventListener('selectionchange', () => { clearTimeout(hlTimer); hlTimer = setTimeout(hlCheck, 160); });
+    function hlCheck() {
+      if (hlMode) { if (matchMedia('(pointer: coarse)').matches && hlSelOk()) hlAdd(); return; } // touch: long-press selection, added once it settles
+      if (penShown() || !hlSelOk()) { if (hlPop && hlPop.dataset.mode === 'add') hlPopHide(); return; }
+      hlPopShow(getSelection().getRangeAt(0).getBoundingClientRect(), 'add');
+    }
+    document.addEventListener('selectionchange', () => { clearTimeout(hlTimer); hlTimer = setTimeout(hlCheck, hlMode ? 700 : 160); });
+    document.addEventListener('mouseup', () => { if (hlMode) setTimeout(() => { if (hlSelOk()) hlAdd(); }, 0); });
     document.addEventListener('click', e => {
       if (hlPop && hlPop.contains(e.target)) return;
-      const m = e.target.closest && e.target.closest('mark.lk-hl'), sel = getSelection();
-      if (m && (!sel || sel.isCollapsed)) { hlPopShow(m.getBoundingClientRect(), 'del', m.dataset.k); return; }
+      const m = hlBody() && hlBody().contains(e.target) ? hlHit(e.clientX, e.clientY) : null, sel = getSelection(), still = !sel || sel.isCollapsed;
+      if (m && still && hlMode) { hlDel(m.k); return; }               // 劃線模式: a tap on a highlight erases it
+      if (m && still && !penShown()) { hlPopShow(m.r.getBoundingClientRect(), 'del', m.k); return; }
       if (hlPop && hlPop.dataset.mode === 'del') hlPopHide();
     });
-    document.addEventListener('pointerdown', e => { if (hlPanel_ && !hlPanel_.hidden && !hlPanel_.contains(e.target) && !(hlBtn && hlBtn.contains(e.target))) hlClose(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { hlPopHide(); hlClose(); } });
-    function hlClose() { if (hlPanel_) { hlPanel_.hidden = true; if (hlBtn) hlBtn.classList.remove('on'); } hlPopHide(); }
+    let hlMv = 0;
+    document.addEventListener('mousemove', e => { if (!hlMode || hlMv) return; hlMv = requestAnimationFrame(() => { hlMv = 0; const bd = hlBody(); if (bd) bd.classList.toggle('lk-hl-over', !!hlHit(e.clientX, e.clientY)); }); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { hlPopHide(); if (hlMode) hlModeSet(false); } });
+    window.addEventListener('hashchange', () => { if (hlMode) hlModeSet(false); });
+    function hlClose() { if (hlMode) hlModeSet(false); hlPopHide(); }
     function hlRefresh() {
       if (!hlPanel_ || !hlId) return;
       const recs = hlGet(hlId); hlPanel_.innerHTML = '';
-      hlPanel_.append(el('header', '', '劃線 · ' + recs.length));
-      if (!recs.length) { hlPanel_.append(el('p', 'lk-hl-empty', '選取文字，點「劃線」，就會一直保持高亮。')); return; }
+      const head = el('button', 'lk-hl-head'); head.type = 'button'; head.setAttribute('aria-expanded', String(hlOpen));
+      head.append(el('span', 'lk-hl-dot'), el('span', '', '劃線中'), el('span', 'lk-hl-n', recs.length ? recs.length + ' 條' : ''), el('span', 'lk-hl-car', recs.length ? (hlOpen ? '收起' : '查看') : ''));
+      head.addEventListener('click', () => { if (!recs.length) return; hlOpen = !hlOpen; hlRefresh(); });
+      hlPanel_.append(head);
+      if (!recs.length) { hlPanel_.append(el('p', 'lk-hl-empty', '拖選文字就會高亮；點高亮處擦掉。再按一次筆結束。')); return; }
+      if (!hlOpen) return;
       const ul = el('ul');
       recs.forEach(r => {
         const li = el('li'), go = el('button', 'lk-hl-go', r.t.length > 90 ? r.t.slice(0, 90) + '…' : r.t), x = el('button', 'lk-hl-x', '×');
-        go.type = x.type = 'button'; x.setAttribute('aria-label', '取消這條劃線');
-        go.addEventListener('click', () => { const m = document.querySelector('mark.lk-hl[data-k="' + r.k + '"]'); if (m) { m.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); m.classList.add('lk-hl-flash'); setTimeout(() => m.classList.remove('lk-hl-flash'), 1400); } });
+        go.type = x.type = 'button'; x.setAttribute('aria-label', '擦掉這條劃線');
+        go.addEventListener('click', () => { const h = hlRanges.find(x => x.k === r.k); if (!h) return; const q = h.r.getBoundingClientRect(); scrollBy({ top: q.top - innerHeight / 2 + q.height / 2, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); if (HL) { CSS.highlights.set('lk-hl-flash', new Highlight(h.r)); setTimeout(() => CSS.highlights.delete('lk-hl-flash'), 1400); } });
         x.addEventListener('click', () => hlDel(r.k));
         li.append(go, x); ul.append(li);
       });
       hlPanel_.append(ul);
     }
     function hlPanel(btn, id) {
-      hlId = id; hlBtn = btn;
+      if (hlMode) hlModeSet(false);
+      hlId = id; hlBtn = btn; btn.setAttribute('aria-pressed', 'false'); btn.title = '劃線：按一下開始';
       if (hlPanel_) hlPanel_.remove();
       hlPanel_ = el('div', 'lk-hl-panel'); hlPanel_.hidden = true; document.body.append(hlPanel_);
-      btn.addEventListener('click', () => { hlPanel_.hidden = !hlPanel_.hidden; btn.classList.toggle('on', !hlPanel_.hidden); hlRefresh(); });
-      hlRefresh();
+      btn.addEventListener('pointerdown', e => e.preventDefault()); // keep a selection made before tapping the pen
+      btn.addEventListener('click', () => { const was = hlMode; hlModeSet(!was); if (!was && hlSelOk()) hlAdd(); }); // text already selected → highlight it right away
     }
     const VIEW = /^(成长|成長|投资|投資)$/;   // 觀點類: the cover and the book's details stand on the left where 傳記 has its portrait
     function bio(id) {

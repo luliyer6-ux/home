@@ -3133,23 +3133,32 @@ html:not([data-appearance="dark"]):not([data-appearance="cc"]) .lk-howto-card { 
 @media (prefers-reduced-motion: reduce) { .lk-howto-card, .lk-howto-card.on { transform: none; transition-duration: .01s; } }
 
 /* 劃線 (2026-11-09): saved highlights in reading notes */
-mark.lk-hl { background: rgba(214, 170, 70, .34); color: inherit; padding: 0 .08em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; cursor: pointer; transition: background .25s; }
-mark.lk-hl:hover { background: rgba(214, 170, 70, .5); }
-mark.lk-hl.lk-hl-flash { background: rgba(214, 170, 70, .8); }
-html[data-appearance="light"] mark.lk-hl { background: rgba(240, 195, 70, .5); }
-html[data-appearance="light"] mark.lk-hl:hover { background: rgba(240, 195, 70, .7); }
+::highlight(lk-hl) { background-color: rgba(214, 170, 70, .34); }
+::highlight(lk-hl-flash) { background-color: rgba(214, 170, 70, .8); }
+html[data-appearance="light"] ::highlight(lk-hl) { background-color: rgba(240, 195, 70, .5); }
 .lk-hl-pop { position: fixed; z-index: 90; }
 .lk-hl-pop[hidden], .lk-hl-panel[hidden] { display: none; }
 .lk-hl-pop button { padding: 8px 16px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 999px; background: #161616; color: #ededed; font: 500 14px/1 var(--font-body); box-shadow: 0 6px 18px rgba(0, 0, 0, .4); cursor: pointer; }
 .lk-hl-pop button:hover { background: #262626; }
-.lk-hl-panel { position: fixed; z-index: 41; left: var(--bio-rail, 16px); bottom: 26px; margin-bottom: 0; transform: translateY(-212px); width: min(300px, calc(100vw - 32px)); max-height: 50vh; overflow: auto; padding: 14px 16px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 12px; background: #141414; color: #ededed; box-shadow: 0 10px 28px rgba(0, 0, 0, .45); }
-.lk-hl-panel header { font: 12px/1 var(--font-mono); letter-spacing: .1em; color: rgba(237, 237, 237, .55); margin-bottom: 10px; }
+.lk-hl-panel { position: fixed; z-index: 41; left: calc(var(--bio-rail, 16px) + 54px); bottom: 26px; width: min(300px, calc(100vw - var(--bio-rail, 16px) - 70px)); max-height: 60vh; overflow: auto; padding: 4px 14px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 12px; background: #141414; color: #ededed; box-shadow: 0 10px 28px rgba(0, 0, 0, .45); }
+.lk-hl-head { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 0; border: 0; background: none; color: inherit; font: 13px/1 var(--font-body); cursor: pointer; text-align: left; }
+.lk-hl-dot { width: 8px; height: 8px; border-radius: 50%; background: #e3b95a; box-shadow: 0 0 0 3px rgba(227, 185, 90, .2); animation: lk-hl-pulse 1.8s ease-in-out infinite; }
+@keyframes lk-hl-pulse { 50% { box-shadow: 0 0 0 6px rgba(227, 185, 90, .05); } }
+.lk-hl-n { color: rgba(237, 237, 237, .55); font-family: var(--font-mono); font-size: 12px; }
+.lk-hl-car { margin-left: auto; font-size: 12px; color: rgba(237, 237, 237, .55); }
+.lk-hl-head:hover .lk-hl-car { color: #e3b95a; }
+.lk-hl-panel .lk-hl-empty { padding: 0 0 12px; font-size: 13px; }
+html.lk-hl-mode #main .source-body { cursor: text; }
+html.lk-hl-mode #main .source-body ::selection { background: rgba(227, 185, 90, .45); }
+html.lk-hl-mode #main .source-body.lk-hl-over { cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .lk-hl-dot { animation: none; } }
 .lk-hl-panel ul { list-style: none; margin: 0; padding: 0; }
 .lk-hl-panel li { display: flex; gap: 6px; align-items: flex-start; padding: 8px 0; border-top: 1px solid rgba(255, 255, 255, .07); }
-.lk-hl-go { flex: 1; text-align: left; padding: 0; border: 0; background: none; color: inherit; font: 14px/1.55 var(--font-body); cursor: pointer; }
+.lk-hl-go { flex: 1; min-width: 0; white-space: normal; text-align: left; padding: 0; border: 0; background: none; color: inherit; font: 14px/1.55 var(--font-body); cursor: pointer; }
 .lk-hl-go:hover { color: #e3b95a; }
 .lk-hl-x { border: 0; background: none; color: rgba(237, 237, 237, .45); font-size: 18px; line-height: 1; cursor: pointer; }
 .lk-hl-x:hover { color: #fff; }
 .lk-hl-empty { margin: 0; font-size: 14px; line-height: 1.6; color: rgba(237, 237, 237, .65); }
 html[data-appearance="light"] .lk-hl-pop button, html[data-appearance="light"] .lk-hl-panel { background: #fff; color: #111; border-color: rgba(0, 0, 0, .12); }
 html[data-appearance="light"] .lk-hl-panel li { border-color: rgba(0, 0, 0, .08); }
+html[data-appearance="light"] .lk-hl-n, html[data-appearance="light"] .lk-hl-car { color: rgba(0, 0, 0, .5); }
