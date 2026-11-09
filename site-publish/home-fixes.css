@@ -2920,6 +2920,9 @@ html.lk-read #main .lk-bc-rate { color: var(--lk-acc); letter-spacing: .14em; }
 html.lk-read #main .lk-bc-pub { font-size: 13px; color: var(--lk-mute); }
 html.lk-read .lk-bc-db { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; opacity: .8; }
 html.lk-read .lk-bc-db:hover { opacity: 1; color: var(--lk-acc, #e3b95a); }
+/* 2026-11-09: reading notes drop the byline row (LULIY · 約 N 分鐘 · 分享 and its rule); kept in the DOM, the scripts anchor on it */
+html.lk-read #main .lk-by { display: none !important; }
+html.lk-read #main .lk-bookcard { margin-top: 1.2em; }
 /* 豆瓣 blurb on the right of the book card (2026-11-09) */
 html.lk-read #main .lk-bookcard.has-brief .lk-bc-text { flex: none; max-width: 300px; }
 html.lk-read #main .lk-bc-brief { flex: 1; min-width: 0; align-self: center; margin: 0; padding-left: 24px; border-left: 1px solid var(--lk-rule); font-size: 13.5px; line-height: 1.75; color: var(--lk-soft); text-indent: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
