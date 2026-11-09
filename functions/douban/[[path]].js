@@ -1,4 +1,4 @@
-/* 豆瓣 book lookup (2026-11-09): luliy.me/douban/<subject id>       → JSON { id, title, author, translator, publisher, year, isbn, cover }
+/* 豆瓣 book lookup (2026-11-09): luliy.me/douban/<subject id>       → JSON { id, title, author, translator, publisher, year, isbn, brief, cover }
                                   luliy.me/douban/<subject id>/cover → the cover picture
    Why here: 豆瓣 neither lets other sites read its pages from the browser nor shows its covers on them (hot-link
    protection), so the reading notes ask this function instead. Order: NeoDB (a public catalogue that mirrors 豆瓣
@@ -27,6 +27,7 @@ async function viaNeoDB(id) {
     return {
       title, subtitle: clean(j.subtitle), author: names(j.author).join(' / '), translator: names(j.translator).join(' / '),
       publisher: clean(Array.isArray(j.pub_house) ? j.pub_house[0] : j.pub_house), year: clean(j.pub_year), isbn: clean(j.isbn),
+      brief: clean(j.brief),
       coverUrl: /missing|default/i.test(j.cover_image_url || '') ? '' : new URL(j.cover_image_url || '', 'https://neodb.social/').href.replace(/^https:\/\/neodb\.social\/$/, ''), source: 'neodb',
     };
   }
@@ -44,16 +45,18 @@ async function viaDouban(id) {
   const field = k => clean(decode(((new RegExp(k + '\\s*[:：]\\s*([^\\n]+)')).exec(info) || [])[1] || ''));
   return {
     title, subtitle: field('副标题'), author: meta('book:author').map(clean).filter(Boolean).join(' / ') || field('作者'), translator: field('译者'),
+    brief: clean(decode(((html.match(/<div class="intro">([\s\S]*?)<\/div>/) || [])[1] || '').replace(/<[^>]+>/g, ' '))) || clean(meta('og:description')[0] || ''),
     publisher: field('出版社'), year: (field('出版年').match(/\d{4}/) || [''])[0], isbn: meta('book:isbn')[0] || field('ISBN'),
     coverUrl: (meta('og:image')[0] || '').replace(/\/view\/subject\/[sm]\//, '/view/subject/l/'), source: 'douban',
   };
 }
 
 async function lookup(id, cache, origin, waitUntil) {
-  const key = new Request(origin + '/douban/.cache/' + id);
+  const key = new Request(origin + '/douban/.cache/v2/' + id); // v2: answers carry brief
   if (cache) { const hit = await cache.match(key); if (hit) return hit.json(); }
   let book = null;
   for (const way of [viaNeoDB, viaDouban]) { try { book = await way(id); } catch (e) { book = null; } if (book) break; }
+  if (book && book.brief && book.brief.length > 600) book.brief = book.brief.slice(0, 600) + '…';
   if (book && !book.coverUrl && book.source === 'neodb') { try { const d = await viaDouban(id); if (d && d.coverUrl) book.coverUrl = d.coverUrl; } catch (e) {} } // NeoDB without a cover: take 豆瓣's
   const data = book ? Object.assign({ id }, book) : { id, missing: true };
   if (cache) waitUntil(cache.put(key, new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=' + (book ? 30 * DAY : 600) } })));

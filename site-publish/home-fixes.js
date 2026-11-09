@@ -5579,7 +5579,7 @@
       // a) the book card (the text is read whole: the site drops <br> in the standfirst copy)
       // A 豆瓣 link in that quote (2026-11-09) is enough: 「> 豆瓣：https://book.douban.com/subject/36104107/」 —
       // the title, author, publisher and cover come from /douban/<id> (functions/douban/, through NeoDB or the 豆瓣 page,
-      // kept at Cloudflare's edge and in localStorage lk-book-v1). Whatever is written by hand wins.
+      // kept at Cloudflare's edge and in localStorage lk-book-v2). Whatever is written by hand wins.
       const DB = /book\.douban\.com\/subject\/(\d+)/;
       const META = /《[^》]+》[\s\S]*(讀完|读完|評分|评分|Finished|Rating)|^\s*《[^》]+》[^。！？]{0,30}$|book\.douban\.com\/subject\/\d+/;
       const quotes = [...body.querySelectorAll('blockquote')];
@@ -5631,15 +5631,19 @@
           if (v.rate) { const st = el('span', 'lk-bc-rate'); st.setAttribute('aria-label', v.rate + ' / 5'); const k = Math.round(v.rate); st.textContent = '★'.repeat(k) + '☆'.repeat(5 - k); row.append(st); }
           if (dbId) { const a = el('a', 'lk-bc-db', L('豆瓣', 'Douban')); a.href = 'https://book.douban.com/subject/' + dbId + '/'; a.target = '_blank'; a.rel = 'noopener'; row.append(a); }
           if (row.childNodes.length) tx.append(row);
+          // 2026-11-09: 豆瓣's blurb on the right (up to four lines, the card's empty half)
+          let br = card.querySelector('.lk-bc-brief'); const bt = bk && bk.brief ? bk.brief.replace(/\s+/g, ' ').trim() : '';
+          if (bt) { if (!br) { br = el('p', 'lk-bc-brief'); card.append(br); } br.textContent = bt; br.title = bt; card.classList.add('has-brief'); }
+          else if (br) { br.remove(); card.classList.remove('has-brief'); }
         };
-        let bk = null; try { bk = (JSON.parse(localStorage.getItem('lk-book-v1') || '{}') || {})[dbId] || null; } catch (e) {}
+        let bk = null; try { bk = (JSON.parse(localStorage.getItem('lk-book-v2') || '{}') || {})[dbId] || null; } catch (e) {}
         paint(bk);
         if (dbId && (!bk || Date.now() - (bk.at || 0) > 30 * 864e5)) {
           const pid = idNow();
           fetch('/douban/' + dbId, { headers: { Accept: 'application/json' } }).then(r => r.ok ? r.json() : null).then(j => {
             if (!j || !j.title) return;
             j.at = Date.now();
-            try { const all = JSON.parse(localStorage.getItem('lk-book-v1') || '{}') || {}; all[dbId] = j; localStorage.setItem('lk-book-v1', JSON.stringify(all)); } catch (e) {}
+            try { const all = JSON.parse(localStorage.getItem('lk-book-v2') || '{}') || {}; all[dbId] = j; localStorage.setItem('lk-book-v2', JSON.stringify(all)); } catch (e) {}
             if (!card.isConnected || idNow() !== pid) return;
             paint(j); bio(pid);
           }).catch(() => {});
