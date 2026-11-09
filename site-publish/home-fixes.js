@@ -5678,29 +5678,20 @@
     let side = null;
     let tools = null;
     function bioOff() { root.classList.remove('lk-bio', 'lk-view', 'lk-biog'); if (side) { side.remove(); side = null; } if (tools) { tools.remove(); tools = null; } }
-    // the side buttons (bottom right): 標記 (remember where I am; again: go back there, or clear it when already there) · 返回 · 頂部
+    // the side buttons (bottom right): 劃線 · 返回 · 頂部
     function bioTools(id) {
       if (tools && tools.dataset.id === id) return;
       if (tools) tools.remove();
       tools = el('div', 'lk-bio-tools'); tools.dataset.id = id;
-      const KEYM = 'lk-mark-v1';
-      const marks = () => { try { return JSON.parse(localStorage.getItem(KEYM) || '{}') || {}; } catch (e) { return {}; } };
       const btn = (cls, label, svg, text) => { const b = el('button', 'lk-bt ' + cls); b.type = 'button'; b.title = label; b.setAttribute('aria-label', label); b.innerHTML = svg; if (text) b.append(el('span', '', text)); tools.append(b); return b; };
       const pen = btn('lk-bt-pen', '劃線：按一下開始', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14M14.5 4.5l3 3L9 16H6v-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>');
-      const mark = btn('lk-bt-mark', '標記讀到這裡', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16l-5-4-5 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>');
       const back = btn('lk-bt-back', '返回', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5.5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
       const top = btn('lk-bt-top', '回到頂部', '<svg viewBox="0 0 24 10" aria-hidden="true"><path d="M5 8l7-6 7 6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>', '頂');
-      const paint = () => { const m = marks()[id]; mark.classList.toggle('on', m != null); mark.title = m != null ? '回到標記處（已在標記處時再按一次取消）' : '標記讀到這裡'; };
       const smooth = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
-      mark.addEventListener('click', () => {
-        const all = marks(), m = all[id], y = Math.round(scrollY);
-        if (m == null) all[id] = y; else if (Math.abs(m - y) < 200) delete all[id]; else { scrollTo({ top: m, behavior: smooth() }); return; }
-        try { localStorage.setItem(KEYM, JSON.stringify(all)); } catch (e) {} paint();
-      });
       back.addEventListener('click', () => { if (history.length > 1) history.back(); else location.hash = '#/posts?view=archive&tags=Library'; });
       top.addEventListener('click', () => scrollTo({ top: 0, behavior: smooth() }));
       hlPanel(pen, id);
-      document.body.append(tools); paint();
+      document.body.append(tools);
     }
     /* 劃線 (2026-11-09). The pen is a switch: on → drag over text and it is highlighted at once (in the colour picked in the
        little panel: 金 重點 · 藍 疑問 · 紅 反對); tap a highlight → a small editor (change colour, write a note, erase).
