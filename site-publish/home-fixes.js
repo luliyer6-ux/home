@@ -5603,7 +5603,10 @@
         if (stand && META.test(stand.textContent.trim())) stand.classList.add('lk-bc-src');
       }
       // the cover: the first picture outside quotes and tables — or one written inside the book-info quote itself (2026-11-09)
-      const cov = document.querySelector('#main .lk-cover img') || [...body.querySelectorAll('img')].find(i => !i.closest('table') && (!i.closest('blockquote') || i.closest('blockquote.lk-bc-src')));
+      const inQuote = [...body.querySelectorAll('blockquote.lk-bc-src img')][0];
+      // with a 豆瓣 link the cover is 豆瓣's (a picture further down is the article's own — on a 傳記 page, the portrait),
+      // unless a picture is written inside the book-info quote itself
+      const cov = dbId ? inQuote : (document.querySelector('#main .lk-cover img') || [...body.querySelectorAll('img')].find(i => !i.closest('table') && (!i.closest('blockquote') || i.closest('blockquote.lk-bc-src'))));
       if (info && (info.title || dbId || cov)) {
         const card = el('div', 'lk-bookcard');
         if (cov || dbId) {
