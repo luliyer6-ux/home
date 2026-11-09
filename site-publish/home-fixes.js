@@ -5596,7 +5596,8 @@
         if (/^(作者|author)$/i.test(info.author)) info.author = ''; // the template's placeholder
         if (/^(書名|书名|title)$/i.test(info.title)) info.title = '';
         info.hand.title = !!info.title; info.hand.author = !!info.author;
-        let r; if ((r = /(?:讀完|读完|Finished)[：:]\s*([0-9]{4}(?:[-./年][0-9]{1,2}月?)?)/i.exec(t))) info.done = r[1];
+        let r; if ((r = /(?:讀完|读完|Finished)[：:]\s*([0-9]{4})(?:\s*[-./年]\s*([0-9]{1,2})\s*月?(?:\s*[-./]?\s*([0-9]{1,2})\s*日?)?)?/i.exec(t))) // 2026 · 2026-11 · 2026-11-09 · 2026.11.9 · 2026年11月9日
+          info.done = r[1] + (r[2] ? '-' + r[2].padStart(2, '0') + (r[3] ? '-' + r[3].padStart(2, '0') : '') : '');
         if ((r = /(?:評分|评分|Rating)[：:]\s*([0-5](?:\.5)?)/i.exec(t))) info.rate = +r[1];
         metas.forEach(q => q.classList.add('lk-bc-src'));
         if (stand && META.test(stand.textContent.trim())) stand.classList.add('lk-bc-src');
