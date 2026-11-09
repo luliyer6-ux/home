@@ -5677,7 +5677,7 @@
     // and the sheet sits in the rest of the page (as on wangyurui.com's newsletter pages); phones keep the cover on top.
     let side = null;
     let tools = null;
-    function bioOff() { root.classList.remove('lk-bio', 'lk-view', 'lk-biog'); if (side) { side.remove(); side = null; } if (tools) { tools.remove(); tools = null; } }
+    function bioOff() { hlClose(); root.classList.remove('lk-bio', 'lk-view', 'lk-biog'); if (side) { side.remove(); side = null; } if (tools) { tools.remove(); tools = null; } }
     // the side buttons (bottom right): 標記 (remember where I am; again: go back there, or clear it when already there) · 返回 · 頂部
     function bioTools(id) {
       if (tools && tools.dataset.id === id) return;
@@ -5686,7 +5686,8 @@
       const KEYM = 'lk-mark-v1';
       const marks = () => { try { return JSON.parse(localStorage.getItem(KEYM) || '{}') || {}; } catch (e) { return {}; } };
       const btn = (cls, label, svg, text) => { const b = el('button', 'lk-bt ' + cls); b.type = 'button'; b.title = label; b.setAttribute('aria-label', label); b.innerHTML = svg; if (text) b.append(el('span', '', text)); tools.append(b); return b; };
-      const mark = btn('lk-bt-mark', '標記讀到這裡', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14M14.5 4.5l3 3L9 16H6v-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>');
+      const pen = btn('lk-bt-pen', '劃線：選取文字即可保存，點此看全部劃線', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14M14.5 4.5l3 3L9 16H6v-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>');
+      const mark = btn('lk-bt-mark', '標記讀到這裡', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16l-5-4-5 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>');
       const back = btn('lk-bt-back', '返回', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5.5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
       const top = btn('lk-bt-top', '回到頂部', '<svg viewBox="0 0 24 10" aria-hidden="true"><path d="M5 8l7-6 7 6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>', '頂');
       const paint = () => { const m = marks()[id]; mark.classList.toggle('on', m != null); mark.title = m != null ? '回到標記處（已在標記處時再按一次取消）' : '標記讀到這裡'; };
@@ -5698,7 +5699,101 @@
       });
       back.addEventListener('click', () => { if (history.length > 1) history.back(); else location.hash = '#/posts?view=archive&tags=Library'; });
       top.addEventListener('click', () => scrollTo({ top: 0, behavior: smooth() }));
+      hlPanel(pen, id);
       document.body.append(tools); paint();
+    }
+    /* 劃線 (2026-11-09): select text in a reading note → 「劃線」 pops up → it stays highlighted (localStorage lk-hl-v1, per article).
+       Click a highlight → 「取消」. The pen button (wide screens) lists them; click one to jump there. */
+    const HK = 'lk-hl-v1', BLK = 'p, li, h1, h2, h3, h4, h5, h6, td, th, dd, dt';
+    let hlId = '', hlPop = null, hlPanel_ = null, hlBtn = null, hlTimer = 0;
+    const hlAll = () => { try { return JSON.parse(localStorage.getItem(HK) || '{}') || {}; } catch (e) { return {}; } };
+    const hlGet = id => hlAll()[id] || [];
+    const hlSet = (id, a) => { const all = hlAll(); if (a.length) all[id] = a; else delete all[id]; try { localStorage.setItem(HK, JSON.stringify(all)); } catch (e) {} };
+    const hlBody = () => document.querySelector('#main .source-reading .source-body');
+    const hlBlocks = () => { const b = hlBody(); return b ? [...b.querySelectorAll(BLK)].filter(x => !x.querySelector(BLK) && !x.closest('.lk-quotes, .lk-bookcard, .lk-hl-skip')) : []; };
+    const hlOff = (blk, node, off) => { const r = document.createRange(); r.selectNodeContents(blk); r.setEnd(node, off); return r.toString().length; };
+    function hlUnwrap() { const b = hlBody(); if (!b) return; b.querySelectorAll('mark.lk-hl').forEach(m => { const p = m.parentNode; while (m.firstChild) p.insertBefore(m.firstChild, m); p.removeChild(m); p.normalize(); }); }
+    function hlWrap(blk, s, e, k) {
+      const w = document.createTreeWalker(blk, NodeFilter.SHOW_TEXT), list = []; let pos = 0, n;
+      while ((n = w.nextNode())) { const len = n.nodeValue.length; if (pos + len > s && pos < e) list.push([n, Math.max(0, s - pos), Math.min(len, e - pos)]); pos += len; }
+      list.forEach(([node, a, z]) => { if (a >= z || !node.nodeValue.slice(a, z).trim()) return; let t = node; if (a > 0) t = t.splitText(a); if (z - a < t.nodeValue.length) t.splitText(z - a); const m = document.createElement('mark'); m.className = 'lk-hl'; m.dataset.k = k; t.parentNode.insertBefore(m, t); m.appendChild(t); });
+    }
+    function hlApply(id) {
+      hlId = id; hlUnwrap();
+      const bl = hlBlocks(), recs = hlGet(id);
+      recs.forEach(r => { const blk = bl[r.b]; if (!blk) return; const tx = blk.textContent; let s = r.s; if (tx.slice(r.s, r.e) !== r.t) { s = tx.indexOf(r.t); if (s < 0) return; } hlWrap(blk, s, s + r.t.length, r.k); });
+      hlRefresh();
+    }
+    function hlAdd() {
+      const sel = getSelection(); if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+      const rg = sel.getRangeAt(0), bd = hlBody(); if (!bd || !bd.contains(rg.commonAncestorContainer)) return;
+      const id = idNow() || hlId, bl = hlBlocks(), recs = hlGet(id).slice();
+      bl.forEach((blk, i) => {
+        if (!rg.intersectsNode(blk)) return;
+        const bs = document.createRange(); bs.selectNodeContents(blk);
+        const s = rg.compareBoundaryPoints(Range.START_TO_START, bs) > 0 ? hlOff(blk, rg.startContainer, rg.startOffset) : 0;
+        const e = rg.compareBoundaryPoints(Range.END_TO_END, bs) < 0 ? hlOff(blk, rg.endContainer, rg.endOffset) : blk.textContent.length;
+        if (e <= s || !blk.textContent.slice(s, e).trim()) return;
+        let a = s, z = e;
+        for (let j = recs.length - 1; j >= 0; j--) { const r = recs[j]; if (r.b === i && r.s <= z && r.e >= a) { a = Math.min(a, r.s); z = Math.max(z, r.e); recs.splice(j, 1); } } // merge with neighbours
+        recs.push({ k: Date.now().toString(36) + i, b: i, s: a, e: z, t: blk.textContent.slice(a, z) });
+      });
+      recs.sort((x, y) => x.b - y.b || x.s - y.s);
+      hlSet(id, recs); sel.removeAllRanges(); hlApply(id);
+    }
+    function hlDel(k) { const id = idNow() || hlId; hlSet(id, hlGet(id).filter(r => r.k !== k)); hlApply(id); }
+    function hlPopHide() { if (hlPop) hlPop.hidden = true; }
+    function hlPopShow(rect, mode, k) {
+      if (!hlPop) {
+        hlPop = el('div', 'lk-hl-pop'); const b = el('button'); b.type = 'button'; hlPop.append(b); document.body.append(hlPop);
+        hlPop.addEventListener('pointerdown', e => e.preventDefault()); // keep the selection alive
+        b.addEventListener('click', () => { if (hlPop.dataset.mode === 'del') hlDel(hlPop.dataset.k); else hlAdd(); hlPopHide(); });
+      }
+      hlPop.dataset.mode = mode; hlPop.dataset.k = k || '';
+      hlPop.firstChild.textContent = mode === 'del' ? '取消劃線' : '劃線';
+      hlPop.hidden = false;
+      const w = hlPop.offsetWidth || 80, h = hlPop.offsetHeight || 36, coarse = matchMedia('(pointer: coarse)').matches;
+      let x = rect.left + rect.width / 2 - w / 2, y = coarse ? rect.bottom + 14 : rect.top - h - 10;
+      if (y < 8) y = rect.bottom + 10;
+      hlPop.style.left = Math.max(8, Math.min(innerWidth - w - 8, x)) + 'px'; hlPop.style.top = Math.max(8, y) + 'px';
+    }
+    function hlCheck() {
+      if (!root.classList.contains('lk-read')) { hlPopHide(); return; }
+      const sel = getSelection(), bd = hlBody();
+      if (!sel || sel.isCollapsed || !sel.rangeCount || !bd || !bd.contains(sel.getRangeAt(0).commonAncestorContainer) || sel.getRangeAt(0).commonAncestorContainer.parentElement.closest('pre, code, .lk-hl-skip')) { if (hlPop && hlPop.dataset.mode === 'add') hlPopHide(); return; }
+      hlPopShow(sel.getRangeAt(0).getBoundingClientRect(), 'add');
+    }
+    document.addEventListener('selectionchange', () => { clearTimeout(hlTimer); hlTimer = setTimeout(hlCheck, 160); });
+    document.addEventListener('click', e => {
+      if (hlPop && hlPop.contains(e.target)) return;
+      const m = e.target.closest && e.target.closest('mark.lk-hl'), sel = getSelection();
+      if (m && (!sel || sel.isCollapsed)) { hlPopShow(m.getBoundingClientRect(), 'del', m.dataset.k); return; }
+      if (hlPop && hlPop.dataset.mode === 'del') hlPopHide();
+    });
+    document.addEventListener('pointerdown', e => { if (hlPanel_ && !hlPanel_.hidden && !hlPanel_.contains(e.target) && !(hlBtn && hlBtn.contains(e.target))) hlClose(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { hlPopHide(); hlClose(); } });
+    function hlClose() { if (hlPanel_) { hlPanel_.hidden = true; if (hlBtn) hlBtn.classList.remove('on'); } hlPopHide(); }
+    function hlRefresh() {
+      if (!hlPanel_ || !hlId) return;
+      const recs = hlGet(hlId); hlPanel_.innerHTML = '';
+      hlPanel_.append(el('header', '', '劃線 · ' + recs.length));
+      if (!recs.length) { hlPanel_.append(el('p', 'lk-hl-empty', '選取文字，點「劃線」，就會一直保持高亮。')); return; }
+      const ul = el('ul');
+      recs.forEach(r => {
+        const li = el('li'), go = el('button', 'lk-hl-go', r.t.length > 90 ? r.t.slice(0, 90) + '…' : r.t), x = el('button', 'lk-hl-x', '×');
+        go.type = x.type = 'button'; x.setAttribute('aria-label', '取消這條劃線');
+        go.addEventListener('click', () => { const m = document.querySelector('mark.lk-hl[data-k="' + r.k + '"]'); if (m) { m.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); m.classList.add('lk-hl-flash'); setTimeout(() => m.classList.remove('lk-hl-flash'), 1400); } });
+        x.addEventListener('click', () => hlDel(r.k));
+        li.append(go, x); ul.append(li);
+      });
+      hlPanel_.append(ul);
+    }
+    function hlPanel(btn, id) {
+      hlId = id; hlBtn = btn;
+      if (hlPanel_) hlPanel_.remove();
+      hlPanel_ = el('div', 'lk-hl-panel'); hlPanel_.hidden = true; document.body.append(hlPanel_);
+      btn.addEventListener('click', () => { hlPanel_.hidden = !hlPanel_.hidden; btn.classList.toggle('on', !hlPanel_.hidden); hlRefresh(); });
+      hlRefresh();
     }
     const VIEW = /^(成长|成長|投资|投資)$/;   // 觀點類: the cover and the book's details stand on the left where 傳記 has its portrait
     function bio(id) {
@@ -5739,7 +5834,7 @@
       const key = id + (read ? ':r' : ':s');
       if (body.dataset.lkX === key) return;
       body.dataset.lkX = key;
-      try { if (read) { reading(shell, body); bio(id); } else study(shell, body, id); } catch (e) { /* decoration only */ }
+      try { if (read) { reading(shell, body); bio(id); hlApply(id); } else study(shell, body, id); } catch (e) { /* decoration only */ }
     }
     let t = 0;
     (window.__lkSettle = window.__lkSettle || []).push(run); // section 45 runs it at once when an article arrives
