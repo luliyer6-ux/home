@@ -5722,7 +5722,7 @@
     // and the sheet sits in the rest of the page (as on wangyurui.com's newsletter pages); phones keep the cover on top.
     let side = null;
     let tools = null;
-    function bioOff() { root.classList.remove('lk-bio', 'lk-view', 'lk-biog'); if (side) { side.remove(); side = null; } if (tools) { tools.remove(); tools = null; } }
+    function bioOff() { root.classList.remove('lk-bio', 'lk-view', 'lk-biog', 'lk-plain'); if (side) { side.remove(); side = null; } if (tools) { tools.remove(); tools = null; } }
     // the side buttons (bottom right): 劃線 · 返回 · 頂部
     function bioTools(id) {
       if (tools && tools.dataset.id === id) return;
@@ -5977,25 +5977,28 @@
       const view = !ls.some(l => /^(传记|傳記|biography)$/i.test(l)) && ls.some(l => VIEW.test(l));
       const isBio = ls.some(l => /^(传记|傳記|biography)$/i.test(l));
       root.classList.toggle('lk-biog', isBio); // 傳記 typesetting that also holds on a phone (no portrait there)
-      if (!view && !isBio) { bioOff(); return; }
-      let src = '', text = null;
-      if (view) {
-        const card = document.querySelector('#main .lk-bookcard'), ci = card && card.querySelector('.lk-bc-cover img');
-        if (!card || !ci) { bioOff(); return; }
-        src = ci.currentSrc || ci.src; text = card.querySelector('.lk-bc-text');
-      } else {
-        const img = document.querySelector('#main .lk-cover img') || document.querySelector('#main .source-body img:not(.lk-bc-used)');
-        if (!img) { bioOff(); return; }
-        src = img.currentSrc || img.src;
-      }
-      if (side && side.classList.contains('lk-view-side') !== view) { side.remove(); side = null; }
-      if (!side) { side = el('aside', 'lk-bio-side' + (view ? ' lk-view-side' : '')); side.setAttribute('aria-hidden', 'true'); side.append(el('img')); document.body.append(side); }
-      const im = side.querySelector('img'); if (im.getAttribute('src') !== src) { im.src = src; im.alt = ''; }
-      if (view) { // title, author, finished date and stars under the cover: copied from the book card
-        let cap = side.querySelector('.lk-vs-cap'); if (!cap) { cap = el('div', 'lk-vs-cap'); side.append(cap); }
+      // which left panel: 傳記 → the portrait; a book card with a cover on a 成長／投資 page → the cover and the details;
+      // 2026-11-09: any other reading note without a book card → the same wide page, the title set large on the left
+      const card = document.querySelector('#main .lk-bookcard'), ci = card && card.querySelector('.lk-bc-cover img');
+      const portrait = isBio && (document.querySelector('#main .lk-cover img') || document.querySelector('#main .source-body img:not(.lk-bc-used)'));
+      const mode = portrait ? 'bio' : view && ci ? 'view' : !card ? 'plain' : '';
+      if (!mode) { bioOff(); return; }
+      if (side && side.dataset.mode !== mode) { side.remove(); side = null; }
+      if (!side) { side = el('aside', 'lk-bio-side' + (mode !== 'bio' ? ' lk-view-side' : '') + (mode === 'plain' ? ' lk-plain-side' : '')); side.dataset.mode = mode; side.setAttribute('aria-hidden', 'true'); if (mode !== 'plain') side.append(el('img')); document.body.append(side); }
+      if (mode !== 'plain') { const src = mode === 'bio' ? (portrait.currentSrc || portrait.src) : (ci.currentSrc || ci.src); const im = side.querySelector('img'); if (im.getAttribute('src') !== src) { im.src = src; im.alt = ''; } }
+      let cap = side.querySelector('.lk-vs-cap');
+      if (mode === 'view') { // title, author, finished date and stars under the cover: copied from the book card
+        const text = card.querySelector('.lk-bc-text');
+        if (!cap) { cap = el('div', 'lk-vs-cap'); side.append(cap); }
         const sig = text ? text.textContent : ''; if (cap.dataset.sig !== sig) { cap.dataset.sig = sig; cap.innerHTML = ''; if (text) [...text.children].filter(c => !c.classList.contains('lk-bc-kick')).forEach(c => cap.append(c.cloneNode(true))); }
+      } else if (mode === 'plain') { // the article's title, large, with its labels above
+        const h = document.querySelector('#main .source-reading h1'), t = h ? h.textContent.trim() : '';
+        const kinds = ls.filter(l => !/^(library|讀書|读书)$/i.test(l)).join(' · ');
+        const sig = t + '|' + kinds;
+        if (!cap) { cap = el('div', 'lk-vs-cap lk-ps-cap'); side.append(cap); }
+        if (cap.dataset.sig !== sig) { cap.dataset.sig = sig; cap.innerHTML = ''; cap.append(el('small', 'lk-ps-kick', L('读书', 'Reading') + (kinds ? ' · ' + kinds : '')), el('strong', 'lk-ps-title', t), el('span', 'lk-ps-rule')); }
       }
-      side.dataset.id = id; root.classList.add('lk-bio'); root.classList.toggle('lk-view', view); bioTools(id);
+      side.dataset.id = id; root.classList.add('lk-bio'); root.classList.toggle('lk-view', mode !== 'bio'); root.classList.toggle('lk-plain', mode === 'plain'); bioTools(id);
     }
     function run() {
       const READ_ON = true; // 2026-11-07: 讀書 parts on (set false to switch them off)
