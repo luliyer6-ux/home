@@ -5585,10 +5585,26 @@
       const quotes = [...body.querySelectorAll('blockquote')];
       const metas = quotes.filter(q => META.test(q.textContent.trim()) || [...q.querySelectorAll('a[href]')].some(a => DB.test(a.href)));
       const stand = shell.querySelector('.lk-stand');
+      // 2026-11-10, the simple rule: the 豆瓣 address may stand on a line of its own near the top, no 「>」 needed —
+      // one of the first three blocks, a paragraph holding nothing but the link (and 豆瓣：／讀完：… if wanted)
+      if (!metas.length) {
+        const loose = [...body.children].slice(0, 3).find(p => p.tagName === 'P' && !p.querySelector('img') && (DB.test(p.textContent) || [...p.querySelectorAll('a[href]')].some(a => DB.test(a.href)))
+          && p.textContent.replace(/https?:\/\/\S+/g, '').replace(/(?:豆瓣|douban|讀完|读完|Finished)\s*[：:]?|[0-9年月日.\-\/\s]/gi, '').length <= 2);
+        if (loose) {
+          metas.push(loose);
+          const nx = loose.nextElementSibling; // 「讀完：…」 written after a blank line still belongs to it
+          if (nx && nx.tagName === 'P' && /^(?:讀完|读完|Finished)\s*[：:]\s*[0-9年月日.\-\/\s]+$/i.test(nx.textContent.trim())) { nx.classList.add('lk-bc-src'); loose.dataset.more = nx.textContent.trim(); }
+          if (loose.classList.contains('lk-first') || !body.querySelector('.lk-first')) { // the drop cap belongs to the first paragraph the reader sees
+            loose.classList.remove('lk-first');
+            let n = loose.nextElementSibling; while (n && n.tagName !== 'P') n = n.nextElementSibling;
+            if (n && !n.querySelector('img, video, iframe, strong:only-child') && n.textContent.trim().length > 20) n.classList.add('lk-first');
+          }
+        }
+      }
       const src = metas[0] || (stand && META.test(stand.textContent.trim()) ? stand : null);
       let info = null, dbId = '';
       if (src) {
-        const t = src.textContent.replace(/\s+/g, ' ').trim(), m = /《([^》]+)》/.exec(t);
+        const t = (src.textContent + ' ' + (src.dataset.more || '')).replace(/\s+/g, ' ').trim(), m = /《([^》]+)》/.exec(t);
         const lnk = [...src.querySelectorAll('a[href]')].map(a => DB.exec(a.href)).find(Boolean) || DB.exec(t);
         if (lnk) dbId = lnk[1];
         const STOP = /讀完|读完|評分|评分|Finished|Rating|豆瓣|douban|https?:/i;
@@ -5603,7 +5619,7 @@
         if (stand && META.test(stand.textContent.trim())) stand.classList.add('lk-bc-src');
       }
       // the cover: the first picture outside quotes and tables — or one written inside the book-info quote itself (2026-11-09)
-      const inQuote = [...body.querySelectorAll('blockquote.lk-bc-src img')][0];
+      const inQuote = [...body.querySelectorAll('.lk-bc-src img')][0];
       // with a 豆瓣 link the cover is 豆瓣's (a picture further down is the article's own — on a 傳記 page, the portrait),
       // unless a picture is written inside the book-info quote itself
       const cov = dbId ? inQuote : (document.querySelector('#main .lk-cover img') || [...body.querySelectorAll('img')].find(i => !i.closest('table') && (!i.closest('blockquote') || i.closest('blockquote.lk-bc-src'))));
@@ -5970,22 +5986,20 @@
       hlFab.addEventListener('click', hlPenClick);
       document.body.append(hlFab);
     }
-    const VIEW = /^(成长|成長|投资|投資)$/;   // 觀點類: the cover and the book's details stand on the left where 傳記 has its portrait
     function bio(id) {
       let ls = []; try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id] || []; } catch (e) {}
       if (!Array.isArray(ls) || !ls.length) { const c = document.querySelector('#main .source-reading .source-category'); ls = c ? c.textContent.split(/[·,/|]/).map(x => x.trim()).filter(Boolean) : []; } // before the label map arrives: the category line on the page
-      const view = !ls.some(l => /^(传记|傳記|biography)$/i.test(l)) && ls.some(l => VIEW.test(l));
       const isBio = ls.some(l => /^(传记|傳記|biography)$/i.test(l));
       root.classList.toggle('lk-biog', isBio); // 傳記 typesetting that also holds on a phone (no portrait there)
       // which left panel: 傳記 → the portrait; a book card with a cover on a 成長／投資 page → the cover and the details;
       // 2026-11-09: any other reading note without a book card → the same wide page, the title set large on the left
       const card = document.querySelector('#main .lk-bookcard'), ci = card && card.querySelector('.lk-bc-cover img');
       const portrait = isBio && (document.querySelector('#main .lk-cover img') || document.querySelector('#main .source-body img:not(.lk-bc-used)'));
-      const mode = portrait ? 'bio' : view && ci ? 'view' : !card ? 'plain' : '';
-      if (!mode) { bioOff(); return; }
+      const mode = portrait ? 'bio' : card ? 'view' : 'plain'; // 2026-11-10: one skeleton for every reading note, whatever its second label
       if (side && side.dataset.mode !== mode) { side.remove(); side = null; }
-      if (!side) { side = el('aside', 'lk-bio-side' + (mode !== 'bio' ? ' lk-view-side' : '') + (mode === 'plain' ? ' lk-plain-side' : '')); side.dataset.mode = mode; side.setAttribute('aria-hidden', 'true'); if (mode !== 'plain') side.append(el('img')); document.body.append(side); }
-      if (mode !== 'plain') { const src = mode === 'bio' ? (portrait.currentSrc || portrait.src) : (ci.currentSrc || ci.src); const im = side.querySelector('img'); if (im.getAttribute('src') !== src) { im.src = src; im.alt = ''; } }
+      if (!side) { side = el('aside', 'lk-bio-side' + (mode !== 'bio' ? ' lk-view-side' : '') + (mode === 'plain' ? ' lk-plain-side' : '')); side.dataset.mode = mode; side.setAttribute('aria-hidden', 'true'); document.body.append(side); }
+      { const pic = mode === 'bio' ? portrait : mode === 'view' ? ci : null; let im = side.querySelector('img'); // a book card without a cover: the details alone
+        if (!pic) { if (im) im.remove(); } else { const src = pic.currentSrc || pic.src; if (!im) { im = el('img'); im.alt = ''; side.prepend(im); } if (im.getAttribute('src') !== src) im.src = src; } }
       let cap = side.querySelector('.lk-vs-cap');
       if (mode === 'view') { // title, author, finished date and stars under the cover: copied from the book card
         const text = card.querySelector('.lk-bc-text');
@@ -6138,11 +6152,13 @@
         ['`<head>`', '写 HTML 标签要用反引号包起来，不然会被吃掉'],
       ]],
       ['读书 Library', [
-        ['> 《书名》作者\n> 读完：2026-06\n> 评分：4', '书卡与星星（文内第一张图当封面）'],
+        ['https://book.douban.com/subject/编号/', '单独一行贴豆瓣网址：封面、书名、作者、简介自动出现'],
+        ['读完：2026-11-09', '可选，写在网址下一行'],
         ['> 原文……——p.32', '摘录，末尾变页码，收进「本篇书摘」'],
         ['> ★ 一句话', '本篇最重要的一句，放大'],
-        ['+ 传记', '左侧人像（文内要有照片）'],
-        ['+ 成长 / 投资', '左侧封面和书名'],
+        ['**一、小标题**', '单独一行的粗体当作章节，进右侧目录'],
+        ['+ 传记', '左侧人像（文内放一张照片）'],
+        ['+ 小说 / 成长 / 投资 / 现实', '左侧封面和书名；不写豆瓣网址则是大字标题'],
       ]],
       ['学习 Study', [
         ['## 本篇要点 + 加粗句', '顶部显示「N 条重点」'],
@@ -6270,6 +6286,60 @@
     }, true);
     new MutationObserver(check).observe(document.body, { childList: true, subtree: true }); // runs before the browser paints
     if (idOf()) { if (bodyNow() && bodyNow().dataset.loading !== 'true') shown = idOf(); else arm(); }
+  })();
+
+  /* 48. 寫作檢查（2026-11-10）— for the site's owner only. Open any page once with ?check=1 and this browser remembers
+     (localStorage lk-check; ?check=0 switches it off). On an article a small pill at the bottom left then says what the
+     Markdown still needs: template placeholders left in, a broken **bold**, a reading note without its book or its
+     category, a 傳記 without a portrait, a book 豆瓣 could not find, a post with no category label, a very short draft.
+     Readers never see it. */
+  (() => {
+    const root = document.documentElement;
+    try { const q = new URLSearchParams(location.search).get('check'); if (q === '1') localStorage.setItem('lk-check', '1'); if (q === '0') localStorage.removeItem('lk-check'); } catch (e) {}
+    let on = false; try { on = localStorage.getItem('lk-check') === '1'; } catch (e) {}
+    if (!on) return;
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const idNow = () => (/^#\/article\/(P\d+)/.exec(location.hash) || [])[1] || '';
+    const KIND = /^(weekly|journal|study|library|doc|guidebook|ai|timeline)$/i, SHELF = /^(小说|小說|成长|成長|投资|投資|传记|傳記|现实|現實)$/;
+    let box = null, timer = 0, open = false, sig = '';
+    function issues(id) {
+      const body = document.querySelector('#main .source-reading .source-body'); if (!body || body.dataset.loading === 'true') return null;
+      let ls = []; try { ls = (JSON.parse(localStorage.getItem('luliy-label-map-v1') || '{}') || {})[id] || []; } catch (e) {}
+      const out = [], read = root.classList.contains('lk-read'), all = body.textContent;
+      if (/《\s*(書名|书名)\s*》|subject\/(編號|编号|這本書的編號|这本书的编号)|（真的編號）/.test(all)) out.push(['範本的佔位字還在', '把「書名」「作者」「編號」換成真的內容，或整行刪掉。']);
+      const w = document.createTreeWalker(body, NodeFilter.SHOW_TEXT); let n, star = '';
+      while ((n = w.nextNode())) { if (n.parentElement.closest('pre, code, .katex, .lk-quotes')) continue; const m = /\*\*[^*\n]{1,40}|[^*\n]{1,40}\*\*/.exec(n.nodeValue); if (m) { star = m[0].trim(); break; } }
+      if (star) out.push(['粗體沒有生效', '「' + star.slice(0, 24) + '」：** 要緊貼文字，裡外都不能有空格。']);
+      if (ls.length && !ls.some(l => KIND.test(l))) out.push(['沒有貼類別標籤', '貼 Weekly、Journal、Study、Library、Doc 其中一個，文章才會套用對應版面。']);
+      if (read) {
+        const card = document.querySelector('#main .lk-bookcard'), bio = ls.some(l => /^(传记|傳記)$/.test(l));
+        if (!card) out.push(['沒有書籍資訊', '在文章最上面單獨一行貼這本書的豆瓣網址，封面、書名、作者會自動出現。']);
+        else if (card.querySelector('.lk-bc-db') && !card.querySelector('.lk-bc-title')) out.push(['豆瓣查不到這本書', '檢查網址裡的編號，或在第一行手寫「《書名》作者」。']);
+        if (ls.length && !ls.some(l => SHELF.test(l))) out.push(['沒有分類標籤', '再貼 小說、成長、投資、傳記、現實 其中一個；不貼會放進書架的「雜項」。']);
+        if (bio && !body.querySelector('img:not(.lk-bc-used)') && !document.querySelector('#main .lk-cover img')) out.push(['傳記缺人物照', '在文章裡放一張照片，電腦上會顯示在左邊。']);
+      }
+      const len = all.replace(/\s+/g, '').length; if (len < 200) out.push(['內容很短（' + len + ' 字）', '看起來還是草稿。']);
+      return out;
+    }
+    function paint() {
+      const id = idNow(); if (!id) { if (box) box.remove(); box = null; sig = ''; return; }
+      const list = issues(id); if (!list) return;
+      const s2 = id + '|' + list.map(x => x.join(':')).join('|'); if (box && box.isConnected && s2 === sig) return; sig = s2;
+      if (box) box.remove();
+      box = el('div', 'lk-chk' + (list.length ? '' : ' ok') + (open ? ' open' : ''));
+      const head = el('button', 'lk-chk-head', list.length ? '寫作檢查 · ' + list.length + ' 項' : '寫作檢查 · 沒有問題'); head.type = 'button';
+      head.addEventListener('click', () => { if (!list.length) return; open = !open; box.classList.toggle('open', open); });
+      box.append(head);
+      if (list.length) { const ul = el('ul'); list.forEach(([t, d]) => { const li = el('li'); li.append(el('strong', '', t), el('span', '', d)); ul.append(li); }); box.append(ul); }
+      const off = el('a', 'lk-chk-off', '關閉檢查'); off.href = location.pathname + '?check=0' + location.hash; box.append(off);
+      document.body.append(box);
+    }
+    const later = () => { clearTimeout(timer); timer = setTimeout(paint, 900); };
+    (window.__lkSettle = window.__lkSettle || []).push(later);
+    addEventListener('hashchange', () => { sig = ''; later(); });
+    new MutationObserver(ms => { if (ms.some(m => { const t = m.target.nodeType === 1 ? m.target : m.target.parentElement; return t && t.closest('#main') && !t.closest('.lk-chk'); })) later(); }).observe(document.body, { childList: true, subtree: true });
+    setInterval(() => { if (idNow()) paint(); }, 4000); // the book card fills in a moment after the page
+    later();
   })();
 
 })();
