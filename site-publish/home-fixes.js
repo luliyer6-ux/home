@@ -4101,7 +4101,10 @@
           ? ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][+g[2] - 1] + ' ' + (+g[3]) + ', ' + g[1]
           : g[1] + '年' + (+g[2]) + '月' + (+g[3]) + '日';
       }
-      if (shell.classList.contains('lk-cov') && dEl && dEl.textContent) kick.textContent += ' · ' + dEl.textContent;
+      // 2026-11-10: an issue's line above the title is the date alone (no labels, no 第N期: the number is in the title and
+      // the big numeral; the byline under the title is gone, home-fixes.css 36 k)
+      if (no) kick.textContent = dEl && dEl.textContent ? dEl.textContent : '';
+      else if (shell.classList.contains('lk-cov') && dEl && dEl.textContent) kick.textContent += ' · ' + dEl.textContent;
       fitTitle(h1);
       fitNumber(shell);
       const rt = meta && meta.querySelector('#sourceReadingTime'), mm = rt && rt.textContent.match(/(\d+)\s*(?:分|min)/i);
@@ -4315,8 +4318,43 @@
     }
     /* 封面光 (2026-11-06): the issue's cover, blurred and dimmed, lights the desk on both sides of the sheet (desktop;
        CSS hides it on phones). One fixed layer inside .page-above, under the content. No cover: no layer, plain desk. */
+    /* 2026-11-10: the paper's accent follows the cover. The cover (same-origin /gh/camo) is read small on a canvas; the
+       strongest hue among its coloured pixels becomes --lk-cov-d (dark paper, light tone) and --lk-cov-l (white paper,
+       deep tone) with saturation held in a readable range; html.lk-cova switches them on (home-fixes.css 36 k). A grey or
+       unreadable cover leaves the usual copper. */
+    const covHue = new Map();
+    function hueOf(img) {
+      const c = document.createElement('canvas'); c.width = 96; c.height = 54;
+      const x = c.getContext('2d'); x.drawImage(img, 0, 0, 96, 54);
+      const d = x.getImageData(0, 0, 96, 54).data, bins = new Array(36).fill(0), hs = new Array(36).fill(0), ss = new Array(36).fill(0);
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
+        if (mx === mn || l < .15 || l > .85) continue;
+        const sat = (mx - mn) / (1 - Math.abs(2 * l - 1));
+        if (sat < .25) continue;
+        let h = mx === r ? ((g - b) / (mx - mn) + 6) % 6 : mx === g ? (b - r) / (mx - mn) + 2 : (r - g) / (mx - mn) + 4; h *= 60;
+        const k = Math.floor(h / 10) % 36, w = sat * (1 - Math.abs(l - .5));
+        bins[k] += w; hs[k] += h * w; ss[k] += sat * w;
+      }
+      let k = 0; for (let i = 1; i < 36; i++) if (bins[i] > bins[k]) k = i;
+      if (bins[k] < 5) return null;
+      return { h: Math.round(hs[k] / bins[k]), s: Math.round(Math.max(35, Math.min(60, ss[k] / bins[k] * 100))) };
+    }
+    function coverAccent() {
+      const img = root.classList.contains('lk-weekly') && main.querySelector('.lk-cover img');
+      const set = v => {
+        root.classList.toggle('lk-cova', !!v);
+        if (v) { root.style.setProperty('--lk-cov-d', 'hsl(' + v.h + ' ' + v.s + '% 66%)'); root.style.setProperty('--lk-cov-l', 'hsl(' + v.h + ' ' + v.s + '% 34%)'); }
+      };
+      if (!img) { set(null); return; }
+      const src = img.currentSrc || img.src;
+      if (covHue.has(src)) { set(covHue.get(src)); return; }
+      const run = () => { let v = null; try { v = hueOf(img); } catch (e) {} covHue.set(src, v); if (main.querySelector('.lk-cover img') === img) set(v); };
+      if (img.complete && img.naturalWidth) run(); else { set(null); img.addEventListener('load', run, { once: true }); }
+    }
     let glowEl = null;
     function glow() {
+      coverAccent();
       const img = root.classList.contains('lk-weekly') && root.classList.contains('lk-p-g') && main.querySelector('.lk-cover img');
       const src = img && img.getAttribute('src');
       const host = document.querySelector('.page-above');

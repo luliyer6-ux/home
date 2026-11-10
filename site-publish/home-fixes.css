@@ -2223,6 +2223,25 @@ html .lk-glow { display: none; }
 }
 @media (prefers-reduced-transparency: reduce) { html.lk-weekly.lk-p-g .lk-glow { opacity: .5; } }
 
+/* 36 k) 2026-11-10. 姚說 issues: no byline (LULIY · date · time · 分享) under the title — the date is the line above the
+   title (home-fixes.js decorate) — but the byline box stays, collapsed, as the anchor of the big numeral (its bottom is
+   measured from the box's top, so it keeps its place) and gets a little relief. The standfirst is upright and lighter (no faux
+   italic for Chinese). Desktop: the cover's lower edge fades into the page. The accent follows the cover (html.lk-cova). */
+html.lk-weekly #main .source-reading[data-lk-no] > .lk-by { height: 0 !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; margin-top: 0 !important; }
+html.lk-weekly #main .source-reading[data-lk-no] > .lk-by > * { display: none !important; }
+html.lk-weekly #main .source-reading[data-lk-no] > .lk-by::before { display: none !important; }
+html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .source-reading[data-lk-no] > .lk-by[data-lk-no]::after {
+  opacity: 1; color: color-mix(in srgb, var(--lk-ink) 5.5%, transparent);
+  text-shadow: -1px -1px 0 color-mix(in srgb, var(--lk-ink) 8%, transparent), 2px 2px 0 rgba(0, 0, 0, .16), 3px 6px 12px rgba(0, 0, 0, .16); }
+html.lk-weekly[data-appearance="light"]:is(.lk-p-an, .lk-p-b) #main .source-reading[data-lk-no] > .lk-by[data-lk-no]::after {
+  color: color-mix(in srgb, var(--lk-ink) 6%, transparent); text-shadow: -1px -1px 0 rgba(255, 255, 255, .7), 2px 2px 0 rgba(60, 45, 20, .10), 4px 8px 14px rgba(60, 45, 20, .10); }
+html.lk-weekly #main .lk-stand { font-style: normal; color: color-mix(in srgb, var(--lk-ink) 62%, transparent); }
+@media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
+  html.lk-weekly #main .lk-cover { -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent); mask-image: linear-gradient(to bottom, #000 62%, transparent); }
+}
+html.lk-weekly.lk-cova { --lk-acc: var(--lk-cov-d); }
+html.lk-weekly.lk-cova[data-appearance="light"] { --lk-acc: var(--lk-cov-l); }
+
 /* 36 k) 往期 (2026-11-06; home-fixes.js stack(), series()).
    纸角: desk papers (b, g), desktop. The neighbouring issue lies under the sheet (.lk-under, behind the sheet's ::before):
    a thin edge shows along the side, and an index tab with its number sticks out near the top. */
