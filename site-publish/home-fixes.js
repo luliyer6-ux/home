@@ -2631,21 +2631,8 @@
       im.src = ATLAS;
     }
     function kick() { if (!raf && atlas) { moving(true); lastT = performance.now(); raf = requestAnimationFrame(tick); } }
-    // The clip does not end on the resting pose and is still moving in its last frames. Instead of stopping on the
-    // last frame and then dissolving (which read as a hitch), the opening clip slows down over its final frames
-    // and, from BLEND_FROM on, fades into the resting frame while it is still moving: one continuous settle.
-    // v2 (2026-10-30): the atlas now ends with 5 interpolated frames that move her back to the resting pose (plus one
-    // in-between at the old jump after frame 58), so the clip loops by motion; BLEND_FROM now only marks those last
-    // frames, where a hover waits for her to finish settling. blend() is kept but no longer called.
-    const BLEND_FROM = NF - 6;
-    const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
-    function blend(p) {
-      const k = smooth((p - BLEND_FROM) / (NF - 1 - BLEND_FROM)), i = Math.max(0, Math.min(NF - 1, Math.round(p)));
-      ctx.clearRect(0, 0, FW, FH);
-      if (k < 1) { ctx.globalAlpha = 1 - k; ctx.drawImage(atlas, (i % COLS) * FW, ((i / COLS) | 0) * FH, FW, FH, 0, 0, FW, FH); }
-      ctx.globalAlpha = k; ctx.drawImage(atlas, 0, 0, FW, FH, 0, 0, FW, FH);
-      ctx.globalAlpha = 1; drawn = -1;
-    }
+    // The atlas ends with 5 interpolated frames that move her back to the resting pose (v2, 2026-10-30), so the clip
+    // settles by motion alone; the old dissolve into the resting frame was removed 2026-11-10.
     function tick(now) {
       raf = 0;
       const dt = Math.min(.05, (now - lastT) / 1000); lastT = now;

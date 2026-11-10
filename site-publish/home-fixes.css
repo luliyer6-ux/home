@@ -2281,8 +2281,6 @@ html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-tk i.on { background: var(--lk-
 html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now { display: flex; align-items: baseline; gap: 8px; max-width: 100%; min-width: 0; white-space: nowrap; }
 html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now b { flex: none; font: 600 11px/1 var(--font-mono); letter-spacing: .08em; color: var(--lk-acc); }
 html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now .lk-cl-ch { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--lk-ink); }
-html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now .lk-cl-sub { flex: 0 10 auto; min-width: 2em; overflow: hidden; text-overflow: ellipsis; color: var(--lk-mute); font-size: 12.5px; border: 0; padding: 0; }
-html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-now .lk-cl-sub::before { content: "· "; opacity: .7; }
 html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-tk { display: none; }
 html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-line { border-top: 1px solid color-mix(in srgb, var(--lk-ink) 12%, transparent); border-radius: 0 0 12px 12px; }
 html.lk-weekly.lk-weekly.lk-weekly.lk-weekly .lk-card.open .lk-card-panel { width: var(--lk-card-w, 260px); margin: 0; padding: 8px 4px 4px; background: none; border: 0; box-shadow: none; }
@@ -2539,8 +2537,6 @@ html.lk-weekly.luliy-mascot-on .lk-bar, html.lk-weekly.luliy-mascot-on .lk-issue
 .lk-card-line:hover { background: rgba(226,194,126,.1); }
 .lk-card-line b { flex: none; font: 600 11.5px/1 var(--font-mono); letter-spacing: .12em; color: #e2c27e; }
 .lk-card-line .lk-cl-ch { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lk-card-line .lk-cl-sub { flex: 0 10 auto; min-width: 2em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #e2c27e; font-size: 12.5px; }
-.lk-card-line .lk-cl-sub::before { content: "› "; opacity: .6; }
 .lk-card-line i { flex: none; margin-left: auto; font-style: normal; color: #e2c27e; opacity: .8; transition: transform .25s; }
 .lk-card.open .lk-card-line i { transform: rotate(180deg); }
 .lk-card :is(button, a):focus-visible { outline: 2px solid #e2c27e; outline-offset: -2px; }
@@ -2564,15 +2560,11 @@ html.lk-weekly .luliy-mascot-tools { gap: 4px; }
 html.lk-weekly .luliy-mascot-tools button { width: 26px; height: 26px; }
 /* issue icon (a magazine cover) instead of the "W 1" text, in the card, its issue button and the capsule */
 .lk-ico { display: block; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
-.lk-card-line .lk-cl-ico { align-self: center; color: #e2c27e; }
 .lk-card-ib { display: inline-flex; align-items: center; gap: 7px; font: 13px/1 var(--font-body); letter-spacing: .04em; }
 .lk-card-ib i { font-style: normal; opacity: .8; }
 html.lk-weekly .lk-no { display: grid; place-items: center; padding: 7px 10px; }
 .lk-card .lk-card-iss a b.lk-in, html.lk-weekly .lk-issues a b.lk-in { min-width: 3.6em; font: 12px/1.4 var(--font-body); letter-spacing: .04em; opacity: .85; }
 /* the chapter and the open sub-heading share one gold pill in her card (same idea as the capsule's coloured pill) */
-.lk-card-line .lk-cl-pill { flex: 0 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: 999px; background: #e2c27e; color: #1a1508; }
-.lk-card-line .lk-cl-pill .lk-cl-sub { flex: 0 10 auto; color: inherit; padding-left: 7px; border-left: 1px solid rgba(26,21,8,.35); }
-.lk-card-line .lk-cl-pill .lk-cl-sub::before { content: none; }
 
 /* weekly: comments are folded; click 評論 to open (home-fixes.js 36). The Giscus frame still loads in the background. */
 html.lk-weekly #main .luliy-comments > h2 { display: flex; align-items: center; justify-content: space-between; margin: 0; cursor: pointer; user-select: none; }
@@ -2596,9 +2588,7 @@ html.lk-weekly.lk-weekly .lk-card :is(.lk-card-iss, .lk-card-list) a[aria-curren
 html.lk-weekly.lk-weekly .lk-card .lk-card-iss { border-bottom: 1px solid var(--lk-rule); }
 html.lk-weekly.lk-weekly .lk-card-line { color: var(--lk-ink); border-radius: 0; }
 html.lk-weekly.lk-weekly .lk-card-line:hover { background: color-mix(in srgb, var(--lk-ink) 7%, transparent); }
-html.lk-weekly.lk-weekly .lk-card-line .lk-cl-ico, html.lk-weekly.lk-weekly .lk-card-line i { color: var(--lk-acc); }
-html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill { background: none; padding: 0; color: var(--lk-ink); }
-html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub { color: var(--lk-acc); border-left-color: var(--lk-rule); }
+html.lk-weekly.lk-weekly .lk-card-line i { color: var(--lk-acc); }
 html.lk-weekly.lk-weekly .lk-card :is(button, a):focus-visible { outline-color: var(--lk-acc); }
 /* a 欄目表 */
 /* b 書籤絲帶: the closed line becomes a ribbon hanging under the page */
@@ -2613,28 +2603,17 @@ html.lk-weekly .lk-card .lk-card-list a[aria-current] { border-left: 3px solid v
 /* d 側邊刻度 */
 html.lk-weekly .luliy-mascot .lk-card { width: max-content; }
 html.lk-weekly .lk-card-line { flex: none; max-width: var(--lk-card-w, 240px); }
-html.lk-weekly .lk-card-line .lk-cl-pill { flex: 0 1 auto; }
 html.lk-weekly.lk-weekly .lk-card-line:hover { background: var(--lk-acc); filter: brightness(1.08); }
 /* ribbon: the sub-heading goes on its own small line under the chapter, so it never gets squeezed out on narrow margins;
    the issue button stays pinned at the top of the open page while the list scrolls */
-html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill { flex-direction: column; align-items: flex-start; gap: 2px; max-width: 100%; overflow: hidden; }
-html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-ch { max-width: 100%; }
-html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub { flex: none; max-width: 100%; min-width: 0; padding: 0; border: 0; font: 400 12px/1.3 var(--font-body); opacity: .9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-html.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub::before { content: "› "; opacity: .7; }
 html.lk-weekly.lk-weekly .lk-card-line { align-items: center; padding-bottom: 19px; }
-html.lk-weekly.lk-weekly .lk-card-line .lk-cl-ico { align-self: center; }
 html.lk-weekly.lk-weekly .lk-card-ib { position: sticky; top: 0; z-index: 1; background: var(--lk-bg); }
-/* the sub-heading colour must beat the generic accent colour (it sits on an accent ribbon) */
-html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub { color: var(--lk-bg); border-left-color: transparent; }
-html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill { overflow: visible; padding: 0 2px; }
-/* no "›" before the sub-heading on the ribbon: it is already on its own line, and the tiny mark read like a stray quote */
-html.lk-weekly.lk-weekly.lk-weekly .lk-card-line .lk-cl-pill .lk-cl-sub::before { content: none; }
 /* weekly: her speech bubble is clickable (opens the contents); the separate contents button is gone */
 html.lk-weekly .luliy-mascot .luliy-mascot-bubble.show { pointer-events: auto; cursor: pointer; }
 html.lk-weekly .luliy-mascot [data-m="toc"] { display: none !important; }
 /* the ribbon is joined to Loon like a speech bubble: a flat bottom edge with a small tail pointing down at her */
 html.lk-weekly.lk-weekly .lk-card-line { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 72px calc(100% - 10px), 62px 100%, 52px calc(100% - 10px), 0 calc(100% - 10px)); padding-bottom: 19px; }
-/* no "›" before the sub-heading in the capsule either (same reason as the ribbon) */
+/* no "›" before the sub-heading in the capsule */
 html.lk-weekly .lk-sub.on::before { content: none; }
 
 /* ---- Player sheets unified with the site's pages (2026-11-03) ----
@@ -3122,7 +3101,6 @@ html.lk-biog.lk-essay #main .source-body h3 { margin-top: 1.2em; margin-bottom: 
 html.lk-biog #main .source-body p { margin-top: 0; margin-bottom: .7em; }
 html.lk-biog #main .source-body p:empty, html.lk-biog #main .source-body br:only-child { display: none; }
 html.lk-biog #main .source-body > br { display: none; }
-html.lk-biog #main .lk-resume, html.lk-biog #main .lk-continue { margin-bottom: .6em; }
 @media (max-width: 700px) {
   html.lk-biog #main .source-body h2 { font-size: 1.35em; line-height: 1.4; }
   html.lk-biog #main .source-body { line-height: 1.85; }
