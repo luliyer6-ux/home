@@ -2244,11 +2244,21 @@ html.lk-weekly #main .source-reading[data-lk-no] > .lk-by::before { display: non
     -webkit-mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 260px, #000 350px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
     mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 260px, #000 350px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
     -webkit-mask-clip: no-clip; mask-clip: no-clip; }
-  /* the neighbouring issue under the sheet fades in the same way (its top showed as a dark block through the faded sheet);
-     not clipped, so its tab (outside the paper) stays; the tab sits beside the title, where the paper is solid */
-  html.lk-weekly.lk-p-b #main .source-reading.lk-cov .lk-under {
-    -webkit-mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 252px, #000 342px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
-    mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 252px, #000 342px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+  /* the neighbouring issue paper fades in at the top like the sheet, along the whole reading length beside it;
+     but in that fade zone only its outer strip (the 8px beside the sheet + 8px for the hover shift) is drawn,
+     so it no longer shows through the faded sheet as a dark box right of the numeral. Below 140px it is whole.
+     Not clipped, so its tab (outside the paper) stays */
+  html.lk-weekly.lk-p-b #main .source-reading.lk-cov .lk-under.nx {
+    -webkit-mask: linear-gradient(#000, #000) 0 140px / 100% 100% no-repeat, linear-gradient(to left, #000 216px, transparent 217px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat, linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 252px, #000 342px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+    -webkit-mask-composite: source-over, source-in;
+    mask: linear-gradient(#000, #000) 0 140px / 100% 100% no-repeat, linear-gradient(to left, #000 216px, transparent 217px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat, linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 252px, #000 342px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+    mask-composite: add, intersect;
+    -webkit-mask-clip: no-clip; mask-clip: no-clip; }
+  html.lk-weekly.lk-p-b #main .source-reading.lk-cov .lk-under.pv {
+    -webkit-mask: linear-gradient(#000, #000) 0 140px / 100% 100% no-repeat, linear-gradient(to right, #000 216px, transparent 217px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat, linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 252px, #000 342px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+    -webkit-mask-composite: source-over, source-in;
+    mask: linear-gradient(#000, #000) 0 140px / 100% 100% no-repeat, linear-gradient(to right, #000 216px, transparent 217px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat, linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 252px, #000 342px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+    mask-composite: add, intersect;
     -webkit-mask-clip: no-clip; mask-clip: no-clip; }
   html.lk-weekly.lk-p-b #main .source-reading.lk-cov .lk-tab { top: 150px; }
   html.lk-weekly #main .lk-cover { -webkit-mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); }
