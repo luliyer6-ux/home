@@ -2238,7 +2238,14 @@ html.lk-weekly #main .source-reading[data-lk-no] > .lk-by::before { display: non
   html.lk-weekly[data-appearance="light"]:is(.lk-p-an, .lk-p-b) #main .source-reading[data-lk-no] > .lk-by[data-lk-no]::after {
     color: color-mix(in srgb, var(--lk-ink) 6%, transparent); text-shadow: -1px -1px 0 rgba(255, 255, 255, .7), 2px 2px 0 rgba(60, 45, 20, .10), 4px 8px 14px rgba(60, 45, 20, .10); }
   /* an issue with a cover: the panel's top 150px fades in from nothing (no top edge over the cover), the cover fades out longer */
-  html.lk-weekly.lk-p-b #main .source-reading.lk-cov::before { -webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .35) 60px, #000 150px); mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .35) 60px, #000 150px); }
+  /* the mask reaches 200px beyond the sheet on every side and is not clipped to it, so the sheet's shadow survives
+     (2026-11-11: a plain mask cut the shadow off and the sheet turned into a hard-edged block) */
+  html.lk-weekly.lk-p-b #main .source-reading.lk-cov::before {
+    -webkit-mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 260px, #000 350px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+    mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 260px, #000 350px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+    -webkit-mask-clip: no-clip; mask-clip: no-clip; }
+  /* the neighbouring issue under the sheet starts where the sheet is solid again (it showed through the faded top) */
+  html.lk-weekly.lk-p-b #main .source-reading.lk-cov .lk-under { top: 100px; }
   html.lk-weekly #main .lk-cover { -webkit-mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); }
 }
 /* phones: the big numeral at half the size, in the top right corner of the title block (fitNumber sizes --lk-num-size from the block height, ~280px on a phone; digit height ≈ .72em) */
