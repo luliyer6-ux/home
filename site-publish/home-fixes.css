@@ -2241,6 +2241,11 @@ html.lk-weekly #main .source-reading[data-lk-no] > .lk-by::before { display: non
   html.lk-weekly.lk-p-b #main .source-reading.lk-cov::before { -webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .35) 60px, #000 150px); mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .35) 60px, #000 150px); }
   html.lk-weekly #main .lk-cover { -webkit-mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); }
 }
+/* phones: the big numeral at half the size, in the top right corner of the title block (fitNumber sizes --lk-num-size from the block height, ~280px on a phone; digit height ≈ .72em) */
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
+  html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .lk-by[data-lk-no]::after { font-size: calc(var(--lk-num-size, 130px) * .5); right: 0;
+    bottom: calc(100% - .06em + var(--lk-num-up, 20px) + var(--lk-num-size, 130px) * .24); } /* top right of the title block (its top = the date line) */
+}
 html.lk-weekly #main .lk-stand { font-style: normal; color: color-mix(in srgb, var(--lk-ink) 62%, transparent); }
 html.lk-weekly.lk-cova { --lk-acc: var(--lk-cov-d); }
 html.lk-weekly.lk-cova[data-appearance="light"] { --lk-acc: var(--lk-cov-l); }
