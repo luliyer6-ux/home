@@ -2230,15 +2230,18 @@ html .lk-glow { display: none; }
 html.lk-weekly #main .source-reading[data-lk-no] > .lk-by { height: 0 !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; margin-top: 0 !important; }
 html.lk-weekly #main .source-reading[data-lk-no] > .lk-by > * { display: none !important; }
 html.lk-weekly #main .source-reading[data-lk-no] > .lk-by::before { display: none !important; }
-html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .source-reading[data-lk-no] > .lk-by[data-lk-no]::after {
-  opacity: 1; color: color-mix(in srgb, var(--lk-ink) 5.5%, transparent);
-  text-shadow: -1px -1px 0 color-mix(in srgb, var(--lk-ink) 8%, transparent), 2px 2px 0 rgba(0, 0, 0, .16), 3px 6px 12px rgba(0, 0, 0, .16); }
-html.lk-weekly[data-appearance="light"]:is(.lk-p-an, .lk-p-b) #main .source-reading[data-lk-no] > .lk-by[data-lk-no]::after {
-  color: color-mix(in srgb, var(--lk-ink) 6%, transparent); text-shadow: -1px -1px 0 rgba(255, 255, 255, .7), 2px 2px 0 rgba(60, 45, 20, .10), 4px 8px 14px rgba(60, 45, 20, .10); }
-html.lk-weekly #main .lk-stand { font-style: normal; color: color-mix(in srgb, var(--lk-ink) 62%, transparent); }
+/* Relief on the big numeral and the soft top of the panel: desktop only (phones keep the flat numeral and no panel). */
 @media (min-width: 769px) and (pointer: fine), (min-width: 1001px) {
-  html.lk-weekly #main .lk-cover { -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent); mask-image: linear-gradient(to bottom, #000 62%, transparent); }
+  html.lk-weekly:is(.lk-p-an, .lk-p-b) #main .source-reading[data-lk-no] > .lk-by[data-lk-no]::after {
+    opacity: 1; color: color-mix(in srgb, var(--lk-ink) 5.5%, transparent);
+    text-shadow: -1px -1px 0 color-mix(in srgb, var(--lk-ink) 8%, transparent), 2px 2px 0 rgba(0, 0, 0, .16), 3px 6px 12px rgba(0, 0, 0, .16); }
+  html.lk-weekly[data-appearance="light"]:is(.lk-p-an, .lk-p-b) #main .source-reading[data-lk-no] > .lk-by[data-lk-no]::after {
+    color: color-mix(in srgb, var(--lk-ink) 6%, transparent); text-shadow: -1px -1px 0 rgba(255, 255, 255, .7), 2px 2px 0 rgba(60, 45, 20, .10), 4px 8px 14px rgba(60, 45, 20, .10); }
+  /* an issue with a cover: the panel's top 150px fades in from nothing (no top edge over the cover), the cover fades out longer */
+  html.lk-weekly.lk-p-b #main .source-reading.lk-cov::before { -webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .35) 60px, #000 150px); mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .35) 60px, #000 150px); }
+  html.lk-weekly #main .lk-cover { -webkit-mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); }
 }
+html.lk-weekly #main .lk-stand { font-style: normal; color: color-mix(in srgb, var(--lk-ink) 62%, transparent); }
 html.lk-weekly.lk-cova { --lk-acc: var(--lk-cov-d); }
 html.lk-weekly.lk-cova[data-appearance="light"] { --lk-acc: var(--lk-cov-l); }
 
