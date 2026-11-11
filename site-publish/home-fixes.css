@@ -2244,8 +2244,13 @@ html.lk-weekly #main .source-reading[data-lk-no] > .lk-by::before { display: non
     -webkit-mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 260px, #000 350px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
     mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 260px, #000 350px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
     -webkit-mask-clip: no-clip; mask-clip: no-clip; }
-  /* the neighbouring issue under the sheet starts where the sheet is solid again (it showed through the faded top) */
-  html.lk-weekly.lk-p-b #main .source-reading.lk-cov .lk-under { top: 100px; }
+  /* the neighbouring issue under the sheet fades in the same way (its top showed as a dark block through the faded sheet);
+     not clipped, so its tab (outside the paper) stays; the tab sits beside the title, where the paper is solid */
+  html.lk-weekly.lk-p-b #main .source-reading.lk-cov .lk-under {
+    -webkit-mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 252px, #000 342px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+    mask: linear-gradient(to bottom, transparent 200px, rgba(0, 0, 0, .35) 252px, #000 342px) -200px -200px / calc(100% + 400px) calc(100% + 400px) no-repeat;
+    -webkit-mask-clip: no-clip; mask-clip: no-clip; }
+  html.lk-weekly.lk-p-b #main .source-reading.lk-cov .lk-tab { top: 150px; }
   html.lk-weekly #main .lk-cover { -webkit-mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, .45) 75%, transparent); }
 }
 /* phones: the big numeral at half the size, in the top right corner of the title block (fitNumber sizes --lk-num-size from the block height, ~280px on a phone; digit height ≈ .72em) */
