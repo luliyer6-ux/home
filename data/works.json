@@ -107,6 +107,15 @@
       "url": "./works/dianous/",
       "cover": "./assets/works/dianous.webp",
       "exam": false
+    },
+    {
+      "name": "液压与气压传动",
+      "zh": "65 道复习题：填空 20、选择 15、判断 20、简答 6、计算 2、综合 2；背诵、挖空自测与闪卡抽背。",
+      "en": "Hydraulics and pneumatics review: 65 questions with recitation, cloze self-test and flashcards.",
+      "ja": "油圧と空圧の復習：65 問の暗記・穴埋め自測・フラッシュカード。",
+      "url": "./works/hydraulic-pneumatic-review.html",
+      "cover": "./assets/works/hydraulic-pneumatic-review.svg",
+      "exam": false
     }
   ],
   "knownPaths": [
@@ -117,6 +126,7 @@
     "jingzhong",
     "kaoyan-dashboard",
     "math-handbook",
-    "math2"
+    "math2",
+    "hydraulic-pneumatic-review.html"
   ]
 }

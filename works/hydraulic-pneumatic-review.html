@@ -1,0 +1,2640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>《液压与气压传动》复习题 · 互动背诵与自测系统</title>
+  <style>
+    /* ==========================================================================
+       1. 设计系统与双主题变量（日间纸质暖白护眼 / 暗夜书房深色金边）
+       ========================================================================== */
+    :root {
+      --bg-page: #f7f4ef;
+      --bg-card: #ffffff;
+      --bg-subtle: #f2eee6;
+      --bg-toolbar: rgba(255, 253, 249, 0.94);
+      --text-main: #1f2421;
+      --text-secondary: #4a524d;
+      --text-muted: #6e7771;
+      --border: #e3ddd1;
+      --border-strong: #cfc6b6;
+
+      --accent: #1d4ed8;
+      --accent-hover: #1e40af;
+      --accent-soft: #eff6ff;
+      --accent-border: #bfdbfe;
+
+      --highlight-bg: #fef08a;
+      --highlight-text: #713f12;
+
+      --mnemonic-bg: #ecfdf5;
+      --mnemonic-border: #10b981;
+      --mnemonic-text: #065f46;
+
+      --errata-bg: #fff1f2;
+      --errata-border: #f43f5e;
+      --errata-text: #9f1239;
+
+      --analysis-bg: #f8fafc;
+      --analysis-border: #cbd5e1;
+      --analysis-text: #334155;
+
+      --cloze-bg: #dbeafe;
+      --cloze-border: #2563eb;
+      --cloze-hint: #1d4ed8;
+
+      --mastered-bg: #dcfce7;
+      --mastered-text: #15803d;
+      --mastered-border: #86efac;
+
+      --svg-stroke: #1e293b;
+      --svg-accent: #1d4ed8;
+      --svg-fill: #ffffff;
+      --svg-muted: #64748b;
+
+      --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06);
+      --shadow-md: 0 6px 20px rgba(28, 25, 23, 0.08);
+      --shadow-lg: 0 20px 45px rgba(0, 0, 0, 0.18);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #111317;
+      --bg-card: #191c23;
+      --bg-subtle: #222630;
+      --bg-toolbar: rgba(25, 28, 35, 0.94);
+      --text-main: #edeff3;
+      --text-secondary: #c2c8d1;
+      --text-muted: #8b93a1;
+      --border: #2c313d;
+      --border-strong: #3e4556;
+
+      --accent: #f59e0b;
+      --accent-hover: #fbbf24;
+      --accent-soft: rgba(245, 158, 11, 0.14);
+      --accent-border: rgba(245, 158, 11, 0.35);
+
+      --highlight-bg: rgba(245, 158, 11, 0.24);
+      --highlight-text: #fde68a;
+
+      --mnemonic-bg: rgba(16, 185, 129, 0.12);
+      --mnemonic-border: #34d399;
+      --mnemonic-text: #6ee7b7;
+
+      --errata-bg: rgba(244, 63, 94, 0.13);
+      --errata-border: #fb7185;
+      --errata-text: #fda4af;
+
+      --analysis-bg: #1e222b;
+      --analysis-border: #333a48;
+      --analysis-text: #cbd5e1;
+
+      --cloze-bg: #283042;
+      --cloze-border: #f59e0b;
+      --cloze-hint: #fbbf24;
+
+      --mastered-bg: rgba(34, 197, 94, 0.15);
+      --mastered-text: #4ade80;
+      --mastered-border: rgba(74, 222, 128, 0.35);
+
+      --svg-stroke: #e2e8f0;
+      --svg-accent: #fbbf24;
+      --svg-fill: #191c23;
+      --svg-muted: #94a3b8;
+
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ==========================================================================
+       2. 全局基础排版
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 155px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+        "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.72;
+      font-size: 15.5px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      padding-bottom: 72px;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* 数学公式工整排版 */
+    .math {
+      font-family: "Cambria Math", "Times New Roman", Georgia, serif;
+      font-style: italic;
+      padding: 0 2px;
+    }
+    .math-rm {
+      font-family: "Cambria Math", "Times New Roman", Georgia, serif;
+      font-style: normal;
+    }
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 4px;
+      font-size: 0.88em;
+      line-height: 1.15;
+    }
+    .frac > span:first-child {
+      border-bottom: 1.5px solid currentColor;
+      padding: 0 4px 2px;
+    }
+    .frac > span:last-child {
+      padding: 2px 4px 0;
+    }
+    .formula-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 10px 0;
+      font-size: 16px;
+      overflow-x: auto;
+    }
+
+    /* ==========================================================================
+       3. 顶部粘性控制台（Sticky Toolbar）
+       ========================================================================== */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-toolbar);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 10px 0;
+    }
+
+    .toolbar-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    [data-theme="dark"] .brand-icon {
+      color: #111317;
+    }
+
+    .brand-title {
+      font-size: 16.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    /* 模式切换分段按钮 */
+    .mode-switcher {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      padding: 3px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      gap: 2px;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .mode-btn:hover {
+      color: var(--text-main);
+    }
+
+    .mode-btn.active {
+      background: var(--bg-card);
+      color: var(--accent);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 右侧快捷功能按钮 */
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .icon-btn {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .icon-btn.active-filter {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* 挖空模式下全局显示/隐藏条 */
+    .cloze-global-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    body[data-mode="cloze"] .cloze-global-bar {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    /* 进度条区域 */
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 7px;
+      background: var(--bg-subtle);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981, var(--accent));
+      border-radius: 99px;
+      transition: width 0.35s ease;
+    }
+
+    .progress-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    /* 底部导航标签与搜索栏 */
+    .nav-search-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .nav-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .nav-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-pill {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      padding: 4px 11px;
+      border-radius: 99px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .nav-pill:hover,
+    .nav-pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    [data-theme="dark"] .nav-pill:hover,
+    [data-theme="dark"] .nav-pill.active {
+      color: #111317;
+      font-weight: 600;
+    }
+
+    .search-box {
+      position: relative;
+      width: 210px;
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 5px 28px 5px 30px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: none;
+    }
+
+    /* ==========================================================================
+       4. 置顶速记口诀与勘误模块 + 题目卡片
+       ========================================================================== */
+    .section-block {
+      margin-top: 26px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 19px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 99px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+
+    /* 置顶速记仪表盘 */
+    .cheat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .cheat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--mnemonic-border);
+      border-radius: var(--radius-md);
+      padding: 15px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cheat-card-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--mnemonic-text);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .errata-banner {
+      background: var(--errata-bg);
+      border: 1px solid var(--errata-border);
+      border-left: 4px solid var(--errata-border);
+      border-radius: var(--radius-md);
+      padding: 15px 18px;
+      color: var(--errata-text);
+      font-size: 14px;
+    }
+
+    .errata-banner h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .errata-banner ul {
+      padding-left: 20px;
+    }
+
+    .errata-banner li {
+      margin-bottom: 4px;
+    }
+
+    /* 单题卡片 */
+    .q-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s ease, border-color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .q-card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .q-card.is-mastered {
+      border-left: 4px solid #22c55e;
+    }
+
+    .q-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .q-num-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 2px 9px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .repeat-tag {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--bg-subtle);
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+
+    .master-btn {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .master-btn:hover {
+      border-color: #22c55e;
+      color: #16a34a;
+    }
+
+    .q-card.is-mastered .master-btn {
+      background: var(--mastered-bg);
+      color: var(--mastered-text);
+      border-color: var(--mastered-border);
+    }
+
+    .q-stem {
+      font-size: 15.5px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    /* ==========================================================================
+       5. 挖空自测胶囊（Cloze）与高亮样式
+       ========================================================================== */
+    .ans-highlight {
+      font-weight: 700;
+      color: var(--highlight-text);
+      background: var(--highlight-bg);
+      padding: 1px 7px;
+      border-radius: 5px;
+      margin: 0 2px;
+      display: inline;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    /* 挖空自测模式下的胶囊遮罩 */
+    body[data-mode="cloze"] .cloze:not(.revealed) {
+      background: var(--cloze-bg);
+      color: transparent;
+      border-bottom: 2px dashed var(--cloze-border);
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      padding: 1px 10px;
+      transition: all 0.18s ease;
+    }
+
+    body[data-mode="cloze"] .cloze:not(.revealed)::after {
+      content: "点击揭晓";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--cloze-hint);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    body[data-mode="cloze"] .cloze:not(.revealed):hover {
+      filter: brightness(0.95);
+    }
+
+    body[data-mode="cloze"] .cloze.revealed {
+      cursor: pointer;
+      animation: popReveal 0.22s ease;
+    }
+
+    @keyframes popReveal {
+      0% { transform: scale(0.96); opacity: 0.6; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 长答案折叠遮罩（简答/计算/综合题） */
+    .long-ans-wrapper {
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .cloze-cover-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px dashed var(--cloze-border);
+      background: var(--cloze-bg);
+      color: var(--cloze-hint);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .cloze-cover-btn:hover {
+      filter: brightness(0.96);
+    }
+
+    body[data-mode="cloze"] .long-ans-wrapper:not(.revealed) .cloze-cover-btn {
+      display: block;
+    }
+
+    body[data-mode="cloze"] .long-ans-wrapper:not(.revealed) .long-ans-content {
+      display: none;
+    }
+
+    .rehide-bar {
+      display: none;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    body[data-mode="cloze"] .long-ans-wrapper.revealed .rehide-bar {
+      display: flex;
+    }
+
+    .rehide-btn {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       6. 选择题选项网格与标签块（口诀/解析/勘误）
+       ========================================================================== */
+    .mcq-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .mcq-opt {
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    /* 背诵模式下直接标绿正确选项 */
+    body[data-mode="recite"] .mcq-opt.is-correct,
+    body[data-mode="cloze"] .q-card.mcq-revealed .mcq-opt.is-correct {
+      background: var(--mnemonic-bg);
+      border-color: var(--mnemonic-border);
+      color: var(--mnemonic-text);
+      font-weight: 700;
+    }
+
+    body[data-mode="cloze"] .mcq-opt {
+      cursor: pointer;
+    }
+
+    body[data-mode="cloze"] .mcq-opt:hover {
+      border-color: var(--accent);
+    }
+
+    body[data-mode="cloze"] .mcq-opt.user-wrong {
+      background: var(--errata-bg);
+      border-color: var(--errata-border);
+      color: var(--errata-text);
+    }
+
+    /* 信息徽章框：口诀 / 解析 / 勘误 */
+    .info-box {
+      margin-top: 10px;
+      padding: 9px 13px;
+      border-radius: var(--radius-sm);
+      font-size: 13.8px;
+      line-height: 1.65;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .info-box.analysis {
+      background: var(--analysis-bg);
+      border: 1px solid var(--analysis-border);
+      color: var(--analysis-text);
+    }
+
+    .info-box.mnemonic {
+      background: var(--mnemonic-bg);
+      border: 1px solid var(--mnemonic-border);
+      color: var(--mnemonic-text);
+    }
+
+    .info-box.errata {
+      background: var(--errata-bg);
+      border: 1px solid var(--errata-border);
+      color: var(--errata-text);
+    }
+
+    .tag-pill {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .analysis .tag-pill {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .mnemonic .tag-pill {
+      background: var(--mnemonic-border);
+      color: #fff;
+    }
+
+    .errata .tag-pill {
+      background: var(--errata-border);
+      color: #fff;
+    }
+
+    /* 挖空模式下默认隐藏选择题/判断题解析，揭晓答案后同步展示 */
+    body[data-mode="cloze"] .q-card:not(.mcq-revealed):not(.tf-revealed) .auto-hide-note {
+      display: none;
+    }
+
+    /* 判断题大号徽章 */
+    .tf-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 54px;
+      padding: 2px 10px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 14px;
+      margin-left: 6px;
+    }
+    .tf-true {
+      background: var(--mnemonic-bg);
+      color: var(--mnemonic-text);
+      border: 1px solid var(--mnemonic-border);
+    }
+    .tf-false {
+      background: var(--errata-bg);
+      color: var(--errata-text);
+      border: 1px solid var(--errata-border);
+    }
+
+    /* ==========================================================================
+       7. 表格与矢量 SVG 工程图容器
+       ========================================================================== */
+    .svg-figure {
+      margin: 14px 0;
+      padding: 14px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .svg-figure svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .svg-caption {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: center;
+      background: var(--bg-card);
+    }
+
+    table.data-table th,
+    table.data-table td {
+      border: 1px solid var(--border-strong);
+      padding: 8px 12px;
+    }
+
+    table.data-table th {
+      background: var(--bg-subtle);
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .dual-tables {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .ans-list {
+      padding-left: 20px;
+      margin-top: 6px;
+    }
+
+    .ans-list li {
+      margin-bottom: 6px;
+    }
+
+    /* ==========================================================================
+       8. 闪卡抽背模态框（Flashcard Modal）
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(15, 18, 24, 0.72);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .flashcard-shell {
+      width: 100%;
+      max-width: 680px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .fc-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .fc-select {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      font-size: 13.5px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .fc-counter {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .fc-stage {
+      perspective: 1200px;
+      min-height: 290px;
+      cursor: pointer;
+    }
+
+    .fc-card {
+      position: relative;
+      width: 100%;
+      min-height: 290px;
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .fc-card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .fc-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      max-height: 420px;
+    }
+
+    .fc-face.fc-back {
+      transform: rotateY(180deg);
+      background: var(--bg-card);
+      border-color: var(--accent);
+    }
+
+    .fc-side-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .fc-body {
+      font-size: 16px;
+      line-height: 1.75;
+      margin: auto 0;
+    }
+
+    .fc-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .fc-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .fc-nav-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    [data-theme="dark"] .btn-primary {
+      color: #111317;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      background: var(--bg-card);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      display: none;
+      margin-top: 20px;
+    }
+
+    /* 响应式适配 */
+    @media (max-width: 680px) {
+      html {
+        scroll-padding-top: 195px;
+      }
+      .search-box {
+        width: 100%;
+      }
+      .nav-search-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .mode-btn {
+        padding: 5px 9px;
+        font-size: 12.5px;
+      }
+      .q-card {
+        padding: 14px;
+      }
+    }
+
+    /* 打印优化 */
+    @media print {
+      .sticky-header, .master-btn, .cloze-cover-btn, .rehide-bar, .modal-backdrop {
+        display: none !important;
+      }
+      .long-ans-content {
+        display: block !important;
+      }
+      body {
+        background: #fff;
+        color: #000;
+      }
+      .q-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+      }
+    }
+  </style>
+</head>
+<body data-mode="recite" data-theme="light">
+
+  <!-- ========================================================================
+       顶部粘性控制台（Sticky Toolbar）
+       ======================================================================== -->
+  <header class="sticky-header">
+    <div class="container">
+      <div class="toolbar-top">
+        <div class="app-brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="9"/>
+              <polygon points="12,5 17,12 7,12" fill="currentColor"/>
+              <line x1="12" y1="12" x2="12" y2="19"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-title">《液压与气压传动》复习背诵系统</div>
+            <span class="brand-sub">完整题库 · 挖空自测 · 闪卡抽背 · 矢量图解</span>
+          </div>
+        </div>
+
+        <!-- 三大核心学习模式 -->
+        <div class="mode-switcher" role="tablist" aria-label="学习模式切换">
+          <button class="mode-btn active" id="btnModeRecite" onclick="setMode('recite')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            背诵模式
+          </button>
+          <button class="mode-btn" id="btnModeCloze" onclick="setMode('cloze')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            挖空自测
+          </button>
+          <button class="mode-btn" id="btnModeFlashcard" onclick="openFlashcardModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M12 9v6"/><path d="M9 12h6"/></svg>
+            闪卡抽背
+          </button>
+        </div>
+
+        <!-- 筛选与主题切换 -->
+        <div class="toolbar-actions">
+          <button class="icon-btn" id="btnFilterUnmastered" onclick="toggleUnmasteredFilter()" title="筛选尚未掌握的题目">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            只看未掌握
+          </button>
+          <button class="icon-btn" onclick="openResetConfirm()" title="清空本地已掌握进度记录">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            重置进度
+          </button>
+          <button class="icon-btn" onclick="exportSelfHtml()" title="下载保存为单文件离线HTML网页">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            导出HTML
+          </button>
+          <button class="icon-btn" id="btnThemeToggle" onclick="toggleTheme()" title="切换日间/暗夜护眼主题">
+            <span id="themeIcon">🌙</span>
+            <span id="themeText">暗夜书房</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 挖空自测模式专属批量操作条 -->
+      <div class="cloze-global-bar">
+        <span>💡 <strong>挖空自测提示：</strong>点击任意蓝色/金色胶囊或选项即可单独揭晓答案，检验记忆效果。</span>
+        <div style="display:flex; gap:6px;">
+          <button class="icon-btn" onclick="revealAllClozes(true)">全部显示</button>
+          <button class="icon-btn" onclick="revealAllClozes(false)">全部隐藏</button>
+        </div>
+      </div>
+
+      <!-- 掌握进度条 -->
+      <div class="progress-row">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-label" id="progressLabel">已掌握 0 / 0 (0%)</div>
+      </div>
+
+      <!-- 题型快速导航 & 实时搜索 -->
+      <div class="nav-search-row">
+        <nav class="nav-pills" aria-label="题型跳转导航">
+          <button class="nav-pill active" data-target="all" onclick="filterSection('all', this)">全部(65)</button>
+          <button class="nav-pill" data-target="sec-fill" onclick="filterSection('sec-fill', this)">填空题(20)</button>
+          <button class="nav-pill" data-target="sec-mcq" onclick="filterSection('sec-mcq', this)">选择题(15)</button>
+          <button class="nav-pill" data-target="sec-tf" onclick="filterSection('sec-tf', this)">判断题(20)</button>
+          <button class="nav-pill" data-target="sec-short" onclick="filterSection('sec-short', this)">简答题(6)</button>
+          <button class="nav-pill" data-target="sec-calc" onclick="filterSection('sec-calc', this)">计算题(2)</button>
+          <button class="nav-pill" data-target="sec-comp" onclick="filterSection('sec-comp', this)">综合题(2)</button>
+          <button class="nav-pill" data-target="sec-cheat" onclick="filterSection('sec-cheat', this)">勘误与重点</button>
+        </nav>
+
+        <div class="search-box">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="searchInput" placeholder="搜索知识点/题干..." oninput="handleSearch(this.value)" />
+          <button class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="清空搜索">✕</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       主内容区：置顶速记口诀与勘误表 + 六大题型完整题库
+       ======================================================================== -->
+  <main class="container" id="mainContent">
+
+    <!-- 置顶模块：【考前速记口诀与原卷勘误表】 -->
+    <section class="section-block" id="sec-cheat">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          考前速记口诀与原卷勘误表
+        </h2>
+        <span class="section-badge">考前必看</span>
+      </div>
+
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <div class="cheat-card-title">⚡ 泵的压力等级口诀</div>
+          <p><strong>齿轮低压、叶片中压、柱塞高压</strong>。<br>
+          <span style="font-size:13.5px; color:var(--text-secondary);">补充：<strong>双作用</strong>叶片泵径向力平衡，为<strong>定量泵</strong>；<strong>单作用</strong>叶片泵偏心可调，为<strong>变量泵</strong>。</span></p>
+        </div>
+
+        <div class="cheat-card">
+          <div class="cheat-card-title">⚡ 三大压力阀对比口诀</div>
+          <p style="font-size:14px;">
+            • <strong>溢流阀</strong>：进口控制、常态<strong>常闭</strong>、溢流稳压。<br>
+            • <strong>减压阀</strong>：出口控制、常态<strong>常开</strong>、工作关小、单独外泄。<br>
+            • <strong>顺序阀</strong>：进口控制、常态<strong>常闭</strong>、达到开启。
+          </p>
+        </div>
+
+        <div class="cheat-card">
+          <div class="cheat-card-title">⚡ 液压系统缺点口诀</div>
+          <p><strong>传动不严、效率低远、怕温怕脏、难查贵漏</strong>。<br>
+          <span style="font-size:13.5px; color:var(--text-secondary);">对应：无严格传动比、效率低不宜远传、温度敏感、难排故、精度高成本贵易泄漏。</span></p>
+        </div>
+      </div>
+
+      <div class="errata-banner">
+        <h3>⚠️ 原卷参考答案勘误与补充提醒（避免考试失分）</h3>
+        <ul>
+          <li><strong>计算题第 1 题（小数点错误）</strong>：按公式 <span class="math">P = p·q / η</span>，代入 <span class="math-rm">0.8 MPa</span> 与 <span class="math-rm">60 L/min</span> 算得 <span class="math-rm">1000 W = <strong>1 kW</strong></span>（第二问 <span class="math-rm">0.4 MPa</span> 得 <span class="math-rm"><strong>0.5 kW</strong></span>）。原卷参考答案错算为 <span class="math-rm">10 kW</span> 和 <span class="math-rm">5 kW</span>，考试建议写出完整算式并附注。</li>
+          <li><strong>计算题第 2 题（分子笔误）</strong>：原卷步骤分子将流量 <span class="math-rm">0.047</span> 误印为 <span class="math-rm">0.47</span>，但最终得数 <span class="math-rm"><strong>9.38 m/s</strong></span> 和 <span class="math-rm"><strong>0.67 m/s</strong></span> 完全正确。</li>
+          <li><strong>综合题第 2 题（油路补全与双表格）</strong>：已补全快进、工进、快退完整油路分析，同时提供对应原理图 <code>1YA~3YA</code> 的标准动作表和原卷附带的 <code>CT1~CT3</code> 简表。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 一、填空题 -->
+    <section class="section-block" id="sec-fill">
+      <div class="section-header">
+        <h2 class="section-title">一、填空题</h2>
+        <span class="section-badge">共 20 题（含 18～20 重复题标注）</span>
+      </div>
+      <div id="list-fill"></div>
+    </section>
+
+    <!-- 二、选择题 -->
+    <section class="section-block" id="sec-mcq">
+      <div class="section-header">
+        <h2 class="section-title">二、选择题</h2>
+        <span class="section-badge">共 15 题 · 含逐题解析</span>
+      </div>
+      <div id="list-mcq"></div>
+    </section>
+
+    <!-- 三、判断题 -->
+    <section class="section-block" id="sec-tf">
+      <div class="section-header">
+        <h2 class="section-title">三、判断题</h2>
+        <span class="section-badge">共 20 题（含第 11～20 重复题对照与逐题解析）</span>
+      </div>
+      <div id="list-tf"></div>
+    </section>
+
+    <!-- 四、简答题 -->
+    <section class="section-block" id="sec-short">
+      <div class="section-header">
+        <h2 class="section-title">四、简答题</h2>
+        <span class="section-badge">共 6 题 · 含口诀与梭阀 SVG 图</span>
+      </div>
+
+      <!-- 简答 1 -->
+      <article class="q-card" data-qid="short-1" data-cat="sec-short">
+        <div class="q-card-top">
+          <span class="q-num-badge">简答题 1</span>
+          <button class="master-btn" onclick="toggleMastered('short-1')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">1. 液压系统的缺点有哪些？</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测答案（口诀：减压出口常开外泄，顺序进口常闭内泄）</button>
+          <div class="long-ans-content">
+            <div class="info-box mnemonic">
+              <span class="tag-pill">速记口诀</span>
+              <span><strong>减压出口常开外泄（工作关小），顺序进口常闭内泄（达到开启）</strong></span>
+            </div>
+            <ol class="ans-list">
+              <li><span class="ans-highlight cloze">不能保证严格的传动比</span>（由于存在泄漏和油液的可压缩性）。</li>
+              <li><span class="ans-highlight cloze">能量损失大，机械效率低</span>，不宜做远距离传动。</li>
+              <li><span class="ans-highlight cloze">油液对温度变化敏感</span>，不宜在高温或低温环境下工作。</li>
+              <li><span class="ans-highlight cloze">系统出现故障时不易查找原因</span>，对液压故障诊断技术要求高。</li>
+              <li><span class="ans-highlight cloze">元件制造精度及成本较高</span>，且易出现泄漏污染环境。</li>
+            </ol>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 简答 2 -->
+      <article class="q-card" data-qid="short-2" data-cat="sec-short">
+        <div class="q-card-top">
+          <span class="q-num-badge">简答题 2</span>
+          <button class="master-btn" onclick="toggleMastered('short-2')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">2. 简述泵的排量、流量及容积效率之间的关系。</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测答案（排量 V、理论/实际流量、容积效率 η_v 定义及公式）</button>
+          <div class="long-ans-content">
+            <ol class="ans-list">
+              <li><strong>泵的排量（<span class="math">V</span>）</strong>：液压泵<span class="ans-highlight cloze">每转一周</span>，由其密封几何尺寸变化计算而得的排出液体的体积。</li>
+              <li><strong>泵的流量</strong>：<span class="ans-highlight cloze">单位时间内所排出的液体体积</span>（理论流量 <span class="math">q<sub>t</sub> = V · n</span>，实际流量 <span class="math">q = q<sub>t</sub> − Δq</span>）。</li>
+              <li><strong>泵的容积效率（<span class="math">η<sub>v</sub></span>）</strong>：泵的<span class="ans-highlight cloze">实际输出流量与理论流量的比值</span>，其大小取决于泵的结构特点、加工精度及工作压力等因素：
+                <div class="formula-box">
+                  <span class="math">η<sub>v</sub></span> =
+                  <span class="frac"><span class="math">q</span><span class="math">q<sub>t</sub></span></span> =
+                  <span class="frac"><span class="math">q</span><span><span class="math">V · n</span></span></span>
+                </div>
+              </li>
+            </ol>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 简答 3 -->
+      <article class="q-card" data-qid="short-3" data-cat="sec-short">
+        <div class="q-card-top">
+          <span class="q-num-badge">简答题 3</span>
+          <button class="master-btn" onclick="toggleMastered('short-3')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">3. 为什么外啮合齿轮泵的吸油区和压油区要开平衡槽？有什么影响？</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测答案（径向不平衡力原因 + 对容积效率的影响）</button>
+          <div class="long-ans-content">
+            <ul class="ans-list">
+              <li><strong>原因</strong>：压油口压力 <span class="math">p<sub>1</sub></span> 大，该侧油液对齿轮轴的径向作用力 <span class="math">F<sub>1</sub> = p<sub>1</sub>A<sub>1</sub></span> 较大；而吸油侧压力 <span class="math">p<sub>2</sub></span> 较低，径向作用力 <span class="math">F<sub>2</sub> = p<sub>2</sub>A<sub>2</sub></span> 较小。即 <span class="math">p<sub>1</sub>A<sub>1</sub> &gt; p<sub>2</sub>A<sub>2</sub></span>，引起了油液对齿轮轴的<span class="ans-highlight cloze">径向不平衡力</span>，因此要在吸油区和压油区开平衡槽（注：端盖开卸荷槽则用于消除困油现象）。</li>
+              <li><strong>影响</strong>：开平衡槽缩短了高低压腔之间的密封长度，增加了内部泄漏，因此<span class="ans-highlight cloze">会降低齿轮泵的容积效率</span>。</li>
+            </ul>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 简答 4 -->
+      <article class="q-card" data-qid="short-4" data-cat="sec-short">
+        <div class="q-card-top">
+          <span class="q-num-badge">简答题 4</span>
+          <button class="master-btn" onclick="toggleMastered('short-4')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">4. 为什么节流阀就可以实现调速功能还要使用调速阀来调速？</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测答案（节流阀压差受负载影响 vs 调速阀压力补偿稳压）</button>
+          <div class="long-ans-content">
+            <ul class="ans-list">
+              <li><strong>节流阀局限</strong>：节流阀只是改变通流截面积来调定流量，使负载（油缸）运动速度发生快慢变化；但当外部负载变化时，其进出口压差随之改变，导致<span class="ans-highlight cloze">流量不稳定（速度随负载变化而波动）</span>，仅适用于负载变化小或对速度稳定性要求不精密的系统（优点是结构简单、价格便宜）。</li>
+              <li><strong>调速阀优势</strong>：调速阀内部串联了定差减压阀，具有<span class="ans-highlight cloze">压力补偿功能和稳压功能</span>，能自动保持节流阀前后压差恒定，从而使流量和执行元件速度不受负载变化影响。</li>
+            </ul>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 简答 5 -->
+      <article class="q-card" data-qid="short-5" data-cat="sec-short">
+        <div class="q-card-top">
+          <span class="q-num-badge">简答题 5</span>
+          <button class="master-btn" onclick="toggleMastered('short-5')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">5. 简述顺序阀与减压阀之间的区别。</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测答案（口诀：减压出口常开外泄关小，顺序进口常闭达到开启）</button>
+          <div class="long-ans-content">
+            <div class="info-box mnemonic">
+              <span class="tag-pill">速记口诀</span>
+              <span><strong>减压出口常开外泄关小，顺序进口常闭达到开启</strong></span>
+            </div>
+            <ol class="ans-list">
+              <li><strong>功能不同</strong>：减压阀是将进口压力减至某一需要的出口压力，并依靠介质本身的能量使出口压力自动保持稳定；顺序阀是在具有两个以上分支回路的系统中，根据回路压力来控制执行元件动作顺序的阀。</li>
+              <li><strong>工作状态与控制压力不同</strong>：减压阀为<span class="ans-highlight cloze">出口压力控制</span>，工作时阀口<span class="ans-highlight cloze">关小</span>；顺序阀（内控式）为<span class="ans-highlight cloze">进口压力控制</span>，达到调定压力时阀口<span class="ans-highlight cloze">开启</span>。</li>
+              <li><strong>常态结构不同</strong>：减压阀阀芯<span class="ans-highlight cloze">常态常开</span>；顺序阀阀芯<span class="ans-highlight cloze">常态常闭</span>。</li>
+              <li><strong>泄油方式不同</strong>：减压阀先导泄油口必须<span class="ans-highlight cloze">单独外接油箱</span>；内控顺序阀视具体用途决定内泄或外泄。</li>
+            </ol>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 简答 6 -->
+      <article class="q-card" data-qid="short-6" data-cat="sec-short">
+        <div class="q-card-top">
+          <span class="q-num-badge">简答题 6</span>
+          <button class="master-btn" onclick="toggleMastered('short-6')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">6. 画出梭阀结构简图并说明其或门工作原理。</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测答案（查看梭阀标准图形符号 + 或门工作原理）</button>
+          <div class="long-ans-content">
+            <!-- 矢量重绘：梭阀结构简图（ISO符号） -->
+            <div class="svg-figure">
+              <svg width="360" height="150" viewBox="0 0 360 150" aria-label="梭阀结构简图">
+                <!-- 外虚线框 -->
+                <rect x="30" y="18" width="300" height="118" rx="6" fill="none" stroke="var(--svg-muted)" stroke-width="1.5" stroke-dasharray="6,4"/>
+                <!-- 内阀体框 -->
+                <rect x="115" y="54" width="130" height="64" rx="4" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+                <!-- 左输入口 ① -->
+                <line x1="15" y1="86" x2="145" y2="86" stroke="var(--svg-stroke)" stroke-width="2"/>
+                <circle cx="68" cy="60" r="13" fill="var(--svg-fill)" stroke="var(--svg-accent)" stroke-width="1.8"/>
+                <text x="68" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--svg-accent)">1</text>
+                <!-- 右输入口 ③ -->
+                <line x1="168" y1="86" x2="345" y2="86" stroke="var(--svg-stroke)" stroke-width="2"/>
+                <circle cx="292" cy="60" r="13" fill="var(--svg-fill)" stroke="var(--svg-accent)" stroke-width="1.8"/>
+                <text x="292" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--svg-accent)">3</text>
+                <!-- 上输出口 ② -->
+                <line x1="180" y1="8" x2="180" y2="86" stroke="var(--svg-stroke)" stroke-width="2"/>
+                <circle cx="152" cy="34" r="13" fill="var(--svg-fill)" stroke="var(--svg-accent)" stroke-width="1.8"/>
+                <text x="152" y="39" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--svg-accent)">2</text>
+                <!-- 阀芯钢球与左右单向阀座 -->
+                <polyline points="150,70 138,86 150,102" fill="none" stroke="var(--svg-stroke)" stroke-width="2.2"/>
+                <circle cx="156" cy="86" r="11" fill="var(--svg-fill)" stroke="var(--svg-accent)" stroke-width="2.4"/>
+                <polyline points="210,70 222,86 210,102" fill="none" stroke="var(--svg-stroke)" stroke-width="2.2"/>
+              </svg>
+              <div class="svg-caption">图：梭阀（气动“或门”逻辑阀）标准图形符号（1、3 为输入口，2 为输出口）</div>
+            </div>
+
+            <p><strong>或门工作原理</strong>：信号 <span class="ans-highlight cloze">1 或信号 3 均可以产生输出信号 2</span>（即满足逻辑“或” <span class="math">Y = A + B</span>）。当单侧进气时，气压将阀芯推向另一侧将其堵住，有信号一侧与 <code>2</code> 口相通输出；当信号 <code>1</code> 和 <code>3</code> 同时存在且有一个信号比另一个强时，阀芯被推向低压侧，<span class="ans-highlight cloze">强（高）压信号发生作用</span>并从 <code>2</code> 口输出。</p>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 五、计算题 -->
+    <section class="section-block" id="sec-calc">
+      <div class="section-header">
+        <h2 class="section-title">五、计算题</h2>
+        <span class="section-badge">共 2 题 · 含公式推导、SVG 示意图与勘误</span>
+      </div>
+
+      <!-- 计算题 1 -->
+      <article class="q-card" data-qid="calc-1" data-cat="sec-calc">
+        <div class="q-card-top">
+          <span class="q-num-badge">计算题 1</span>
+          <button class="master-btn" onclick="toggleMastered('calc-1')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">1. 液压泵的额定压力 <span class="math">p<sub>n</sub></span> 为 <span class="math-rm">0.8 MPa</span>，流量 <span class="math">q<sub>n</sub></span> 为 <span class="math-rm">60 L/min</span>，额定工况下的总效率 <span class="math">η<sub>n</sub></span> = 0.8，额定转速 <span class="math">n</span> 为 <span class="math-rm">1450 r/min</span>。试求：1）该泵选配的电动机功率；2）特定工况下，工作压力 <span class="math">p<sub>p</sub></span> 为 <span class="math-rm">0.4 MPa</span> 时泵的电动机功率。</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测解题步骤（核心公式 P = p·q / η，注意单位换算）</button>
+          <div class="long-ans-content">
+            <div class="formula-box">
+              <strong>核心公式：</strong>
+              <span class="math">P<sub>i</sub></span> =
+              <span class="frac"><span><span class="math">p · q</span></span><span class="math">η<sub>n</sub></span></span>
+              &nbsp;&nbsp;（单位换算：<span class="math-rm">1 MPa = 10<sup>6</sup> Pa</span>，<span class="math-rm">1 L/min = </span><span class="frac"><span>10<sup>−3</sup></span><span>60</span></span><span class="math-rm"> m<sup>3</sup>/s</span>）
+            </div>
+            <ol class="ans-list">
+              <li><strong>额定工况下选配的电动机功率 <span class="math">P<sub>i</sub></span></strong>：
+                <div class="formula-box">
+                  <span class="math">P<sub>i</sub></span> =
+                  <span class="frac"><span><span class="math">p<sub>n</sub> q<sub>n</sub></span></span><span class="math">η<sub>n</sub></span></span> =
+                  <span class="frac"><span>0.8 × 10<sup>6</sup> × 60 × 10<sup>−3</sup></span><span>0.8 × 60</span></span> =
+                  <span class="ans-highlight cloze">1000 W = 1 kW</span>
+                </div>
+              </li>
+              <li><strong>工作压力 <span class="math">p<sub>p</sub> = 0.4 MPa</span> 时的电动机驱动功率 <span class="math">P<sub>t</sub></span></strong>：<br>
+                因为泵的实际工作压力已确定，选取实际工作压力进行功率计算：
+                <div class="formula-box">
+                  <span class="math">P<sub>t</sub></span> =
+                  <span class="frac"><span><span class="math">p<sub>p</sub> q<sub>n</sub></span></span><span class="math">η<sub>n</sub></span></span> =
+                  <span class="frac"><span>0.4 × 10<sup>6</sup> × 60 × 10<sup>−3</sup></span><span>0.8 × 60</span></span> =
+                  <span class="ans-highlight cloze">500 W = 0.5 kW</span>
+                </div>
+              </li>
+            </ol>
+            <div class="info-box errata">
+              <span class="tag-pill">勘误提醒</span>
+              <span>原卷参考答案在计算时小数点错算了一位，将结果印作 <strong>10 kW</strong> 和 <strong>5 kW</strong>（实际上分子 48000 ÷ 分母 48 = 1000 W = 1 kW）。考试时建议写出完整代入算式，写明 <strong>= 1 kW</strong>（可括号备注原卷印作 10 kW）。</span>
+            </div>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 计算题 2 -->
+      <article class="q-card" data-qid="calc-2" data-cat="sec-calc">
+        <div class="q-card-top">
+          <span class="q-num-badge">计算题 2</span>
+          <button class="master-btn" onclick="toggleMastered('calc-2')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">2. 有一异径管如下图所示，管内充满油液，由左端向右端流动，已知 <span class="math">A, B, C</span> 三个断面的直径为 <span class="math-rm">0.2 m, 0.08 m, 0.3 m</span>，<span class="math">A</span> 断面的平均流速为 <span class="math-rm">1.5 m/s</span>，求流量的大小和 <span class="math">B, C</span> 断面的平均流速。</div>
+
+        <!-- 矢量重绘：异径管示意图 -->
+        <div class="svg-figure">
+          <svg width="460" height="155" viewBox="0 0 460 155" aria-label="异径管示意图">
+            <!-- 管壁轮廓 -->
+            <polyline points="25,44 135,44 170,65 280,65 315,32 435,32" fill="none" stroke="var(--svg-stroke)" stroke-width="2.4"/>
+            <polyline points="25,112 135,112 170,91 280,91 315,124 435,124" fill="none" stroke="var(--svg-stroke)" stroke-width="2.4"/>
+            <!-- 断面虚线 -->
+            <line x1="80" y1="44" x2="80" y2="112" stroke="var(--svg-accent)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="225" y1="65" x2="225" y2="91" stroke="var(--svg-accent)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="375" y1="32" x2="375" y2="124" stroke="var(--svg-accent)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <!-- 液流箭头 -->
+            <line x1="40" y1="78" x2="415" y2="78" stroke="var(--svg-muted)" stroke-width="1.4" stroke-dasharray="6,4"/>
+            <polygon points="420,78 410,73 410,83" fill="var(--svg-muted)"/>
+            <!-- 标注文字 -->
+            <text x="80" y="34" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--svg-accent)">A</text>
+            <text x="80" y="136" text-anchor="middle" font-size="12" fill="var(--svg-muted)">d_A = 0.2m</text>
+
+            <text x="225" y="54" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--svg-accent)">B</text>
+            <text x="225" y="114" text-anchor="middle" font-size="12" fill="var(--svg-muted)">d_B = 0.08m</text>
+
+            <text x="375" y="22" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--svg-accent)">C</text>
+            <text x="375" y="144" text-anchor="middle" font-size="12" fill="var(--svg-muted)">d_C = 0.3m</text>
+          </svg>
+          <div class="svg-caption">图：异径管流量连续性计算示意图（液流由左向右流动）</div>
+        </div>
+
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测解题步骤（流量连续性方程 q = v_A·A_A = v_B·A_B = v_C·A_C）</button>
+          <div class="long-ans-content">
+            <div class="formula-box">
+              <strong>核心公式：</strong>
+              <span class="math">q = v<sub>A</sub> A<sub>A</sub> = v<sub>B</sub> A<sub>B</sub> = v<sub>C</sub> A<sub>C</sub></span>，&nbsp;&nbsp;
+              <span class="math">A = π r<sup>2</sup> = π</span>(<span class="frac"><span class="math">d</span><span>2</span></span>)<sup>2</sup>
+            </div>
+            <ol class="ans-list">
+              <li><strong>求管内流量 <span class="math">q</span></strong>（半径 <span class="math">r<sub>A</sub> = 0.1 m</span>）：
+                <div class="formula-box">
+                  <span class="math">q = v<sub>A</sub> × A<sub>A</sub></span> = 1.5 × 3.14 × 0.1<sup>2</sup> = <span class="ans-highlight cloze">0.0471 m<sup>3</sup>/s ≈ 0.047 m<sup>3</sup>/s</span>
+                </div>
+              </li>
+              <li><strong>求 <span class="math">B</span> 断面的平均流速 <span class="math">v<sub>B</sub></span></strong>（半径 <span class="math">r<sub>B</sub> = 0.04 m</span>）：
+                <div class="formula-box">
+                  <span class="math">v<sub>B</sub></span> =
+                  <span class="frac"><span class="math">q</span><span class="math">A<sub>B</sub></span></span> =
+                  <span class="frac"><span>0.0471</span><span>3.14 × 0.04<sup>2</sup></span></span> =
+                  <span class="ans-highlight cloze">9.38 m/s</span>
+                </div>
+              </li>
+              <li><strong>求 <span class="math">C</span> 断面的平均流速 <span class="math">v<sub>C</sub></span></strong>（半径 <span class="math">r<sub>C</sub> = 0.15 m</span>）：
+                <div class="formula-box">
+                  <span class="math">v<sub>C</sub></span> =
+                  <span class="frac"><span class="math">q</span><span class="math">A<sub>C</sub></span></span> =
+                  <span class="frac"><span>0.0471</span><span>3.14 × 0.15<sup>2</sup></span></span> =
+                  <span class="ans-highlight cloze">0.67 m/s</span>
+                </div>
+              </li>
+            </ol>
+            <div class="info-box analysis">
+              <span class="tag-pill">注意</span>
+              <span>原卷解答中算式分子将 0.047 误印成了 0.47，但最终得数 <strong>9.38 m/s</strong> 和 <strong>0.67 m/s</strong> 均正确，按上述修正算式书写即可。</span>
+            </div>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 六、综合题 -->
+    <section class="section-block" id="sec-comp">
+      <div class="section-header">
+        <h2 class="section-title">六、综合题</h2>
+        <span class="section-badge">共 2 题 · 含完整矢量回路图、油路分析与双动作表</span>
+      </div>
+
+      <!-- 公共矢量液压回路图 -->
+      <div class="svg-figure">
+        <svg width="560" height="445" viewBox="0 0 560 445" aria-label="快慢速转换回路原理图">
+          <!-- 1. 顶部双作用单活塞杆液压缸 -->
+          <rect x="210" y="16" width="180" height="52" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2.2"/>
+          <!-- 活塞与活塞杆 -->
+          <rect x="268" y="16" width="12" height="52" fill="var(--svg-muted)" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <rect x="280" y="36" width="165" height="12" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <text x="239" y="46" text-anchor="middle" font-size="11.5" fill="var(--svg-muted)">无杆腔</text>
+          <text x="342" y="31" text-anchor="middle" font-size="11.5" fill="var(--svg-muted)">有杆腔</text>
+
+          <!-- 缸左腔主油路（向下直通阀3左上口，并向右分支接压力继电器6） -->
+          <line x1="242" y1="68" x2="242" y2="262" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <circle cx="242" cy="112" r="3.5" fill="var(--svg-stroke)"/>
+          <line x1="242" y1="112" x2="395" y2="112" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="395" y1="112" x2="395" y2="128" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+
+          <!-- 缸右腔回油/进油路（向下分两路进阀4和阀5） -->
+          <line x1="335" y1="68" x2="335" y2="96" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <circle cx="335" cy="96" r="3.5" fill="var(--svg-stroke)"/>
+          <line x1="165" y1="96" x2="335" y2="96" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="165" y1="96" x2="165" y2="128" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="335" y1="96" x2="335" y2="128" stroke="var(--svg-stroke)" stroke-width="2"/>
+
+          <!-- 2. 元件 4：二位二通电磁换向阀 (3YA) -->
+          <!-- 电磁铁 3YA -->
+          <rect x="65" y="136" width="32" height="24" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="65" y1="160" x2="97" y2="136" stroke="var(--svg-stroke)" stroke-width="1.5"/>
+          <text x="58" y="153" text-anchor="end" font-size="13" font-weight="bold" fill="var(--svg-accent)">3YA</text>
+          <!-- 左位（导通箭头） -->
+          <rect x="97" y="128" width="40" height="40" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="117" y1="164" x2="117" y2="134" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <polygon points="117,131 113,139 121,139" fill="var(--svg-stroke)"/>
+          <!-- 右位（常态常闭） -->
+          <rect x="137" y="128" width="40" height="40" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="157" y1="128" x2="157" y2="140" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="150" y1="140" x2="164" y2="140" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="157" y1="168" x2="157" y2="156" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="150" y1="156" x2="164" y2="156" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <!-- 右侧弹簧 -->
+          <polyline points="177,148 182,141 187,155 192,141 197,155 202,148" fill="none" stroke="var(--svg-stroke)" stroke-width="1.6"/>
+          <!-- 序号 4 -->
+          <circle cx="115" cy="184" r="11" fill="var(--svg-accent)"/>
+          <text x="115" y="188" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--svg-fill)">4</text>
+
+          <!-- 3. 元件 5：调速阀 -->
+          <rect x="313" y="128" width="44" height="44" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="335" y1="128" x2="335" y2="172" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <path d="M324,140 Q331,150 324,160" fill="none" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <path d="M346,140 Q339,150 346,160" fill="none" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="320" y1="164" x2="350" y2="136" stroke="var(--svg-stroke)" stroke-width="1.5"/>
+          <polygon points="352,134 345,137 349,141" fill="var(--svg-stroke)"/>
+          <!-- 序号 5 -->
+          <circle cx="315" cy="186" r="11" fill="var(--svg-accent)"/>
+          <text x="315" y="190" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--svg-fill)">5</text>
+
+          <!-- 4. 元件 6：压力继电器 -->
+          <rect x="377" y="128" width="36" height="44" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <circle cx="395" cy="141" r="6" fill="none" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <circle cx="395" cy="158" r="6" fill="none" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <polyline points="389,172 401,176 389,180 401,184 395,187" fill="none" stroke="var(--svg-stroke)" stroke-width="1.6"/>
+          <!-- 序号 6 -->
+          <circle cx="428" cy="150" r="11" fill="var(--svg-accent)"/>
+          <text x="428" y="154" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--svg-fill)">6</text>
+
+          <!-- 阀4与阀5下方合流进阀3右上口 -->
+          <line x1="165" y1="168" x2="165" y2="210" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="335" y1="172" x2="335" y2="262" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="165" y1="210" x2="335" y2="210" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <circle cx="335" cy="210" r="3.5" fill="var(--svg-stroke)"/>
+
+          <!-- 5. 元件 3：三位四通双向电磁换向阀 (1YA / 2YA) -->
+          <!-- 左电磁铁 1YA + 左弹簧 -->
+          <rect x="172" y="274" width="32" height="24" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="172" y1="298" x2="204" y2="274" stroke="var(--svg-stroke)" stroke-width="1.5"/>
+          <text x="165" y="290" text-anchor="end" font-size="13" font-weight="bold" fill="var(--svg-accent)">1YA</text>
+          <polyline points="204,268 209,262 214,272 219,262 224,272 228,268" fill="none" stroke="var(--svg-stroke)" stroke-width="1.5"/>
+
+          <!-- 左位方框（平行箭头：P->A, B->T） -->
+          <rect x="228" y="262" width="42" height="42" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="242" y1="304" x2="242" y2="266" stroke="var(--svg-stroke)" stroke-width="1.7"/>
+          <polygon points="242,263 238,270 246,270" fill="var(--svg-stroke)"/>
+          <line x1="256" y1="262" x2="256" y2="300" stroke="var(--svg-stroke)" stroke-width="1.7"/>
+          <polygon points="256,303 252,296 260,296" fill="var(--svg-stroke)"/>
+
+          <!-- 中位方框（Y型/闭口中位） -->
+          <rect x="270" y="262" width="42" height="42" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="284" y1="262" x2="284" y2="274" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="278" y1="274" x2="290" y2="274" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="298" y1="262" x2="298" y2="274" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="292" y1="274" x2="304" y2="274" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="284" y1="304" x2="284" y2="292" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="278" y1="292" x2="290" y2="292" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="298" y1="304" x2="298" y2="292" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="292" y1="292" x2="304" y2="292" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+
+          <!-- 右位方框（交叉箭头：P->B, A->T） -->
+          <rect x="312" y="262" width="42" height="42" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="324" y1="304" x2="342" y2="265" stroke="var(--svg-stroke)" stroke-width="1.7"/>
+          <polygon points="343,263 336,268 342,271" fill="var(--svg-stroke)"/>
+          <line x1="324" y1="262" x2="342" y2="301" stroke="var(--svg-stroke)" stroke-width="1.7"/>
+          <polygon points="343,303 336,298 342,295" fill="var(--svg-stroke)"/>
+
+          <!-- 右弹簧 + 右电磁铁 2YA -->
+          <polyline points="354,268 359,262 364,272 369,262 374,272 378,268" fill="none" stroke="var(--svg-stroke)" stroke-width="1.5"/>
+          <rect x="378" y="274" width="32" height="24" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <line x1="378" y1="298" x2="410" y2="274" stroke="var(--svg-stroke)" stroke-width="1.5"/>
+          <text x="417" y="290" text-anchor="start" font-size="13" font-weight="bold" fill="var(--svg-accent)">2YA</text>
+          <!-- 序号 3 -->
+          <circle cx="242" cy="240" r="11" fill="var(--svg-accent)"/>
+          <text x="242" y="244" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--svg-fill)">3</text>
+
+          <!-- 6. 底部泵站：1 单向定量泵 + M 电机 + 2 溢流阀 -->
+          <!-- 阀3回油 T 口 -->
+          <line x1="326" y1="304" x2="326" y2="332" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <polyline points="308,325 308,336 344,336 344,325" fill="none" stroke="var(--svg-stroke)" stroke-width="2"/>
+
+          <!-- 阀3进油 P 口接泵 -->
+          <line x1="284" y1="304" x2="284" y2="352" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <circle cx="284" cy="342" r="3.5" fill="var(--svg-stroke)"/>
+
+          <!-- 泵 1 与 电机 M -->
+          <circle cx="284" cy="372" r="20" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2.2"/>
+          <polygon points="284,353 277,365 291,365" fill="var(--svg-stroke)"/>
+          <line x1="304" y1="372" x2="346" y2="372" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <circle cx="364" cy="372" r="18" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <text x="364" y="377" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--svg-stroke)">M</text>
+          <!-- 泵吸油油箱 -->
+          <line x1="284" y1="392" x2="284" y2="416" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <polyline points="264,405 264,418 304,418 304,405" fill="none" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <!-- 序号 1 -->
+          <circle cx="250" cy="396" r="11" fill="var(--svg-accent)"/>
+          <text x="250" y="400" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--svg-fill)">1</text>
+
+          <!-- 元件 2：溢流阀 -->
+          <line x1="284" y1="342" x2="185" y2="342" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="185" y1="342" x2="185" y2="356" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <rect x="167" y="356" width="36" height="36" fill="var(--svg-fill)" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <line x1="185" y1="356" x2="185" y2="388" stroke="var(--svg-stroke)" stroke-width="1.8"/>
+          <polygon points="185,391 181,383 189,383" fill="var(--svg-stroke)"/>
+          <!-- 先导虚线与弹簧 -->
+          <polyline points="185,348 158,348 158,374 167,374" fill="none" stroke="var(--svg-stroke)" stroke-width="1.4" stroke-dasharray="3,2"/>
+          <polyline points="203,374 208,367 213,381 218,367 223,381 228,374" fill="none" stroke="var(--svg-stroke)" stroke-width="1.6"/>
+          <!-- 溢流回油箱 -->
+          <line x1="185" y1="392" x2="185" y2="416" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <polyline points="165,405 165,418 205,418 205,405" fill="none" stroke="var(--svg-stroke)" stroke-width="2"/>
+          <!-- 序号 2 -->
+          <circle cx="145" cy="342" r="11" fill="var(--svg-accent)"/>
+          <text x="145" y="346" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--svg-fill)">2</text>
+        </svg>
+        <div class="svg-caption">图：快慢速转换回路原理图（实现“快进 — 工进 — 快退”工作循环）</div>
+      </div>
+
+      <!-- 综合题 1 -->
+      <article class="q-card" data-qid="comp-1" data-cat="sec-comp">
+        <div class="q-card-top">
+          <span class="q-num-badge">综合题 1 · 元件识读</span>
+          <button class="master-btn" onclick="toggleMastered('comp-1')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">1. 上图为快慢速转换回路，用来实现“快进——工进——快退”的工作循环，识读该液压回路，写出序号 1—6 分别代表的液压元件的全称。</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测答案（1～6 号液压元件全称）</button>
+          <div class="long-ans-content">
+            <div class="mcq-options">
+              <div class="mcq-opt"><strong>1：</strong><span class="ans-highlight cloze">单向定量泵</span>（单向定量液压泵）</div>
+              <div class="mcq-opt"><strong>2：</strong><span class="ans-highlight cloze">溢流阀</span>（直动式溢流阀）</div>
+              <div class="mcq-opt"><strong>3：</strong><span class="ans-highlight cloze">三位四通双向电磁换向阀</span></div>
+              <div class="mcq-opt"><strong>4：</strong><span class="ans-highlight cloze">两位两通单向电磁换向阀</span></div>
+              <div class="mcq-opt"><strong>5：</strong><span class="ans-highlight cloze">调速阀</span></div>
+              <div class="mcq-opt"><strong>6：</strong><span class="ans-highlight cloze">压力继电器</span></div>
+            </div>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 综合题 2 -->
+      <article class="q-card" data-qid="comp-2" data-cat="sec-comp">
+        <div class="q-card-top">
+          <span class="q-num-badge">综合题 2 · 油路分析与动作表</span>
+          <button class="master-btn" onclick="toggleMastered('comp-2')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+        </div>
+        <div class="q-stem">2. 分析该液压回路，分析液压缸实现快进和工进时的油路，填写电磁铁动作表。</div>
+        <div class="long-ans-wrapper">
+          <button class="cloze-cover-btn" onclick="revealLongAns(this)">👁️ 点击展开自测答案（快进/工进/快退完整油路 + 双版本电磁铁动作表）</button>
+          <div class="long-ans-content">
+            <h4 style="margin:6px 0; font-size:15px; color:var(--accent);">（1）各工况油路分析：</h4>
+            <ul class="ans-list">
+              <li><strong>① 快进（<code>1YA</code> 得电、<code>2YA</code> 失电、<code>3YA</code> 得电）</strong>：<br>
+                • <strong>进油路</strong>：液压泵 <code>1</code> → 三位四通电磁换向阀 <code>3</code>（左位） → 液压缸左腔（无杆腔）。<br>
+                • <strong>回油路</strong>：液压缸右腔（有杆腔） → <span class="ans-highlight cloze">二位二通电磁换向阀 4（左位导通，短接调速阀 5）</span> → 阀 <code>3</code>（左位） → 油箱。<br>
+                <em>（特点：回油不经过调速阀，无节流阻力，实现快速前进。）</em>
+              </li>
+              <li><strong>② 工进（<code>1YA</code> 得电、<code>2YA</code> 失电、<code>3YA</code> 失电）</strong>：<br>
+                • <strong>进油路</strong>：液压泵 <code>1</code> → 阀 <code>3</code>（左位） → 液压缸左腔（无杆腔）（多余油液经溢流阀 <code>2</code> 溢流回油箱）。<br>
+                • <strong>回油路</strong>：液压缸右腔（有杆腔） → <span class="ans-highlight cloze">调速阀 5（因 3YA 失电，阀 4 恢复右位关闭）</span> → 阀 <code>3</code>（左位） → 油箱。<br>
+                <em>（特点：构成<strong>回油节流调速</strong>，实现慢速工进；工进结束升压后触发压力继电器 <code>6</code> 发讯切换为快退。）</em>
+              </li>
+              <li><strong>③ 快退（<code>1YA</code> 失电、<code>2YA</code> 得电、<code>3YA</code> 失电）</strong>：<br>
+                • <strong>进油路</strong>：液压泵 <code>1</code> → 阀 <code>3</code>（右位） → 液压缸右腔（有杆腔）。<br>
+                • <strong>回油路</strong>：液压缸左腔（无杆腔） → 阀 <code>3</code>（右位） → 油箱。
+              </li>
+            </ul>
+
+            <h4 style="margin:12px 0 6px; font-size:15px; color:var(--accent);">（2）电磁铁动作表（双版本对照）：</h4>
+            <div class="dual-tables">
+              <div>
+                <div style="font-size:13px; font-weight:700; margin-bottom:4px;">版本 A：对应原理图（<code>1YA~3YA</code>）完整工作循环表</div>
+                <div class="table-wrap">
+                  <table class="data-table">
+                    <thead>
+                      <tr><th>动作工况</th><th>1YA (CT1)</th><th>2YA (CT2)</th><th>3YA (CT3)</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><strong>快进</strong></td><td><span class="ans-highlight cloze">＋</span></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">＋</span></td></tr>
+                      <tr><td><strong>工进</strong></td><td><span class="ans-highlight cloze">＋</span></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">－</span></td></tr>
+                      <tr><td><strong>快退</strong></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">＋</span></td><td><span class="ans-highlight cloze">－</span></td></tr>
+                      <tr><td><strong>停止(中位)</strong></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">－</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size:13px; font-weight:700; margin-bottom:4px;">版本 B：原卷附带参考简表（若按原卷基础表格样式填答）</div>
+                <div class="table-wrap">
+                  <table class="data-table">
+                    <thead>
+                      <tr><th>电磁铁 / 动作</th><th>CT1</th><th>CT2</th><th>CT3</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><strong>缸进</strong></td><td><span class="ans-highlight cloze">＋</span></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">－</span></td></tr>
+                      <tr><td><strong>缸退</strong></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">＋</span></td><td><span class="ans-highlight cloze">－</span></td></tr>
+                      <tr><td><strong>停止</strong></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">－</span></td><td><span class="ans-highlight cloze">＋</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="rehide-bar"><button class="rehide-btn" onclick="hideLongAns(this)">重新遮盖答案</button></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 空状态提示 -->
+    <div class="empty-state" id="emptyState">
+      <div style="font-size:32px; margin-bottom:8px;">🎉</div>
+      <div style="font-size:16px; font-weight:700; color:var(--text-main);">当前筛选条件下没有需要显示的题目</div>
+      <p style="font-size:13.5px; margin-top:4px;">你可以取消「只看未掌握」或清空搜索框查看全部题目。</p>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================
+       闪卡抽背模态框（Flashcard Modal）
+       ======================================================================== -->
+  <div class="modal-backdrop" id="flashcardModal" role="dialog" aria-modal="true" aria-label="闪卡抽背模式">
+    <div class="flashcard-shell">
+      <div class="fc-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <strong>🃏 闪卡抽背</strong>
+          <select class="fc-select" id="fcCategorySelect" onchange="initFlashcards()">
+            <option value="all">全部题型 (65)</option>
+            <option value="unmastered">仅未掌握题目</option>
+            <option value="fill">一、填空题 (20)</option>
+            <option value="mcq">二、选择题 (15)</option>
+            <option value="tf">三、判断题 (20)</option>
+            <option value="short">四、简答题 (6)</option>
+            <option value="calc">五、计算题 (2)</option>
+            <option value="comp">六、综合题 (2)</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="fc-counter" id="fcCounter">1 / 1</span>
+          <button class="icon-btn" onclick="closeFlashcardModal()">✕ 关闭</button>
+        </div>
+      </div>
+
+      <div class="fc-stage" id="fcStage" onclick="flipFlashcard()">
+        <div class="fc-card" id="fcCard">
+          <div class="fc-face fc-front">
+            <div class="fc-side-tag">
+              <span id="fcFrontCat">填空题 1</span>
+              <span id="fcStatusBadge">未掌握</span>
+            </div>
+            <div class="fc-body" id="fcFrontBody">题目加载中...</div>
+            <div class="fc-hint">点击卡片或按 [空格键] 翻转查看参考答案</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-side-tag">
+              <span style="color:var(--accent);">参考答案与速记解析</span>
+              <span>背面</span>
+            </div>
+            <div class="fc-body" id="fcBackBody">答案加载中...</div>
+            <div class="fc-hint">再次点击或按 [空格键] 翻回题干</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-controls">
+        <div class="fc-nav-group">
+          <button class="icon-btn" onclick="prevFlashcard()">← 上一题</button>
+          <button class="icon-btn" onclick="nextFlashcard()">下一题 →</button>
+          <button class="icon-btn" onclick="shuffleFlashcards()" title="随机打乱顺序">🔀 随机</button>
+        </div>
+        <div class="fc-nav-group">
+          <button class="icon-btn" id="fcToggleMasterBtn" onclick="toggleFlashcardMastered()">✓ 标记为已掌握</button>
+          <button class="btn-primary" onclick="flipFlashcard()">翻转卡片</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 自定义重置进度确认弹窗 -->
+  <div class="modal-backdrop" id="resetConfirmModal" role="dialog" aria-modal="true" aria-label="重置进度确认">
+    <div class="flashcard-shell" style="max-width:420px; text-align:center;">
+      <div style="font-size:28px;">🔄</div>
+      <h3 style="font-size:17px; font-weight:700;">确认清空所有学习进度？</h3>
+      <p style="font-size:14px; color:var(--text-secondary);">此操作会将全部 65 道题重置为「未掌握」状态，方便重新进行新一轮背诵自测。</p>
+      <div style="display:flex; justify-content:center; gap:10px; margin-top:6px;">
+        <button class="icon-btn" onclick="closeResetConfirm()">取消</button>
+        <button class="btn-primary" style="background:#e11d48; color:#fff;" onclick="confirmResetProgress()">确认重置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部轻量状态提示条 -->
+  <div id="toastBanner" style="position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--text-main); color:var(--bg-card); padding:9px 18px; border-radius:99px; font-size:13.5px; font-weight:600; box-shadow:var(--shadow-md); opacity:0; pointer-events:none; transition:all 0.25s ease; z-index:1200;"></div>
+
+  <!-- ========================================================================
+       交互逻辑脚本（零外部依赖，数据与交互完整封装）
+       ======================================================================== -->
+  <script>
+    /* ========================================================================
+       1. 完整题库数据（填空20题 + 选择15题 + 判断20题[10组对照]）
+       ======================================================================== */
+    const FILL_QUESTIONS = [
+      { id: 'fill-1', num: '第 1 题', before: '1. 流经管路的液体会因为阻力造成压力损失，期中由于粘性造成的压力损失称为 ', ans: '沿程压力损失', after: '（或：沿程损失）。', note: '' },
+      { id: 'fill-2', num: '第 2 题', before: '2. 某环境真空度为 0.2 个大气压，则相对压力为 ', ans: '-0.2 个大气压', after: '（或：约 -0.02 MPa）。', note: '解析：相对压力 = 绝对压力 - 大气压 = -真空度。' },
+      { id: 'fill-3', num: '第 3 题', before: '3. 除了摩擦因素外，液气压系统的温升现象最主要的造成原因是 ', ans: '压力损失', after: '（或：溢流损失、节流损失等能量损失转化为热能）。', note: '' },
+      { id: 'fill-4', num: '第 4 题', before: '4. 防止 ', ans: '液压冲击', after: ' 的根本措施是避免液流速度的急剧变化。', note: '' },
+      { id: 'fill-5', num: '第 5 题', before: '5. ', ans: '液控单向阀', after: ' 是一种通过控制压力油允许液流向一个方向流动，反向开启则必须通过液压控制来实现的单向阀。', note: '' },
+      { id: 'fill-6', num: '第 6 题', before: '6. 液体沿管道流动，在流经某一截面时其流速呈抛物线形分布。在靠近管壁处，其速度为零，愈接近轴心处速度愈大，轴心处速度 ', ans: '最大', after: '（或：等于平均流速的 2 倍）。', note: '' },
+      { id: 'fill-7', num: '第 7 题', before: '7. 某密封容积内绝对压力为 1.7 个大气压，则相对压力为 ', ans: '0.7 个大气压', after: '（或：约 0.07 MPa）。', note: '解析：相对压力 = 1.7 - 1 = 0.7 个大气压。' },
+      { id: 'fill-8', num: '第 8 题', before: '8. 液压、气动系统一般由动力装置、', ans: '控制装置', after: '（或：控制调节装置）、执行装置、辅助装置四个部分组成。', note: '速记口诀：动、控、执、辅（外加工作介质）。' },
+      { id: 'fill-9', num: '第 9 题', before: '9. 1 m³/h = ', ans: '1/3600', after: '（或：2.78 × 10⁻⁴）m³/s。', note: '' },
+      { id: 'fill-10', num: '第 10 题', before: '10. 为了便于检修，蓄能器与管路之间应安装截止阀，为了防止液压泵停车或泄载时蓄能器内的压力油倒流，蓄能器与液压泵之间应安装 ', ans: '单向阀', after: '。', note: '' },
+      { id: 'fill-11', num: '第 11 题', before: '11. 常用的溢流阀分为直动式溢流阀和 ', ans: '先导式溢流阀', after: '。', note: '' },
+      { id: 'fill-12', num: '第 12 题', before: '12. 液体实际雷诺数小于临界雷诺数时，流态为 ', ans: '层流', after: '。', note: '速记：小于临界为层流，大于临界为紊流。' },
+      { id: 'fill-13', num: '第 13 题', before: '13. 一个标准大气压约等于 ', ans: '0.1', after: '（或：0.1013）MPa（原卷印作 MP）。', note: '' },
+      { id: 'fill-14', num: '第 14 题', before: '14. 气动回路中可以用 ', ans: '逻辑', after: '（或：梭阀、双压阀）阀实现逻辑控制。', note: '' },
+      { id: 'fill-15', num: '第 15 题', before: '15. 伯努利方程是研究液压系统 ', ans: '能量', after: ' 转换的重要工具。', note: '' },
+      { id: 'fill-16', num: '第 16 题', before: '16. 溢流阀为进口压力控制，阀口常闭。定值减压阀为出口压力控制，阀口 ', ans: '常开', after: '。', note: '速记口诀：溢流进控常闭，减压出控常开。' },
+      { id: 'fill-17', num: '第 17 题', before: '17. 液压系统中，油箱的主要作用有储存油液、', ans: '散发热量', after: '（或：散热）、使油中空气逸出、杂质沉淀。', note: '' },
+      { id: 'fill-18', num: '第 18 题', repeat: '同第 13 题', before: '18. 一个标准大气压约等于 ', ans: '0.1', after: '（或：0.1013）MPa。', note: '' },
+      { id: 'fill-19', num: '第 19 题', repeat: '同第 14 题', before: '19. 气动回路中可以用 ', ans: '逻辑', after: '（或：梭阀、双压阀）阀实现逻辑控制。', note: '' },
+      { id: 'fill-20', num: '第 20 题', repeat: '同第 15 题', before: '20. 伯努利方程是研究液压系统 ', ans: '能量', after: ' 转换的重要工具。', note: '' }
+    ];
+
+    const MCQ_QUESTIONS = [
+      {
+        id: 'mcq-1', num: '第 1 题',
+        stem: '1. 根据流量连续性原理，我们可以判断某管路中液体的（　）变化。',
+        options: ['A. 速度', 'B. 压力', 'C. 粘性', 'D. 流量'],
+        correct: 0, ansText: 'A. 速度',
+        analysis: '解析：由流量连续性方程 q = vA = 常量可知，管路截面积变化时，液体流速发生变化。'
+      },
+      {
+        id: 'mcq-2', num: '第 2 题',
+        stem: '2. 下列泵中可以用于高压系统的是（　）。',
+        options: ['A. 齿轮泵', 'B. 双作用叶片泵', 'C. 柱塞泵', 'D. 单作用叶片泵'],
+        correct: 2, ansText: 'C. 柱塞泵',
+        analysis: '口诀：齿轮低压、叶片中压、柱塞高压。柱塞泵密封性好、额定压力最高。'
+      },
+      {
+        id: 'mcq-3', num: '第 3 题',
+        stem: '3. 调速阀是由减压阀和（　）阀串联而成的组合阀。',
+        options: ['A. 溢流', 'B. 节流', 'C. 单向', 'D. 增压'],
+        correct: 1, ansText: 'B. 节流',
+        analysis: '解析：调速阀由定差减压阀与节流阀串联组成，定差减压阀保证节流阀前后压差恒定。'
+      },
+      {
+        id: 'mcq-4', num: '第 4 题',
+        stem: '4. 下列属于液压传动优点的是（　）。',
+        options: ['A. 控制精度高', 'B. 不易泄露污染', 'C. 有严格的传动比', 'D. 在相同功率条件下系统体积小重量轻'],
+        correct: 3, ansText: 'D. 在相同功率条件下系统体积小重量轻',
+        analysis: '解析：液压传动功率重量比大、结构紧凑；因存在泄漏和油液可压缩性，无严格传动比。'
+      },
+      {
+        id: 'mcq-5', num: '第 5 题',
+        stem: '5. 高压管路中的换向阀应采用（　）。',
+        options: ['A. 手动阀', 'B. 机动阀', 'C. 液控阀', 'D. 电磁阀'],
+        correct: 2, ansText: 'C. 液控阀',
+        analysis: '解析：高压大流量管路中阀芯所受液动力大，普通电磁铁推力不足，应采用液控换向阀（或电液换向阀）。'
+      },
+      {
+        id: 'mcq-6', num: '第 6 题',
+        stem: '6. 液压系统的最大工作压力为 10MPa，安全阀的调定压力应为（　）。',
+        options: ['A. 等于 10MPa', 'B. 小于 10MPa', 'C. 大于 10MPa', 'D. 0'],
+        correct: 2, ansText: 'C. 大于 10MPa',
+        analysis: '解析：安全阀（溢流阀作安全阀用）常态关闭，其调定压力一般比系统最大工作压力高 10%～20%。'
+      },
+      {
+        id: 'mcq-7', num: '第 7 题',
+        stem: '7. （　）在常态时，阀口是常开的，进、出油路相通。',
+        options: ['A. 溢流阀', 'B. 减压阀', 'C. 顺序阀', 'D. 单向阀'],
+        correct: 1, ansText: 'B. 减压阀',
+        analysis: '口诀：溢流阀、顺序阀常态常闭；定值减压阀常态常开。'
+      },
+      {
+        id: 'mcq-8', num: '第 8 题',
+        stem: '8. 液压泵的理论流量 qₜ（　）实际流量 q。',
+        options: ['A. 大于', 'B. 小于', 'C. 等于', 'D. 0'],
+        correct: 0, ansText: 'A. 大于',
+        analysis: '解析：液压泵工作时存在内部容积泄漏损失，因此理论流量 qₜ 大于实际输出流量 q。'
+      },
+      {
+        id: 'mcq-9', num: '第 9 题',
+        stem: '9. 流量连续性方程是质量守恒定律在流体力学中的表达形式，而伯努利方程是（　）在流体力学中的表达形式。',
+        options: ['A. 能量守恒定律', 'B. 动量定理', 'C. 质量守恒定律', 'D. 其他'],
+        correct: 0, ansText: 'A. 能量守恒定律',
+        analysis: '解析：理想液体伯努利方程体现了压力能、位能和动能三者之间的能量守恒。'
+      },
+      {
+        id: 'mcq-10', num: '第 10 题',
+        stem: '10. 外啮合齿轮泵位于轮齿逐渐脱开啮合的一侧是（　）腔，位于轮齿逐渐进入啮合的一侧是压油腔。',
+        options: ['A. 吸油', 'B. 压油', 'C. 空油', 'D. 冷油'],
+        correct: 0, ansText: 'A. 吸油',
+        analysis: '解析：轮齿脱开啮合时密封容积逐渐增大，形成局部真空，成为吸油腔。'
+      },
+      {
+        id: 'mcq-11', num: '第 11 题',
+        stem: '11. 液压传动系统中，配管的高度（长度）一般不超过（　）米。',
+        options: ['A. 8', 'B. 10', 'C. 12', 'D. 15'],
+        correct: 1, ansText: 'B. 10（部分教材为 D. 15）',
+        analysis: '解析：液压传动沿程压力损失大，不宜远距离传输，统考题库通常选 B（10米），少数教材题库为 D（15米）。'
+      },
+      {
+        id: 'mcq-12', num: '第 12 题',
+        stem: '12. 下列泵中受到径向力平衡的是（　）。',
+        options: ['A. 齿轮泵', 'B. 双作用叶片泵', 'C. 单作用叶片泵', 'D. 单作用叶片泵'],
+        correct: 1, ansText: 'B. 双作用叶片泵',
+        analysis: '解析：双作用叶片泵的两个吸油区和两个压油区对称分布，转子所受径向液压力相互平衡。'
+      },
+      {
+        id: 'mcq-13', num: '第 13 题',
+        stem: '13. 调速阀是由节流阀和（　）阀串联而成的组合阀。',
+        options: ['A. 溢流', 'B. 减压', 'C. 单向', 'D. 增压'],
+        correct: 1, ansText: 'B. 减压',
+        analysis: '解析：同第 3 题，调速阀 = 节流阀 + 定差减压阀串联。'
+      },
+      {
+        id: 'mcq-14', num: '第 14 题',
+        stem: '14. 随着油温的降低，油液的粘度会（　），随着压力的减小，粘度会变大。',
+        options: ['A. 变大', 'B. 变小', 'C. 不变', 'D. 0'],
+        correct: 0, ansText: 'A. 变大',
+        analysis: '解析：油液温度降低时粘度显著变大（注：原卷题干后半句“随着压力的减小，粘度会变大”为印刷笔误，实际压力增大粘度变大，第一空选 A 无误）。'
+      },
+      {
+        id: 'mcq-15', num: '第 15 题',
+        stem: '15. 某液压系统中要求选用三位四通换向阀中位时可形成差动回路，应选用（　）型。',
+        options: ['A. O型', 'B. Y型', 'C. P型', 'D. H型'],
+        correct: 2, ansText: 'C. P型',
+        analysis: '解析：P 型中位机能 P 口与 A、B 口均相通，T 口封闭，使单活塞杆液压缸两腔连通压力油形成差动连接。'
+      }
+    ];
+
+    const TF_QUESTIONS = [
+      { id: 'tf-1', num: '第 1 题', stem: '1. 液压马达和液压泵都是做连续回转运动，所以可以互换使用。', isTrue: false, reason: '解析：原理上具有可逆性，但由于结构存在差异（如配流对称性、泄油口设置、自吸能力等），很多泵和马达不能直接互换使用。' },
+      { id: 'tf-2', num: '第 2 题', stem: '2. 油液从较粗管路流向较细管路后流速会变大。', isTrue: true, reason: '解析：由流量连续性方程 q = vA 可知，流量一定时，管路变细（截面积 A 减小），流速 v 必然变大。' },
+      { id: 'tf-3', num: '第 3 题', stem: '3. 单作用叶片泵不可以做变量泵使用。', isTrue: false, reason: '解析：单作用叶片泵定子和转子偏心安装，改变偏心距即可改变排量，常作为变量泵使用；双作用叶片泵才只能作定量泵。' },
+      { id: 'tf-4', num: '第 4 题', stem: '4. 齿轮泵可以在高压环境中使用。', isTrue: false, reason: '解析：普通齿轮泵径向不平衡力大、端面泄漏大，一般只用于低压系统。' },
+      { id: 'tf-5', num: '第 5 题', stem: '5. 标号为 46# 的液压油中，“46”是指矿物质含量的百分数。', isTrue: false, reason: '解析：“46”是指该液压油在 40℃ 时的运动粘度平均值为 46 mm²/s。' },
+      { id: 'tf-6', num: '第 6 题', stem: '6. 液控式单向阀既可以单向导通也可以反向导通。', isTrue: true, reason: '解析：正向自由导通；当控制油口通入一定压力的控制油顶开阀芯时，允许油液反向导通。' },
+      { id: 'tf-7', num: '第 7 题', stem: '7. 减压阀在工作时阀芯是关闭的状态。', isTrue: false, reason: '解析：减压阀常态常开，工作时阀芯移动使阀口“关小”以产生节流压降来减压，并非完全关闭。' },
+      { id: 'tf-8', num: '第 8 题', stem: '8. 调速阀和节流阀在系统稳定性要求不高的情况下可以互换使用。', isTrue: true, reason: '解析：调速阀比节流阀多了压力补偿（定差减压阀），当负载变化小或对速度稳定性要求不高时可互换。' },
+      { id: 'tf-9', num: '第 9 题', stem: '9. 在油液进入液压泵之前必须安装过滤器。', isTrue: true, customBadge: '√（统考标准判√）', reason: '解析：常规考试题库均判 √（防止大颗粒杂质吸入泵内造成磨损卡死）；严谨教材因过滤器也可装回油/压油路而判 ×，建议按任课老师口径（普遍判 √）。' },
+      { id: 'tf-10', num: '第 10 题', stem: '10. 螺杆泵没有连续的周期性容积变化，所以不属于容积式液压泵。', isTrue: false, reason: '解析：螺杆泵依靠螺杆相互啮合空间的密封容积变化吸油和压油，依然属于容积式液压泵。' },
+      { id: 'tf-11', num: '第 11 题', repeat: '同第 1 题', stem: '11. 液压马达和液压泵都是做连续回转运动，所以可以互换使用。', isTrue: false, reason: '解析（同第 1 题）：结构存在差异（如配流对称性、泄油口设置等），很多泵和马达不能直接互换使用。' },
+      { id: 'tf-12', num: '第 12 题', repeat: '同第 2 题', stem: '12. 油液从较粗管路流向较细管路后流速会变大。', isTrue: true, reason: '解析（同第 2 题）：由 q = vA 可知，截面积 A 减小，流速 v 变大。' },
+      { id: 'tf-13', num: '第 13 题', repeat: '同第 3 题', stem: '13. 单作用叶片泵不可以做变量泵使用。', isTrue: false, reason: '解析（同第 3 题）：单作用叶片泵改变偏心距即可变量，常作为变量泵使用。' },
+      { id: 'tf-14', num: '第 14 题', repeat: '同第 4 题', stem: '14. 齿轮泵可以在高压环境中使用。', isTrue: false, reason: '解析（同第 4 题）：普通齿轮泵一般只用于低压系统。' },
+      { id: 'tf-15', num: '第 15 题', repeat: '同第 5 题', stem: '15. 标号为 46# 的液压油中，“46”是指矿物质含量的百分数。', isTrue: false, reason: '解析（同第 5 题）：“46”是指 40℃ 时的运动粘度平均值为 46 mm²/s。' },
+      { id: 'tf-16', num: '第 16 题', repeat: '同第 6 题', stem: '16. 液控式单向阀既可以单向导通也可以反向导通。', isTrue: true, reason: '解析（同第 6 题）：正向自由导通，控制油通入顶开阀芯时可反向导通。' },
+      { id: 'tf-17', num: '第 17 题', repeat: '同第 7 题', stem: '17. 减压阀在工作时阀芯是关闭的状态。', isTrue: false, reason: '解析（同第 7 题）：减压阀常态常开，工作时阀口是“关小”减压而非完全关闭。' },
+      { id: 'tf-18', num: '第 18 题', repeat: '同第 8 题', stem: '18. 调速阀和节流阀在系统稳定性要求不高的情况下可以互换使用。', isTrue: true, reason: '解析（同第 8 题）：系统稳定性要求不高时两者可以互换使用。' },
+      { id: 'tf-19', num: '第 19 题', repeat: '同第 9 题', stem: '19. 在油液进入液压泵之前必须安装过滤器。', isTrue: true, customBadge: '√（统考标准判√）', reason: '解析（同第 9 题）：统考题库常规判 √（严谨教材因安装位置多样判 ×）。' },
+      { id: 'tf-20', num: '第 20 题', repeat: '同第 10 题', stem: '20. 螺杆泵没有连续的周期性容积变化，所以不属于容积式液压泵。', isTrue: false, reason: '解析（同第 10 题）：螺杆泵属于容积式液压泵。' }
+    ];
+
+    /* ========================================================================
+       2. 状态管理与 localStorage 持久化（安全容错封装）
+       ======================================================================== */
+    const STORAGE_KEY = 'hydraulic_review_mastered_v1';
+    const THEME_KEY = 'hydraulic_review_theme_v1';
+    let masteredSet = new Set();
+    let currentMode = 'recite';
+    let onlyUnmastered = false;
+    let currentSectionFilter = 'all';
+    let currentSearchQuery = '';
+
+    function loadStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          JSON.parse(saved).forEach(id => masteredSet.add(id));
+        }
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'dark') {
+          applyTheme('dark');
+        }
+      } catch (e) {
+        // 沙盒/隐私模式禁用 localStorage 时静默降级为内存存储
+      }
+    }
+
+    function saveStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...masteredSet]));
+      } catch (e) {}
+    }
+
+    /* ========================================================================
+       3. 动态渲染填空题、选择题、判断题
+       ======================================================================== */
+    function renderQuestions() {
+      // 渲染填空题
+      const fillContainer = document.getElementById('list-fill');
+      fillContainer.innerHTML = FILL_QUESTIONS.map(q => `
+        <article class="q-card" data-qid="${q.id}" data-cat="sec-fill">
+          <div class="q-card-top">
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <span class="q-num-badge">填空 ${q.num}</span>
+              ${q.repeat ? `<span class="repeat-tag">${q.repeat}</span>` : ''}
+            </div>
+            <button class="master-btn" onclick="toggleMastered('${q.id}')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+          </div>
+          <div class="q-stem">
+            ${q.before}<span class="ans-highlight cloze" tabindex="0" role="button" onclick="toggleCloze(this)">${q.ans}</span>${q.after}
+          </div>
+          ${q.note ? `<div class="info-box analysis"><span class="tag-pill">速记/解析</span><span>${q.note}</span></div>` : ''}
+        </article>
+      `).join('');
+
+      // 渲染选择题
+      const mcqContainer = document.getElementById('list-mcq');
+      mcqContainer.innerHTML = MCQ_QUESTIONS.map(q => `
+        <article class="q-card" data-qid="${q.id}" data-cat="sec-mcq">
+          <div class="q-card-top">
+            <span class="q-num-badge">选择 ${q.num}</span>
+            <button class="master-btn" onclick="toggleMastered('${q.id}')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+          </div>
+          <div class="q-stem">
+            ${q.stem.replace('（　）', `（<span class="ans-highlight cloze" tabindex="0" role="button" onclick="revealMcqCard('${q.id}', this)">${q.ansText}</span>）`)}
+          </div>
+          <div class="mcq-options">
+            ${q.options.map((opt, idx) => `
+              <div class="mcq-opt ${idx === q.correct ? 'is-correct' : ''}" onclick="handleMcqOptionClick('${q.id}', ${idx === q.correct}, this)">
+                <span>${opt}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="info-box analysis auto-hide-note">
+            <span class="tag-pill">解析</span>
+            <span>${q.analysis}</span>
+          </div>
+        </article>
+      `).join('');
+
+      // 渲染判断题
+      const tfContainer = document.getElementById('list-tf');
+      tfContainer.innerHTML = TF_QUESTIONS.map(q => {
+        const badgeText = q.customBadge || (q.isTrue ? '√ 正确' : '× 错误');
+        const badgeClass = q.isTrue ? 'tf-true' : 'tf-false';
+        return `
+          <article class="q-card" data-qid="${q.id}" data-cat="sec-tf">
+            <div class="q-card-top">
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span class="q-num-badge">判断 ${q.num}</span>
+                ${q.repeat ? `<span class="repeat-tag">${q.repeat}</span>` : ''}
+              </div>
+              <button class="master-btn" onclick="toggleMastered('${q.id}')"><span class="m-icon">○</span> <span class="m-text">未掌握</span></button>
+            </div>
+            <div class="q-stem">
+              ${q.stem}
+              <span class="tf-badge ${badgeClass} cloze" tabindex="0" role="button" onclick="revealTfCard('${q.id}', this)">${badgeText}</span>
+            </div>
+            <div class="info-box analysis auto-hide-note">
+              <span class="tag-pill">判断依据</span>
+              <span>${q.reason}</span>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    /* ========================================================================
+       4. 学习模式切换（背诵模式 / 挖空自测模式）与点击揭晓逻辑
+       ======================================================================== */
+    function setMode(mode) {
+      currentMode = mode;
+      document.body.setAttribute('data-mode', mode);
+      document.getElementById('btnModeRecite').classList.toggle('active', mode === 'recite');
+      document.getElementById('btnModeCloze').classList.toggle('active', mode === 'cloze');
+
+      if (mode === 'cloze') {
+        revealAllClozes(false);
+      }
+    }
+
+    function toggleCloze(el) {
+      if (currentMode !== 'cloze') return;
+      el.classList.toggle('revealed');
+    }
+
+    function revealMcqCard(qid, clozeEl) {
+      if (currentMode !== 'cloze') return;
+      const card = document.querySelector(`.q-card[data-qid="${qid}"]`);
+      const isRevealed = clozeEl.classList.toggle('revealed');
+      card.classList.toggle('mcq-revealed', isRevealed);
+      if (!isRevealed) {
+        card.querySelectorAll('.mcq-opt').forEach(o => o.classList.remove('user-wrong'));
+      }
+    }
+
+    function handleMcqOptionClick(qid, isCorrect, optEl) {
+      if (currentMode !== 'cloze') return;
+      const card = document.querySelector(`.q-card[data-qid="${qid}"]`);
+      card.classList.add('mcq-revealed');
+      const cloze = card.querySelector('.cloze');
+      if (cloze) cloze.classList.add('revealed');
+      if (!isCorrect) {
+        optEl.classList.add('user-wrong');
+      }
+    }
+
+    function revealTfCard(qid, clozeEl) {
+      if (currentMode !== 'cloze') return;
+      const card = document.querySelector(`.q-card[data-qid="${qid}"]`);
+      const isRevealed = clozeEl.classList.toggle('revealed');
+      card.classList.toggle('tf-revealed', isRevealed);
+    }
+
+    function revealLongAns(btn) {
+      const wrapper = btn.closest('.long-ans-wrapper');
+      wrapper.classList.add('revealed');
+      wrapper.querySelectorAll('.cloze').forEach(c => c.classList.add('revealed'));
+    }
+
+    function hideLongAns(btn) {
+      const wrapper = btn.closest('.long-ans-wrapper');
+      wrapper.classList.remove('revealed');
+      wrapper.querySelectorAll('.cloze').forEach(c => c.classList.remove('revealed'));
+    }
+
+    function revealAllClozes(show) {
+      document.querySelectorAll('.cloze').forEach(el => {
+        el.classList.toggle('revealed', show);
+      });
+      document.querySelectorAll('.q-card').forEach(card => {
+        card.classList.toggle('mcq-revealed', show);
+        card.classList.toggle('tf-revealed', show);
+        if (!show) {
+          card.querySelectorAll('.mcq-opt').forEach(o => o.classList.remove('user-wrong'));
+        }
+      });
+      document.querySelectorAll('.long-ans-wrapper').forEach(w => {
+        w.classList.toggle('revealed', show);
+      });
+    }
+
+    /* ========================================================================
+       5. 掌握进度追踪、主题切换、题型筛选与关键词搜索
+       ======================================================================== */
+    function toggleMastered(qid) {
+      if (masteredSet.has(qid)) {
+        masteredSet.delete(qid);
+      } else {
+        masteredSet.add(qid);
+      }
+      saveStorage();
+      syncMasteredUI();
+      applyFilters();
+    }
+
+    function syncMasteredUI() {
+      const allCards = document.querySelectorAll('.q-card');
+      const total = allCards.length;
+      let masteredCount = 0;
+
+      allCards.forEach(card => {
+        const qid = card.getAttribute('data-qid');
+        const isMastered = masteredSet.has(qid);
+        if (isMastered) masteredCount++;
+        card.classList.toggle('is-mastered', isMastered);
+        const icon = card.querySelector('.m-icon');
+        const text = card.querySelector('.m-text');
+        if (icon && text) {
+          icon.textContent = isMastered ? '✓' : '○';
+          text.textContent = isMastered ? '已掌握' : '未掌握';
+        }
+      });
+
+      const pct = total ? Math.round((masteredCount / total) * 100) : 0;
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressLabel').textContent = `已掌握 ${masteredCount} / ${total} (${pct}%)`;
+    }
+
+    function toggleUnmasteredFilter() {
+      onlyUnmastered = !onlyUnmastered;
+      document.getElementById('btnFilterUnmastered').classList.toggle('active-filter', onlyUnmastered);
+      applyFilters();
+    }
+
+    function filterSection(target, btnEl) {
+      currentSectionFilter = target;
+      document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      applyFilters();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function handleSearch(val) {
+      currentSearchQuery = val.trim().toLowerCase();
+      document.getElementById('searchClear').style.display = currentSearchQuery ? 'block' : 'none';
+      applyFilters();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      handleSearch('');
+    }
+
+    function applyFilters() {
+      const sections = document.querySelectorAll('.section-block');
+      let totalVisibleCards = 0;
+
+      sections.forEach(sec => {
+        const secId = sec.id;
+        // 板块级筛选
+        if (currentSectionFilter !== 'all' && currentSectionFilter !== secId) {
+          sec.style.display = 'none';
+          return;
+        }
+
+        // 置顶口诀板块特殊处理
+        if (secId === 'sec-cheat') {
+          const textMatch = !currentSearchQuery || sec.textContent.toLowerCase().includes(currentSearchQuery);
+          sec.style.display = textMatch ? 'block' : 'none';
+          if (textMatch) totalVisibleCards++;
+          return;
+        }
+
+        const cards = sec.querySelectorAll('.q-card');
+        let secVisibleCount = 0;
+
+        cards.forEach(card => {
+          const qid = card.getAttribute('data-qid');
+          const matchMastered = !onlyUnmastered || !masteredSet.has(qid);
+          const matchText = !currentSearchQuery || card.textContent.toLowerCase().includes(currentSearchQuery);
+          const show = matchMastered && matchText;
+          card.style.display = show ? 'block' : 'none';
+          if (show) {
+            secVisibleCount++;
+            totalVisibleCards++;
+          }
+        });
+
+        sec.style.display = secVisibleCount > 0 ? 'block' : 'none';
+      });
+
+      document.getElementById('emptyState').style.display = totalVisibleCards === 0 ? 'block' : 'none';
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'light' : 'dark';
+      applyTheme(nextTheme);
+      try {
+        localStorage.setItem(THEME_KEY, nextTheme);
+      } catch (e) {}
+    }
+
+    function applyTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      document.getElementById('themeIcon').textContent = theme === 'dark' ? '☀️' : '🌙';
+      document.getElementById('themeText').textContent = theme === 'dark' ? '纸质暖白' : '暗夜书房';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastBanner');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+      }, 2400);
+    }
+
+    function openResetConfirm() {
+      document.getElementById('resetConfirmModal').classList.add('open');
+    }
+
+    function closeResetConfirm() {
+      document.getElementById('resetConfirmModal').classList.remove('open');
+    }
+
+    function confirmResetProgress() {
+      masteredSet.clear();
+      saveStorage();
+      syncMasteredUI();
+      applyFilters();
+      closeResetConfirm();
+      showToast('✓ 已重置全部 65 道题的学习进度');
+    }
+
+    function exportSelfHtml() {
+      try {
+        const clone = document.documentElement.cloneNode(true);
+        // 清理动态渲染生成的内部列表和临时弹窗状态，避免导出文件重复渲染
+        ['list-fill', 'list-mcq', 'list-tf'].forEach(id => {
+          const el = clone.querySelector('#' + id);
+          if (el) el.innerHTML = '';
+        });
+        clone.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('open'));
+        const htmlContent = '<!DOCTYPE html>\n' + clone.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '液压与气压传动_互动背诵自测_65题完整版.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('✓ 已导出单文件离线 HTML 网页');
+      } catch (e) {
+        showToast('导出失败，请使用浏览器 Ctrl+S 保存网页');
+      }
+    }
+
+    /* ========================================================================
+       6. 闪卡抽背模式（Flashcard Modal + 键盘快捷键 + 触屏滑动）
+       ======================================================================== */
+    let flashcardPool = [];
+    let fcIndex = 0;
+    let fcFlipped = false;
+
+    function buildAllFlashcards() {
+      const deck = [];
+      FILL_QUESTIONS.forEach(q => {
+        deck.push({
+          qid: q.id,
+          cat: 'fill',
+          title: `一、填空题 · ${q.num}`,
+          front: `${q.before} <span style="border-bottom:2px solid var(--accent); padding:0 18px; color:var(--accent);">（ ？ ）</span> ${q.after}`,
+          back: `<div style="font-size:20px; font-weight:700; color:var(--accent); margin-bottom:8px;">${q.ans}</div>${q.note ? `<div class="info-box analysis"><span class="tag-pill">解析</span><span>${q.note}</span></div>` : ''}`
+        });
+      });
+
+      MCQ_QUESTIONS.forEach(q => {
+        deck.push({
+          qid: q.id,
+          cat: 'mcq',
+          title: `二、选择题 · ${q.num}`,
+          front: `<div>${q.stem}</div><div style="margin-top:10px; font-size:14.5px; color:var(--text-secondary);">${q.options.join(' &nbsp;&nbsp; ')}</div>`,
+          back: `<div style="font-size:19px; font-weight:700; color:var(--mnemonic-text); margin-bottom:8px;">正确答案：${q.ansText}</div><div class="info-box analysis"><span class="tag-pill">解析</span><span>${q.analysis}</span></div>`
+        });
+      });
+
+      TF_QUESTIONS.forEach(q => {
+        deck.push({
+          qid: q.id,
+          cat: 'tf',
+          title: `三、判断题 · ${q.num}`,
+          front: q.stem,
+          back: `<div style="font-size:20px; font-weight:800; color:${q.isTrue ? 'var(--mnemonic-text)' : 'var(--errata-text)'}; margin-bottom:8px;">${q.customBadge || (q.isTrue ? '√ 正确' : '× 错误')}</div><div class="info-box analysis"><span class="tag-pill">依据</span><span>${q.reason}</span></div>`
+        });
+      });
+
+      // 从页面已有 DOM 提取简答、计算、综合题卡片内容作为闪卡
+      const complexMap = [
+        { qid: 'short-1', cat: 'short', title: '四、简答题 · 第 1 题' },
+        { qid: 'short-2', cat: 'short', title: '四、简答题 · 第 2 题' },
+        { qid: 'short-3', cat: 'short', title: '四、简答题 · 第 3 题' },
+        { qid: 'short-4', cat: 'short', title: '四、简答题 · 第 4 题' },
+        { qid: 'short-5', cat: 'short', title: '四、简答题 · 第 5 题' },
+        { qid: 'short-6', cat: 'short', title: '四、简答题 · 第 6 题' },
+        { qid: 'calc-1', cat: 'calc', title: '五、计算题 · 第 1 题' },
+        { qid: 'calc-2', cat: 'calc', title: '五、计算题 · 第 2 题' },
+        { qid: 'comp-1', cat: 'comp', title: '六、综合题 · 第 1 题' },
+        { qid: 'comp-2', cat: 'comp', title: '六、综合题 · 第 2 题' }
+      ];
+
+      complexMap.forEach(item => {
+        const cardEl = document.querySelector(`.q-card[data-qid="${item.qid}"]`);
+        if (cardEl) {
+          const stemHtml = cardEl.querySelector('.q-stem').innerHTML;
+          const svgEl = cardEl.querySelector('.svg-figure');
+          const ansClone = cardEl.querySelector('.long-ans-content').cloneNode(true);
+          const rehide = ansClone.querySelector('.rehide-bar');
+          if (rehide) rehide.remove();
+          ansClone.querySelectorAll('.cloze').forEach(c => c.classList.remove('cloze'));
+          deck.push({
+            qid: item.qid,
+            cat: item.cat,
+            title: item.title,
+            front: stemHtml + (svgEl ? svgEl.outerHTML : ''),
+            back: ansClone.innerHTML
+          });
+        }
+      });
+
+      return deck;
+    }
+
+    function openFlashcardModal() {
+      document.getElementById('flashcardModal').classList.add('open');
+      initFlashcards();
+    }
+
+    function closeFlashcardModal() {
+      document.getElementById('flashcardModal').classList.remove('open');
+    }
+
+    function initFlashcards() {
+      const filter = document.getElementById('fcCategorySelect').value;
+      const allDeck = buildAllFlashcards();
+      if (filter === 'all') {
+        flashcardPool = allDeck;
+      } else if (filter === 'unmastered') {
+        flashcardPool = allDeck.filter(c => !masteredSet.has(c.qid));
+      } else {
+        flashcardPool = allDeck.filter(c => c.cat === filter);
+      }
+      fcIndex = 0;
+      fcFlipped = false;
+      renderCurrentFlashcard();
+    }
+
+    function renderCurrentFlashcard() {
+      const cardEl = document.getElementById('fcCard');
+      cardEl.classList.toggle('flipped', fcFlipped);
+
+      if (flashcardPool.length === 0) {
+        document.getElementById('fcCounter').textContent = '0 / 0';
+        document.getElementById('fcFrontCat').textContent = '提示';
+        document.getElementById('fcFrontBody').innerHTML = '🎉 当前分类下没有未掌握的闪卡啦！';
+        document.getElementById('fcBackBody').innerHTML = '可切换其他题型继续抽背。';
+        return;
+      }
+
+      const item = flashcardPool[fcIndex];
+      const isMastered = masteredSet.has(item.qid);
+      document.getElementById('fcCounter').textContent = `${fcIndex + 1} / ${flashcardPool.length}`;
+      document.getElementById('fcFrontCat').textContent = item.title;
+      document.getElementById('fcFrontBody').innerHTML = item.front;
+      document.getElementById('fcBackBody').innerHTML = item.back;
+
+      const badge = document.getElementById('fcStatusBadge');
+      badge.textContent = isMastered ? '✓ 已掌握' : '○ 未掌握';
+      badge.style.color = isMastered ? '#16a34a' : 'var(--text-muted)';
+
+      const toggleBtn = document.getElementById('fcToggleMasterBtn');
+      toggleBtn.textContent = isMastered ? '✕ 取消已掌握' : '✓ 标记为已掌握';
+    }
+
+    function flipFlashcard() {
+      if (flashcardPool.length === 0) return;
+      fcFlipped = !fcFlipped;
+      document.getElementById('fcCard').classList.toggle('flipped', fcFlipped);
+    }
+
+    function nextFlashcard() {
+      if (flashcardPool.length === 0) return;
+      fcFlipped = false;
+      fcIndex = (fcIndex + 1) % flashcardPool.length;
+      renderCurrentFlashcard();
+    }
+
+    function prevFlashcard() {
+      if (flashcardPool.length === 0) return;
+      fcFlipped = false;
+      fcIndex = (fcIndex - 1 + flashcardPool.length) % flashcardPool.length;
+      renderCurrentFlashcard();
+    }
+
+    function shuffleFlashcards() {
+      for (let i = flashcardPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [flashcardPool[i], flashcardPool[j]] = [flashcardPool[j], flashcardPool[i]];
+      }
+      fcIndex = 0;
+      fcFlipped = false;
+      renderCurrentFlashcard();
+    }
+
+    function toggleFlashcardMastered() {
+      if (flashcardPool.length === 0) return;
+      const item = flashcardPool[fcIndex];
+      toggleMastered(item.qid);
+      renderCurrentFlashcard();
+    }
+
+    // 键盘快捷键支持（空格翻转、左右切换、Esc退出）
+    document.addEventListener('keydown', e => {
+      const modalOpen = document.getElementById('flashcardModal').classList.contains('open');
+      if (!modalOpen) return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        flipFlashcard();
+      } else if (e.code === 'ArrowRight') {
+        nextFlashcard();
+      } else if (e.code === 'ArrowLeft') {
+        prevFlashcard();
+      } else if (e.code === 'Escape') {
+        closeFlashcardModal();
+      }
+    });
+
+    // 移动端闪卡左右滑动支持
+    let touchStartX = 0;
+    const fcStage = document.getElementById('fcStage');
+    fcStage.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    fcStage.addEventListener('touchend', e => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) nextFlashcard();
+        else prevFlashcard();
+      }
+    }, { passive: true });
+
+    // 初始化启动
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStorage();
+      renderQuestions();
+      syncMasteredUI();
+    });
+  </script>
+</body>
+</html>
