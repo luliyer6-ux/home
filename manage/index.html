@@ -215,6 +215,7 @@ function renderMain(){
   var bar=el('div','bar');bar.append(el('h2','',def.title),el('span','meta',plain(db).length+' '+def.unit+(db.custom?' · '+VIEWS[db.view]:'')));
   bar.append(el('span','sp'));
   var q=el('input');q.type='search';q.placeholder='搜尋';q.setAttribute('aria-label','搜尋');bar.append(q);
+  if(db.custom&&!db.isNew){var see=el('a','btn','在網站上看');see.href='/#/c/'+def.id;see.target=window.self!==window.top?'_top':'_blank';see.rel='noopener';see.style.textDecoration='none';see.style.color='inherit';bar.append(see)}
   if(db.custom){var s=el('button','btn','設定');s.type='button';s.addEventListener('click',function(){editDb(db)});bar.append(s)}
   var add=el('button','btn primary','＋ 新增一'+def.unit);add.type='button';add.addEventListener('click',function(){editItem(db,null)});bar.append(add);
   m.append(bar);

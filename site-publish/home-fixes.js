@@ -6381,3 +6381,107 @@
   })();
 
 })();
+
+/* 46) 2026-11-15  My databases: #/c/<id> shows a database made on the manage page (/manage/). The list is
+   data/db/index.json, each database data/db/<id>.json = { title, view: table | cards | timeline, fields, items }.
+   The route is unknown to the main script, which draws its 404 there; this block replaces that with the page.
+   Each database also gets a link in the menu (Other). Text only goes in through textContent. */
+(() => {
+  'use strict';
+  const main = document.querySelector('#main'); if (!main) return;
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const lang = () => document.documentElement.lang || 'zh';
+  const L = (zh, en, ja) => /^en/.test(lang()) ? en : /^ja/.test(lang()) ? ja : zh;
+  const idNow = () => { const m = /^#\/c\/([\w-]+)/.exec(location.hash || ''); return m ? m[1] : ''; };
+  const cache = new Map();
+  const json = path => { if (!cache.has(path)) cache.set(path, fetch(path, { cache: 'no-cache' }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.status)))); return cache.get(path); };
+  const index = () => json('/data/db/index.json').catch(() => []);
+  const safeUrl = u => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch (e) { return ''; } };
+  const host = u => { try { return new URL(u).host.replace(/^www\./, ''); } catch (e) { return u; } };
+  const imgSrc = v => { const s = String(v || ''); return /^(https?:)?\/\//.test(s) ? safeUrl(s) : s ? '/' + s.replace(/^\.?\//, '') : ''; };
+
+  function value(f, v) { // one field of one item, as a node (or null when empty)
+    if (v == null || v === '' || v === false) return null;
+    if (f.type === 'url') { const u = safeUrl(v); if (!u) return el('span', '', String(v)); const a = el('a', 'lc-link', host(u)); a.href = u; a.target = '_blank'; a.rel = 'noopener noreferrer'; return a; }
+    if (f.type === 'image') { const s = imgSrc(v); if (!s) return null; const i = el('img'); i.src = s; i.alt = ''; i.loading = 'lazy'; i.decoding = 'async'; i.referrerPolicy = 'no-referrer'; return i; }
+    if (f.type === 'bool') return el('span', 'lc-yes', '✓');
+    return el('span', '', String(v));
+  }
+  function table(db, items, box) {
+    const t = el('table', 'lc-table'), hr = el('tr'); db.fields.forEach(f => hr.append(el('th', '', f.label)));
+    const th = el('thead'); th.append(hr); const tb = el('tbody'); t.append(th, tb);
+    items.forEach(it => { const tr = el('tr'); db.fields.forEach((f, i) => { const td = el('td', i ? '' : 'lc-first'); td.dataset.label = f.label; const n = value(f, it[f.key]); if (n) td.append(n); tr.append(td); }); tb.append(tr); });
+    const wrap = el('div', 'lc-scroll'); wrap.append(t); box.append(wrap);
+  }
+  function cards(db, items, box) {
+    const grid = el('div', 'lc-cards'), fImg = db.fields.find(f => f.type === 'image'), fUrl = db.fields.find(f => f.type === 'url'), fTitle = db.fields[0];
+    items.forEach(it => {
+      const u = fUrl && safeUrl(it[fUrl.key]), c = el(u ? 'a' : 'div', 'lc-card'); if (u) { c.href = u; c.target = '_blank'; c.rel = 'noopener noreferrer'; }
+      const im = fImg && value(fImg, it[fImg.key]); if (im) { const fig = el('div', 'lc-card-img'); fig.append(im); c.append(fig); }
+      c.append(el('h3', '', String(it[fTitle.key] || '')));
+      db.fields.forEach(f => { if (f === fTitle || f === fImg) return; const v = it[f.key]; if (v == null || v === '' || v === false) return;
+        if (f === fUrl) { c.append(el('p', 'lc-host', host(u || String(v)))); return; }
+        const p = el('p', f.type === 'area' || f.type === 'text' ? '' : 'lc-meta'); if (f.type !== 'area' && f.type !== 'text') p.append(el('span', 'lc-k', f.label + ' ')); const n = f.type === 'bool' ? el('span', '', '✓') : el('span', '', String(v)); p.append(n); c.append(p); });
+      grid.append(c);
+    });
+    box.append(grid);
+  }
+  function timeline(db, items, box) {
+    const fDate = db.fields.find(f => f.type === 'date'), fTitle = db.fields.find(f => f !== fDate) || db.fields[0];
+    const list = items.slice(); if (fDate) list.sort((a, b) => String(b[fDate.key] || '').localeCompare(String(a[fDate.key] || '')));
+    const ol = el('ol', 'lc-time'); let year = '';
+    list.forEach(it => {
+      const d = fDate ? String(it[fDate.key] || '') : '', y = d.slice(0, 4);
+      if (y && y !== year) { year = y; ol.append(el('li', 'lc-year', y)); }
+      const li = el('li', 'lc-ev'); li.append(el('time', '', d ? d.slice(5).replace('-', '.') : ''));
+      const b = el('div'); b.append(el('h3', '', String(it[fTitle.key] || '')));
+      db.fields.forEach(f => { if (f === fDate || f === fTitle) return; const n = value(f, it[f.key]); if (!n) return; const p = el('p'); p.append(n); b.append(p); });
+      li.append(b); ol.append(li);
+    });
+    box.append(ol);
+  }
+  async function paint() {
+    const id = idNow(); if (!id) return;
+    const here = main.querySelector('.lc-page');
+    if (here && here.dataset.id === id && here.dataset.lang === lang()) return;
+    if (!main.querySelector('.not-found') && !here) return; // the main script has not drawn this route yet
+    const sec = el('section', 'shell subpage lc-page'); sec.dataset.id = id; sec.dataset.lang = lang();
+    sec.append(el('p', 'lc-state', L('載入中…', 'Loading…', '読み込み中…')));
+    main.replaceChildren(sec);
+    let db; try { db = await json('/data/db/' + id + '.json'); } catch (e) { db = null; }
+    if (idNow() !== id || !sec.isConnected) return;
+    sec.replaceChildren();
+    if (!db || !Array.isArray(db.fields) || !db.fields.length) {
+      sec.append(el('h1', '', '404'), el('p', 'lc-state', L('沒有這個資料庫。', 'No such database.', 'このデータベースはありません。')));
+      const a = el('a', 'text-link', L('首頁', 'Home', 'ホーム')); a.href = '#/'; sec.append(a); return;
+    }
+    const items = (db.items || []).filter(it => it && !it.draft);
+    document.title = 'Luliy ' + db.title;
+    const head = el('header', 'lc-head'); head.append(el('h1', '', db.title), el('p', 'lc-count', items.length + ' ' + L('筆', 'entries', '件')));
+    sec.append(head);
+    const box = el('div', 'lc-body'); sec.append(box);
+    const draw = list => { box.replaceChildren(); if (!list.length) { box.append(el('p', 'lc-state', L('還沒有內容。', 'Nothing here yet.', 'まだ何もありません。'))); return; }
+      (db.view === 'cards' ? cards : db.view === 'timeline' ? timeline : table)(db, list, box); };
+    if (items.length > 8) {
+      const q = el('input', 'lc-search'); q.type = 'search'; q.placeholder = L('搜尋', 'Search', '検索'); q.setAttribute('aria-label', q.placeholder);
+      q.addEventListener('input', () => { const n = q.value.trim().toLowerCase(); draw(n ? items.filter(it => JSON.stringify(it).toLowerCase().includes(n)) : items); });
+      head.append(q);
+    }
+    draw(items);
+  }
+  let queued = false;
+  const later = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; paint(); }); };
+  new MutationObserver(later).observe(main, { childList: true });
+  addEventListener('hashchange', later);
+  new MutationObserver(later).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  later();
+
+  // menu: one link per database, in Other, before the divider that precedes Blog A
+  index().then(list => {
+    const box = document.querySelector('#directory .directory-other-options'); if (!box || !Array.isArray(list) || !list.length) return;
+    const at = box.querySelector('.directory-other-divider');
+    list.forEach(m => { if (!m || !/^[\w-]+$/.test(m.id || '')) return; const a = el('a', 'directory-db', m.title || m.id); a.href = '#/c/' + m.id;
+      a.addEventListener('click', () => { const d = document.getElementById('directory'); if (d && d.open) d.close(); });
+      if (at) at.before(a); else box.append(a); });
+  });
+})();
