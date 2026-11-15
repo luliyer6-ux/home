@@ -3273,3 +3273,13 @@ html[data-appearance="light"] .lk-hl-tip-red { border-left-color: var(--hl-red-s
 html.lk-bio .lk-chk, html.luliy-mascot-on .lk-chk { left: auto; right: 16px; bottom: 16px; }
 @media (min-width: 1001px) { html.lk-bio .lk-chk { right: auto; left: 16px; } }
 @media print { .lk-chk { display: none; } }
+
+/* 36 l) 2026-11-15  share button at the foot of issues and reading notes (their byline row, where 分享 used to be, is hidden) */
+html.lk-weekly #main .lk-endshare { display: none; }
+html.lk-weekly #main .source-reading[data-lk-no] > .lk-endshare,
+html.lk-weekly.lk-read #main .source-reading > .lk-endshare {
+  display: block; margin: 44px auto 26px; padding: 7px 16px; font: 500 12px/1.2 var(--font-mono); letter-spacing: .18em;
+  color: color-mix(in srgb, var(--lk-ink) 70%, transparent); background: none;
+  border: 1px solid color-mix(in srgb, var(--lk-ink) 28%, transparent); border-radius: 2px; cursor: pointer; }
+html.lk-weekly #main .lk-endshare:hover, html.lk-weekly #main .lk-endshare:focus-visible {
+  color: var(--lk-ink); border-color: var(--lk-ink); outline: none; }

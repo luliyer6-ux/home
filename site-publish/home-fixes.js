@@ -4093,6 +4093,19 @@
         if (share) { const b = el('button', 'lk-share', L('分享', 'Share', '共有')); b.type = 'button'; b.addEventListener('click', () => share.click()); r.append(b); }
         by.append(l, r); meta.after(by);
       }
+      // share at the foot (2026-11-15): issues and reading notes have no byline row any more, so no 分享 button; this one is
+      // shown only on those pages (CSS) and shares the static page /articles/Pxx/, like the button it replaces
+      if (!shell.querySelector(':scope > .lk-endshare') && /^P\d+$/.test(id)) {
+        const b = el('button', 'lk-endshare', L('分享這一篇', 'Share this piece', 'この記事を共有')); b.type = 'button';
+        b.addEventListener('click', async () => {
+          const url = 'https://luliy.me/articles/' + id + '/';
+          try {
+            if (navigator.share) await navigator.share({ title: document.title, url });
+            else { await navigator.clipboard.writeText(url); b.textContent = L('連結已複製', 'Link copied', 'リンクをコピーしました'); }
+          } catch (e) { if (e && e.name !== 'AbortError') window.prompt(L('複製這個連結', 'Copy this link', 'このリンクをコピー'), url); }
+        });
+        const end = shell.querySelector(':scope > .source-end'); if (end) end.before(b); else shell.append(b);
+      }
       // date (2026-11-02): 2026年10月4日 in Chinese and Japanese, OCT 4, 2026 in English
       const dEl = shell.querySelector(':scope > .lk-by .lk-date');
       if (dEl) {
