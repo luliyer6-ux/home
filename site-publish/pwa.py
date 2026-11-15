@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Add to Home Screen + offline reading (run by optimize-home.py after runtime-fixes.py; idempotent).
 
-- copies site-publish/sw.js -> /sw.js (a service worker must sit at the root to cover the whole site)
+- copies site-publish/sw.js -> /sw.js (a service worker must sit at the root to cover the whole site),
+  setting its VERSION to a digest of the source, so any change to the worker retires the old caches
 - copies site-publish/pwa/manifest.webmanifest -> /manifest.webmanifest
 - puts the manifest, the iOS home-screen icon and title into <head> of index.html (after the viewport tag)
 home-fixes.js (block 8) registers /sw.js after the page has loaded.
 """
-import pathlib, re, shutil
+import hashlib, pathlib, re, shutil
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 HTML = ROOT / 'index.html'
@@ -20,8 +21,19 @@ def copy(src, dest):
         shutil.copyfile(src, dest)
         print('pwa: wrote', dest.name)
 
+def write_sw():
+    src = (SRC / 'sw.js').read_text(encoding='utf-8')
+    version = 'v-' + hashlib.sha256(src.encode('utf-8')).hexdigest()[:10]
+    out, n = re.subn(r"^const VERSION = '[^']*';", f"const VERSION = '{version}';", src, count=1, flags=re.M)
+    if n != 1:
+        raise SystemExit("pwa: no `const VERSION = '...';` line in site-publish/sw.js")
+    dest = ROOT / 'sw.js'
+    if not dest.exists() or dest.read_text(encoding='utf-8') != out:
+        dest.write_text(out, encoding='utf-8')
+        print('pwa: wrote sw.js', version)
+
 def main():
-    copy(SRC / 'sw.js', ROOT / 'sw.js')
+    write_sw()
     copy(SRC / 'pwa' / 'manifest.webmanifest', ROOT / 'manifest.webmanifest')
     s = HTML.read_text(encoding='utf-8')
     # Anchor right after the viewport tag, so optimize-home.py moving its own tags never reorders these.

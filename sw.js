@@ -5,7 +5,7 @@
      network first, cached copy when offline.
    - Everything else (Drive, sign-in, GitHub API, images from other sites, video, any non-GET) is not touched.
    To retire it, replace this file with one that calls self.registration.unregister(). */
-const VERSION = 'v1';
+const VERSION = 'v-688322fd15'; // the copy at /sw.js gets a digest of this file instead (pwa.py); no need to bump it by hand
 const SHELL = 'luliy-shell-' + VERSION, ASSETS = 'luliy-assets-' + VERSION, ARTICLES = 'luliy-articles-' + VERSION;
 const LIMITS = { [ASSETS]: 400, [ARTICLES]: 80 };
 const ARTICLE_SOURCE = 'https://raw.githubusercontent.com/luliy6/luliy6.github.io/main/docs/';
