@@ -547,7 +547,8 @@ def main():
     home_dir = ROOT / "assets" / "site" / "home"
     chunk_path = None
     for cand in sorted(home_dir.glob("*.js")):
-        if cand.read_bytes().startswith(b"window.LULIY_DATA="):
+        if (cand.read_bytes().startswith(b"window.LULIY_DATA=")
+                and cand.name in index_text):
             chunk_path = cand
             break
     if chunk_path is None:
