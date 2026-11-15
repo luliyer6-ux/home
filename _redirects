@@ -25,6 +25,9 @@
 /英语作品发布说明.md / 302
 /docs/* / 302
 # End internal docs
+# The 添加 page became part of the manage page (2026-11-15)
+/add /manage/ 302
+/add/* /manage/ 302
 # Old path-style article links are rendered by the homepage router.
 /article/* / 200
 /post/* / 200

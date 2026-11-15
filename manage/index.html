@@ -75,6 +75,13 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
   .hint{font-size:13px;color:var(--muted);margin:6px 0 0}
   .err{color:var(--danger)}
+  .up{display:flex;gap:8px;align-items:center}
+  .up input[type=text]{flex:1;min-width:0}
+  .up input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+  .up label.btn{margin:0;font-size:14px;color:var(--text)}
+  body.embedded{background:transparent}
+  body.embedded .top{padding:6px 16px}
+  body.embedded .wrap{min-height:0}
   .fieldrow{display:grid;grid-template-columns:1fr 130px 34px;gap:8px;margin-top:8px}
   ul.changes{margin:6px 0 0;padding-left:18px;font-size:14px}
   ul.changes li.d{color:var(--danger)}
@@ -98,8 +105,7 @@
   <h1>管理</h1>
   <button type="button" class="key" id="keyBtn">鑰匙</button>
   <span class="sp"></span>
-  <a href="/add/">上傳檔案</a>
-  <a href="/">回首頁</a>
+  <a href="/" id="homeLink">回首頁</a>
 </div>
 <div class="wrap">
   <nav class="side" id="side" aria-label="資料庫"></nav>
@@ -113,7 +119,7 @@
 (function(){
 'use strict';
 /* Manage page (2026-11-15). Every list of the site is a JSON file under data/. This page edits them with forms:
-   add / edit / delete / reorder, and create or remove whole databases (data/db/<id>.json, listed in data/db/index.json).
+   add / edit / delete / reorder, upload files (staged with the change, same commit), and create or remove whole databases (data/db/<id>.json, listed in data/db/index.json).
    Nothing is written until 儲存到網站: all changes go to GitHub as ONE commit (git trees API) with the fine-grained
    token the 添加 page already uses (localStorage 'luliy-add-token', Contents read/write on the home repo only). */
 var REPO='https://api.github.com/repos/luliyer6-ux/home/', TOKEN_KEY='luliy-add-token', BRANCH='main';
@@ -131,18 +137,18 @@ var BUILTIN=[
  {id:'songs',title:'唱片',path:'data/songs.json',unit:'首',list:function(d){return d},wrap:function(d,items){return items},
   thumb:'cover',t1:'name.zh',t2:'src',fileDir:'./music/',
   fields:[{key:'name.zh',label:'歌名（中文）',type:'text',req:true},{key:'name.en',label:'英文名',type:'text',half:true},{key:'name.ja',label:'日文名',type:'text',half:true},
-          {key:'src',label:'音檔位址',type:'text',req:true,hint:'Drive shared/ 的直鏈，或 ./music/檔名.mp3'},{key:'cover',label:'封面位址',type:'text'},
+          {key:'src',label:'音檔位址',type:'text',req:true,hint:'建議填 Drive shared/ 的直鏈；也可以上傳 mp3（20MB 以內，會放進倉庫的 music/）',up:{dir:'music/',accept:'audio/*'}},{key:'cover',label:'封面',type:'text',up:{dir:'assets/covers/',accept:'image/*'}},
           {key:'duration',label:'時長（秒）',type:'number',half:true},{key:'color',label:'主色',type:'color',half:true},{key:'draft',label:'草稿',type:'bool'}],
   blank:function(items){return {id:uid('song',items),name:{zh:'',en:'',ja:''},src:'',duration:null,color:'#9a8f83',cover:''}}},
  {id:'works',title:'作品',path:'data/works.json',unit:'件',list:function(d){return d.works},wrap:function(d,items){var o=clone(d);o.works=items;return o},
   thumb:'cover',t1:'name',t2:'zh',
-  fields:[{key:'name',label:'作品名',type:'text',req:true},{key:'url',label:'連結',type:'text',req:true,hint:'外部網址，或 ./works/…'},{key:'zh',label:'中文簡介',type:'area'},
-          {key:'en',label:'英文簡介',type:'text',half:true},{key:'ja',label:'日文簡介',type:'text',half:true},{key:'cover',label:'封面位址',type:'text'},
+  fields:[{key:'name',label:'作品名',type:'text',req:true},{key:'url',label:'連結',type:'text',req:true,hint:'外部網址，或上傳單個 HTML 檔',up:{dir:'works/',accept:'.html,text/html'}},{key:'zh',label:'中文簡介',type:'area'},
+          {key:'en',label:'英文簡介',type:'text',half:true},{key:'ja',label:'日文簡介',type:'text',half:true},{key:'cover',label:'封面',type:'text',up:{dir:'assets/covers/',accept:'image/*'}},
           {key:'exam',label:'放在真題區',type:'bool'},{key:'draft',label:'草稿',type:'bool'}],
   blank:function(){return {name:'',zh:'',en:'',ja:'',url:'',cover:'',exam:false}}},
  {id:'photos',title:'照片牆',path:'data/photos.json',unit:'張',list:function(d){return d},wrap:function(d,items){return items},
   thumb:'src',t1:'title',t2:'src',fileDir:'./photos/',
-  fields:[{key:'title',label:'標題',type:'text',req:true},{key:'src',label:'圖片位址',type:'text',hint:'./photos/檔名，或直鏈'},{key:'drive',label:'Drive 檔名',type:'text',hint:'檔案在 shared/照片牆/ 裡時填這個'},
+  fields:[{key:'title',label:'標題',type:'text',req:true},{key:'src',label:'圖片',type:'text',hint:'直鏈，或上傳圖片',up:{dir:'photos/',accept:'image/*'}},{key:'drive',label:'Drive 檔名',type:'text',hint:'檔案在 shared/照片牆/ 裡時填這個'},
           {key:'credit',label:'出處',type:'text'},{key:'draft',label:'草稿',type:'bool'}],
   blank:function(){return {title:'',src:'',credit:''}}}
 ];
@@ -151,6 +157,8 @@ var TYPES={text:'文字',area:'多行文字',url:'網址',image:'圖片',date:'�
 var VIEWS={table:'表格',cards:'卡片牆',timeline:'時間線'};
 
 /* ---- state ---- */
+var uploads={}; // repo path -> File, staged until 儲存
+var MAX_BYTES=20*1024*1024;
 var dbs=[], cur=null, dbIndex={base:[],now:[]}, removedDbs=[];
 // each db: {def, base (file content as loaded), items (working copy, each with _k), baseItems, isNew}
 function fromBuiltin(def,data){var items=clone(def.list(data));return {def:def,base:data,items:tag(items),baseItems:clone(items),custom:false}}
@@ -172,7 +180,7 @@ function counts(db){var add=0,chg=0,del=0;db.items.forEach(function(i){if(i.del)
 /* ---- loading: read the published files (works without a key; the key is only needed to save) ---- */
 async function readJson(path){var r=await fetch('/'+path+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(path+' 讀不到（'+r.status+'）');return r.json()}
 async function load(){
-  dbs=[];removedDbs=[];
+  dbs=[];removedDbs=[];uploads={};
   for(var i=0;i<BUILTIN.length;i++){dbs.push(fromBuiltin(BUILTIN[i],await readJson(BUILTIN[i].path)))}
   var idx=[];try{idx=await readJson('data/db/index.json')}catch(e){idx=[]}
   dbIndex={base:clone(idx),now:clone(idx)};
@@ -260,7 +268,7 @@ function renderSave(){
 function editItem(db,it){
   var def=db.def,v=it?clone(it.v):def.blank(plain(db)),d=$('dlg');d.textContent='';
   var form=el('form');form.method='dialog';form.append(el('header','',(it?'編輯':'新增')+' · '+def.title));
-  var body=el('div','body'),inputs=[],grid=null;
+  var body=el('div','body'),inputs=[],grid=null,err=el('p','hint err','');
   def.fields.forEach(function(f){
     var box=el('div');
     if(f.type==='bool'){var l=el('label','c'),c=el('input');c.type='checkbox';c.checked=!!get(v,f.key);l.append(c,document.createTextNode(f.label));box.append(l);inputs.push([f,c])}
@@ -268,11 +276,20 @@ function editItem(db,it){
       var lab=el('label','f',f.label+(f.req?' *':''));var inp;
       if(f.type==='area'){inp=el('textarea')}else{inp=el('input');inp.type=f.type==='number'?'number':f.type==='color'?'color':f.type==='date'?'date':'text'}
       var val=get(v,f.key);inp.value=val==null?'':val;if(f.type==='color'&&!inp.value)inp.value='#9a8f83';
-      inp.id='f_'+f.key;lab.htmlFor=inp.id;box.append(lab,inp);if(f.hint)box.append(el('p','hint',f.hint));inputs.push([f,inp]);
+      inp.id='f_'+f.key;lab.htmlFor=inp.id;
+      var up=f.up||(f.type==='image'?{dir:'assets/db/',accept:'image/*'}:null);
+      if(up){
+        var wrapU=el('div','up'),pick=el('label','btn','上傳'),fi=el('input');fi.type='file';fi.accept=up.accept;fi.id='u_'+f.key;pick.htmlFor=fi.id;
+        (function(inp,up,fi){fi.addEventListener('change',function(){var file=fi.files[0];if(!file)return;
+          if(file.size>MAX_BYTES){err.textContent='檔案超過 20MB，請改放 Drive 再貼直鏈。';fi.value='';return}
+          var name=file.name.replace(/[\s#?%&]+/g,'-'),path=up.dir+name;uploads[path]=file;inp.value='./'+path;err.textContent='';})})(inp,up,fi);
+        wrapU.append(inp,pick,fi);box.append(lab,wrapU);
+      } else box.append(lab,inp);
+      if(f.hint)box.append(el('p','hint',f.hint));inputs.push([f,inp]);
     }
     if(f.half){if(!grid){grid=el('div','grid2');body.append(grid)}grid.append(box);if(grid.children.length===2)grid=null}else{grid=null;body.append(box)}
   });
-  var err=el('p','hint err','');body.append(err);form.append(body);
+  body.append(err);form.append(body);
   var foot=el('footer'),cancel=el('button','btn','取消'),ok=el('button','btn primary',it?'完成':'加入');cancel.type='button';ok.type='submit';
   cancel.addEventListener('click',function(){d.close()});foot.append(cancel,ok);form.append(foot);d.append(form);
   form.addEventListener('submit',function(e){
@@ -352,6 +369,7 @@ async function api(path,method,body){
   if(!r.ok){if(r.status===401)throw new Error('鑰匙無效或已過期。');if(r.status===403||r.status===404)throw new Error('GitHub 拒絕了（鑰匙權限不足）。');throw new Error(j.message||('GitHub 回應 '+r.status))}
   return j;
 }
+function b64(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){var by=new Uint8Array(r.result),bin='',ch=0x8000;for(var i=0;i<by.length;i+=ch)bin+=String.fromCharCode.apply(null,by.subarray(i,i+ch));res(btoa(bin))};r.onerror=function(){rej(new Error('讀不到檔案。'))};r.readAsArrayBuffer(file)})}
 function localFile(db,v){var dir=db.def.fileDir,src=v&&v.src;return dir&&typeof src==='string'&&src.indexOf(dir)===0?src.slice(2):null}
 $('save').addEventListener('click',function(){
   var ch=allChanges(),d=$('dlg');d.textContent='';var form=el('form');form.method='dialog';form.append(el('header','','儲存到網站'));
@@ -360,6 +378,8 @@ $('save').addEventListener('click',function(){
   // a deleted song / photo whose file sits in the repo: the file goes too, otherwise the site registers it again
   var files=[];dbs.forEach(function(db){db.items.forEach(function(i){if(i.del){var f=localFile(db,i.v);if(f)files.push(f)}})});
   files.forEach(function(f){ul.append(el('li','d','同時刪除檔案 '+f))});
+  var live=JSON.stringify(dbs.map(plain)),ups=Object.keys(uploads).filter(function(p){return live.indexOf('./'+p)>=0});
+  ups.forEach(function(p){ul.append(el('li','','上傳檔案 '+p+'（'+(uploads[p].size/1048576).toFixed(1)+' MB）'))});
   body.append(ul);
   if(ch.some(function(c){return c.del})) body.append(el('p','hint','刪除的內容之後只能從 GitHub 的歷史紀錄找回。'));
   var msg=el('p','hint','');body.append(msg);form.append(body);
@@ -375,6 +395,14 @@ $('save').addEventListener('click',function(){
         var cur2=await api('contents/'+db.def.path+'?ref='+head);var remote=JSON.parse(decodeURIComponent(escape(atob(cur2.content.replace(/\n/g,'')))));
         if(!same(remote,db.base))throw new Error('「'+db.def.title+'」在別處被改過了。請重新整理這一頁再改一次。')}
       var tree=[];
+      for(var u=0;u<ups.length;u++){
+        msg.textContent='上傳檔案 '+(u+1)+' / '+ups.length+'…';
+        var there=await fetch(REPO+'contents/'+ups[u].split('/').map(encodeURIComponent).join('/')+'?ref='+head,{headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+token()}});
+        if(there.ok)throw new Error('倉庫裡已經有同名檔案：'+ups[u]+'。請改個檔名再上傳。');
+        var blob=await api('git/blobs','POST',{content:await b64(uploads[ups[u]]),encoding:'base64'});
+        tree.push({path:ups[u],mode:'100644',type:'blob',sha:blob.sha});
+      }
+      msg.textContent='寫入清單…';
       dbs.forEach(function(db){if(dirty(db))tree.push({path:db.def.path,mode:'100644',type:'blob',content:fileText(db)})});
       removedDbs.forEach(function(db){tree.push({path:db.def.path,mode:'100644',type:'blob',sha:null})});
       files.forEach(function(f){tree.push({path:f,mode:'100644',type:'blob',sha:null})});
@@ -384,7 +412,7 @@ $('save').addEventListener('click',function(){
       await api('git/refs/heads/'+BRANCH,'PATCH',{sha:c.sha});
       d.close();toast('已儲存。約 1–2 分鐘後上線。');
       dbs.forEach(function(db){if(dirty(db)){var items=plain(db);db.base=db.custom?JSON.parse(fileText(db)):db.def.wrap(db.base,items);db.baseItems=clone(items);db.items=tag(clone(items));db.isNew=false}});
-      removedDbs=[];dbIndex.base=clone(dbIndex.now);render();
+      removedDbs=[];uploads={};dbIndex.base=clone(dbIndex.now);render();
     }catch(x){msg.className='hint err';msg.textContent=x.message;ok.disabled=cancel.disabled=false}
   });
   d.showModal();
@@ -392,6 +420,8 @@ $('save').addEventListener('click',function(){
 $('discard').addEventListener('click',function(){var b=$('discard');if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='再按一次確認還原';setTimeout(function(){b.dataset.sure='';b.textContent='全部還原'},3000);return}b.dataset.sure='';b.textContent='全部還原';load()});
 window.addEventListener('beforeunload',function(e){if(allChanges().length){e.preventDefault();e.returnValue=''}});
 
+if(window.self!==window.top){document.body.classList.add('embedded');$('homeLink').target='_top';
+  window.addEventListener('message',function(e){if(e.origin===location.origin&&e.data&&e.data.type==='luliy-theme'&&/^(dark|light|cc)$/.test(e.data.appearance))document.documentElement.dataset.appearance=e.data.appearance})}
 (function theme(){try{var a=localStorage.getItem('luliy-appearance');if(a==='light'||a==='cc')document.documentElement.dataset.appearance=a}catch(e){}})();
 load().catch(function(e){$('main').textContent='';$('main').append(el('p','empty err',e.message))});
 })();

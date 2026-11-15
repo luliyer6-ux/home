@@ -271,7 +271,7 @@ def patch_home_cc(text, works, photos):
     return text, changed
 
 
-ADD_LINK = '<a class="directory-add" href="/add/">+ 添加</a>'
+ADD_LINK = '<a class="directory-add" href="/manage/">管理</a>'
 ADD_ANCHOR = ('<a class="directory-issues" href="https://github.com/luliy6/luliy6.github.io/issues" '
               'target="_blank" rel="noopener noreferrer">Issues</a>')
 
@@ -287,7 +287,7 @@ def patch_index_html(text):
 
 
 ADD_VIEW_HTML = ('<div class="directory-add-view" hidden>'
-                 '<iframe id="directoryAddFrame" title="添加"></iframe></div>')
+                 '<iframe id="directoryAddFrame" title="管理"></iframe></div>')
 ADD_VIEW_ANCHOR = '</nav></div>\n <div class="directory-bottom directory-other-bar">'
 ADD_STYLE = """<style id="directory-add-style">
 /* directory-add v3 */
@@ -339,10 +339,10 @@ function showAdd(){
   dialog.classList.remove('directory-add-exiting');
   mainView.hidden=true;
   addView.hidden=false;
-  if(!frame.getAttribute('src'))frame.setAttribute('src','/add/');
+  if(!frame.getAttribute('src'))frame.setAttribute('src','/manage/');
   closeBtn.setAttribute('aria-label','回到目录');
   closeBtn.title='回到目录';
-  if(title)title.textContent='添加';
+  if(title)title.textContent='管理';
   postTheme();
   closeBtn.focus();
 }
