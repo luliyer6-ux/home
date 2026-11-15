@@ -19,7 +19,7 @@ const PAGES = [
   '/?intro=0&loader=0#/posts',
   '/?intro=0&loader=0#/projects',
   '/404.html',
-  '/add/',
+  '/manage/',
   '/study/',
   '/works/gpt-english-2-exams.html',
   '/works/hydraulic-pneumatic-review.html',
