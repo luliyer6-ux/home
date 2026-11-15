@@ -1,0 +1,50 @@
+name: Check site
+
+# Pushing to main publishes at once (Cloudflare Pages), so every push and pull request is checked:
+#   1. check_site.py   - JS / JSON / Python syntax, missing local files, _headers / _redirects shape
+#   2. smoke_test.mjs  - opens the home page and the work pages in Chromium, fails on script errors
+# A red check on a branch means: do not merge yet. On main it means the live site may be broken.
+# Run them by hand with:  python3 .github/scripts/check_site.py && node .github/scripts/smoke_test.mjs
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Syntax and reference checks
+        run: python3 .github/scripts/check_site.py
+
+  smoke:
+    needs: static
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Open pages and look for script errors
+        run: node .github/scripts/smoke_test.mjs
