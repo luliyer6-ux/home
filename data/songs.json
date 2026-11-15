@@ -1,17 +1,5 @@
 [
   {
-    "id": "qingge",
-    "name": {
-      "zh": "情歌",
-      "en": "Qing Ge",
-      "ja": "情歌"
-    },
-    "src": "https://cloud.luliy.me/api/audio?path=shared%2F%E6%83%85%E6%AD%8C%E4%B8%80%E4%B8%AA%E7%90%83.mp3",
-    "duration": 251,
-    "color": "#b9a39a",
-    "cover": "assets/site/307fceafdddbf5c3eb9d.webp"
-  },
-  {
     "id": "call-me-now",
     "name": {
       "zh": "Call Me Now",
@@ -46,6 +34,18 @@
     "duration": 160,
     "color": "#aea195",
     "cover": "assets/site/b390d7a49ad8546f102e.webp"
+  },
+  {
+    "id": "qingge",
+    "name": {
+      "zh": "情歌",
+      "en": "Qing Ge",
+      "ja": "情歌"
+    },
+    "src": "https://cloud.luliy.me/api/audio?path=shared%2F%E6%83%85%E6%AD%8C%E4%B8%80%E4%B8%AA%E7%90%83.mp3",
+    "duration": 251,
+    "color": "#b9a39a",
+    "cover": "assets/site/307fceafdddbf5c3eb9d.webp"
   },
   {
     "id": "one-to-two",
