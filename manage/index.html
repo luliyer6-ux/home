@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="zh-Hant" data-appearance="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>管理 · Luliy</title>
+<style>
+  :root[data-appearance="dark"]{color-scheme:dark;--bg:#111110;--paper:#191918;--raised:#222220;--ink:#f2ede4;--text:#e8e3d9;--muted:#a6a198;--line:#3b3935;--line-strong:#777168;--accent:#b89a6a;--danger:#f0a08a;--ok:#9dbf9a}
+  :root[data-appearance="light"],:root[data-appearance="cc"]{color-scheme:light;--bg:#faf9f5;--paper:#f0eee7;--raised:#e9e6dd;--ink:#141413;--text:#30302d;--muted:#66645e;--line:#d8d5cd;--line-strong:#918b80;--accent:#8b6840;--danger:#b03a2e;--ok:#3f7a3a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;line-height:1.6;font-size:15px}
+  a{color:var(--accent)}
+  button{font:inherit;color:inherit}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .top{display:flex;align-items:center;gap:16px;padding:14px 24px;border-bottom:1px solid var(--line)}
+  .top h1{font-size:19px;margin:0;color:var(--ink);font-weight:600}
+  .top .sp{flex:1}
+  .top a{font-size:14px;text-decoration:none}
+  .key{font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:none;cursor:pointer}
+  .key.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 50%,transparent)}
+  .wrap{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 58px)}
+  nav.side{border-right:1px solid var(--line);padding:18px 12px}
+  nav.side h2{font-size:12px;letter-spacing:.12em;color:var(--muted);margin:14px 10px 6px;font-weight:500}
+  nav.side button.db{display:flex;width:100%;align-items:center;gap:8px;text-align:left;padding:8px 10px;border:0;border-radius:8px;background:none;cursor:pointer}
+  nav.side button.db:hover{background:var(--paper)}
+  nav.side button.db.on{background:var(--raised);color:var(--ink)}
+  nav.side button.db .n{margin-left:auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  nav.side button.db .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
+  nav.side button.new{margin:10px 10px 0;padding:7px 10px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--muted);cursor:pointer;width:calc(100% - 20px)}
+  nav.side button.new:hover{color:var(--text);border-color:var(--accent)}
+  section.main{padding:22px 28px 120px;min-width:0}
+  .bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .bar h2{font-size:22px;margin:0;color:var(--ink);font-weight:600}
+  .bar .meta{font-size:13px;color:var(--muted)}
+  .bar .sp{flex:1}
+  input[type=text],input[type=url],input[type=number],input[type=password],input[type=search],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+  input[type=search]{width:220px}
+  input[type=color]{width:100%;height:40px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+  textarea{min-height:76px;resize:vertical}
+  .btn{padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:none;cursor:pointer;white-space:nowrap}
+  .btn:hover{border-color:var(--line-strong)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:600}
+  .btn.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
+  .btn:disabled{opacity:.45;cursor:default}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-strong);white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr.row:hover td{background:var(--paper)}
+  tr.del td{opacity:.45;text-decoration:line-through}
+  tr.new td:first-child,tr.chg td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  td.thumb{width:52px}
+  td.thumb img,td.thumb i{display:block;width:40px;height:40px;border-radius:6px;object-fit:cover;background:var(--raised)}
+  td.t1{color:var(--ink);font-weight:500}
+  td.t2{color:var(--muted);font-size:13px;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  td.acts{white-space:nowrap;text-align:right;width:1%}
+  td.acts button{border:0;background:none;cursor:pointer;padding:5px 7px;border-radius:6px;color:var(--muted)}
+  td.acts button:hover{background:var(--raised);color:var(--text)}
+  td.acts button.x:hover{color:var(--danger)}
+  .tag{display:inline-block;font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted);margin-left:6px;text-decoration:none}
+  .tag.a{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 50%,transparent)}
+  .empty{padding:48px 0;text-align:center;color:var(--muted)}
+  .savebar{position:fixed;left:0;right:0;bottom:0;display:none;align-items:center;gap:14px;padding:12px 24px;background:var(--raised);border-top:1px solid var(--line-strong);z-index:5}
+  .savebar.on{display:flex}
+  .savebar .sum{flex:1;font-size:14px}
+  .savebar .sum b{color:var(--ink)}
+  dialog{border:1px solid var(--line-strong);border-radius:14px;background:var(--paper);color:var(--text);padding:0;width:min(620px,calc(100vw - 28px));max-height:calc(100vh - 40px)}
+  dialog::backdrop{background:rgba(0,0,0,.55)}
+  dialog form{display:flex;flex-direction:column;max-height:calc(100vh - 42px)}
+  dialog header{padding:16px 20px 10px;font-size:18px;color:var(--ink);font-weight:600}
+  dialog .body{padding:0 20px 8px;overflow:auto}
+  dialog footer{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line)}
+  label.f{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+  label.c{display:flex;align-items:center;gap:8px;margin-top:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  .hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+  .err{color:var(--danger)}
+  .fieldrow{display:grid;grid-template-columns:1fr 130px 34px;gap:8px;margin-top:8px}
+  ul.changes{margin:6px 0 0;padding-left:18px;font-size:14px}
+  ul.changes li.d{color:var(--danger)}
+  #toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;display:none;z-index:9;max-width:calc(100vw - 32px)}
+  @media (max-width:760px){
+    .wrap{display:block;min-height:0}
+    nav.side{border-right:0;border-bottom:1px solid var(--line);padding:10px 12px;display:flex;gap:6px;overflow-x:auto;align-items:center}
+    nav.side h2{display:none}
+    nav.side button.db{width:auto;white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+    nav.side button.new{margin:0;width:auto;white-space:nowrap;border-radius:999px}
+    section.main{padding:16px 14px 120px}
+    .top{padding:12px 14px}
+    input[type=search]{width:100%}
+    td.t2,th.c2{display:none}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>管理</h1>
+  <button type="button" class="key" id="keyBtn">鑰匙</button>
+  <span class="sp"></span>
+  <a href="/add/">上傳檔案</a>
+  <a href="/">回首頁</a>
+</div>
+<div class="wrap">
+  <nav class="side" id="side" aria-label="資料庫"></nav>
+  <section class="main" id="main"><p class="empty">載入中…</p></section>
+</div>
+<div class="savebar" id="savebar"><span class="sum" id="saveSum"></span><button type="button" class="btn" id="discard">全部還原</button><button type="button" class="btn primary" id="save">儲存到網站</button></div>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+/* Manage page (2026-11-15). Every list of the site is a JSON file under data/. This page edits them with forms:
+   add / edit / delete / reorder, and create or remove whole databases (data/db/<id>.json, listed in data/db/index.json).
+   Nothing is written until 儲存到網站: all changes go to GitHub as ONE commit (git trees API) with the fine-grained
+   token the 添加 page already uses (localStorage 'luliy-add-token', Contents read/write on the home repo only). */
+var REPO='https://api.github.com/repos/luliyer6-ux/home/', TOKEN_KEY='luliy-add-token', BRANCH='main';
+var $=function(id){return document.getElementById(id)};
+function el(tag,cls,text){var n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n}
+function token(){try{return localStorage.getItem(TOKEN_KEY)||''}catch(e){return ''}}
+function toast(msg){var t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){t.style.display='none'},3200)}
+function get(o,path){return path.split('.').reduce(function(a,k){return a==null?undefined:a[k]},o)}
+function set(o,path,v){var ks=path.split('.'),a=o;for(var i=0;i<ks.length-1;i++){if(a[ks[i]]==null||typeof a[ks[i]]!=='object')a[ks[i]]={};a=a[ks[i]]}a[ks[ks.length-1]]=v}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+
+/* ---- built-in databases: the files the site already reads ---- */
+var BUILTIN=[
+ {id:'songs',title:'唱片',path:'data/songs.json',unit:'首',list:function(d){return d},wrap:function(d,items){return items},
+  thumb:'cover',t1:'name.zh',t2:'src',fileDir:'./music/',
+  fields:[{key:'name.zh',label:'歌名（中文）',type:'text',req:true},{key:'name.en',label:'英文名',type:'text',half:true},{key:'name.ja',label:'日文名',type:'text',half:true},
+          {key:'src',label:'音檔位址',type:'text',req:true,hint:'Drive shared/ 的直鏈，或 ./music/檔名.mp3'},{key:'cover',label:'封面位址',type:'text'},
+          {key:'duration',label:'時長（秒）',type:'number',half:true},{key:'color',label:'主色',type:'color',half:true},{key:'draft',label:'草稿',type:'bool'}],
+  blank:function(items){return {id:uid('song',items),name:{zh:'',en:'',ja:''},src:'',duration:null,color:'#9a8f83',cover:''}}},
+ {id:'works',title:'作品',path:'data/works.json',unit:'件',list:function(d){return d.works},wrap:function(d,items){var o=clone(d);o.works=items;return o},
+  thumb:'cover',t1:'name',t2:'zh',
+  fields:[{key:'name',label:'作品名',type:'text',req:true},{key:'url',label:'連結',type:'text',req:true,hint:'外部網址，或 ./works/…'},{key:'zh',label:'中文簡介',type:'area'},
+          {key:'en',label:'英文簡介',type:'text',half:true},{key:'ja',label:'日文簡介',type:'text',half:true},{key:'cover',label:'封面位址',type:'text'},
+          {key:'exam',label:'放在真題區',type:'bool'},{key:'draft',label:'草稿',type:'bool'}],
+  blank:function(){return {name:'',zh:'',en:'',ja:'',url:'',cover:'',exam:false}}},
+ {id:'photos',title:'照片牆',path:'data/photos.json',unit:'張',list:function(d){return d},wrap:function(d,items){return items},
+  thumb:'src',t1:'title',t2:'src',fileDir:'./photos/',
+  fields:[{key:'title',label:'標題',type:'text',req:true},{key:'src',label:'圖片位址',type:'text',hint:'./photos/檔名，或直鏈'},{key:'drive',label:'Drive 檔名',type:'text',hint:'檔案在 shared/照片牆/ 裡時填這個'},
+          {key:'credit',label:'出處',type:'text'},{key:'draft',label:'草稿',type:'bool'}],
+  blank:function(){return {title:'',src:'',credit:''}}}
+];
+function uid(prefix,items){var n=items.length+1,ids={};items.forEach(function(i){ids[i.id]=1});while(ids[prefix+'-'+n])n++;return prefix+'-'+n}
+var TYPES={text:'文字',area:'多行文字',url:'網址',image:'圖片',date:'日期',number:'數字',bool:'是／否'};
+var VIEWS={table:'表格',cards:'卡片牆',timeline:'時間線'};
+
+/* ---- state ---- */
+var dbs=[], cur=null, dbIndex={base:[],now:[]}, removedDbs=[];
+// each db: {def, base (file content as loaded), items (working copy, each with _k), baseItems, isNew}
+function fromBuiltin(def,data){var items=clone(def.list(data));return {def:def,base:data,items:tag(items),baseItems:clone(items),custom:false}}
+function fromCustom(meta,data,isNew){
+  var def={id:meta.id,title:data.title||meta.id,path:'data/db/'+meta.id+'.json',unit:'筆',custom:true,
+           fields:data.fields,thumb:(data.fields.filter(function(f){return f.type==='image'})[0]||{}).key,
+           t1:data.fields[0].key,t2:(data.fields[1]||{}).key,blank:function(){var o={};data.fields.forEach(function(f){o[f.key]=f.type==='bool'?false:''});return o}};
+  return {def:def,base:data,items:tag(clone(data.items||[])),baseItems:clone(data.items||[]),custom:true,isNew:!!isNew,view:data.view||'table'};
+}
+var seq=0;function tag(items){return items.map(function(i){return {_k:++seq,v:i}})}
+function plain(db){return db.items.filter(function(i){return !i.del}).map(function(i){return i.v})}
+function dirty(db){return db.isNew||!same(plain(db),db.baseItems)||(db.custom&&(db.def.title!==(db.base.title||db.def.id)||db.view!==(db.base.view||'table')||!same(db.def.fields,db.base.fields)))}
+function fileText(db){
+  if(!db.custom) return JSON.stringify(db.def.wrap(db.base,plain(db)),null,2)+'\n';
+  return JSON.stringify({title:db.def.title,view:db.view,fields:db.def.fields,items:plain(db)},null,2)+'\n';
+}
+function counts(db){var add=0,chg=0,del=0;db.items.forEach(function(i){if(i.del)del++;else if(i.isNew)add++;else if(i.chg)chg++});return {add:add,chg:chg,del:del}}
+
+/* ---- loading: read the published files (works without a key; the key is only needed to save) ---- */
+async function readJson(path){var r=await fetch('/'+path+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(path+' 讀不到（'+r.status+'）');return r.json()}
+async function load(){
+  dbs=[];removedDbs=[];
+  for(var i=0;i<BUILTIN.length;i++){dbs.push(fromBuiltin(BUILTIN[i],await readJson(BUILTIN[i].path)))}
+  var idx=[];try{idx=await readJson('data/db/index.json')}catch(e){idx=[]}
+  dbIndex={base:clone(idx),now:clone(idx)};
+  for(var j=0;j<idx.length;j++){try{dbs.push(fromCustom(idx[j],await readJson('data/db/'+idx[j].id+'.json')))}catch(e){toast(e.message)}}
+  cur=dbs[0];render();
+}
+
+/* ---- rendering ---- */
+function render(){renderSide();renderMain();renderSave();renderKey()}
+function renderKey(){var b=$('keyBtn'),ok=!!token();b.className='key'+(ok?' ok':'');b.textContent=ok?'鑰匙已儲存':'尚未設定鑰匙'}
+function renderSide(){
+  var s=$('side');s.textContent='';
+  s.append(el('h2','','網站清單'));
+  dbs.forEach(function(db,i){
+    if(i===BUILTIN.length) s.append(el('h2','','我的資料庫'));
+    var b=el('button','db'+(db===cur?' on':''));b.type='button';
+    if(dirty(db)) b.append(el('span','dot'));
+    b.append(el('span','',db.def.title),el('span','n',String(plain(db).length)));
+    b.addEventListener('click',function(){cur=db;render()});s.append(b);
+  });
+  if(dbs.length===BUILTIN.length) s.append(el('h2','','我的資料庫'));
+  var n=el('button','new','＋ 新增資料庫');n.type='button';n.addEventListener('click',function(){editDb(null)});s.append(n);
+}
+function thumbOf(db,v){
+  var k=db.def.thumb,src=k?get(v,k):'';
+  if(!src||!/\.(png|jpe?g|webp|gif|svg|avif)(\?|$)|^data:image|api\/image/i.test(src)) return el('i');
+  var im=el('img');im.alt='';im.loading='lazy';im.referrerPolicy='no-referrer';im.src=/^(https?:|data:|\/)/.test(src)?src:'/'+src.replace(/^\.\//,'');
+  im.onerror=function(){im.replaceWith(el('i'))};return im;
+}
+function renderMain(){
+  var m=$('main');m.textContent='';var db=cur,def=db.def;
+  var bar=el('div','bar');bar.append(el('h2','',def.title),el('span','meta',plain(db).length+' '+def.unit+(db.custom?' · '+VIEWS[db.view]:'')));
+  bar.append(el('span','sp'));
+  var q=el('input');q.type='search';q.placeholder='搜尋';q.setAttribute('aria-label','搜尋');bar.append(q);
+  if(db.custom){var s=el('button','btn','設定');s.type='button';s.addEventListener('click',function(){editDb(db)});bar.append(s)}
+  var add=el('button','btn primary','＋ 新增一'+def.unit);add.type='button';add.addEventListener('click',function(){editItem(db,null)});bar.append(add);
+  m.append(bar);
+  var table=el('table'),thead=el('thead'),hr=el('tr');
+  [['',''],[labelOf(def,def.t1),''],[def.t2?labelOf(def,def.t2):'','c2'],['','']].forEach(function(h){hr.append(el('th',h[1],h[0]))});
+  thead.append(hr);table.append(thead);var tb=el('tbody');table.append(tb);m.append(table);
+  var empty=el('p','empty','');m.append(empty);
+  function rows(){
+    tb.textContent='';var needle=q.value.trim().toLowerCase(),shown=0;
+    db.items.forEach(function(it,i){
+      if(needle&&JSON.stringify(it.v).toLowerCase().indexOf(needle)<0) return;
+      shown++;
+      var tr=el('tr','row'+(it.del?' del':it.isNew?' new':it.chg?' chg':''));
+      var th=el('td',def.thumb?'thumb':'');if(def.thumb)th.append(thumbOf(db,it.v));
+      var t1=el('td','t1',String(get(it.v,def.t1)||'（未命名）'));
+      if(it.v.draft) t1.append(el('span','tag','草稿'));
+      if(it.isNew&&!it.del) t1.append(el('span','tag a','新增'));else if(it.chg&&!it.del) t1.append(el('span','tag a','已修改'));
+      var t2=el('td','t2',def.t2?String(get(it.v,def.t2)==null?'':get(it.v,def.t2)):'');t2.title=t2.textContent;
+      var a=el('td','acts');
+      function act(label,title,fn,cls){var b=el('button',cls||'',label);b.type='button';b.title=title;b.setAttribute('aria-label',title);b.addEventListener('click',fn);a.append(b)}
+      if(it.del){act('還原','還原這一'+def.unit,function(){it.del=false;render()})}
+      else{
+        if(!needle){act('↑','上移',function(){move(db,i,-1)});act('↓','下移',function(){move(db,i,1)})}
+        act('編輯','編輯',function(){editItem(db,it)});
+        act('刪除','刪除',function(){if(it.isNew)db.items.splice(db.items.indexOf(it),1);else it.del=true;render()},'x');
+      }
+      tr.append(th,t1,t2,a);tb.append(tr);
+    });
+    empty.textContent=shown?'':(needle?'沒有符合的項目。':'這個資料庫還是空的，按「新增」加第一'+def.unit+'。');
+    table.style.display=shown?'':'none';
+  }
+  q.addEventListener('input',rows);rows();
+}
+function labelOf(def,key){var f=def.fields.filter(function(f){return f.key===key})[0];return f?f.label.replace(/（.*$/,''):key}
+function move(db,i,d){var j=i+d;while(j>=0&&j<db.items.length&&db.items[j].del)j+=d;if(j<0||j>=db.items.length)return;var t=db.items[i];db.items[i]=db.items[j];db.items[j]=t;render()}
+function allChanges(){
+  var out=[];
+  dbs.forEach(function(db){if(!dirty(db))return;var c=counts(db),p=[];
+    if(db.isNew)p.push('新資料庫');if(c.add)p.push('新增 '+c.add);if(c.chg)p.push('修改 '+c.chg);if(c.del)p.push('刪除 '+c.del);
+    if(!p.length)p.push('調整順序或設定');out.push({db:db,text:db.def.title+'：'+p.join('、'),del:c.del})});
+  removedDbs.forEach(function(db){out.push({db:db,text:'刪除整個資料庫「'+db.def.title+'」',del:1,whole:true})});
+  return out;
+}
+function renderSave(){
+  var ch=allChanges(),bar=$('savebar');bar.className='savebar'+(ch.length?' on':'');
+  var s=$('saveSum');s.textContent='';if(!ch.length)return;
+  s.append(el('b','','尚未儲存：'),document.createTextNode(ch.map(function(c){return c.text}).join('；')));
+}
+
+/* ---- item form ---- */
+function editItem(db,it){
+  var def=db.def,v=it?clone(it.v):def.blank(plain(db)),d=$('dlg');d.textContent='';
+  var form=el('form');form.method='dialog';form.append(el('header','',(it?'編輯':'新增')+' · '+def.title));
+  var body=el('div','body'),inputs=[],grid=null;
+  def.fields.forEach(function(f){
+    var box=el('div');
+    if(f.type==='bool'){var l=el('label','c'),c=el('input');c.type='checkbox';c.checked=!!get(v,f.key);l.append(c,document.createTextNode(f.label));box.append(l);inputs.push([f,c])}
+    else{
+      var lab=el('label','f',f.label+(f.req?' *':''));var inp;
+      if(f.type==='area'){inp=el('textarea')}else{inp=el('input');inp.type=f.type==='number'?'number':f.type==='color'?'color':f.type==='date'?'date':'text'}
+      var val=get(v,f.key);inp.value=val==null?'':val;if(f.type==='color'&&!inp.value)inp.value='#9a8f83';
+      inp.id='f_'+f.key;lab.htmlFor=inp.id;box.append(lab,inp);if(f.hint)box.append(el('p','hint',f.hint));inputs.push([f,inp]);
+    }
+    if(f.half){if(!grid){grid=el('div','grid2');body.append(grid)}grid.append(box);if(grid.children.length===2)grid=null}else{grid=null;body.append(box)}
+  });
+  var err=el('p','hint err','');body.append(err);form.append(body);
+  var foot=el('footer'),cancel=el('button','btn','取消'),ok=el('button','btn primary',it?'完成':'加入');cancel.type='button';ok.type='submit';
+  cancel.addEventListener('click',function(){d.close()});foot.append(cancel,ok);form.append(foot);d.append(form);
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    for(var i=0;i<inputs.length;i++){var f=inputs[i][0],n=inputs[i][1],val;
+      if(f.type==='bool'){val=n.checked;if(!val&&get(v,f.key)===undefined)continue}
+      else if(f.type==='number'){val=n.value===''?null:Number(n.value)}
+      else{val=n.value.trim()}
+      if(f.req&&!val){err.textContent='請填「'+f.label+'」。';n.focus();return}
+      if(f.type==='bool'&&!val&&f.key==='draft'){delete v.draft;continue}
+      set(v,f.key,val);
+    }
+    if(it){if(!same(it.v,v)){it.v=v;if(!it.isNew)it.chg=true}}else{db.items.push({_k:++seq,v:v,isNew:true})}
+    d.close();render();
+  });
+  d.showModal();
+}
+
+/* ---- database form (custom databases only) ---- */
+function editDb(db){
+  var d=$('dlg');d.textContent='';var isNew=!db;
+  var fields=db?clone(db.def.fields):[{key:'name',label:'名稱',type:'text'},{key:'url',label:'網址',type:'url'},{key:'note',label:'說明',type:'area'}];
+  var form=el('form');form.method='dialog';form.append(el('header','',isNew?'新增資料庫':'設定 · '+db.def.title));
+  var body=el('div','body');
+  var lt=el('label','f','名稱 *'),it=el('input');it.type='text';it.value=db?db.def.title:'';it.placeholder='例如：收藏、友鏈、想看的電影';body.append(lt,it);
+  var lv=el('label','f','在網站上的樣子'),sv=el('select');Object.keys(VIEWS).forEach(function(k){var o=el('option','',VIEWS[k]);o.value=k;sv.append(o)});sv.value=db?db.view:'table';body.append(lv,sv);
+  body.append(el('label','f','欄位（第一欄當標題）'));
+  var list=el('div');body.append(list);
+  function draw(){list.textContent='';fields.forEach(function(f,i){
+    var r=el('div','fieldrow'),n=el('input'),t=el('select'),x=el('button','btn','×');
+    n.type='text';n.value=f.label;n.placeholder='欄位名稱';n.setAttribute('aria-label','欄位名稱');n.addEventListener('input',function(){f.label=n.value});
+    Object.keys(TYPES).forEach(function(k){var o=el('option','',TYPES[k]);o.value=k;t.append(o)});t.value=f.type;t.setAttribute('aria-label','欄位類型');t.addEventListener('change',function(){f.type=t.value});
+    x.type='button';x.title='移除這一欄';x.setAttribute('aria-label','移除這一欄');x.disabled=fields.length<2;x.addEventListener('click',function(){fields.splice(i,1);draw()});
+    r.append(n,t,x);list.append(r)})}
+  draw();
+  var more=el('button','btn','＋ 加一欄');more.type='button';more.style.marginTop='10px';more.addEventListener('click',function(){fields.push({key:'',label:'',type:'text'});draw()});body.append(more);
+  body.append(el('p','hint','移除欄位不會刪掉已經填過的內容，只是不再顯示。'));
+  var err=el('p','hint err','');body.append(err);form.append(body);
+  var foot=el('footer');
+  if(db){var rm=el('button','btn danger','刪除整個資料庫');rm.type='button';rm.style.marginRight='auto';
+    rm.addEventListener('click',function(){if(rm.dataset.sure!=='1'){rm.dataset.sure='1';rm.textContent='再按一次確認刪除';return}
+      dbs.splice(dbs.indexOf(db),1);dbIndex.now=dbIndex.now.filter(function(m){return m.id!==db.def.id});if(!db.isNew)removedDbs.push(db);cur=dbs[0];d.close();render()});foot.append(rm)}
+  var cancel=el('button','btn','取消'),ok=el('button','btn primary',isNew?'建立':'完成');cancel.type='button';ok.type='submit';cancel.addEventListener('click',function(){d.close()});
+  foot.append(cancel,ok);form.append(foot);d.append(form);
+  form.addEventListener('submit',function(e){
+    e.preventDefault();var title=it.value.trim();if(!title){err.textContent='請填名稱。';it.focus();return}
+    var used={};for(var i=0;i<fields.length;i++){var f=fields[i];f.label=(f.label||'').trim();if(!f.label){err.textContent='有欄位還沒有名稱。';return}
+      if(!f.key){var k='f'+(i+1);while(used[k]||fields.some(function(x){return x.key===k}))k+='_';f.key=k}used[f.key]=1}
+    if(isNew){var id='db-'+Date.now().toString(36);var ndb=fromCustom({id:id},{title:title,view:sv.value,fields:fields,items:[]},true);dbs.push(ndb);dbIndex.now.push({id:id,title:title});cur=ndb}
+    else{db.def.title=title;db.view=sv.value;db.def.fields=fields;db.def.t1=fields[0].key;db.def.t2=(fields[1]||{}).key;db.def.thumb=(fields.filter(function(f){return f.type==='image'})[0]||{}).key;
+      dbIndex.now.forEach(function(m){if(m.id===db.def.id)m.title=title})}
+    d.close();render();
+  });
+  d.showModal();it.focus();
+}
+
+/* ---- key ---- */
+$('keyBtn').addEventListener('click',function(){
+  var d=$('dlg');d.textContent='';var form=el('form');form.method='dialog';form.append(el('header','','GitHub 鑰匙'));
+  var body=el('div','body');body.append(el('p','hint','只有儲存時才需要。在 GitHub：Settings › Developer settings › Fine-grained tokens，只選 home 倉庫，Contents 設為 Read and write。鑰匙只存在這個瀏覽器裡，和「添加」頁共用。'));
+  var l=el('label','f','鑰匙'),i=el('input');i.type='password';i.autocomplete='off';i.placeholder=token()?'已儲存（貼新的可以替換）':'貼上鑰匙';body.append(l,i);
+  var msg=el('p','hint','');body.append(msg);form.append(body);
+  var foot=el('footer'),clr=el('button','btn','清除'),test=el('button','btn','測試'),ok=el('button','btn primary','儲存');clr.type=test.type='button';ok.type='submit';
+  clr.addEventListener('click',function(){try{localStorage.removeItem(TOKEN_KEY)}catch(e){}renderKey();d.close()});
+  test.addEventListener('click',async function(){var t=i.value.trim()||token();if(!t){msg.textContent='還沒有鑰匙。';return}msg.textContent='測試中…';
+    try{var r=await fetch(REPO.slice(0,-1),{headers:{Authorization:'Bearer '+t,Accept:'application/vnd.github+json'}});var j=await r.json();
+      msg.textContent=r.ok?(j.permissions&&j.permissions.push?'可以用，有寫入權限。':'讀得到倉庫，但沒有寫入權限。'):'無效（'+r.status+'）。'}catch(e){msg.textContent='連不上 GitHub。'}});
+  foot.append(clr,test,ok);form.append(foot);d.append(form);
+  form.addEventListener('submit',function(e){e.preventDefault();var t=i.value.trim();if(t){try{localStorage.setItem(TOKEN_KEY,t)}catch(x){}}renderKey();d.close()});
+  d.showModal();
+});
+
+/* ---- save: one commit for everything ---- */
+async function api(path,method,body){
+  var r=await fetch(REPO+path,{method:method||'GET',headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+token()},body:body?JSON.stringify(body):undefined});
+  var j=await r.json().catch(function(){return {}});
+  if(!r.ok){if(r.status===401)throw new Error('鑰匙無效或已過期。');if(r.status===403||r.status===404)throw new Error('GitHub 拒絕了（鑰匙權限不足）。');throw new Error(j.message||('GitHub 回應 '+r.status))}
+  return j;
+}
+function localFile(db,v){var dir=db.def.fileDir,src=v&&v.src;return dir&&typeof src==='string'&&src.indexOf(dir)===0?src.slice(2):null}
+$('save').addEventListener('click',function(){
+  var ch=allChanges(),d=$('dlg');d.textContent='';var form=el('form');form.method='dialog';form.append(el('header','','儲存到網站'));
+  var body=el('div','body');body.append(el('p','','這些修改會一次送出，約 1–2 分鐘後出現在網站上：'));
+  var ul=el('ul','changes');ch.forEach(function(c){ul.append(el('li',c.del?'d':'',c.text))});
+  // a deleted song / photo whose file sits in the repo: the file goes too, otherwise the site registers it again
+  var files=[];dbs.forEach(function(db){db.items.forEach(function(i){if(i.del){var f=localFile(db,i.v);if(f)files.push(f)}})});
+  files.forEach(function(f){ul.append(el('li','d','同時刪除檔案 '+f))});
+  body.append(ul);
+  if(ch.some(function(c){return c.del})) body.append(el('p','hint','刪除的內容之後只能從 GitHub 的歷史紀錄找回。'));
+  var msg=el('p','hint','');body.append(msg);form.append(body);
+  var foot=el('footer'),cancel=el('button','btn','再看看'),ok=el('button','btn primary','確認儲存');cancel.type='button';ok.type='submit';cancel.addEventListener('click',function(){d.close()});
+  foot.append(cancel,ok);form.append(foot);d.append(form);
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();if(!token()){msg.className='hint err';msg.textContent='還沒有設定鑰匙：先按左上角的「鑰匙」。';return}
+    ok.disabled=cancel.disabled=true;msg.className='hint';msg.textContent='送出中…';
+    try{
+      var ref=await api('git/ref/heads/'+BRANCH),head=ref.object.sha,commit=await api('git/commits/'+head);
+      // refuse to overwrite a list that changed on GitHub since this page read it
+      for(var i=0;i<dbs.length;i++){var db=dbs[i];if(!dirty(db)||db.isNew)continue;
+        var cur2=await api('contents/'+db.def.path+'?ref='+head);var remote=JSON.parse(decodeURIComponent(escape(atob(cur2.content.replace(/\n/g,'')))));
+        if(!same(remote,db.base))throw new Error('「'+db.def.title+'」在別處被改過了。請重新整理這一頁再改一次。')}
+      var tree=[];
+      dbs.forEach(function(db){if(dirty(db))tree.push({path:db.def.path,mode:'100644',type:'blob',content:fileText(db)})});
+      removedDbs.forEach(function(db){tree.push({path:db.def.path,mode:'100644',type:'blob',sha:null})});
+      files.forEach(function(f){tree.push({path:f,mode:'100644',type:'blob',sha:null})});
+      if(!same(dbIndex.now,dbIndex.base))tree.push({path:'data/db/index.json',mode:'100644',type:'blob',content:JSON.stringify(dbIndex.now,null,2)+'\n'});
+      var t=await api('git/trees','POST',{base_tree:commit.tree.sha,tree:tree});
+      var c=await api('git/commits','POST',{message:'Manage: '+ch.map(function(x){return x.text}).join('; '),tree:t.sha,parents:[head]});
+      await api('git/refs/heads/'+BRANCH,'PATCH',{sha:c.sha});
+      d.close();toast('已儲存。約 1–2 分鐘後上線。');
+      dbs.forEach(function(db){if(dirty(db)){var items=plain(db);db.base=db.custom?JSON.parse(fileText(db)):db.def.wrap(db.base,items);db.baseItems=clone(items);db.items=tag(clone(items));db.isNew=false}});
+      removedDbs=[];dbIndex.base=clone(dbIndex.now);render();
+    }catch(x){msg.className='hint err';msg.textContent=x.message;ok.disabled=cancel.disabled=false}
+  });
+  d.showModal();
+});
+$('discard').addEventListener('click',function(){var b=$('discard');if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='再按一次確認還原';setTimeout(function(){b.dataset.sure='';b.textContent='全部還原'},3000);return}b.dataset.sure='';b.textContent='全部還原';load()});
+window.addEventListener('beforeunload',function(e){if(allChanges().length){e.preventDefault();e.returnValue=''}});
+
+(function theme(){try{var a=localStorage.getItem('luliy-appearance');if(a==='light'||a==='cc')document.documentElement.dataset.appearance=a}catch(e){}})();
+load().catch(function(e){$('main').textContent='';$('main').append(el('p','empty err',e.message))});
+})();
+</script>
+</body>
+</html>
