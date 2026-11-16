@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>背诵卡片</title>
+<style>
+:root{
+  --bg:#f6f5f1;--card:#ffffff;--ink:#1f2328;--muted:#6b7280;--line:#e5e2da;
+  --accent:#2f6fde;--accent-soft:#e8effc;--good:#1f9d55;--mid:#d48a00;--bad:#d64545;
+  --hook:#fff6db;--hook-ink:#7a5a00;--shadow:0 6px 24px rgba(0,0,0,.07);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15171a;--card:#1e2126;--ink:#e8e6e1;--muted:#9aa0a8;--line:#2e3238;
+  --accent:#6c9cf0;--accent-soft:#22314d;--good:#3cc47a;--mid:#e8a93a;--bad:#ef6b6b;
+  --hook:#3a3220;--hook-ink:#f1d48a;--shadow:0 6px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#15171a;--card:#1e2126;--ink:#e8e6e1;--muted:#9aa0a8;--line:#2e3238;
+  --accent:#6c9cf0;--accent-soft:#22314d;--good:#3cc47a;--mid:#e8a93a;--bad:#ef6b6b;
+  --hook:#3a3220;--hook-ink:#f1d48a;--shadow:0 6px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+h1{font-size:20px;margin:4px 0}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:10px 0}
+button,.chip{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+button:hover,.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.label{font-size:13px;color:var(--muted);margin-right:2px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 2px}
+.bar>i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.stats{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);min-height:320px;padding:22px 22px 18px;margin-top:12px;cursor:pointer;user-select:text;position:relative}
+.meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tag{background:var(--accent-soft);color:var(--accent);padding:1px 8px;border-radius:999px}
+.q{font-size:19px;font-weight:600;white-space:pre-wrap}
+.hint{margin-top:26px;color:var(--muted);font-size:14px;text-align:center}
+.a{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);white-space:pre-wrap;display:none}
+.card.flipped .a{display:block}
+.card.flipped .hint{display:none}
+.hook{margin-top:12px;background:var(--hook);color:var(--hook-ink);border-radius:10px;padding:8px 12px;font-size:14px;white-space:pre-wrap}
+.hook b{margin-right:4px}
+.rate{display:none;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.rate.show{display:grid}
+.rate button{border-radius:12px;padding:10px 4px;font-weight:600;color:#fff;border:none}
+.r1{background:var(--bad)}.r2{background:var(--mid)}.r3{background:var(--good)}
+.rate small{display:block;font-weight:400;opacity:.85;font-size:11px}
+.nav{display:flex;justify-content:space-between;margin-top:10px;gap:8px}
+.keys{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+.done{text-align:center;padding:40px 10px}
+.list .item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0}
+.list .item .q{font-size:15px}
+.list .item .a{display:block;font-size:14px;margin-top:6px;padding-top:6px}
+details.tips{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-top:12px}
+details.tips summary{cursor:pointer;font-weight:600}
+details.tips ol{padding-left:20px;margin:8px 0}
+details.tips li{margin:4px 0}
+table.k{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+table.k td{border-top:1px solid var(--line);padding:5px 4px;vertical-align:top}
+table.k td:first-child{color:var(--muted);white-space:nowrap;padding-right:10px}
+@media (max-width:520px){.q{font-size:17px}.card{padding:18px 16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>背诵卡片</h1>
+    <div class="row" style="margin:0">
+      <button id="themeBtn" title="切换深浅色">◐</button>
+      <button id="resetBtn" title="清空记忆进度">重置进度</button>
+    </div>
+  </header>
+
+  <div class="row" id="deckRow"><span class="label">科目</span></div>
+  <div class="row" id="catRow"><span class="label">分类</span></div>
+  <div class="row" id="modeRow"><span class="label">模式</span></div>
+
+  <div class="bar"><i id="barFill"></i></div>
+  <div class="stats"><span id="statL"></span><span id="statR"></span></div>
+
+  <div id="stage"></div>
+
+  <div class="keys">空格 / 点击卡片 = 翻面　·　1 忘了　2 模糊　3 记住　·　← → 上一张 / 下一张（手机可左右滑）</div>
+
+  <details class="tips">
+    <summary>口诀一页纸（考前 5 分钟看这里）</summary>
+    <table class="k">
+      <tr><td>维护三级</td><td>日常清补检；一级润紧查转制；二级调转制悬 + 电机 + 高压盒</td></tr>
+      <tr><td>7 种诊断</td><td>直 · 随 · 简 · 车 · 换 · 模 · 树</td></tr>
+      <tr><td>防护 6 件</td><td>从头到脚：帽 → 镜 → 服 → 手套 → 鞋 → 垫</td></tr>
+      <tr><td>电池能量流</td><td>3 进（车载充电机 / 制动回收 / 外置充电）→ 高压配电 → 2 出（驱动电机 / PTC）</td></tr>
+      <tr><td>BMS 通信</td><td>点 · 线 · 连</td></tr>
+      <tr><td>充电</td><td>交 220 单，直 380 三</td></tr>
+      <tr><td>电机过热</td><td>码 → 铁 → 阻 → 断 → 短 → 换</td></tr>
+      <tr><td>EPS 异响</td><td>从上往下：盘 → 转向器 → EPS 本体 → 横拉杆</td></tr>
+      <tr><td>继电器电路</td><td>33 → 5 进 3 出 → 16 → 电磁阀 → CA60 的 2 号 → 搭铁</td></tr>
+      <tr><td>液压阀口</td><td>减压常开；溢流、顺序常闭。溢流顺序看进口，减压看出口</td></tr>
+      <tr><td>调速阀</td><td>= 减压阀 + 节流阀 串联</td></tr>
+      <tr><td>泵</td><td>柱塞高压 ＞ 叶片 ＞ 齿轮低压；单作用叶片可变量、不平衡；双作用定量、平衡</td></tr>
+      <tr><td>齿轮泵</td><td>脱开吸油，啮合压油</td></tr>
+      <tr><td>粘度</td><td>温↓粘↑，压↑粘↑；46# = 40 ℃ 运动粘度 46</td></tr>
+      <tr><td>两方程</td><td>连续性 = 质量守恒（管细流速大）；伯努利 = 能量守恒</td></tr>
+      <tr><td>中位机能</td><td>O 全封｜H 全通卸荷｜P 差动｜Y 浮动｜M 泵卸荷缸锁紧</td></tr>
+      <tr><td>功率 / 流速</td><td>P = p·q/η；q = v·A；L/min ÷ 60000 = m³/s</td></tr>
+    </table>
+  </details>
+
+  <details class="tips">
+    <summary>备考技巧（怎样用最少时间背完）</summary>
+    <ol>
+      <li><b>第 1 轮（约 40 分钟）</b>：选「学习」模式，全部卡片过一遍。先想答案再翻面，老实按 1 / 2 / 3 打分。「忘了」的卡会在 3 张后再出现，「模糊」的 8 张后再出现，直到你按「记住」。</li>
+      <li><b>当晚睡前（约 10 分钟）</b>：切到「错题」模式，只过被你按过「忘了 / 模糊」的卡。</li>
+      <li><b>第二天早上（约 15 分钟）</b>：「学习」模式再过一遍；已掌握（★★ 以上）的卡会排到后面。</li>
+      <li><b>考前</b>：只看上面的口诀一页纸 +「速览」模式扫一遍。</li>
+      <li><b>客观题秒杀</b>：汽车选择题「不包括」→ 选带「燃油」的；判断题带「任何、所有、仅、统一、直接、更简单」→ ×。液压判断题带偷换概念的多半 ×。</li>
+      <li><b>主观题写法</b>：先默写口诀骨架（如「码铁阻断短换」「功态构」），再把每个字展开成一句话。故障题一律按「现象 → 原因 → 诊断步骤」写，步骤按「由外到内、先读码后换件」。</li>
+      <li><b>计算题</b>：过程分比结果分多，务必写公式和单位换算。</li>
+    </ol>
+  </details>
+</div>
+
+<script>
+/* ---------- 卡片数据 ---------- */
+const DECKS={car:"新能源汽车",hyd:"液压与气压"};
+const RAW=[
+/* ===== 新能源汽车 ===== */
+["car","维护","电动系统专用装置维护的定义？","为维持新能源汽车上的高压系统及其相关附件的完好技术状况或工作能力而进行的作业。","对象 = 高压系统 + 附件；目的 = 完好技术状况 / 工作能力"],
+["car","维护","维护周期分为哪几类？","日常维护和定期维护（一级维护、二级维护）。",""],
+["car","维护","日常维护的中心内容？","以清洁、补给和安全性能检视为中心内容的维护作业。","清 · 补 · 检"],
+["car","维护","一级维护？","除日常维护作业外，以润滑、紧固为中心内容，并检查转向系统、制动系统等的维护作业。","润 · 紧 + 查转制"],
+["car","维护","二级维护？","除一级维护作业外，以检查和调整转向系统、制动系统、悬架等，检查调整驱动电机系统的运行状况和高压控制盒等为主的维护作业。","从「查」升级到「调」：转 · 制 · 悬 + 电机 + 高压盒"],
+["car","维护","新能源汽车维护周期如何确定？","根据车辆行驶里程或使用时间进行，同级维护的间隔期是参考新能源汽车制造厂商推荐的周期而制订的。","里程 / 时间 + 厂商推荐"],
+["car","诊断方法","新能源汽车故障诊断的方法有哪 7 种？","直观、随车、简单仪表、车载诊断系统、换件、故障征兆模拟、故障树。","直 · 随 · 简 · 车 · 换 · 模 · 树"],
+["car","诊断方法","什么是数据流分析法？","利用故障诊断仪来读取车辆相关数据，然后通过对该数据进行分析，查找故障原因的方法。","读 → 析 → 找"],
+["car","安全防护","高压防护用具主要包括？","绝缘手套、安全帽、绝缘鞋、绝缘服、护目镜、绝缘垫。","从头到脚：帽 → 镜 → 服 → 手套 → 鞋 → 垫"],
+["car","安全防护","绝缘手套一般标有什么？","最大电压值。",""],
+["car","安全防护","高压绝缘检测仪可以测量什么？有什么特点？","可以测量电压、绝缘电阻、低电阻等，它具有性能稳定的特点。","压 · 绝 · 低"],
+["car","安全防护","熔断器的定义？","当电流超过规定值时，用本身产生的热量使熔体熔断，断开电路的一种电器。",""],
+["car","电池/BMS","动力蓄电池系统的作用（能量流向）？","首先接收和储存由车载充电机、制动能量回收系统或外置充电装置提供的电能，然后通过高压配电装置为驱动电机和 PTC 加热器等用电设备提供电能。","3 进（车载充电机 / 制动回收 / 外置充电）→ 高压配电 → 2 出（驱动电机 / PTC）"],
+["car","电池/BMS","BMS 通信故障的故障现象？","当 BMS 发生通信故障时，车辆无法完成高压自检，不能上高压电，同时组合仪表上的动力蓄电池故障指示灯、系统故障指示灯等也会亮起。","不自检 → 不上电 → 灯亮"],
+["car","电池/BMS","BMS 通信故障的故障原因？","① BMS 模块自身故障\n② CAN 总线故障\n③ BMS 模块与 CAN 总线之间的连接电路故障","点（模块）· 线（总线）· 连（连接）"],
+["car","充电","充电系统一般包括哪两种？","交流充电系统和直流充电系统。",""],
+["car","充电","交流 / 直流充电系统分别使用什么电？","交流充电系统：一般使用 220 V 单相交流电\n直流充电系统：一般使用工业 380 V 三相交流电","交 220 单，直 380 三（直流快充用的是三相「交流」电）"],
+["car","电机/热管理","驱动电机过热的故障现象？","车辆会降功率行驶，严重时甚至会使驱动电机停止运行，同时组合仪表上相应的故障指示灯也会亮起。","降功率 → 停机 → 灯亮"],
+["car","电机/热管理","驱动电机过热的故障原因？","通常为驱动电机温度传感器故障。",""],
+["car","电机/热管理","驱动电机过热的诊断方法（6 步）？","① 读取故障码\n② 检查驱动电机信号搭铁电路\n③ 检查温度传感器 R1、R2 的电阻\n④ 检查温度传感器 R1、R2 的信号传输电路是否断路\n⑤ 检查温度传感器 R1、R2 的信号传输电路是否短路\n⑥ 更换电机控制器后试车","码 → 铁 → 阻 → 断 → 短 → 换"],
+["car","电机/热管理","新能源汽车的热管理系统主要由什么组成？","空调和冷却系统。",""],
+["car","电机/热管理","电动水泵不工作的故障现象？","电动水泵不工作，会导致冷却液无法在冷却系统中循环流动，从而造成高压系统过热。",""],
+["car","电机/热管理","热管理继电器 ER11 电路的电流路径（图 4-35）？","空调控制器输出一个控制信号到 ER11，使热管理继电器开关吸合。低压蓄电池正极电流经过熔断器 EF33，由 ER11 的 5 号端子流经继电器开关从 3 号端子流出，再经过熔断器 EF16 流进元件制冷管路电磁阀，最后通过 CA60 线束连接器的 2 号端子接搭铁点，构成电流回路。","数字串 33-5-3-16-60-2：正极 → EF33 → 5 进 3 出 → EF16 → 电磁阀 → CA60 的 2 号 → 搭铁"],
+["car","EPS","EPS 异响的故障现象？","① 车辆在转向时 EPS 会发出异响，而直线行驶时 EPS 无异响\n② 当转向盘处于极限位置或原地转动转向盘时，齿轮齿条式转向器会发出严重的「嘶嘶」声","转向响、直行不响；打死 / 原地打方向「嘶嘶」"],
+["car","EPS","EPS 异响的诊断方法（8 步）？","1. 前后左右晃动转向盘，检查转向盘有无松动或异响\n2. 检查齿轮齿条式转向器固定螺栓有无松动\n3. 检查齿轮齿条式转向器间隙是否过大\n4. 检查 EPS 机械结构各个连接处是否牢固\n5. 举升车辆，检查 EPS 是否有直接破损，以及出现异响的位置是否因变形而与其他零部件发生碰撞\n6. 检查 EPS 安装固定点是否有松动\n7. 检查转向横拉杆球头铰接处是否存在间隙\n8. 检查转向横拉杆限位是否合理","从上往下：盘(1) → 转向器：螺栓、间隙(2,3) → EPS：连接、破损碰撞、安装点(4,5,6) → 横拉杆：球头、限位(7,8)"],
+["car","EPS","EPS 由哪些部件组成（图 5-1）？","转向盘、转矩传感器、转向轴、转角传感器、减速机构、齿轮齿条式转向器、转向横拉杆、转向电机、电磁离合器、ECU（输入车速传感器、转矩 / 转角信号）。","沿转向轴从上往下：盘 → 转矩 → 轴 → 转角 → 减速 → 转向器 → 横拉杆；旁边：电机 + 离合器 + ECU"],
+["car","EPS","EPS 中减速机构的作用？","减速增矩。",""],
+["car","EPS","EPS 电动助力转向系统有没有转向助力泵？","没有（转向助力泵是液压助力转向才有的）。",""],
+["car","选择题","新能源汽车直流充电系统一般使用？","工业 380 V 三相交流电。",""],
+["car","选择题","动力蓄电池系统进行均衡充电时，主要目的是？","延长电池使用寿命。",""],
+["car","选择题","新能源汽车的充电系统通常不包括以下哪个部件？","燃油泵。","「不包括」→ 找燃油"],
+["car","选择题","驱动电机控制器的主要功能不包括？","过滤燃油杂质。","「不包括」→ 找燃油"],
+["car","选择题","空调系统压缩机不工作的可能原因不包括？","转向助力泵故障。","风马牛不相及的那个"],
+["car","选择题","下列哪个不是新能源汽车驱动电机系统部分？","燃油喷射系统部件。","「不是」→ 找燃油"],
+["car","选择题","动力蓄电池的 SOC 是指？","剩余电量百分比。","SOC = State Of Charge"],
+["car","选择题","新能源汽车的整车控制系统通常不包括？","燃油喷射控制。","「不包括」→ 找燃油"],
+["car","选择题","负责将高压直流电转换为低压直流电的设备是？","DC/DC 转换器。","直流 → 直流 = DC/DC"],
+["car","选择题","适合拆装所处部位狭小或特别隐蔽的螺栓或螺母的是？","套筒扳手。",""],
+["car","选择题","制动能量回收系统主要回收的是车辆的？","动能。",""],
+["car","选择题","哪项不是动力蓄电池系统的安全保护措施？","过速保护。","电池只管压、流、温，不管速度"],
+["car","选择题","用于监测和控制电池组内各个单体电池状态的系统是？","电池管理系统（BMS）。",""],
+["car","选择题","新能源汽车的转向系统通常不包括？","转向齿条（笔记原文答案）。",""],
+["car","选择题","对新能源汽车故障诊断的描述，错误的是？","动力电池组可以随意更换不同品牌和型号的电池单体。","「错误」→ 找「随意」"],
+["car","判断题","新能源汽车的高压线束一般为橙色，并带有警示标志。","√",""],
+["car","判断题","混合动力汽车在任何情况下都可以只依靠电动机行驶。","×","绝对词「任何」"],
+["car","判断题","动力电池的深度放电会严重影响其使用寿命。","√",""],
+["car","判断题","新能源汽车的驱动电机可以直接用水冲洗清洁。","×","绝对词「直接」"],
+["car","判断题","制动能量回收系统在所有制动情况下都能工作。","×","绝对词「所有」"],
+["car","判断题","新能源汽车的冷却系统仅用于冷却发动机。","×","绝对词「仅」"],
+["car","判断题","快充接口通常比慢充接口具有更高的电流和功率。","√",""],
+["car","判断题","新能源汽车的充电接口标准在全球范围内是统一的。","×","绝对词「统一」"],
+["car","判断题","动力电池的 SOC 达到 100% 时，表示电池已完全充满。","√",""],
+["car","判断题","新能源汽车的故障诊断通常比传统燃油车更简单。","×","绝对词「更简单」"],
+["car","分析题","充电桩显示充电异常、车辆无法充满电：可能的故障点有哪些？","1. 充电桩故障，无法提供稳定的充电电流和电压。\n2. 车辆充电接口或充电线束故障，导致充电异常。\n3. 车辆充电控制系统故障，无法正确接收充电桩的充电信号。","桩 · 口 · 控"],
+["car","分析题","充电异常、无法充满电：故障诊断步骤（5 步）？","1. 充电桩检查：检查充电桩的工作状态，确保充电桩无故障，能够提供稳定的充电电流和电压。\n2. 车辆充电接口检查：检查车辆充电接口及充电线束，确保无破损、腐蚀、松动等情况。\n3. 通信检查：检查车辆充电控制系统与充电桩之间的通信是否正常，确保信息传输无误。\n4. 故障码读取：使用故障诊断仪读取车辆充电控制系统的故障码，根据故障码提示进行进一步的诊断。\n5. 充放电测试：在充电桩和车辆充电接口均正常的情况下，进行充放电测试，观察充电过程是否异常。","桩 → 口 → 通信 → 码 → 测（万能模板：外 → 接 → 信 → 码 → 测）"],
+
+/* ===== 液压 ===== */
+["hyd","填空题","由于粘性造成的压力损失称为＿＿。","沿程压力损失","粘性 → 一路摩擦 → 沿程；截面突变才是局部"],
+["hyd","填空题","某环境真空度为 0.2 个大气压，则相对压力为＿＿。","−0.2 个大气压（约 −0.02 MPa）","真空度 = 负的相对压力"],
+["hyd","填空题","除摩擦外，液气压系统温升最主要的原因是＿＿。","压力损失（损失的能量转化为热能）",""],
+["hyd","填空题","防止＿＿的根本措施是避免液流速度的急剧变化。","液压冲击","速度突变 → 冲击"],
+["hyd","填空题","正向允许流动、反向开启必须通过液压控制来实现的单向阀是＿＿。","液控单向阀","题干「液压控制」+「单向阀」"],
+["hyd","填空题","液体流速呈抛物线分布，管壁处速度为零，轴心处速度＿＿。","最大",""],
+["hyd","填空题","某密封容积内绝对压力为 1.7 个大气压，则相对压力为＿＿。","0.7 个大气压（约 0.07 MPa）","相对 = 绝对 − 大气 = 1.7 − 1"],
+["hyd","填空题","液压、气动系统由动力装置、＿＿、执行装置、辅助装置四部分组成。","控制装置（控制调节装置）","心脏 → 大脑 → 手 → 后勤"],
+["hyd","填空题","1 m³/h = ＿＿ m³/s","1/3600 ≈ 2.78×10⁻⁴","1 小时 = 3600 秒"],
+["hyd","填空题","为防止泵停车或泄载时蓄能器压力油倒流，蓄能器与液压泵之间应安装＿＿。","单向阀","防倒流 = 单向阀"],
+["hyd","填空题","常用的溢流阀分为直动式溢流阀和＿＿。","先导式溢流阀",""],
+["hyd","填空题","实际雷诺数小于临界雷诺数时，流态为＿＿。","层流","小 → 层流；大 → 紊流"],
+["hyd","填空题","一个标准大气压约等于＿＿ MPa。","0.1（0.101325）",""],
+["hyd","填空题","气动回路中可以用＿＿阀实现逻辑控制。","梭阀（或门）；双压阀为与门，统称逻辑阀","首选写「梭」"],
+["hyd","填空题","伯努利方程是研究液压系统＿＿转换的重要工具。","能量","伯努利 = 能量守恒"],
+["hyd","填空题","溢流阀进口压力控制、阀口常闭；定值减压阀出口压力控制，阀口＿＿。","常开","减压常开；溢流、顺序常闭"],
+["hyd","填空题","油箱的作用：储存油液、＿＿、使油中空气逸出、杂质沉淀。","散热","储 · 散 · 逸 · 沉"],
+["hyd","选择题","根据流量连续性原理，可以判断管路中液体的（ ）变化。\nA 速度　B 压力　C 粘性　D 流量","A 速度","q = v·A 不变，A 变 v 就变"],
+["hyd","选择题","可以用于高压系统的泵是？\nA 齿轮泵　B 双作用叶片泵　C 柱塞泵　D 单作用叶片泵","C 柱塞泵","柱塞高压 ＞ 叶片中压 ＞ 齿轮低压"],
+["hyd","选择题","调速阀是由减压阀和（ ）阀串联而成；也会反问：由节流阀和（ ）阀串联而成。","减压阀 + 节流阀（第 3 题选 B 节流；第 13 题选 B 减压）","调速 = 减压 + 节流"],
+["hyd","选择题","属于液压传动优点的是？\nA 控制精度高　B 不易泄漏污染　C 有严格传动比　D 相同功率下体积小重量轻","D","A、B、C 都是液压缺点的反面"],
+["hyd","选择题","高压管路中的换向阀应采用？\nA 手动阀　B 机动阀　C 液控阀　D 电磁阀","C 液控阀","高压大流量电磁铁推不动，用液压推"],
+["hyd","选择题","系统最大工作压力 10 MPa，安全阀调定压力应为？","C 大于 10 MPa","一般取约 1.1 倍，否则会误开"],
+["hyd","选择题","（ ）在常态时阀口常开，进、出油路相通。\nA 溢流阀　B 减压阀　C 顺序阀　D 单向阀","B 减压阀","减压常开"],
+["hyd","选择题","液压泵的理论流量 qt（ ）实际流量 q。","A 大于","泵有泄漏"],
+["hyd","选择题","连续性方程是质量守恒，伯努利方程是（ ）在流体力学中的表达形式。","A 能量守恒定律",""],
+["hyd","选择题","外啮合齿轮泵轮齿逐渐脱开啮合的一侧是（ ）腔。","A 吸油","脱开 → 容积变大 → 吸油；进入啮合 → 压油"],
+["hyd","选择题","液压传动系统中，配管的高度一般不超过（ ）米。\nA 8　B 10　C 12　D 15","B 10（以老师答案为准）",""],
+["hyd","选择题","下列泵中受到径向力平衡的是？","B 双作用叶片泵","「双」= 两边对称 = 平衡"],
+["hyd","选择题","随着油温的降低，油液的粘度会（ ）。","A 变大","冬天油变稠；压力减小粘度变小（题干那句是反的，别被带偏）"],
+["hyd","选择题","三位四通换向阀中位时可形成差动回路，应选用（ ）型。\nA O　B Y　C P　D H","C P 型","P 型：P、A、B 相通 → 两腔同时进油 = 差动"],
+["hyd","判断题","液压马达和液压泵都做连续回转运动，所以可以互换使用。","×","结构要求不同"],
+["hyd","判断题","油液从较粗管路流向较细管路后流速会变大。","√","连续性方程"],
+["hyd","判断题","单作用叶片泵不可以做变量泵使用。","×","单作用可以变量（改偏心距）"],
+["hyd","判断题","齿轮泵可以在高压环境中使用。","×","齿轮泵是低压泵"],
+["hyd","判断题","标号 46# 的液压油中，“46”是指矿物质含量的百分数。","×","指 40 ℃ 运动粘度约 46 mm²/s"],
+["hyd","判断题","液控式单向阀既可以单向导通也可以反向导通。","√","通控制油可反向导通"],
+["hyd","判断题","减压阀在工作时阀芯是关闭的状态。","×","常开，工作时阀口关小而非关闭"],
+["hyd","判断题","调速阀和节流阀在系统稳定性要求不高的情况下可以互换使用。","√",""],
+["hyd","判断题","在油液进入液压泵之前必须安装过滤器。","√","吸油口装粗过滤器"],
+["hyd","判断题","螺杆泵没有连续的周期性容积变化，所以不属于容积式液压泵。","×","螺杆泵是容积式泵"],
+["hyd","简答题","液压系统的缺点有哪些？","（1）不能保证严格的传动比。\n（2）能量损失大，机械效率低，不宜做远距离传动。\n（3）油液对温度变化敏感，不宜在高温或低温环境工作。\n（4）系统出现故障时不易查找原因，对液压故障诊断技术要求高。\n（5）元件制造精度及成本较高，易出现泄漏污染。","比 · 损 · 温 · 查 · 贵漏"],
+["hyd","简答题","简述泵的排量、流量及容积效率之间的关系。","（1）排量：液压泵每转一周，由其密封几何尺寸变化计算而得的排出液体的体积。\n（2）流量：单位时间内所排出的液体体积。\n（3）容积效率：泵的实际输出流量与理论流量的比值，其大小取决于泵的结构特点、加工精度等因素。\n（加分：qt = V·n，q = qt·ηv）","每转 · 每秒 · 实/理"],
+["hyd","简答题","为什么外啮合齿轮泵的吸油区和压油区要开平衡槽？有什么影响？","压油口压力 P₁ 大，该侧油液对齿轮轴的径向作用力 F₁ = P₁·A₁；吸油侧压力 P₂ 较低，F₂ = P₂·A₂ 较小。即 A₁P₁ > A₂P₂，引起油液对齿轮轴的径向不平衡作用力，因此要在吸油区和压油区开平衡槽。\n影响：开平衡槽会降低齿轮泵的容积效率。","压大 → 力不平 → 开槽 → 降效"],
+["hyd","简答题","节流阀就可以实现调速，为什么还要使用调速阀？","节流阀只是调定流量，使负载（油缸）可以快慢变化，但进口和出口存在很大的压差，流量也不稳定，在要求不严的系统中广泛采用，优点是快速有效、价格便宜。而调速阀里面有减压回路，具有压力补偿和稳压功能。","节流不稳 → 调速有减压补偿"],
+["hyd","简答题","简述顺序阀与减压阀之间的区别。","（1）功能不一样：减压阀是将进口压力减至某一需要的出口压力，并依靠介质本身的能量使出口压力自动保持稳定的阀门；顺序阀是在具有两个以上分支回路的系统中，根据回路的压力来控制执行元件动作顺序的阀。（2 分）\n（2）工作状态不一样：减压阀阀口关小；顺序阀阀口开启。（2 分）\n（3）结构不一样：减压阀阀芯常开；顺序阀阀芯常闭。（1 分）","功 · 态 · 构"],
+["hyd","简答题","画出梭阀结构简图并说明其或门工作原理。","简图：方框内左口①、右口③、上口②，中间一个圆球阀芯，两侧各一个阀座，②从中间引出。\n        ②\n        |\n ①──〈 ● 〉──③\n原理：信号 1 或信号 3 均可以产生信号 2；当信号 1 或 3 有一个比另一个强时，强信号发生作用。","有一个就输出 = 或门；球被强的一侧推去堵弱的一侧"],
+["hyd","计算题","泵额定压力 0.8 MPa，流量 60 L/min，总效率 0.8。求：1）选配电动机功率；2）工作压力 0.4 MPa 时电动机功率。","公式 P = p·q/η，60 L/min = 1×10⁻³ m³/s\n1）P = 0.8×10⁶ × 1×10⁻³ / 0.8 = 1000 W = 1 kW\n2）按实际工作压力计算：P = 0.4×10⁶ × 1×10⁻³ / 0.8 = 500 W = 0.5 kW\n⚠ 原答案写 10 kW / 5 kW，数量级错了 10 倍；转速 1450 r/min 用不到。","P = pq/η；L/min ÷ 60000 = m³/s"],
+["hyd","计算题","异径管 dA = 0.2 m，dB = 0.08 m，dC = 0.3 m，vA = 1.5 m/s，求流量及 vB、vC。","q = vA·AA = 1.5 × 3.14 × 0.1² = 0.047 m³/s\nvB = q/AB = 0.047 / (3.14 × 0.04²) = 9.38 m/s\nvC = q/AC = 0.047 / (3.14 × 0.15²) = 0.67 m/s\n（原答案中间的 0.47 是笔误）","v 与 d² 成反比：vB = 1.5 × (0.2/0.08)² = 9.375"],
+["hyd","综合题","快进—工进—快退回路，写出元件 1–6 的全称。","1 单向定量泵\n2 溢流阀\n3 三位四通双向电磁换向阀\n4 两位两通单向电磁换向阀\n5 调速阀\n6 压力继电器","泵 · 溢 · 三换 · 两换 · 调 · 继"],
+["hyd","综合题","快进—工进—快退回路的电磁铁动作表（原卷答案表）？","　　　CT1　CT2　CT3\n缸进　 +　　−　　−\n缸退　 −　　+　　−\n停止　 −　　−　　+","原卷给的表，照背"],
+["hyd","综合题","按图分析：快进、工进、快退时电磁铁状态和油路？","快进：1YA+ 2YA− 3YA+　泵→阀3左位(P→A)→阀4(导通，短接调速阀)→无杆腔；有杆腔→阀3(B→T)→油箱\n工进：1YA+ 2YA− 3YA−　阀4关闭，油经调速阀5→无杆腔，速度由调速阀调定\n快退：1YA− 2YA+ 3YA+　泵→阀3右位(P→B)→有杆腔；无杆腔→阀4→阀3(A→T)→油箱\n停止：全 −，阀3中位，泵经溢流阀2溢流\n工进到底压力升高 → 压力继电器6发信号 → 换快退","1YA 管进、2YA 管退；3YA 通电 = 走捷径 = 快"]
+];
+const CARDS=RAW.map((r,i)=>({id:r[0]+"-"+i,d:r[0],c:r[1],q:r[2],a:r[3],m:r[4]}));
+
+/* ---------- 存储（仅本浏览器，失败也能用） ---------- */
+const KEY="recite-cards-v1";
+let store={};
+try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){store={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+function box(id){return (store[id]&&store[id].b)||0}
+function wrong(id){return !!(store[id]&&store[id].w)}
+
+/* ---------- 状态 ---------- */
+let deck="all",cat="all",mode="learn",queue=[],pos=0,flipped=false,history=[];
+try{const p=JSON.parse(localStorage.getItem(KEY+"-ui")||"{}");deck=p.deck||deck;mode=p.mode||mode}catch(e){}
+function saveUI(){try{localStorage.setItem(KEY+"-ui",JSON.stringify({deck,mode}))}catch(e){}}
+
+const $=s=>document.querySelector(s);
+function chip(row,label,val,cur,fn){const b=document.createElement("button");b.className="chip"+(val===cur?" on":"");b.textContent=label;b.onclick=()=>fn(val);row.appendChild(b)}
+
+function pool(){return CARDS.filter(c=>(deck==="all"||c.d===deck)&&(cat==="all"||c.c===cat))}
+function renderFilters(){
+  const dr=$("#deckRow");dr.querySelectorAll("button").forEach(b=>b.remove());
+  chip(dr,"全部","all",deck,v=>{deck=v;cat="all";saveUI();rebuild()});
+  for(const k in DECKS)chip(dr,DECKS[k],k,deck,v=>{deck=v;cat="all";saveUI();rebuild()});
+  const cr=$("#catRow");cr.querySelectorAll("button").forEach(b=>b.remove());
+  chip(cr,"全部","all",cat,v=>{cat=v;rebuild()});
+  const cats=[...new Set(CARDS.filter(c=>deck==="all"||c.d===deck).map(c=>c.c))];
+  cats.forEach(c=>chip(cr,c,c,cat,v=>{cat=v;rebuild()}));
+  const mr=$("#modeRow");mr.querySelectorAll("button").forEach(b=>b.remove());
+  [["learn","学习"],["order","顺序"],["wrong","错题"],["list","速览"]].forEach(([v,l])=>chip(mr,l,v,mode,x=>{mode=x;saveUI();rebuild()}));
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function rebuild(){
+  renderFilters();
+  let p=pool();
+  if(mode==="wrong")p=p.filter(c=>wrong(c.id));
+  if(mode==="learn"){p=shuffle(p.slice()).sort((x,y)=>box(x.id)-box(y.id))}
+  queue=p.slice();pos=0;flipped=false;history=[];
+  render();
+}
+function stars(b){return b>=3?"★★★":b===2?"★★":b===1?"★":"新"}
+function stats(){
+  const p=pool(),m=p.filter(c=>box(c.id)>=2).length;
+  $("#barFill").style.width=(p.length?m/p.length*100:0)+"%";
+  $("#statL").textContent=`已掌握 ${m} / ${p.length}（★★ 以上算掌握）`;
+  $("#statR").textContent=mode==="list"?"":`本轮剩余 ${Math.max(queue.length-pos,0)} 张　错题本 ${p.filter(c=>wrong(c.id)).length} 张`;
+}
+function esc(s){return s.replace(/[&<>]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]))}
+function render(){
+  stats();const st=$("#stage");
+  if(mode==="list"){
+    const p=pool();
+    st.innerHTML='<div class="list">'+p.map(c=>`<div class="item"><div class="meta"><span class="tag">${c.c}</span><span>${stars(box(c.id))}</span></div><div class="q">${esc(c.q)}</div><div class="a">${esc(c.a)}</div>${c.m?`<div class="hook"><b>钩子</b>${esc(c.m)}</div>`:""}</div>`).join("")+"</div>";
+    return;
+  }
+  if(pos>=queue.length){
+    st.innerHTML=`<div class="card done" style="cursor:default"><div class="q">${queue.length?"🎉 本轮完成":(mode==="wrong"?"错题本是空的":"没有卡片")}</div><p style="color:var(--muted)">${mode==="wrong"?"按「记住」会把卡片移出错题本。":"可以切到「错题」模式再巩固，或再来一轮。"}</p><button id="again">再来一轮</button></div>`;
+    $("#again").onclick=rebuild;return;
+  }
+  const c=queue[pos];
+  st.innerHTML=`<div class="card${flipped?" flipped":""}" id="card">
+    <div class="meta"><span class="tag">${DECKS[c.d]}</span><span class="tag">${c.c}</span><span>${stars(box(c.id))}</span><span style="margin-left:auto">${pos+1} / ${queue.length}</span></div>
+    <div class="q">${esc(c.q)}</div>
+    <div class="hint">先在心里说出答案，再点击翻面</div>
+    <div class="a">${esc(c.a)}${c.m?`<div class="hook"><b>钩子</b>${esc(c.m)}</div>`:""}</div>
+  </div>
+  <div class="rate${flipped?" show":""}">
+    <button class="r1" data-r="1">忘了<small>3 张后再考</small></button>
+    <button class="r2" data-r="2">模糊<small>8 张后再考</small></button>
+    <button class="r3" data-r="3">记住<small>升一星</small></button>
+  </div>
+  <div class="nav"><button id="prev">← 上一张</button><button id="next">下一张 →</button></div>`;
+  $("#card").onclick=e=>{if(window.getSelection().toString())return;flip()};
+  st.querySelectorAll(".rate button").forEach(b=>b.onclick=()=>rate(+b.dataset.r));
+  $("#prev").onclick=prev;$("#next").onclick=next;
+}
+function flip(){if(mode==="list"||pos>=queue.length)return;flipped=!flipped;render()}
+function next(){if(pos<queue.length){history.push(pos);pos++;flipped=false;render()}}
+function prev(){if(history.length){pos=history.pop();flipped=false;render()}}
+function rate(r){
+  if(pos>=queue.length)return;
+  if(!flipped){flip();return}
+  const c=queue[pos],s=store[c.id]||{b:0,w:false};
+  if(r===1){s.b=0;s.w=true;queue.splice(Math.min(pos+4,queue.length),0,c)}
+  else if(r===2){s.b=Math.max(1,Math.min(s.b,1));s.w=true;queue.splice(Math.min(pos+9,queue.length),0,c)}
+  else{s.b=Math.min(s.b+1,3);if(s.b>=2)s.w=false}
+  store[c.id]=s;save();next();
+}
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT")return;
+  if(e.code==="Space"||e.key==="Enter"){e.preventDefault();flip()}
+  else if(e.key==="1"||e.key==="2"||e.key==="3")rate(+e.key);
+  else if(e.key==="ArrowRight")next();
+  else if(e.key==="ArrowLeft")prev();
+});
+let tx=null;
+document.addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60){dx<0?next():prev()}tx=null},{passive:true});
+
+$("#resetBtn").onclick=()=>{if(confirm("清空全部记忆进度和错题本？")){store={};save();rebuild()}};
+$("#themeBtn").onclick=()=>{
+  const r=document.documentElement,cur=r.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  r.dataset.theme=cur==="dark"?"light":"dark";try{localStorage.setItem(KEY+"-theme",r.dataset.theme)}catch(e){}
+};
+try{const t=localStorage.getItem(KEY+"-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}
+rebuild();
+</script>
+</body>
+</html>
