@@ -1175,3 +1175,13 @@ Blog A 文章按标签换版面，Loon 照常出现。优先顺序：`weekly`（
   - 新增一个页面或作品时，把它的地址加进 `smoke_test.mjs` 的 `PAGES`。
 - **两个自动发布流程不再互相挤掉**：`build-lists.yml` 和 `public-articles.yml` 都会推送到 `main`；现在推送前先 `git pull --rebase`，失败时最多重试 4 次。`build-lists.yml` 只提交它会改的 `data/`、`index.html`、`assets/site/`（原来是 `git add -A`），提交前先跑一次 `check_site.py`，检查不过就不提交。
 - **Service Worker 版本自动更新**：`site-publish/pwa.py` 复制 `sw.js` 时，按文件内容的摘要填写 `VERSION`；改了 `site-publish/sw.js` 之后跑一次 `pwa.py`（或 `optimize-home.py`），旧缓存就会在访客下次打开时清掉，不用再手动改版本号。
+
+### 15.13 数学二、英语二网址直达年份（`works/exam-deeplink.js`，2026-11-17）
+
+和 408 页已有的 `?year=&q=` 一样，让外部链接（考研冲刺决策台）能直接打开某一年。
+
+- **网址**：数学二 `/works/math2/?year=2019&q=15`（`q` 是第几题，可省略）；英语二 `/works/gpt-english-2-exams.html?year=2024&part=reading`（`part` 可选 `cloze` `reading` `newtype` `translation` `smallWriting` `largeWriting` `full`，省略时保持上次的题型）。
+- **做法**：单独一个脚本，`works/math2/index.html` 和 `works/gpt-english-2-exams.html` 末尾各加一行 `<script src="…exam-deeplink.js?v=…" defer>`。脚本等页面自己初始化完，再切年份：数学二是设置 `#yearSelect` 并触发 `change`，再点 `#questionGrid` 里第 `q` 个题号；英语二调用 `E2Complete.select(题型, 年份, 'practice')`。没有 `year` 参数或年份不存在时什么都不做，不改页面原有逻辑。
+- **副作用**：和手动选年份一样，会把“上次打开的年份”记成这个年份。
+- **同步**：这两个 HTML 如果是本机源工程生成的，重新生成前要把那一行 `<script>` 加回源工程（见第 13 节第 10 条）。
+- **测过**：在线上页面注入同一段脚本，数学二 `?year=2019&q=15` 打开 2019 年第 15 题，英语二 `?year=2023&part=translation` 打开 2023 年翻译。
