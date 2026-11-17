@@ -707,7 +707,7 @@ window.LuliyStudyDisplay={mount:mountDisplay};
 
 /* Both displays read from the same project data as search. */
 const LuliyProjects=(()=>{
-  const isExam=project=>["https://study.luliy.me/","./works/gpt-english-2-exams.html","./works/math-handbook/index.html","./works/408/","./works/math2/","https://jin.luliy.me/"].includes(project[4])||project[4]==='https://study.luliy.me/';
+  const isExam=project=>["https://study.luliy.me/","./works/gpt-english-2-exams.html","./works/math-handbook/index.html","./works/408/","./works/math2/","./works/kaoyan-decision-desk/"].includes(project[4])||project[4]==='https://study.luliy.me/';
   function examCards(projects,projectCard,L,esc){const exams=projects.filter(isExam);return exams.length?`<section class="works-exams-section section" aria-labelledby="worksExamsHeading"><div class="section-label works-web-heading"><span>EXAMS</span><h2 id="worksExamsHeading">${esc(L('考研行动与真题','Exam prep & papers','受験準備と過去問'))}</h2></div><div class="projects-list project-gallery-grid">${exams.map((project,index)=>projectCard(project,index,true)).join('')}</div></section>`:'';}
 
   function render({root,title,projectCard,projects,spaces,sectionLabel,wallPhotos,L,esc}){
