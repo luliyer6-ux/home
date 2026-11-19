@@ -119,9 +119,9 @@
     },
     {
       "name": "背诵卡片",
-      "zh": "99 张背诵卡：新能源汽车 47、液压与气压传动 52；翻牌自测、记忆评分与进度。",
-      "en": "Recitation flashcards: 99 cards — 47 new-energy-vehicle, 52 hydraulics & pneumatics; flip to self-test, rate recall, track progress.",
-      "ja": "暗記フラッシュカード：99 枚——新エネルギー車 47、油圧と空圧 52。めくって自測、記憶度を評価、進捗を記録。",
+      "zh": "167 张背诵卡：新能源汽车 47、液压与气压传动 52、数学二 68；翻牌自测、记忆评分与进度。",
+      "en": "Recitation flashcards: 167 cards — 47 new-energy-vehicle, 52 hydraulics & pneumatics, 68 mathematics II; flip to self-test, rate recall, track progress.",
+      "ja": "暗記フラッシュカード：167 枚——新エネルギー車 47、油圧と空圧 52、数学 II 68。めくって自測、記憶度を評価、進捗を記録。",
       "url": "./works/recitation-flashcards.html",
       "cover": "./assets/works/recitation-flashcards.svg",
       "exam": false
