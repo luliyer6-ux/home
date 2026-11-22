@@ -134,6 +134,16 @@
       "url": "./works/kaoyan-decision-desk/",
       "cover": "./assets/works/kaoyan-decision-desk.svg",
       "exam": true
+    },
+    {
+      "name": "kaoyan-math-framework",
+      "zh": "kaoyan-math-framework",
+      "en": "kaoyan-math-framework",
+      "ja": "kaoyan-math-framework",
+      "url": "./works/kaoyan-math-framework/",
+      "cover": "",
+      "exam": false,
+      "draft": true
     }
   ],
   "knownPaths": [
@@ -146,6 +156,7 @@
     "jingzhong-app",
     "kaoyan-dashboard",
     "kaoyan-decision-desk",
+    "kaoyan-math-framework",
     "math-handbook",
     "math2",
     "recitation-flashcards.html"
