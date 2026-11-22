@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>考研英语二写作终极工作台 · 词组点选释义升级版 (v3)</title>
+  <style>
+    :root {
+      --bg-page: #f6f4ef;
+      --bg-card: #ffffff;
+      --bg-subtle: #eeebe2;
+      --bg-hover: #e5e0d4;
+      --text-main: #1f2329;
+      --text-muted: #585f69;
+      --text-faint: #8a919c;
+      --accent: #244b7a;
+      --accent-soft: #e9f1fb;
+      --accent-border: #bdd4f2;
+      --gold: #8c5311;
+      --gold-bg: #fef6d8;
+      --emerald: #1e563b;
+      --emerald-bg: #e6f7ee;
+      --crimson: #8c2323;
+      --crimson-bg: #fdecec;
+      --border: #dad4c8;
+      --shadow: 0 4px 16px rgba(31, 35, 41, 0.06);
+      --radius: 12px;
+      --font-serif: "Georgia", "Noto Serif SC", "Songti SC", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    body.dark {
+      --bg-page: #13161b;
+      --bg-card: #1c2028;
+      --bg-subtle: #252b35;
+      --bg-hover: #2f3643;
+      --text-main: #e8ecf2;
+      --text-muted: #a2adbc;
+      --text-faint: #6c7686;
+      --accent: #68b0f8;
+      --accent-soft: #1b2c40;
+      --accent-border: #2a4a6e;
+      --gold: #f5d76e;
+      --gold-bg: #322b16;
+      --emerald: #68d391;
+      --emerald-bg: #173226;
+      --crimson: #fca5a5;
+      --crimson-bg: #361c1c;
+      --border: #2e3542;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding-bottom: 72px;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sticky Topbar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 120;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 12px 20px;
+    }
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.22rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .brand p {
+      font-size: 0.79rem;
+      color: var(--text-muted);
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.16s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn:hover { background: var(--bg-hover); border-color: var(--accent); }
+    .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    body.dark .btn.active { color: #13161b; font-weight: 700; }
+
+    /* Nav Tabs */
+    .nav-tabs {
+      max-width: 1240px;
+      margin: 16px auto 0;
+      padding: 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tab-btn {
+      padding: 9px 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { border-color: var(--accent); color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 2px 10px rgba(36, 75, 122, 0.24);
+    }
+    body.dark .tab-btn.active { color: #13161b; }
+
+    /* Layout */
+    .container { max-width: 1240px; margin: 16px auto 0; padding: 0 20px; }
+    .panel { display: none; animation: fadeIn 0.22s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-title { font-size: 1.06rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .badge {
+      font-size: 0.74rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+    .badge.gold { background: var(--gold-bg); color: var(--gold); border-color: transparent; }
+    .badge.emerald { background: var(--emerald-bg); color: var(--emerald); border-color: transparent; }
+    .badge.crimson { background: var(--crimson-bg); color: var(--crimson); border-color: transparent; }
+
+    /* SOP Grid */
+    .sop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 14px;
+    }
+    .sop-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .sop-step { font-size: 0.76rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.03em; }
+    .sop-title { font-size: 0.96rem; font-weight: 700; color: var(--text-main); }
+    .sop-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+    .sop-example {
+      font-size: 0.82rem;
+      background: var(--bg-card);
+      border-left: 3px solid var(--gold);
+      padding: 7px 10px;
+      border-radius: 0 6px 6px 0;
+      color: var(--text-main);
+      margin-top: auto;
+    }
+
+
+    /* Interactive Word/Phrase Chips (Click any word/phrase to show Chinese) */
+    .kw {
+      display: inline;
+      border-bottom: 1.5px dashed var(--accent);
+      background: rgba(36, 75, 122, 0.06);
+      padding: 0 3px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    body.dark .kw {
+      background: rgba(104, 176, 248, 0.12);
+    }
+    .kw:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .kw-zh {
+      display: none;
+      font-family: var(--font-sans);
+      font-size: 0.78em;
+      font-weight: 600;
+      color: var(--emerald);
+      background: var(--emerald-bg);
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+      vertical-align: baseline;
+      border: 1px solid rgba(30, 86, 59, 0.2);
+    }
+    .kw.open .kw-zh,
+    body.show-all-kw .kw .kw-zh {
+      display: inline-block;
+    }
+    .kw.open {
+      background: var(--accent-soft);
+      border-bottom-style: solid;
+    }
+
+    /* Interactive Sentence Box */
+    .sentence-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .sentence-box:hover { border-color: var(--accent); }
+    .sentence-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .hint-pill {
+      font-size: 0.75rem;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+    .en-text {
+      font-family: var(--font-serif);
+      font-size: 1.01rem;
+      line-height: 1.75;
+      color: var(--text-main);
+    }
+    .zh-text {
+      display: none;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.89rem;
+      color: var(--text-muted);
+      line-height: 1.62;
+    }
+    .sentence-box.zh-open .zh-text,
+    body.show-all-zh .zh-text { display: block; }
+
+    /* Reverse Translation Mode (Show Zh, Blur En) */
+    body.zh-to-en .en-text {
+      filter: blur(5.5px);
+      user-select: none;
+      transition: filter 0.2s;
+    }
+    body.zh-to-en .zh-text { display: block; color: var(--text-main); font-weight: 500; border-top: none; margin-top: 4px; padding-top: 0; }
+    body.zh-to-en .sentence-box.zh-open .en-text,
+    body.zh-to-en .phrase-chip.zh-open .p-en { filter: none; user-select: text; }
+
+    .slot {
+      display: inline-block;
+      background: var(--gold-bg);
+      color: var(--gold);
+      font-family: var(--font-sans);
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 5px;
+      border: 1px dashed var(--gold);
+      margin: 0 2px;
+    }
+    body.cloze-mode .slot {
+      color: transparent !important;
+      background: var(--bg-hover);
+      border: 1px dashed var(--text-faint);
+      user-select: none;
+      min-width: 72px;
+      text-align: center;
+    }
+    body.cloze-mode .slot.revealed {
+      color: var(--gold) !important;
+      background: var(--gold-bg);
+      border-color: var(--gold);
+    }
+
+    .speak-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 0.77rem;
+      cursor: pointer;
+    }
+    .speak-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .master-check { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+
+    /* Sub-tabs / Pill Bars */
+    .pill-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .pill-btn {
+      padding: 7px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s;
+    }
+    .pill-btn:hover { border-color: var(--accent); color: var(--text-main); }
+    .pill-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    body.dark .pill-btn.active { color: #13161b; }
+
+    /* Builder Grids */
+    .builder-grid { display: grid; grid-template-columns: 310px 1fr; gap: 18px; }
+    @media (max-width: 880px) { .builder-grid { grid-template-columns: 1fr; } }
+
+    .year-list {
+      max-height: 670px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+    .year-item {
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .year-item:hover { border-color: var(--accent); }
+    .year-item.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    body.dark .year-item.active { color: #13161b; }
+    .year-item .y-top { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.86rem; gap: 6px; }
+    .year-item .y-sub { font-size: 0.78rem; opacity: 0.88; margin-top: 2px; }
+
+    .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 640px) { .input-grid { grid-template-columns: 1fr; } }
+    .input-group { margin-bottom: 9px; }
+    .input-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 3px; }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      font-size: 0.86rem;
+      font-family: var(--font-sans);
+    }
+
+    .preview-essay {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-family: var(--font-serif);
+      font-size: 0.99rem;
+      line-height: 1.82;
+      margin-top: 12px;
+    }
+    .preview-essay p { margin-bottom: 12px; text-indent: 2em; }
+    .preview-essay p.no-indent { text-indent: 0; }
+    .hl-fill { color: var(--accent); font-weight: 700; border-bottom: 1px dashed var(--accent); }
+
+    /* Corpus Cards & Search */
+    .search-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .search-bar input {
+      flex: 1;
+      min-width: 220px;
+      padding: 9px 13px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+    .chip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 11px;
+    }
+    .phrase-chip {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      cursor: pointer;
+      transition: all 0.16s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .phrase-chip:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .phrase-chip .p-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .phrase-chip .p-tag { font-size: 0.72rem; font-weight: 700; color: var(--gold); background: var(--gold-bg); padding: 1px 7px; border-radius: 5px; }
+    .phrase-chip .p-en { font-family: var(--font-serif); font-size: 0.95rem; font-weight: 600; color: var(--text-main); line-height: 1.55; }
+    .phrase-chip .p-zh { display: none; font-size: 0.84rem; color: var(--accent); line-height: 1.5; padding-top: 5px; border-top: 1px dashed var(--border); }
+    .phrase-chip.zh-open .p-zh, body.show-all-zh .phrase-chip .p-zh { display: block; }
+    body.zh-to-en .phrase-chip .p-en { filter: blur(5px); }
+    body.zh-to-en .phrase-chip .p-zh { display: block; border-top: none; padding-top: 0; color: var(--text-main); }
+
+    .star-btn {
+      background: transparent;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      opacity: 0.45;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .star-btn.starred { opacity: 1; transform: scale(1.1); }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { border: 1px solid var(--border); padding: 9px 11px; text-align: left; vertical-align: top; }
+    th { background: var(--bg-subtle); font-weight: 700; white-space: nowrap; }
+    tr:hover td { background: var(--bg-subtle); }
+
+    .quick-fill-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .qf-chip {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+      cursor: pointer;
+    }
+    .qf-chip:hover { background: var(--accent); color: #fff; }
+  
+/* 决策台内的作文工作区 */
+body {--bg-page:#edf1f5;--bg-card:#fff;--bg-subtle:#f5f7fa;--bg-hover:#e8edf3;--text-main:#192434;--text-muted:#596b85;--accent:#bf315b;--accent-soft:#fae9ef;--accent-border:#efb6c8;--border:#d1dae5;--shadow:none;line-height:1.55}
+body.dark {--bg-page:#11151c;--bg-card:#19202a;--bg-subtle:#1d2735;--bg-hover:#2a3442;--text-main:#e5e9ef;--text-muted:#aab8cc;--text-faint:#9ba8bc;--accent:#fa759c;--accent-soft:#3a1d28;--accent-border:#784056;--border:#303c4e;--shadow:none}
+.topbar{position:static;padding:15px 18px;box-shadow:none}.topbar-inner{display:block}.brand h1{font-size:1.12rem}.brand p{margin:4px 0 11px;line-height:1.5}.controls{gap:6px}.controls .btn{min-height:38px}.writeLayout{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:175px minmax(0,1fr)}
+.nav-tabs{display:flex;flex-direction:column;align-self:start;margin:0;padding:14px 9px;gap:5px}.tab-btn{text-align:left;width:100%;min-height:42px;padding:8px 10px;border-color:transparent;background:transparent;border-radius:7px;box-shadow:none;font-size:.85rem}.tab-btn.active{box-shadow:none}.container{min-width:0;max-width:none;padding:14px 14px 36px;margin:0;border-left:1px solid var(--border)}.card{padding:18px;margin-bottom:14px}.sentence-box,.p-chip{overflow-wrap:anywhere}.kw{background:transparent;padding:1px 0;cursor:pointer;border-bottom:1px dashed var(--accent);border-radius:0}.kw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.kw-zh{white-space:normal}.phrase-action{font:600 11px var(--font-sans);padding:2px 4px;margin-left:3px;border:1px solid var(--accent-border);border-radius:4px;color:var(--accent);white-space:normal}.phrase-action .kw-zh{font-size:12px}#selectionResult{margin-top:9px;padding:8px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg-subtle);color:var(--text-main);font-size:.82rem;overflow-wrap:anywhere}.builder-grid,.input-grid{min-width:0}.table-wrap{max-width:100%;overflow-x:auto}.card,.preview-essay{min-width:0}.preview-essay{overflow-wrap:anywhere}body.dark .btn.active,body.dark .tab-btn.active{color:#1a202b}
+@media(max-width:650px){.writeLayout{display:block}.topbar{padding:14px}.nav-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:10px 10px 2px;gap:6px}.tab-btn{text-align:center;font-size:12px;padding:7px 3px;border:1px solid var(--border);min-height:42px}.container{border-left:0;padding:10px 10px 28px}.card{padding:14px}.controls .btn{font-size:12px;padding:6px 8px}.brand h1{font-size:16px}.brand p{font-size:12px}}
+
+
+/* 英语二作文知识库：与决策台科目库统一的目录与内容布局 */
+body{padding:0;background:var(--bg-page)}
+.writeLayout{display:grid;grid-template-columns:210px minmax(0,1fr);min-height:100vh;max-width:none}
+.nav-tabs{display:block;margin:0;padding:17px 12px;background:var(--bg-card);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow:auto}
+.write-label{font-size:11px;letter-spacing:.08em;font-weight:700;color:var(--accent);margin-bottom:3px}.write-title{font:700 20px var(--font-serif);color:var(--text-main)}.write-sub{font-size:12px;color:var(--text-muted);margin:4px 0 12px}
+#guideSearch{width:100%;height:42px;border:1px solid var(--border);border-radius:8px;padding:0 10px;background:var(--bg-page);color:var(--text-main);font-size:14px}
+.nav-toggle{display:none}.write-nav-group{margin:18px 0 0}.write-nav-group summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--text-main);padding:5px 2px;list-style:none;display:flex;justify-content:space-between}.write-nav-group summary:after{content:'−';color:var(--text-muted)}.write-nav-group:not([open]) summary:after{content:'+'}
+.tab-btn{text-align:left;width:100%;min-height:37px;padding:7px 9px;font-size:13px;color:var(--text-muted);border:0;background:transparent;border-radius:6px}.tab-btn.active{background:var(--accent-soft);color:var(--accent);font-weight:700}.tab-btn:hover{background:var(--bg-hover)}body.dark .tab-btn.active{color:var(--accent)}.write-nav-note{font-size:11px;color:var(--text-muted);padding:14px 3px;line-height:1.6}
+.container{padding:20px 18px 40px;margin:0;border:0;background:var(--bg-page);min-width:0}.topbar{background:transparent;padding:0 0 16px;border:0}.brand p{margin:4px 0 9px}.brand h1{font-family:var(--font-serif);font-size:21px}.controls .btn{min-height:34px}.controls{gap:6px}.controls .btn{font-size:12px;padding:6px 9px}.panel{animation:none}.guide-eyebrow{font-size:12px;letter-spacing:.05em;color:var(--accent);font-weight:700;margin-bottom:7px}.guide-heading{font:700 24px var(--font-serif);color:var(--text-main);margin:0 0 5px}.guide-desc{font-size:13px;color:var(--text-muted);margin:0 0 18px}.guide-flow{background:var(--bg-card);border:1px solid var(--border);border-radius:9px;padding:15px 16px;margin-bottom:12px}.guide-flow strong{display:block;margin-bottom:7px}.guide-flow p{color:var(--text-muted);white-space:pre-line;font-size:14px;line-height:1.7}.guide-note{border-left:3px solid var(--accent);background:var(--accent-soft);color:var(--text-main);padding:11px 14px;margin-bottom:16px;font-size:13px;line-height:1.7}.guide-note li{margin:4px 0 4px 14px}.guide-sentences .sentence-box{margin-bottom:10px;background:var(--bg-card)}.guide-section-title{font-weight:700;font-size:15px;margin:18px 0 9px}.guide-raw-warning{font-size:12px;line-height:1.6;color:var(--text-muted);border:1px solid var(--border);padding:9px 11px;border-radius:7px;margin-bottom:14px}.chip-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr))}.phrase-chip,.phrase-chip .p-en{min-width:0;overflow-wrap:anywhere}body.in-desk #btnDark{display:none}.guide-placeholder{display:none}#noGuideResults{color:var(--text-muted);font-size:12px;margin-top:8px}.nav-tabs [hidden],#noGuideResults[hidden],#selectionResult[hidden]{display:none!important}
+@media(max-width:650px){.writeLayout{display:block}.nav-tabs{position:static;height:auto;max-height:none;border:0;border-bottom:1px solid var(--border);padding:14px 12px}.write-title{font-size:19px}.nav-toggle{display:block;width:100%;margin-top:8px;text-align:left;background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:9px 10px;color:var(--text-main);font-size:14px}.write-nav-group{margin-top:12px}.nav-tabs #writeNavItems{max-height:300px;overflow:auto}.container{padding:15px 12px 30px}.topbar{padding-bottom:12px}.controls .btn{min-height:34px}.guide-heading{font-size:21px}.guide-flow{padding:12px}.guide-note{padding:10px 12px}.card{padding:14px}}
+
+</style>
+</head>
+<body>
+
+  <div class="writeLayout">
+  <aside class="nav-tabs" aria-label="作文目录">
+    <div class="write-label">英语二 · WRITING</div><h2 class="write-title">作文知识库</h2><p class="write-sub">主力模板 · 语料 · 原资料</p>
+    <input id="guideSearch" type="search" placeholder="搜索模板、词组或技巧" aria-label="搜索作文模板" />
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="writeNavItems">显示章节目录 ＋</button>
+    <div id="writeNavItems">
+      <div id="guideNav"></div><p id="noGuideResults" hidden>没有匹配的推荐模板</p>
+      <details class="write-nav-group" id="rawNav"><summary>上传原资料</summary>
+        <button class="tab-btn" onclick="switchTab('tab-sop', this)">使用方法</button>
+        <button class="tab-btn" onclick="switchTab('tab-parta', this)">小作文原模板</button>
+        <button class="tab-btn" onclick="switchTab('tab-partb', this)">大作文原模板</button>
+        <button class="tab-btn" onclick="switchTab('tab-builder', this)">原资料 · 真题套写</button>
+        <button class="tab-btn" onclick="switchTab('tab-corpus', this)">原资料 · 写作语料</button>
+        <button class="tab-btn" onclick="switchTab('tab-history', this)">原资料 · 规律与避坑</button>
+      </details><p class="write-nav-note">推荐版：骨架先行，具体内容按题目填写。原资料保留备查。</p>
+    </div>
+  </aside>
+  <main class="container">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>英语二 · 作文</h1>
+        <p>点英文看词义；点「词组」或选中词组查询；点击句卡空白处看整句中文。</p>
+      </div>
+      <div class="controls">
+        <button class="btn" id="btnAllZh" onclick="toggleAllZh()">👁️ 全部整句汉语</button>
+        <button class="btn" id="btnAllKw" onclick="toggleAllKw()">🏷️ 显示全部词义</button>
+        <button class="btn" id="btnLookupSelection" type="button">🔎 查选中词组</button>
+        <button class="btn" id="btnZhToEn" onclick="toggleZhToEn()">🔄 看中背英自测</button>
+        <button class="btn" id="btnCloze" onclick="toggleCloze()">🧠 槽位填空遮罩</button>
+        <button class="btn" id="btnDark" onclick="toggleDark()">🌙 护眼暗色</button>
+        <span id="masterStats" style="font-size:0.81rem; color:var(--text-muted); margin-left:4px;">已背熟: 0</span>
+      </div>
+      <div id="selectionResult" role="status" hidden></div>
+    </div>
+  </header>
+  <div id="rawWarning" class="guide-raw-warning" hidden>以下为上传原资料，内容和真题信息未逐条核验；请按实际题目使用，不要编造研究、数据或附件。推荐先用目录中的背诵版。</div>
+  <section id="tab-guide" class="panel active"><div id="guidePage"></div></section>
+
+
+    <!-- TAB 1: SOP HOW TO USE -->
+    <section id="tab-sop" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🎯 为什么整合这三套体系？（先搞懂分工，备考效率翻倍）</div>
+          <span class="badge emerald">5分钟看懂全局</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>名师体系</th>
+                <th>解决的核心痛点</th>
+                <th>你在考场上怎么用它？</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>南萧《大作文一页纸》</strong></td>
+                <td>解决<strong>“立意低、小学看图写话”</strong></td>
+                <td>作为<strong>大作文主力骨架</strong>：把任何题目转化为正面宏大主题词，按“小我→政策→大我战略”写出高站位思辨，契合2021–2026政治化命题趋势。</td>
+              </tr>
+              <tr>
+                <td><strong>Monkey《三分归元法》</strong></td>
+                <td>解决<strong>“小作文无话可写、审题卡壳”</strong></td>
+                <td>作为<strong>小作文主力引擎 + 大作文保底退路</strong>：小作文直接套“是什么/为什么/怎么办”三元库；若大作文实在想不出国家政策词，立刻切换Monkey“马克思经济基础+群体偏好+社交媒体”零卡壳兜底！</td>
+              </tr>
+              <tr>
+                <td><strong>潘赟《九宫格背诵手册》</strong></td>
+                <td>解决<strong>“语料匮乏、句式单调撞车”</strong></td>
+                <td>作为<strong>词句升级军火库 + 特殊文体补充</strong>：提供46个九宫格高级倒装/虚拟功能句、100+高频话题英汉翻译语料、12句万能名言谚语，以及新大纲新增的<strong>会议纪要 (Meeting Minutes)</strong>格式！</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">✉️ 小作文 15 分钟保姆级出文流程（三分归元 SOP）</div>
+          <span class="badge gold">读完就会写</span>
+        </div>
+        <div class="sop-grid" id="sopPartAGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏛️ 大作文 30 分钟保姆级出文流程（四步成文法 SOP）</div>
+          <span class="badge">零卡壳路径</span>
+        </div>
+        <div class="sop-grid" id="sopPartBGrid"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: PART A -->
+    <section id="tab-parta" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🧩 小作文实时拼装器（边选边练・瞬间掌握三分归元法）</div>
+          <span class="badge emerald">交互实战</span>
+        </div>
+        <div class="input-grid">
+          <div class="input-group">
+            <label>1. 收信人称呼（注意大小写）</label>
+            <input id="paTo" value="Jack" oninput="buildPartALetter()" />
+          </div>
+          <div class="input-group">
+            <label>2. 核心话题英文短语（如 improving translation skills / our campus food festival）</label>
+            <input id="paTopic" value="improving your translation skills" oninput="buildPartALetter()" />
+          </div>
+          <div class="input-group">
+            <label>3. 首段・次要目的（纯情感礼节，可留空）</label>
+            <select id="paSec" onchange="buildPartALetter()">
+              <option value="thank you for your warm congratulations, and to ">感谢祝贺 (thank you for your warm congratulations)</option>
+              <option value="thank you for your warm reception, and to ">感谢接待 (thank you for your warm reception)</option>
+              <option value="congratulate you on your admission to university, and to ">祝贺录取 (congratulate you on your admission)</option>
+              <option value="apologize sincerely for the unexpected change in my schedule, and to ">诚挚道歉 (apologize sincerely for...)</option>
+              <option value="">无次要目的（直接写主要目的）</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>4. 首段・主要目的（题干核心干货）</label>
+            <select id="paPri" onchange="buildPartALetter()">
+              <option value="offer you some practical suggestions on">提建议 (offer practical suggestions on...)</option>
+              <option value="provide you with some essential information regarding">介绍信息 (provide essential information regarding...)</option>
+              <option value="extend you a sincere invitation to participate in">发出邀请 (extend a sincere invitation to...)</option>
+              <option value="recommend to you an outstanding option concerning">进行推荐 (recommend an outstanding option...)</option>
+              <option value="make a formal complaint regarding">正式投诉 (make a formal complaint regarding...)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>5. 主体段・选择调用“三元”哪一组论点</label>
+            <select id="paTriad" onchange="buildPartALetter()">
+              <option value="how">第三元：怎么办（提建议：正确观念 + 知乎查经验 + 落地计划）</option>
+              <option value="what">第一元：是什么（介绍活动：主楼时间地点 + 人员指引 + 着装）</option>
+              <option value="why">第二元：为什么（推荐理由：官方权威 + 大众口碑 + 个人体验）</option>
+              <option value="mix_what_why">混合型：介绍活动 + 推荐理由（2022美食节/2025短剧神器）</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>6. 尾段・是否期待对方回复</label>
+            <select id="paReply" onchange="buildPartALetter()">
+              <option value="no">不强制回信（希望有帮助 + 有疑问随时联系）</option>
+              <option value="yes">期待积极回复（请认真考虑 + 静候早日佳音）</option>
+            </select>
+          </div>
+        </div>
+        <div class="preview-essay" id="paLiveOutput"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+          <span id="paWordCount" style="font-size:0.8rem; color:var(--text-muted);">词数统计：0 words</span>
+          <button class="btn" onclick="copyTextById('paLiveOutput')">📋 复制拼装好的小作文</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📖 Monkey 三分归元法・三元论点精背库（点一下显示汉语）</div>
+          <span class="badge gold">覆盖全部书信主题</span>
+        </div>
+        <div id="paThreeElementsWrap"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📑 尾段双模板 + 告示 (Notice) + 会议纪要 (Meeting Minutes)</div>
+          <span class="badge crimson">含23大纲新增纪要格式</span>
+        </div>
+        <div id="paSpecialFormatsWrap"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: PART B SCHOOLS -->
+    <section id="tab-partb" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏛️ 选择你想背诵的大作文流派骨架（点一下英文卡显示汉语）</div>
+          <span class="badge">三大体系自由切换</span>
+        </div>
+        <div class="pill-bar">
+          <button class="pill-btn active" onclick="switchPartBSchool('nanxiao', this)">🏆 流派 A：南萧《一页纸》宏大叙事（推荐主力）</button>
+          <button class="pill-btn" onclick="switchPartBSchool('monkey', this)">🛡️ 流派 B：Monkey 万能防卡壳模板（图表+图画）</button>
+          <button class="pill-btn" onclick="switchPartBSchool('panyun', this)">✨ 流派 C：潘赟《九宫格》46句功能句与词句升级</button>
+        </div>
+        <div id="partBSchoolContent"></div>
+      </div>
+    </section>
+
+    <!-- TAB 4: 17 YEARS REAL EXAM BUILDER -->
+    <section id="tab-builder" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🛠️ 2010–2026年 17年英语二真题交互套写演练台</div>
+          <span class="badge emerald">支持南萧三档 + Monkey图表版实时生成</span>
+        </div>
+        <div class="builder-grid">
+          <div>
+            <div style="font-size:0.83rem; font-weight:700; margin-bottom:8px; color:var(--text-muted);">点击选择年份载入真题：</div>
+            <div class="year-list" id="yearList"></div>
+          </div>
+          <div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+              <h3 id="builderTitle" style="font-size:1.02rem;">2024年真题</h3>
+              <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                <select id="builderMode" onchange="renderBuiltEssay()" style="padding:5px 8px; border-radius:7px; border:1px solid var(--border); background:var(--bg-subtle); color:var(--text-main); font-size:0.82rem;">
+                  <option value="nx_full">南萧・满分进阶版（9槽）</option>
+                  <option value="nx_simple">南萧・高效简化版（5槽）</option>
+                  <option value="nx_speed">南萧・一晚速通版（实证句）</option>
+                  <option value="mk_chart">Monkey・图表马克思版（零卡壳）</option>
+                </select>
+                <select id="builderSpark" onchange="renderBuiltEssay()" style="padding:5px 8px; border-radius:7px; border:1px solid var(--border); background:var(--bg-subtle); color:var(--text-main); font-size:0.82rem;">
+                  <option value="">不额外加亮点句</option>
+                  <option value=" Abstract as the figures seem to be, their underlying meaning is as deep as the ocean.">+ 潘赟倒装过渡句 (Abstract as...)</option>
+                  <option value=" As President Xi once put it, &quot;empty talk would lead a country astray, and hard work can revitalize a nation.&quot;">+ 习大大金句（实干兴邦）</option>
+                  <option value=" Only in this way can we embrace a more prosperous and meaningful future.">+ 潘赟 Only 倒装结尾</option>
+                </select>
+                <button class="btn" onclick="copyTextById('essayOutput')">📋 复制完整作文</button>
+              </div>
+            </div>
+
+            <div class="quick-fill-bar">
+              <span style="font-size:0.76rem; color:var(--text-muted); align-self:center;">⚡ 快捷切换万能战略：</span>
+              <span class="qf-chip" onclick="quickSetStrategy('high-quality development')">高质量发展</span>
+              <span class="qf-chip" onclick="quickSetStrategy('cultural confidence and inheritance')">文化自信</span>
+              <span class="qf-chip" onclick="quickSetStrategy('the Healthy China initiative')">健康中国</span>
+              <span class="qf-chip" onclick="quickSetStrategy('rural revitalization and common prosperity')">乡村振兴</span>
+              <span class="qf-chip" onclick="quickSetStrategy('all-round moral, intellectual, physical, aesthetic, and labor education')">五育并举</span>
+            </div>
+
+            <div class="input-group">
+              <label>第一段：客观描图句（可直接手改练手感）</label>
+              <textarea id="inP1Desc" rows="3" oninput="renderBuiltEssay()"></textarea>
+            </div>
+            <div class="input-grid">
+              <div class="input-group"><label>【主题词】（三段一致核心名词短语）</label><input id="inTheme" oninput="renderBuiltEssay()" /></div>
+              <div class="input-group"><label>【具体行为】（动词原形：people + ___）</label><input id="inAction" oninput="renderBuiltEssay()" /></div>
+              <div class="input-group"><label>【可见成果】（名词短语，满分版用）</label><input id="inOutcome" oninput="renderBuiltEssay()" /></div>
+              <div class="input-group"><label>【相关领域】（National policies on ___）</label><input id="inDomain" oninput="renderBuiltEssay()" /></div>
+              <div class="input-group"><label>【个人能力】（empowering individuals to ___）</label><input id="inAbility" oninput="renderBuiltEssay()" /></div>
+              <div class="input-group"><label>【社会效果】（strengthen communities by ___）</label><input id="inSocialEffect" oninput="renderBuiltEssay()" /></div>
+              <div class="input-group"><label>【相关战略】（national strategies for ___）</label><input id="inStrategy" oninput="renderBuiltEssay()" /></div>
+              <div class="input-group"><label>【社会变化】（as this principle takes root, ___）</label><input id="inSocialChange" oninput="renderBuiltEssay()" /></div>
+            </div>
+
+            <div class="preview-essay" id="essayOutput"></div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:6px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+              <span id="wordCountDisplay">词数统计：0 words</span>
+              <span>考场黄金区间：160–210 words（0.5mm黑笔每行9–12词）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: MASSIVE CORPUS -->
+    <section id="tab-corpus" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📚 超级全量语料军火库（南萧战略槽位 + 潘赟三大主题 + 25话题译句 + 14大金句）</div>
+          <span class="badge gold" id="corpusCountBadge">共 0 条语料</span>
+        </div>
+
+        <div class="search-bar">
+          <input type="text" id="corpusSearch" placeholder="🔍 搜索中文或英文关键词（如：劳动、文化、健康、双刃剑、农村、倒装、合作...）" oninput="renderCorpus()" />
+          <button class="btn" id="btnOnlyStarred" onclick="toggleOnlyStarred()">⭐ 只看我的收藏 (<span id="starCount">0</span>)</button>
+        </div>
+
+        <div class="pill-bar" id="corpusFilterBar"></div>
+        <div id="corpusListWrap"></div>
+      </div>
+    </section>
+
+    <!-- TAB 6: HISTORY TABLE -->
+    <section id="tab-history" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 2010–2026年考研英语二 17年大小作文真题规律全景表</div>
+          <span class="badge">考前必看复盘</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>年份</th>
+                <th>Part A 小作文（场景与双指令）</th>
+                <th>Part B 大作文（图型与核心数据）</th>
+                <th>核心价值观映射 &amp; 推荐主题词</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚠️ 考场 5 大高频失分避坑检查表</div>
+          <span class="badge crimson">保底第五档</span>
+        </div>
+        <ul style="padding-left:20px; font-size:0.89rem; color:var(--text-muted); line-height:1.85;">
+          <li><strong>词性零失误：</strong>南萧模板中 <code>the way people + 动词原形</code>、<code>contributing to + 名词/动名词</code>、<code>empowering individuals to + 动词原形</code>、<code>by + 动名词</code>、<code>takes root, + 完整主谓句</code>，切勿混用词性。</li>
+          <li><strong>小作文格式零失误：</strong>书信严格按题干署名（近年均为 Li Ming，切勿写自己真名）；告示（Notice）无 Dear 称呼，落款右对齐写 <code>The Students' Union</code>；若考会议纪要（Meeting Minutes）套用本工具第二栏标准七要素格式。</li>
+          <li><strong>动态图 vs 多选静态图：</strong>各比例相加等于 100% 用 <code>accounts for the largest share</code>；如 2024 劳动实践课、2025 老人休闲、2026 儿童户外活动属于多选调查（比例相加超 100%），务必用 <code>has the highest percentage</code>！</li>
+          <li><strong>切忌胡编生僻词：</strong>图表类别不会翻时，直接按顺序列为 <code>the first category / the second category</code>，或只写前两大占比，绝不胡乱造中式英语。</li>
+          <li><strong>时间分配（Monkey 建议）：</strong>小作文 15–20 分钟，大作文 30–35 分钟，总写作控制在 50 分钟以内，留足阅读与小三门检查时间。</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+  <script src="writing-dictionary.js"></script>
+  <script src="writing-guide.js"></script>
+  <script>
+    const APP_DATA = {"sop": {"partA_steps": [{"step": "Step 1 · 1分钟审题（Monkey 6问法）", "title": "先定格式，再拆双指令", "desc": "拿到小作文题目，立刻自问6个问题：①对方是谁（确定称呼与落款）？②是不是 Notice / Meeting Minutes？③次要目的（纯情感：感谢/祝贺/道歉）是什么？④主要目的（干货核心：建议/邀请/介绍/推荐）是什么？⑤主要目的属于“三元”里的哪几个（是什么/为什么/怎么办）？⑥是否必须要求对方回信？", "example": "例（2016英二）：给朋友Jack回信，1) 感谢祝贺 [次要目的]；2) 给翻译建议 [主要目的 → 怎么办三元]；朋友间回信非必须但礼貌期待回复。"}, {"step": "Step 2 · 1分钟定首尾段", "title": "套用“次要+主要”首段与“回/不回”尾段", "desc": "首段固定拼装：I am writing this letter to [次要目的], and to [主要目的]. 尾段按是否需回信二选一：不需回信（告示/答疑）用“希望有用+有事联系”；需要回信（邀请/投诉/申请/建议）用“希望重视+期待早日回复”。", "example": "I am writing this letter to thank you for your warm congratulations, and to offer you some practical suggestions on how to improve translation skills."}, {"step": "Step 3 · 3分钟拼主体段（三分归元）", "title": "3条万能论点直接塞进 First of all / What's more / In addition", "desc": "主体段开头固定：Regarding [主题], there are several points I would like to mention. 然后把题干指令对应到“三元库”：①介绍活动→时间地点+工作人员指引+着装要求；②推荐/分析理由→官方认证+大众口碑+个人体验；③提建议→树立正确观念+知乎/权威渠道查经验+制定可行计划。", "example": "尾句补刀万能凑字神句：For more details, you could refer to the attachment below.（瞬间精准增加10词且地道规范）"}], "partB_steps": [{"step": "Step 1 · 2分钟审题定调（无条件正向化）", "title": "把任何图表/图画转化为“正面名词主题词”", "desc": "不要陷入表面数字争论！正面题（健康素养、农村快递、劳动课）直接升华到国家战略或核心价值观；负面/对比题（手机依赖、拖延症、中年职场不满）反向转化为正面品质（self-discipline, workplace well-being）。所有主题词必须处理为名词短语（只会写形容词就加 being，如 being independent）。", "example": "2024劳动实践课 → the spirit of labor；2020手机阅读 → lifelong learning and self-discipline；2012职场不满 → workplace well-being。"}, {"step": "Step 2 · 4分钟写第一段（4问描图公式）", "title": "只抓极值与主趋势，拒绝流水账", "desc": "图表题先问4件事（Monkey法）：①数字(number)还是百分比(percentage)？②主体是人(those who...)还是物(sth)？③有没有多年份动态变化？④最大/最小/剧变数据是多少？动态图写“起止时间+一升一降”；静态图写“最大项 accounts for the largest share, followed by...”。遇到不会翻译的类别名，宁可用 the first/second category 也绝不胡乱拼写！", "example": "Between 2018 and 2020, rural express delivery volume surged from 12 billion to 30 billion parcels."}, {"step": "Step 3 · 8分钟写第二段（选流派填槽位）", "title": "南萧“小我→大我”宏大叙事 或 Monkey“马克思+群像+社媒”", "desc": "背熟一个主骨架即可！推荐用【南萧满分/简化版】：①主题引关注 → ②个人行为+成果 → ③国家政策赋能 → ④社区/社会效果 → ⑤国家战略闭环。如果考场卡壳想不出政策词，立刻切【Monkey图表版】：马克思“经济基础决定上层建筑”+相关群体偏好变化+社交媒体助推，纯通用零卡壳！", "example": "考前去【语料库】背熟“文明、和谐、敬业/富强”3组槽位词，进考场像填空题一样往槽里塞！"}, {"step": "Step 4 · 4分钟写第三段 + 嵌入潘赟亮点句", "title": "理性共识收尾 + 1句倒装/虚拟/名言拉满第五档", "desc": "第三段用南萧“理性共识+全面发展”或潘赟九宫格“措施+Only in this way can we...”倒装句收尾，顺手加一句习大大名言或潘赟亮点谚语，确保总词数落在 170–210 词黄金区间。", "example": "Only in this way can we foster holistic human development and embrace a brighter future."}]}, "partA": {"opening_secondary": [{"en": "thank you for your warm reception / kind congratulations / generous assistance", "zh": "感谢你的热情接待 / 诚挚祝贺 / 慷慨相助"}, {"en": "congratulate you on your admission to your dream university / remarkable achievement", "zh": "祝贺你考入理想大学 / 取得非凡成就"}, {"en": "apologize sincerely for canceling my scheduled visit / any inconvenience caused", "zh": "为取消原定拜访 / 造成的任何不便致以诚挚歉意"}, {"en": "express my heartfelt condolences on the passing of...", "zh": "对……的逝世表达深切哀悼"}], "opening_primary": [{"en": "offer you some practical suggestions on how to [do sth]", "zh": "就如何做某事为你提供实用建议"}, {"en": "provide you with some essential information concerning [sth]", "zh": "为你提供有关某事的重要信息"}, {"en": "extend you a sincere invitation to participate in [activity]", "zh": "诚挚邀请你参加某项活动"}, {"en": "recommend to you an outstanding [book / scenic spot / course]", "zh": "向你推荐一本好书 / 一个景点 / 一门课程"}, {"en": "make a formal complaint about the defective [product] I purchased", "zh": "就我购买的故障产品提出正式投诉"}, {"en": "apply for the position of [volunteer / intern] advertised on your website", "zh": "申请贵方网站发布的志愿者 / 实习生职位"}], "three_elements": [{"type": "第一元：是什么（说明介绍活动细节・适用于通知/邀请/告示/答疑）", "applicable": "英二真题：2013慈善义卖、2014生活习惯、2015招志愿者、2020历史景点、2021线上会议、2022美食节、2024古建筑调研计划", "points": [{"id": "m-what-1", "tag": "时间与地点", "en": "First of all, it will be held in the Main Building next Sunday (or: we will gather at the school gate at 8:00 a.m. next Sunday and set off to the spot), so please make sure you are available then.", "zh": "首先，活动将于下周日在主楼举行（或：我们下周日上午8点在校门口集合出发前往现场），请务必确保届时有空。"}, {"id": "m-what-2", "tag": "人员与指引", "en": "What's more, our dedicated staff and volunteers will be there to provide you with necessary orientation, bilingual materials, and thoughtful guidance throughout the event.", "zh": "此外，我们尽职的工作人员与志愿者将在现场全程为你提供必要的入门介绍、双语资料和周到指引。"}, {"id": "m-what-3", "tag": "着装与准备", "en": "In addition, it is highly recommended that you be properly / warmly / comfortably dressed for the occasion and bring a notebook or camera to capture memorable moments.", "zh": "另外，强烈建议你根据场合得体/保暖/舒适着装，并携带笔记本或相机记录难忘瞬间。"}]}, {"type": "第二元：为什么（分析利弊与推荐理由・适用于推荐/邀请/文化介绍/辩论/求职）", "applicable": "英二真题：2010邀外宾访华、2012投诉词典、2017中国文化讲座、2019城市交通辩论、2023展览二选一、2025古典短剧", "points": [{"id": "m-why-1", "tag": "官方权威背书", "en": "First of all, it enjoys an official award / authoritative qualification / high recognition from educational and cultural authorities.", "zh": "首先，它获得了教育文化权威机构的官方奖项 / 专业资质 / 高度认可。"}, {"id": "m-why-2", "tag": "群众与社媒口碑", "en": "What's more, it enjoys widespread popularity and an enviable reputation among the general public as well as on multiple social media platforms.", "zh": "此外，它在广大人民群众以及各大社交媒体平台上都享有极高的人气与良好口碑。"}, {"id": "m-why-3", "tag": "个人切身价值", "en": "In addition, I personally find it genuinely attractive, illuminating, and beneficial to experience, as it bridges cultural gaps and broadens our horizons.", "zh": "另外，我个人认为亲身体验它既迷人又有启发性，既能弥合文化隔阂，又能开阔我们的视野。"}]}, {"type": "第三元：怎么办（提出具体建议与措施・适用于建议信/回信答疑/求助/计划）", "applicable": "英二真题：2011大学生活准备、2016翻译学习建议、2020古迹游览贴士、2026中国行后续建议", "points": [{"id": "m-how-1", "tag": "理念与心态先行", "en": "First of all, it is advisable to put things into perspective and establish correct, positive values about [this endeavor] primarily.", "zh": "首先，建议你以长远眼光看待问题，首要的是对【此事】树立正确、积极的观念。"}, {"id": "m-how-2", "tag": "善用权威平台经验", "en": "What's more, you could search for relevant, advanced, and practical experience in this aspect on reliable platforms such as Zhihu Community or official websites.", "zh": "此外，你可以在知乎社区或官方网站等可靠平台上检索该领域相关、前沿且实用的经验。"}, {"id": "m-how-3", "tag": "落地计划提上日程", "en": "In addition, a practical and reasonable plan should be promptly carried out and remain high on your agenda, as consistent action is the key to success.", "zh": "另外，应当尽快落实一份切实合理的计划并将其列为首要日程，因为持之以恒的行动才是成功的关键。"}]}], "endings": [{"id": "pa-end-no", "tag": "尾段 A · 不强制回信（告示/答疑/一般建议/告知）", "en": "I would be glad if you found the information / suggestions mentioned above helpful. Should you have any further questions, please feel free to contact me via email.<br>Yours truly,<br>Li Ming", "zh": "如果以上信息/建议对你有所帮助，我将倍感欣慰。如有任何进一步问题，请随时通过邮件与我联系。你诚挚的，李明"}, {"id": "pa-end-yes", "tag": "尾段 B · 期待对方回复（邀请/推荐/投诉/申请/道歉改期/调研求助）", "en": "I would appreciate it if you could take my invitation / recommendation / complaint / application / proposal into serious consideration. And I would be much obliged to you for an early and positive reply.<br>Yours truly,<br>Li Ming", "zh": "如果您能认真考虑我的邀请/推荐/投诉/申请/提议，我将感激不尽。如能早日收到您的积极回复，不胜荣幸。你诚挚的，李明"}], "special_formats": [{"id": "pa-fmt-notice", "tag": "特殊文体 1 · 告示 / 通知 (Notice) — 潘赟 + Monkey 融合版", "en": "<div style='text-align:center;font-weight:700;'>Notice</div><div style='text-align:right;font-size:0.86rem;'>November 21, 2026</div>This notice is to briefly introduce the upcoming <span class='slot'>【活动名称】</span> and call for enthusiastic volunteers.<br><br>Regarding the event, there are several points worth mentioning. First of all, it will be held in the Main Building next Sunday, aiming to enrich students' campus life and foster a spirit of public service. What's more, during the activity, participants will engage in diverse sessions ranging from cultural workshops to interactive tours, with our staff providing full orientation. In addition, applicants are expected to be responsible, fluent in English, and passionate about helping others.<br><br>Those who are interested are warmly welcomed to send applications to liming@edu.com before next Friday. Should you have any further questions, please feel free to contact us.<div style='text-align:right;font-weight:700;'>The Students' Union</div>", "zh": "【告示】本公告旨在简要介绍即将举办的【活动名称】并招募热心志愿者。关于本次活动，有以下几点说明：首先，活动将于下周日在主楼举行，旨在丰富校园生活、弘扬公共服务精神；此外，活动涵盖文化工作坊与互动导览等环节，工作人员将全程提供指引；另外，申请者需有责任心、英语流利且乐于助人。有意者请于下周五前发送申请至邮箱。如有疑问欢迎随时联系。学生会"}, {"id": "pa-fmt-minutes", "tag": "特殊文体 2 · 会议纪要 (Meeting Minutes) — 23大纲新增・潘赟九宫格标准格式", "en": "<div style='text-align:center;font-weight:700;'>Meeting Minutes</div><strong>Meeting Name:</strong> Meeting Concerning <span class='slot'>【会议主题，如 Campus Cultural Festival】</span><br><strong>Time:</strong> 9:00 a.m. – 11:00 a.m., Wednesday, November 21, 2026<br><strong>Location:</strong> Conference Room 302, Main Building<br><strong>Attendees:</strong> Members of the Students' Union and student representatives<br><strong>Objective:</strong> To discuss <span class='slot'>【会议目的，如 the arrangements and task division for the event】</span><br><strong>Activities:</strong> Brainstorming and group discussion<br><strong>Discussion &amp; Decisions:</strong><br>1. <span class='slot'>【决议1：确定时间地点与主题】</span> The event will be held next Sunday in the Main Building under the theme of traditional Chinese culture.<br>2. <span class='slot'>【决议2：明确分工与宣传】</span> Volunteers will be recruited to offer orientation, and mass media platforms will be used for publicity.<br>3. <span class='slot'>【决议3：制定后续跟进计划】</span> A practical budget and safety plan will be finalized before Friday.<br><div style='text-align:right;font-weight:700;'>Submitted by: Li Ming</div>", "zh": "【会议纪要标准格式（防大纲突袭）】包含七大固定要素：会议名称、时间、地点、参会人员、会议目的、活动形式、讨论与决议（用1/2/3分点，直接套用“三分归元”句式！）、提交人（Submitted by: Li Ming）。结构工整，考到直接稳拿9分+！"}]}, "partB": {"nanxiao": {"title": "流派 A · 南萧《大作文一页纸》宏大叙事化三档模板（最契合2021–2026政治化立意）", "intro": "核心逻辑：全题型大一统（图画/图表/文本全兼容）+ 小我（个人实践与成果）跃升大我（政策赋能与国家战略）+ 人文社科思辨与实证背书。", "p1": [{"id": "nx-p1-dyn", "tag": "第一段・动态趋势图（柱状/折线）", "en": "The figures in the bar chart / line chart / table reveal notable changes concerning <span class='slot'>【主题词】</span>. Between <span class='slot'>【起始时间】</span> and <span class='slot'>【终止时间】</span>, the number / proportion of <span class='slot'>【类别一】</span> rose / fell from about <span class='slot'>【数据1】</span> to around <span class='slot'>【数据2】</span>, while that of <span class='slot'>【类别二】</span> increased / decreased sharply from roughly <span class='slot'>【数据3】</span> to approximately <span class='slot'>【数据4】</span>.", "zh": "条形图/折线图/表格中的数据揭示了有关【主题词】的显著变化。从【起始时间】到【终止时间】，【类别一】的数量/比例从约【数据1】上升/下降至约【数据2】，而【类别二】则从约【数据3】大幅增减至约【数据4】。"}, {"id": "nx-p1-sta", "tag": "第一段・静态占比图（饼图/调查柱图）", "en": "The pie chart / bar chart clearly reveals the survey results regarding <span class='slot'>【主题词】</span>. Among all the categories listed, <span class='slot'>【类别一】</span> accounts for the largest share, at <span class='slot'>【最大比例】</span>, followed by <span class='slot'>【类别二】</span>, <span class='slot'>【类别三】</span> and <span class='slot'>【类别四】</span> at <span class='slot'>【第二比例】</span>, <span class='slot'>【第三比例】</span> and <span class='slot'>【第四比例】</span> respectively.", "zh": "饼图/柱状图清晰地揭示了有关【主题词】的调查结果。其中，【类别一】占比最高，为【最大比例】，其次是【类别二】、【类别三】和【类别四】，分别占【第二/三/四比例】。（注：多选题将 accounts for the largest share 改为 has the highest percentage）"}, {"id": "nx-p1-pic", "tag": "第一段・图画/混合/文本应急句架", "en": "Though deceptively simple, this scene / this passage conveys a meaningful message: <span class='slot'>【地点+主语+定语从句+动作 / 文段核心观点】</span>. It serves as a compelling testament to the significance of <span class='slot'>【主题词】</span>.", "zh": "尽管画面/文本看似简单，却传递出深刻的寓意：【描图或提炼大意】。它有力地证明了【主题词】的重要性。"}], "tiers": {"full": [{"id": "nx-f1", "tag": "满分版 ① 总述关注与深远影响", "en": "<span class='slot'>【主题词】</span> has attracted attention, not least because of its far-reaching implications.", "zh": "【主题词】受到广泛关注，一个重要原因是其影响深远。（替换：The far-reaching implications of 【主题词】 have helped bring it to centre stage.）"}, {"id": "nx-f2", "tag": "满分版 ② 小我层面（个人行为 → 可见成果）", "en": "At the individual level, it is reflected in the way people <span class='slot'>【具体行为（动词原形）】</span>, ultimately contributing to <span class='slot'>【可见成果（名词短语）】</span>.", "zh": "在个人层面，它体现在人们【具体行为】的方式之中，最终有助于【可见成果】。"}, {"id": "nx-f3", "tag": "满分版 ③ 政策支撑（赋能个人能力）", "en": "National policies on <span class='slot'>【相关领域】</span> likewise focus on empowering individuals to <span class='slot'>【个人能力（动词原形）】</span>.", "zh": "国家在【相关领域】方面的政策，同样着重于使个人能够【个人能力】。"}, {"id": "nx-f4", "tag": "满分版 ④ 跃升大我（社会效果 → 可持续进步）", "en": "Beyond personal advancement, this principle can strengthen communities by <span class='slot'>【社会效果（动名词短语）】</span>, laying the groundwork for sustainable progress.", "zh": "除个人发展之外，这一原则还可以通过【社会效果】增强社区活力，为可持续进步奠定基础。"}, {"id": "nx-f5", "tag": "满分版 ⑤ 国家战略闭环（理念扎根 → 社会变化）", "en": "This is in line with national strategies for <span class='slot'>【相关战略】</span>: as this principle takes root, <span class='slot'>【社会变化（完整主谓句）】</span>.", "zh": "这与国家的【相关战略】高度契合：随着这一理念逐渐扎根，【社会变化】。"}], "simple": [{"id": "nx-s1", "tag": "简化版 ① 总述", "en": "<span class='slot'>【主题词】</span> has attracted attention, not least because of its far-reaching implications.", "zh": "【主题词】受到关注，一个重要原因是其影响深远。"}, {"id": "nx-s2", "tag": "简化版 ② 个人层面（固定成果）", "en": "At the individual level, it is reflected in the way people <span class='slot'>【具体行为（动词原形）】</span>, ultimately contributing to personal development and well-being.", "zh": "在个人层面，它体现在人们【具体行为】的方式之中，最终有助于个人发展与福祉。"}, {"id": "nx-s3", "tag": "简化版 ③ 政策支撑（固定能力）", "en": "National policies on <span class='slot'>【相关领域】</span> likewise focus on empowering individuals to achieve their full potential.", "zh": "国家在【相关领域】方面的政策，同样着重于使个人能够充分发挥自身潜能。"}, {"id": "nx-s4", "tag": "简化版 ④ 社会效果", "en": "Beyond personal advancement, this principle can strengthen communities by <span class='slot'>【社会效果（动名词短语）】</span>, laying the groundwork for sustainable progress.", "zh": "除个人发展之外，这一原则还可以通过【社会效果】增强社区，为可持续进步奠定基础。"}, {"id": "nx-s5", "tag": "简化版 ⑤ 宏观固定收束", "en": "As this principle takes root across society, it creates a ripple effect that benefits social harmony and long-term prosperity.", "zh": "随着这一理念在全社会逐渐扎根，它会产生连锁效应，促进社会和谐与长期繁荣。"}], "speed": [{"id": "nx-sp1", "tag": "速通版 ① 行为动机切入", "en": "To begin with, experience suggests that this trend / pattern can be explained in part by people's desire to <span class='slot'>【具体行为（动词原形）】</span>.", "zh": "首先，从经验上讲，这一趋势/模式可以部分归因于人们【具体行为】的愿望。"}, {"id": "nx-sp2", "tag": "速通版 ② 理性选择（固定句）", "en": "This is hardly surprising, as people tend to favour behaviour they believe will have desirable consequences.", "zh": "这并不令人意外，因为人们倾向于选择自己认为会带来理想结果的行为。"}, {"id": "nx-sp3", "tag": "速通版 ③ 思辨转折（固定句）", "en": "However, we should recognise that social conditions fundamentally shape the choices available to individuals.", "zh": "然而，我们应该认识到，社会条件从根本上塑造了个人能够作出的选择。"}, {"id": "nx-sp4", "tag": "速通版 ④ 国家战略推动", "en": "From this perspective, it is the promotion of national strategies for <span class='slot'>【相关战略】</span> that provides impetus for these developments.", "zh": "基于这一认识，正是国家在【相关战略】方面的战略倡导与推广，为这些发展变化提供了动力。"}, {"id": "nx-sp5", "tag": "速通版 ⑤ 权威研究实证背书", "en": "A study published by <span class='slot'>【Peking University / Oxford University / The Economist】</span> lends support to the view that <span class='slot'>【主题词】</span> plays an important role in driving this trend and fostering community prosperity.", "zh": "【北京大学/牛津大学/《经济学人》】刊载的一项研究支持这样一种观点：即【主题词】在推动这一趋势和促进社区繁荣方面发挥着重要作用。"}]}, "p3": [{"id": "nx-p3", "tag": "第三段通用收尾・理性共识与全面发展", "en": "In conclusion, a rational consensus has emerged that both individuals and communities benefit immeasurably when <span class='slot'>【主题词】</span> guides action. Promoting this principle is therefore not merely advisable but essential for holistic development.", "zh": "总之，人们已经形成一种基于理性认识的共识，即当【主题词】指导行动时，个人与社区都能获得不可估量的益处。因此，倡导这一原则不仅可取，而且是全面发展的必要条件。"}]}, "monkey": {"title": "流派 B · Monkey 万能防卡壳模板（图表马克思版 + 图画习大大版）", "intro": "最大优势：填空极少、零卡壳风险！图表版用“马克思经济基础 + 群体偏好变化 + 社交媒体助推”三连击；图画版用“个人/社会双分支 + 空谈误国实干兴邦”强势收尾。", "chart": [{"id": "mk-c1", "tag": "图表首段・数据描图 + 点出潮流", "en": "As is illustrated in the statistics (among <span class='slot'>【群体】</span> about <span class='slot'>【主题】</span>), the number / percentage of <span class='slot'>【主体/those who...】</span> increased / decreased from <span class='slot'>【数据1】</span> to <span class='slot'>【数据2】</span> in the <span class='slot'>【年数】</span> years between <span class='slot'>【年份1】</span> and <span class='slot'>【年份2】</span>, and that of <span class='slot'>【对比项】</span> stood at <span class='slot'>【数据3】</span>. From my perspective, the above figures reveal a currently prevailing tendency among contemporary society.", "zh": "正如（关于某群体某主题的）统计数据所示，【主体】的数量/比例在【年份1】至【年份2】间从【数据1】增减至【数据2】，而【对比项】为【数据3】。在我看来，以上数字体现了当代社会中一个显著的普遍趋势。"}, {"id": "mk-c2", "tag": "图表主体・三原因（经济基础 + 群体观念 + 社交媒体）", "en": "To examine the root cause of this tendency, certain factors should be specifically pointed out here. First and foremost, just as Karl Marx once said, the economic basis determines the superstructure. Given the shifting economic atmosphere and the state of affairs, it is not surprising for us to witness the above-mentioned tendency. What's more, the phenomenon under discussion could be attributed to the diversity / shift of <span class='slot'>【相关人群，如 young people's / consumers'】</span> preferences, interests, and values. In addition, social media platforms substantially facilitate the flow and intensification of certain awareness, thus accelerating the transition from an emerging phenomenon into the new reality.", "zh": "为透彻审视这一趋势的根本成因，应重点指出以下几点。首先，正如卡尔·马克思所言，经济基础决定上层建筑；考虑到不断变化的经济形势，出现上述趋势毫不意外。其次，这一现象可归因于相关人群偏好、兴趣与价值观的多样化/转变。此外，社交媒体平台极大地促进了特定观念的流动与强化，从而加速了新现象演变为新常态的进程。"}, {"id": "mk-c3", "tag": "图表尾段・时代脉搏与青年先锋", "en": "In conclusion, this tendency is of profound inevitability, and will continue to exist in the foreseeable future. Correspondingly, as the vanguard and successor of our society, we should grasp the pulse of this trend, surf the wave of this era, and actively meet whatever challenges and opportunities it may bring forth.", "zh": "总而言之，这一趋势具有深刻的必然性，在可预见的未来仍将持续。相应地，作为社会的先锋和继承人，我们应当抓住这一趋势的脉搏，驾驭时代浪潮，积极迎接它所带来的挑战与机遇。"}], "cartoon": [{"id": "mk-p1", "tag": "图画首段・描图 + 明确象征意义", "en": "As is vividly / ironically depicted in the cartoon, <span class='slot'>【doing/done背景】</span>, <span class='slot'>【A is doing...】</span> (, while <span class='slot'>【B is doing...】</span>). The symbolic meaning behind the picture is rather explicit: the virtue / awareness of <span class='slot'>【名词主题词】</span> deserves our due attention.", "zh": "如图中生动/讽刺地描绘的，【描图句】。图片背后的象征意义十分明确：【xx】的优秀品质/意识值得我们给予应有的关注。"}, {"id": "mk-p2", "tag": "图画主体・决定成功 + 个人/社会双选 + 反面代价", "en": "To examine the significance of <span class='slot'>【主题词】</span>, certain factors should be specifically pointed out here. First and foremost, it is a truth widely acknowledged that all other factors being equal, <span class='slot'>【主题词】</span> could be the decisive difference between academic / professional / social success or not. In addition, <strong>[个人类选]</strong> since young people always play a vanguard role in promoting social progress, and <span class='slot'>【主题词】</span> exerts remarkable influence on the development of their characters, it will inevitably shape multiple aspects of China in the foreseeable future. / <strong>[社会类选]</strong> we are living in a world with common interest, and since <span class='slot'>【主题词】</span> exerts remarkable influence on our shared community, its impact will inevitably extend to each and every single one of us. Consequently, the lack of <span class='slot'>【主题词】</span> will hinder us from making substantial progress and eventually cost us dearly.", "zh": "为了剖析【xx】的重要性，需重点强调以下几点。首先，公认的真理是在其他条件相同时，【xx】是决定学术/职业/社会成败的关键。其次，[个人类]年轻人是社会进步的先锋，【xx】深刻塑造其品格并影响中国未来 / [社会类]我们休戚与共，【xx】深刻影响共同体并触及每个人。因此，缺乏【xx】将阻碍实质进步并让我们付出沉重代价。"}, {"id": "mk-p3", "tag": "图画尾段・政教举措 + 习大大金句", "en": "In brief, <span class='slot'>【主题词】</span> is of true significance and relevant measures must be taken promptly. To be specific, governments should implement proper policies and launch mass media campaigns, while education institutions should provide necessary guidance to infuse such an indispensable virtue / awareness into everyone. As President Xi once put it, \"empty talk would lead a country astray, and hard work can revitalize a nation\". The more rapidly concrete efforts are made, the more effectively this virtue / awareness will benefit us in the upcoming future.", "zh": "简而言之，【xx】确实意义重大，必须迅速采取措施。具体而言，政府应推行恰当政策并开展媒体宣传，教育机构应提供必要引导，将这种不可或缺的品质注入每个人心中。正如习主席所言：“空谈误国，实干兴邦。”我们越快付诸具体行动，它就越早惠及我们的未来。"}]}, "panyun": {"title": "流派 C · 潘赟《九宫格作文》必背功能句与高分升级库", "intro": "九宫格最大威力在于“句式多样性与词句升级”：直接把这里的倒装句、虚拟语气、高级同义替换动词嵌入南萧或Monkey模板中，即可瞬间避开模板撞车、冲刺第五档！", "chart_9": [{"id": "py-c1", "tag": "格1・引出趋势（含高级动词替换）", "en": "The chart above clearly mirrors / echoes / reflects a noticeable (→ conspicuous / notable / upward) trend that <span class='slot'>【核心趋势】</span>.", "zh": "上面的图表清晰地反映出一个显著的趋势：……（升级替换：mirror → echo/reflect；noticeable → conspicuous/notable）"}, {"id": "py-c2", "tag": "格2・精准对比数据", "en": "To be specific, the proportion of A and B accounts for <span class='slot'>【20%】</span> and <span class='slot'>【50%】</span> respectively. The number of A increased; on the contrary, the number of B decreased.", "zh": "具体而言，A和B的份额分别占了20%和50%。A变量上升，相反B变量下降了。"}, {"id": "py-c3", "tag": "格3・承上启下倒装金句", "en": "Abstract as the figures seem to be, their underlying meaning is as deep as the ocean.", "zh": "数字虽然看似抽象，但它们背后的深层含义却如大海般深邃。（高分 as 倒装句，极佳的段尾过渡句！）"}, {"id": "py-c4", "tag": "格4・引出原因剖析", "en": "Considering / Given / In view of the significance of this situation, we ought to point out the causes behind it.", "zh": "考虑到这一情况的重要性，我们有必要指出其背后的原因。"}, {"id": "py-c5", "tag": "格5・原因展开与推动作用", "en": "To begin with, <span class='slot'>【因素一】</span> might exert great influence on it. Furthermore, due attention paid to <span class='slot'>【因素二】</span> has stimulated the rapid development of <span class='slot'>【领域】</span>.", "zh": "首先，……可能对其产生重大影响。此外，对……给予的充分关注刺激了……的迅速发展。"}, {"id": "py-c6", "tag": "格6・自然引出结果", "en": "As a consequence / Consequently / Hence, <span class='slot'>【积极结果或社会现状】</span>.", "zh": "结果，……（高分逻辑衔接副词替换 so）"}, {"id": "py-c7", "tag": "格7・趋势预测句", "en": "Nowadays, there is a growing / decreasing tendency for people to <span class='slot'>【行为】</span>, which I believe will not change in a short time. / With the quickening pace of <span class='slot'>【时代背景】</span>, the number of <span class='slot'>【对象】</span> will keep growing in the forthcoming decade.", "zh": "如今，人们做某事的趋势正在增强/减弱，我认为短时间内不会改变。/ 随着……步伐加快，未来十年……数量将持续增长。"}, {"id": "py-c8", "tag": "格8・Only 倒装总结金句", "en": "Considering every aspect of this phenomenon, we should bear in mind that <span class='slot'>【核心观点】</span>. Only in this way can we meet a brighter future / live a better life / make life more meaningful.", "zh": "综合考量这一现象的方方面面，我们应牢记……。只有这样，我们才能迎接更光明的未来 / 过上更美好的生活。"}, {"id": "py-c9", "tag": "格9・虚拟语气+媒体法律措施（负面/纠偏题必杀）", "en": "The situation being so serious, it is high time that we took effective and efficient measures to solve the problem. Therefore, the mass media, such as radio, television and the Internet, should make every effort to propagate and advocate (正面) / reveal and prevent (负面) it. Besides, laws and regulations should be worked out and enforced.", "zh": "情况如此严峻，是时候采取切实有效的措施了（独立主格 + high time 虚拟语气）。因此大众媒体应全力宣传倡导/揭露遏制，同时必须制定并执行法律法规。"}], "cartoon_extra": [{"id": "py-p1", "tag": "图画亮点 1・开篇见证现象（双重否定升级）", "en": "The past several decades have witnessed a not uncommon social phenomenon that <span class='slot'>【现象句】</span>. / Recently, it often hits the headlines of the newspaper that <span class='slot'>【热点】</span>, which has aroused a heated discussion among the public.", "zh": "过去数十年见证了一个屡见不鲜的社会现象：…… / 近来，……频频登上报纸头条，引发公众热议。"}, {"id": "py-p2", "tag": "图画亮点 2・意义阐释（正反两用）", "en": "Actually, the author strives to convey an obvious message that <span class='slot'>【主题】</span> is of supreme importance (正面) / of extreme detriment (负面) to one's success.", "zh": "事实上，作者力图传达一个清晰的信息：……对一个人的成功至关重要 / 极其有害。"}, {"id": "py-p3", "tag": "图画亮点 3・无敌虚拟倒装总结句", "en": "To sum up, were there no <span class='slot'>【正面品质】</span>, never would we taste the happiness of life. / In conclusion, were the situation to continue, we would pay a heavy price.", "zh": "总而言之，如果没有……，我们将永远无法体会人生的幸福。/ 总之，若此状况持续，我们将付出沉重代价。（省略 if 的虚拟倒装，阅卷老师最爱的语法加分项！）"}]}}, "corpus": [{"id": "cat-slot-values", "name": "🇨🇳 一、核心价值观与国家战略「槽位直填词包」（南萧模板专用）", "desc": "直接按模板槽位分类！考场上缺哪个槽位就从对应标签里挑，词性已帮你严格匹配好。", "items": [{"tag": "【主题词/战略】富强", "en": "high-quality development", "zh": "高质量发展（经济/产业/消费万能战略词）"}, {"tag": "【主题词/战略】富强", "en": "rural revitalization and common prosperity", "zh": "乡村振兴与共同富裕（2022农村快递/城乡融合）"}, {"tag": "【主题词/战略】富强", "en": "indigenous innovation and digital transformation", "zh": "自主创新与数字化转型（国货/科技/AI/手机）"}, {"tag": "【主题词/战略】文明", "en": "cultural confidence and inheritance", "zh": "文化自信与传承（博物馆/古建筑/短剧/龙舟）"}, {"tag": "【主题词/战略】文明", "en": "building a learning society", "zh": "建设学习型社会（2020手机阅读/2019升学）"}, {"tag": "【主题词/战略】和谐", "en": "the Healthy China initiative", "zh": "健康中国倡议（2021健身/2023健康素养）"}, {"tag": "【主题词/战略】和谐", "en": "proactively responding to population aging", "zh": "积极应对人口老龄化（2025老人休闲/养老科技）"}, {"tag": "【主题词/战略】和谐", "en": "building a child-friendly and livable society", "zh": "建设儿童友好与宜居社会（2026儿童户外/公园）"}, {"tag": "【主题词/战略】敬业", "en": "all-round moral, intellectual, physical, aesthetic, and labor education", "zh": "德智体美劳五育并举（2024劳动教育王牌词）"}, {"tag": "【具体行为(动词原形)】", "en": "participate actively in hands-on social practice", "zh": "积极投身动手社会实践（接在 people 后）"}, {"tag": "【具体行为(动词原形)】", "en": "utilize digital resources wisely for self-improvement", "zh": "明智利用数字资源实现自我提升"}, {"tag": "【具体行为(动词原形)】", "en": "adopt healthier lifestyles and explore cultural heritage", "zh": "践行更健康的生活方式并探索文化遗产"}, {"tag": "【具体行为(动词原形)】", "en": "overcome challenges with perseverance and rational choices", "zh": "以毅力和理性选择克服挑战"}, {"tag": "【可见成果(名词短语)】", "en": "personal growth, career advancement, and holistic well-being", "zh": "个人成长、职业发展与全面福祉（接 contributing to 后）"}, {"tag": "【可见成果(名词短语)】", "en": "deeper cultural literacy and stronger physical resilience", "zh": "更深厚的文化素养与更强健的身心韧性"}, {"tag": "【社会效果(动名词)】", "en": "fostering social cohesion and narrowing the urban-rural divide", "zh": "增强社会凝聚力并缩小城乡差距（接 by 后）"}, {"tag": "【社会效果(动名词)】", "en": "promoting equity, mutual trust, and sustainable vitality", "zh": "推动公平、互信与可持续活力"}, {"tag": "【社会变化(主谓小句)】", "en": "innovation flourishes and people's sense of fulfillment deepens", "zh": "创新蓬勃发展，人民获得感不断增强（接 takes root, 后）"}, {"tag": "【社会变化(主谓小句)】", "en": "social trust deepens and environmental quality steadily improves", "zh": "社会信任加深，环境质量稳步改善"}]}, {"id": "cat-self", "name": "🌱 二、人自身的发展（潘赟九宫格高频主题词改写与例句）", "desc": "覆盖独立、坚持、自信、乐观、理性选择、榜样、及时行动等所有青年个人成长话题。", "items": [{"tag": "独立与溺爱", "en": "Being independent is an indispensable quality for all people; a flower in the greenhouse cannot withstand storms.", "zh": "独立对所有人来说都是不可或缺的品质；温室里的花朵经不起风雨。"}, {"tag": "坚持不懈", "en": "In short, it is persistent and painstaking efforts that can lead to substantial progress and career success.", "zh": "简言之，正是坚持不懈、脚踏实地的努力才能带来实质进步与事业成功。"}, {"tag": "克服逆境", "en": "It is high time that we young people stepped out of the greenhouse to struggle against adversity and prepare for fierce competition.", "zh": "我们年轻人是时候走出温室，学会与逆境抗争并为激烈竞争做好准备了。"}, {"tag": "建立自信", "en": "Self-confidence is the first step to success; only by building strong self-confidence can we get closer to our dreams.", "zh": "自信是成功的第一步；只有建立强烈的自信心，我们才能离梦想更近。"}, {"tag": "乐观心态", "en": "Few things in the world are more powerful than a positive attitude; one can alter his life by altering his attitudes.", "zh": "世界上没有什么比积极心态更有力量；人可以通过改变态度来改变人生。"}, {"tag": "理性选择", "en": "Facing a wide variety of choices, college students should stay rational; only with a reasonable choice can we expect a brighter future.", "zh": "面对诸多选择，大学生应保持理性；唯有合理理性的选择才能带来光明未来。"}, {"tag": "家庭榜样", "en": "It is universally acknowledged that parents are the best role models for their children; a harmonious family atmosphere is indispensable for growth.", "zh": "众所周知父母是孩子最好的榜样；和谐的家庭氛围对孩子成长不可或缺。"}, {"tag": "及时行动", "en": "Nothing is more important than acting timely for one's success; it is taking concrete action that makes dreams come true.", "zh": "对成功而言没有什么比及时行动更重要；正是采取实际行动让梦想成真。"}, {"tag": "警惕沉迷", "en": "Celebrity worship is a double-edged sword, and excessive obsession with it is nothing but a waste of precious time and money.", "zh": "偶像崇拜是一把双刃剑，过度沉迷于此只会浪费宝贵的时间和金钱。"}]}, {"id": "cat-society", "name": "🤝 三、人与社会及自然的发展（潘赟九宫格高频词句库）", "desc": "覆盖敬老爱老、合作共赢、科技双刃剑、多元文化、爱心感恩、环境保护等社会热点。", "items": [{"tag": "尊老爱老", "en": "It is a Chinese traditional virtue to respect, love, and support the elderly; repaying aged parents is our unshirkable obligation.", "zh": "敬老、爱老、养老是中华传统美德；赡养年迈父母是我们义不容辞的责任。"}, {"tag": "合作共赢", "en": "Teamwork is not only necessary but also indispensable; cooperation builds mutual trust and leads to long-term, effective relationships.", "zh": "团队精神不仅必要而且不可或缺；合作能建立互信并带来长期有效的关系。"}, {"tag": "科技与网络", "en": "High technology, especially the Internet, is a double-edged sword: on one hand it connects people closely, while on the other it may isolate some from reality.", "zh": "高科技尤其是互联网是一把双刃剑：一方面紧密连接人们，另一方面也可能使人脱离现实。"}, {"tag": "手机与社交", "en": "Mobile phones are nothing but a convenient tool in interpersonal communication; excessive reliance on them is detrimental to real-life relationships.", "zh": "手机只是人际交往中的便捷工具；过度依赖手机对现实人际关系有害。"}, {"tag": "文化融合", "en": "Chinese traditional culture is a priceless spiritual treasure; we should preserve its essence while embracing world cultures with an open mind.", "zh": "中国传统文化是无价的精神财富；我们既要守正保护其精华，又要以开放心态吸收世界文化。"}, {"tag": "爱心与互助", "en": "Love is the supreme virtue; the best way to show affection and build a harmonious society is to lend a helping hand to those in need.", "zh": "爱心是最崇高的美德；表达爱心、建设和谐社会最好的方式就是向需要帮助的人伸出援手。"}, {"tag": "生态与环保", "en": "Earth can satisfy human needs, but not their greed; we cannot enjoy temporary convenience at the expense of our shared environment.", "zh": "地球能满足人类的需求，却满足不了贪欲；我们绝不能以牺牲环境为代价贪图一时便利。"}, {"tag": "共同护绿", "en": "Only by making joint efforts and punishing inappropriate behaviors can we reverse environmental degradation and achieve harmony with nature.", "zh": "唯有共同努力并惩戒破坏环境的不当行为，才能扭转生态恶化、实现人与自然和谐共生。"}]}, {"id": "cat-en2-topics", "name": "📈 四、英语二历年图表真题专属高分功能句（可直接挪用进大作文第二段）", "desc": "提炼自潘赟手册 2010–2017 英二核心句 + 2018–2026 新时代热点句，写原因分析时直接抓来用！", "items": [{"tag": "通讯与数字生活", "en": "In the era of information technology, smartphones have narrowed the distance between people and brought tremendous convenience to daily life.", "zh": "在信息技术时代，智能手机拉近了人与人之间的距离，为日常生活带来极大便利。"}, {"tag": "国货与自主研发", "en": "Domestic enterprises have endeavored to develop core technologies, which not only enables them to produce quality products but also earns them global credibility.", "zh": "本土企业致力于研发核心技术，这不仅使其造出高品质产品，更赢得了全球信誉。"}, {"tag": "职场压力与关怀", "en": "Middle-aged employees often shoulder heavy pressure from both family and work; employers ought to offer greater care, encouragement, and fairer rewards.", "zh": "中年员工常承受来自家庭与工作的双重重压；雇主应给予更多关怀、鼓励与更合理的回报。"}, {"tag": "大学生兼职实践", "en": "Equipped with rich practical experience from internships and part-time jobs, college students adapt more smoothly to diverse workplace environments.", "zh": "凭借实习和兼职积累的丰富实践经验，大学生能更顺畅地适应多样的职场环境。"}, {"tag": "城镇化与公共资源", "en": "Urbanization is an inevitable trend benefiting the national economy, as residents gain easier access to sophisticated medical resources and quality education.", "zh": "城镇化是造福国民经济的必然趋势，居民得以更便捷地获取优质医疗资源与良好教育。"}, {"tag": "节日与消费升级", "en": "With rising disposable income, consumers increasingly value distinctive features, attentive service, and emotional fulfillment over mere low prices.", "zh": "随着可支配收入提升，消费者愈发看重特色品质、周到服务与情感满足，而非单纯低价。"}, {"tag": "旅游与劳逸结合", "en": "Under heavy academic or career pressure, traveling serves as a refreshing way to relieve stress and broaden horizons when properly balanced with study.", "zh": "在繁重学业或职场压力下，只要与学习合理平衡，旅游便是缓解压力、开阔眼界的极佳方式。"}, {"tag": "博物馆与文化热", "en": "In the long run, acquiring knowledge and cultivating aesthetic taste by visiting museums and cultural venues will always prove a rewarding investment.", "zh": "长远来看，通过参观博物馆和文化场馆获取知识、陶冶审美永远是一项回报丰厚的投资。"}, {"tag": "乡村振兴与物流", "en": "Modern logistics and digital e-commerce have revitalized rural industries, connecting farmers directly with nationwide markets and boosting rural incomes.", "zh": "现代物流与数字电商盘活了乡村产业，将农民直接对接全国市场，有力带动农民增收。"}, {"tag": "劳动教育与五育", "en": "Immersive labor practice courses integrate knowledge transmission with hands-on skill building, fostering both psychological well-being and teamwork.", "zh": "沉浸式劳动实践课将知识传授与动手技能培养融为一体，既舒缓身心又增强团队协作。"}]}, {"id": "cat-quotes", "name": "✨ 五、14大考场万能亮点金句 & 名言谚语库（潘赟 + Monkey 精华）", "desc": "插在第二段论据或第三段结尾，瞬间拉升文章思想厚度与语言格调。", "items": [{"tag": "实干兴邦（习大大）", "en": "As President Xi once put it, \"empty talk would lead a country astray, and hard work can revitalize a nation.\"", "zh": "正如习主席所言：“空谈误国，实干兴邦。”（适合所有劳动/实践/实干/奋斗类结尾）"}, {"tag": "经济基础（马克思）", "en": "Just as Karl Marx once said, the economic basis determines the superstructure.", "zh": "正如卡尔·马克思所言，经济基础决定上层建筑。（图表作文归因段神句）"}, {"tag": "诚信为本", "en": "It is universally acknowledged that honesty is the best policy.", "zh": "众所周知，诚实乃上策。（适合诚信/商业伦理/消费信任）"}, {"tag": "人与自然", "en": "\"Nature is to people what water is to fish\" is an old cliché, yet it remains profoundly true.", "zh": "“自然之于人犹如水之于鱼”，虽是老生常谈，却依然蕴含深刻真理。（环保/户外/生态必杀）"}, {"tag": "心态决定高度", "en": "To adapt a common saying, \"Attitude is a little thing that makes a big difference.\"", "zh": "改编一句谚语：“心态虽小，其力也大。”（乐观/心理健康/抗压）"}, {"tag": "团结协作", "en": "Just as an American proverb says, \"United we stand, divided we fall.\"", "zh": "正如一句谚语所言：“合则立，分则亡。”（团队合作/社会凝聚力/公益互助）"}, {"tag": "目标与方向", "en": "Living without a clear aim is like sailing across a vast ocean without a compass.", "zh": "生活没有明确目标，犹如在茫茫大海上航行没有指南针。（毕业选择/职业规划/学习）"}, {"tag": "实干行动", "en": "Better to light one candle than to curse the darkness.", "zh": "与其诅咒黑暗，不如燃起一盏蜡烛。（解决社会问题/积极行动/志愿服务）"}, {"tag": "知行合一", "en": "People often say, \"Never judge a book by its cover.\" Ironically, it is always easier said than done.", "zh": "人们常说“切勿以貌取人”，讽刺的是说起来容易做起来难。（理性判断/辩证思考）"}, {"tag": "创新与想象", "en": "As Albert Einstein famously noted, imagination is often more important than knowledge alone.", "zh": "正如爱因斯坦名言所说，想象力往往比单纯的知识更为重要。（科技创新/儿童好奇心/教育）"}, {"tag": "希望与未来", "en": "As Percy Bysshe Shelley wrote, \"If winter comes, can spring be far behind?\"", "zh": "正如雪莱所写：“冬天来了，春天还会远吗？”（克服困难/迎接光明未来）"}, {"tag": "人生探索", "en": "Just as the classic line in Forrest Gump goes, \"Life is like a box of chocolates; you never know what you are going to get.\"", "zh": "正如《阿甘正传》经典台词所言：“人生就像一盒巧克力，你永远不知道下一颗是什么味道。”（探索与勇气）"}]}], "exams": [{"year": "2026", "partA": "回复交流信：收看朋友Jack家庭中国旅行视频，谈感受并给建议", "partB": "柱状图：儿童户外活动看法调查（好奇心54.6%、观察力54.5%、强身37.2%、亲子33.2%）", "value": "爱国・文明・和谐（儿童全面发展）", "p1Desc": "The bar chart clearly reveals the survey results regarding public attitudes toward children's outdoor activities. Among all the categories listed, satisfying curiosity has the highest percentage, at 54.6%, followed closely by enhancing observation skills, building physical fitness and strengthening parent-child interaction at 54.5%, 37.2% and 33.2% respectively.", "theme": "all-round child development", "action": "explore nature through outdoor activities", "outcome": "enhanced curiosity and physical vitality", "domain": "family and school education", "ability": "cultivate practical skills and resilience", "socialEffect": "fostering harmonious family relationships and youth vitality", "strategy": "building a child-friendly society", "socialChange": "the younger generation grows up healthier and more creative", "pop": "parents and educators"}, {"year": "2025", "partA": "介绍+邀请信：筹备中国古典小说改编短剧，向John介绍并邀请参演", "partB": "柱状图：某社区老年人日常休闲活动调查（看电视90.8%、散步68.3%、养花34.7%等）", "value": "文明・和谐・友善（积极应对人口老龄化）", "p1Desc": "The bar chart clearly reveals the survey results regarding the daily leisure activities of senior citizens in a community. Among all the categories listed, watching television has the highest percentage, at 90.8%, followed by taking a walk, gardening, reading and playing chess at 68.3%, 34.7%, 31.8% and 18.4% respectively.", "theme": "active aging and elderly care", "action": "engage in enriching daily leisure activities", "outcome": "a dignified and fulfilling later life", "domain": "elderly care services", "ability": "maintain physical and mental well-being", "socialEffect": "promoting the traditional virtue of respecting the elderly", "strategy": "proactively responding to population aging", "socialChange": "community cohesion and senior welfare improve steadily", "pop": "senior citizens and communities"}, {"year": "2024", "partA": "汇报+求助信：与好友Jack开展“古建筑保护”调研，告知计划并征求建议", "partB": "柱状图：某高校劳动实践课学生收获调查（知识91.3%、动手84.8%、舒畅54.4%、协作32.6%）", "value": "文明・敬业（五育并举与劳动育人）", "p1Desc": "The bar chart clearly reveals the survey results regarding college students' major gains from labor practice courses. Among all the categories listed, acquiring relevant knowledge has the highest percentage, at 91.3%, followed by improving hands-on skills, feeling refreshed and enhancing teamwork ability at 84.8%, 54.4% and 32.6% respectively.", "theme": "the spirit of labor", "action": "participate actively in hands-on labor practice", "outcome": "practical competence and craftsmanship spirit", "domain": "comprehensive education", "ability": "combine theoretical knowledge with real-world practice", "socialEffect": "cultivating diligence and social responsibility among youth", "strategy": "all-round moral, intellectual, physical, aesthetic, and labor education", "socialChange": "young people become better prepared to serve society", "pop": "college students and universities"}, {"year": "2023", "partA": "建议信：朋友David在艺术展与机器人展间二选一，给出推荐及理由", "partB": "折线图：2012–2021年我国居民健康素养水平持续上升（8.80%→25.40%）", "value": "富强・文明・和谐（健康中国战略）", "p1Desc": "The figures in the line chart reveal notable changes concerning Chinese residents' health literacy level. Between 2012 and 2021, the proportion of citizens possessing basic health literacy climbed steadily from 8.80% to 25.40%, with a particularly rapid rise after 2016.", "theme": "health literacy and public well-being", "action": "acquire scientific health knowledge and adopt healthy habits", "outcome": "stronger physical resilience and life quality", "domain": "public health education", "ability": "make informed decisions to safeguard their health", "socialEffect": "raising public health awareness across communities", "strategy": "the Healthy China initiative", "socialChange": "overall life expectancy and social vitality reach new heights", "pop": "urban and rural residents"}, {"year": "2022", "partA": "介绍+邀请信：策划校园美食节，向留学生介绍并邀请参加", "partB": "复式柱状图：2018–2020年我国快递总量与农村快递量激增（农村120→300亿件）", "value": "富强・和谐（乡村振兴与共同富裕）", "p1Desc": "The figures in the bar chart reveal notable changes concerning China's express delivery volume. Between 2018 and 2020, total business volume surged from 50.7 billion to 83.4 billion parcels, while rural express delivery volume more than doubled from 12 billion to 30 billion.", "theme": "rural revitalization", "action": "access modern logistics and e-commerce platforms", "outcome": "greater convenience and higher household income", "domain": "rural infrastructure", "ability": "participate in the modern digital economy", "socialEffect": "narrowing the urban-rural development gap", "strategy": "common prosperity", "socialChange": "rural industries flourish and living standards rise markedly", "pop": "rural residents and consumers"}, {"year": "2021", "partA": "邀请信：组织线上交流会议，邀请留学生Jack参加并告知细节", "partB": "柱状图：某市居民体育锻炼方式调查（散步55%居首）", "value": "和谐・文明（全民健身与健康中国）", "p1Desc": "The bar chart clearly reveals the survey results regarding the preferred forms of physical exercise among urban residents. Among all the categories listed, walking accounts for the largest share, at 55%, followed by running, ball games and other workouts.", "theme": "active and healthy living", "action": "incorporate regular physical exercise into daily routines", "outcome": "improved physical fitness and mental relaxation", "domain": "public fitness facilities", "ability": "maintain an energetic and balanced lifestyle", "socialEffect": "fostering a vibrant culture of fitness for all", "strategy": "the Healthy China initiative", "socialChange": "public health improves and healthcare burdens are eased", "pop": "urban residents"}, {"year": "2020", "partA": "介绍+建议信：组织留学生游览历史古迹，介绍古迹并给游览贴士", "partB": "饼状图：某高校学生手机阅读目的（学习知识59.5%、消磨21.3%、信息17.0%）", "value": "文明・敬业（建设学习型社会）", "p1Desc": "The pie chart clearly reveals the survey results regarding mobile reading purposes among college students. Among all the categories listed, acquiring knowledge accounts for the largest share, at 59.5%, followed by passing time, obtaining information and other purposes at 21.3%, 17.0% and 2.2% respectively.", "theme": "lifelong learning and self-discipline", "action": "utilize digital tools wisely to acquire knowledge", "outcome": "continuous intellectual growth and self-improvement", "domain": "digital education", "ability": "stay focused and pursue academic excellence", "socialEffect": "cultivating a strong atmosphere of reading and inquiry", "strategy": "building a learning society", "socialChange": "human capital is continuously strengthened", "pop": "university students"}, {"year": "2019", "partA": "建议+汇报信：向Smith教授提议“城市交通”辩论赛辩题并汇报安排", "partB": "复式柱状图：2013与2018年本科毕业生去向（升学26.3%→34.0%、创业1.3%→2.6%）", "value": "富强・敬业（科教兴国与创新创业）", "p1Desc": "The figures in the bar chart reveal notable changes concerning the post-graduation choices of undergraduates. Between 2013 and 2018, the proportion pursuing further studies rose from 26.3% to 34.0%, and those starting businesses doubled from 1.3% to 2.6%, while direct employment fell from 68.1% to 60.7%.", "theme": "lifelong learning and entrepreneurship", "action": "pursue advanced studies and explore innovative ventures", "outcome": "stronger professional competence and career resilience", "domain": "higher education and innovation", "ability": "adapt to industrial upgrading and unlock creative potential", "socialEffect": "injecting fresh talent and vitality into economic growth", "strategy": "innovation-driven development", "socialChange": "high-quality talent drives sustained national progress", "pop": "college graduates"}, {"year": "2018", "partA": "道歉信：致Smith教授因故取消拜访计划，道歉说明并提议改期", "partB": "饼状图：消费者选择餐厅关注因素（特色36.3%、服务26.8%、环境23.8%、价格8.4%）", "value": "友善・富强（消费升级与高质量发展）", "p1Desc": "The pie chart clearly reveals the survey results regarding key factors consumers consider when choosing a restaurant. Distinctive features account for the largest share, at 36.3%, followed by service, environment, price and other factors at 26.8%, 23.8%, 8.4% and 4.7% respectively.", "theme": "quality-oriented consumption", "action": "value distinctive quality and attentive service over mere low prices", "outcome": "an upgraded lifestyle and richer cultural experience", "domain": "service sector development", "ability": "enjoy higher standards of living", "socialEffect": "encouraging businesses to innovate and improve service standards", "strategy": "high-quality economic development", "socialChange": "consumption upgrades propel steady economic prosperity", "pop": "modern consumers"}, {"year": "2017", "partA": "接受邀请+介绍信：回复Williams教授中国文化讲座邀请并介绍要点", "partB": "双折线图：2013–2015年我国博物馆数量（4165→4692）与参观人数双升", "value": "文明・爱国（文化自信与公共文化繁荣）", "p1Desc": "The figures in the line chart reveal notable changes concerning museums in China. Between 2013 and 2015, the number of museums rose steadily from 4,165 to 4,692, while the number of visitors surged from 637.8 million to 781.1 million.", "theme": "cultural confidence", "action": "visit museums and explore historical heritage", "outcome": "deeper cultural literacy and national pride", "domain": "public cultural services", "ability": "appreciate and pass down fine traditional culture", "socialEffect": "enriching people's spiritual and cultural lives", "strategy": "cultural inheritance and innovation", "socialChange": "traditional heritage shines with renewed vitality", "pop": "the general public"}, {"year": "2016", "partA": "感谢+建议信：回复祝贺翻译比赛获奖的朋友Jack，致谢并给翻译建议", "partB": "饼状图：某高校学生旅游目的（欣赏风景37%、缓解压力33%、交友9%、独立6%）", "value": "友善・和谐（身心平衡与全面成长）", "p1Desc": "The pie chart clearly reveals the survey results regarding college students' purposes for traveling. Enjoying scenery accounts for the largest share, at 37%, followed by relieving stress, making friends and cultivating independence at 33%, 9% and 6% respectively.", "theme": "holistic well-being", "action": "broaden their horizons through travel and nature exploration", "outcome": "relieved academic stress and renewed mental energy", "domain": "youth development and cultural tourism", "ability": "balance academic pursuits with personal enrichment", "socialEffect": "promoting harmonious personal growth and social vitality", "strategy": "all-round education", "socialChange": "young people thrive both physically and intellectually", "pop": "college students"}, {"year": "2015", "partA": "告示(Notice)：面向全校简介高中生夏令营活动并招募志愿者", "partB": "饼状图：某市居民春节假期花销比例（新年礼物40%、聚会20%、交通20%）", "value": "友善・文明（传统节日亲情纽带与民生改善）", "p1Desc": "The pie chart clearly reveals the survey results regarding residents' spending during the Spring Festival holiday. New Year gifts account for the largest share, at 40%, followed by dining out, transportation and other expenses at 20% each.", "theme": "family bonds and cultural heritage", "action": "cherish family reunions and express affection during traditional festivals", "outcome": "stronger kinship ties and spiritual fulfillment", "domain": "cultural preservation and people's livelihood", "ability": "inherit fine family traditions", "socialEffect": "fostering warmth, solidarity, and social harmony", "strategy": "spiritual civilization", "socialChange": "traditional festivals continue to unite communities", "pop": "urban families"}, {"year": "2014", "partA": "介绍+求助信：致国外合租室友John，介绍生活习惯并询问当地生活建议", "partB": "复式柱状图：1990–2010年中国城镇人口上升（300→666百万）与乡村人口下降", "value": "友善・和谐（新型城镇化与城乡协调）", "p1Desc": "The figures in the bar chart reveal notable changes concerning China's urban and rural population. Between 1990 and 2010, the urban population more than doubled from 300 million to 666 million, while the rural population declined gradually from 834 million to 674 million.", "theme": "integrated urban-rural development", "action": "seek better educational and career opportunities in cities", "outcome": "improved living standards and social mobility", "domain": "public services and regional planning", "ability": "share in the fruits of modernization", "socialEffect": "optimizing resource allocation and boosting regional vitality", "strategy": "new-type urbanization", "socialChange": "cities and countryside advance toward coordinated prosperity", "pop": "rural and urban dwellers"}, {"year": "2013", "partA": "倡议通知信：向全班同学告知班级慈善义卖详情并鼓励参与", "partB": "单式柱状图：大一至大四学生兼职比例递增（67.77%→88.24%）", "value": "友善・敬业（实践出真知与青年自强）", "p1Desc": "The figures in the bar chart reveal notable changes concerning the proportion of college students taking part-time jobs. From freshman to senior year, the figure climbed steadily from 67.77% to 88.24%, peaking in the final year of university.", "theme": "practical competence", "action": "engage in part-time jobs and social practice", "outcome": "enhanced independence and workplace readiness", "domain": "higher education reform", "ability": "bridge the gap between campus learning and social needs", "socialEffect": "cultivating self-reliant and capable young talents", "strategy": "talent-driven development", "socialChange": "graduates transition more smoothly into society", "pop": "university students"}, {"year": "2012", "partA": "投诉信：致网店客服投诉电子词典故障并要求尽快解决（Zhang Wei）", "partB": "统计表格：某公司各年龄段员工满意度（41–50岁不满意达64.0%，>50岁满意40%）", "value": "诚信・和谐（关注劳动者福祉与和谐职场）", "p1Desc": "The table clearly reveals the survey results regarding employee job satisfaction across different age groups. Notably, workers aged 41 to 50 report the highest dissatisfaction rate at 64.0%, whereas those over 50 show the highest satisfaction rate at 40.0%.", "theme": "workplace well-being", "action": "balance career responsibilities with physical and mental health", "outcome": "sustained work motivation and life satisfaction", "domain": "labor protection and human resources", "ability": "overcome mid-career stress and achieve sustainable growth", "socialEffect": "building supportive and people-oriented workplaces", "strategy": "people-centered governance", "socialChange": "both employee happiness and organizational efficiency improve", "pop": "working professionals"}, {"year": "2011", "partA": "祝贺+建议信：祝贺表弟考上大学并提大学生活准备建议（Zhang Wei）", "partB": "复式柱状图：2008–2009年国内轿车市场国产品牌份额（25%→32%）反超日系", "value": "富强・敬业（自主创新与国货崛起）", "p1Desc": "The figures in the bar chart reveal notable changes concerning market shares in China's domestic car market. Between 2008 and 2009, the share of domestic brands rose noticeably from around 25% to 32%, surpassing Japanese brands which fell from 35% to 25%.", "theme": "indigenous innovation", "action": "support domestic brands and value technological quality", "outcome": "greater consumer confidence and industrial upgrading", "domain": "manufacturing and scientific innovation", "ability": "drive core technological breakthroughs", "socialEffect": "strengthening national industrial competitiveness", "strategy": "high-quality development", "socialChange": "homegrown brands earn growing trust at home and abroad", "pop": "domestic consumers"}, {"year": "2010", "partA": "感谢信：致美国交流项目同事感谢热情接待并欢迎访华（Zhang Wei）", "partB": "复式柱状图：2000–2008年发展中国家手机用户暴增至40亿远超发达国家", "value": "友善・富强（科技普惠与全球共同发展）", "p1Desc": "The figures in the bar chart reveal notable changes concerning mobile-phone subscriptions worldwide. Between 2000 and 2008, subscriptions in developing countries surged dramatically from roughly 0.4 billion to 4 billion, whereas those in developed countries grew modestly to around 1 billion.", "theme": "technological inclusion", "action": "embrace modern communication tools to access information", "outcome": "narrowed information gaps and broader economic opportunities", "domain": "digital infrastructure", "ability": "connect with the wider world and improve productivity", "socialEffect": "promoting inclusive growth across developing regions", "strategy": "digital transformation", "socialChange": "technological progress benefits ordinary households on an unprecedented scale", "pop": "people in developing nations"}]};
+
+    
+    // --- WORD / PHRASE CLICK-TO-SHOW-CHINESE ENGINE ---
+    const PHRASE_DICT = [
+      // Core Values & National Strategies
+      ["all-round moral, intellectual, physical, aesthetic, and labor education", "德智体美劳五育并举"],
+      ["creative transformation and innovative development", "创造性转化与创新性发展"],
+      ["proactively responding to population aging", "积极应对人口老龄化"],
+      ["rural revitalization and common prosperity", "乡村振兴与共同富裕"],
+      ["indigenous innovation and digital transformation", "自主创新与数字化转型"],
+      ["cultural confidence and inheritance", "文化自信与传承"],
+      ["building a child-friendly and livable society", "建设儿童友好与宜居社会"],
+      ["building a child-friendly society", "建设儿童友好型社会"],
+      ["cultural inheritance and innovation", "文化传承与创新"],
+      ["integrated urban-rural development", "城乡融合发展"],
+      ["high-quality economic development", "经济高质量发展"],
+      ["high-quality development", "高质量发展"],
+      ["rural revitalization", "乡村振兴"],
+      ["common prosperity", "共同富裕"],
+      ["indigenous innovation", "自主创新"],
+      ["digital transformation", "数字化转型"],
+      ["technological inclusion", "科技普惠"],
+      ["cultural confidence", "文化自信"],
+      ["the Healthy China initiative", "健康中国倡议"],
+      ["building a learning society", "建设学习型社会"],
+      ["people-centered governance", "以人民为中心的治理"],
+      ["holistic human development", "人的全面发展"],
+      ["holistic development", "全面发展"],
+      ["holistic well-being", "全面福祉"],
+      ["new-type urbanization", "新型城镇化"],
+      ["innovation-driven development", "创新驱动发展"],
+      ["talent-driven development", "人才强国/人才驱动发展"],
+      ["spiritual civilization", "精神文明建设"],
+      ["spiritual enrichment", "精神富足"],
+      ["all-round education", "全面教育"],
+      ["all-round child development", "儿童全面发展"],
+      ["active aging and elderly care", "积极老龄化与养老服务"],
+      ["health literacy and public well-being", "健康素养与公众福祉"],
+      ["health literacy", "健康素养"],
+      ["active and healthy living", "积极健康的生活方式"],
+      ["lifelong learning and self-discipline", "终身学习与自律"],
+      ["lifelong learning and entrepreneurship", "终身学习与创新创业"],
+      ["lifelong learning", "终身学习"],
+      ["quality-oriented consumption", "品质型消费"],
+      ["family bonds and cultural heritage", "家风亲情与文化传承"],
+      ["practical competence", "实践能力"],
+      ["workplace well-being", "职场福祉"],
+
+      // High-frequency Verbs, Collocations & Individual Vocabulary
+      ["accounts for the largest share", "占最大份额"],
+      ["has the highest percentage", "占最高百分比"],
+      ["remained broadly stable", "保持大致稳定"],
+      ["far-reaching implications", "深远影响"],
+      ["bring it to centre stage", "使其成为关注焦点"],
+      ["at the individual level", "在个人层面"],
+      ["ultimately contributing to", "最终有助于"],
+      ["empowering individuals to", "赋能个人去……"],
+      ["achieve their full potential", "充分发挥自身潜能"],
+      ["unlock one's full potential", "释放个人潜能"],
+      ["beyond personal advancement", "除个人发展之外"],
+      ["strengthen communities", "增强社区凝聚力/活力"],
+      ["laying the groundwork for", "为……奠定基础"],
+      ["sustainable progress", "可持续进步"],
+      ["in line with", "与……相契合/一致"],
+      ["takes root", "扎根/深入人心"],
+      ["creates a ripple effect", "产生连锁反应"],
+      ["social harmony and long-term prosperity", "社会和谐与长期繁荣"],
+      ["a rational consensus", "理性共识"],
+      ["benefit immeasurably", "获得不可估量的益处"],
+      ["provides impetus for", "为……提供动力"],
+      ["lends support to", "为……提供支持"],
+      ["narrow the urban-rural divide", "缩小城乡差距"],
+      ["narrowed information gaps", "缩小信息鸿沟"],
+      ["bridge cultural gaps", "弥合文化隔阂"],
+      ["foster mutual understanding", "增进相互理解"],
+      ["foster social cohesion", "增强社会凝聚力"],
+      ["hands-on labor practice", "动手劳动实践"],
+      ["hands-on social practice", "动手社会实践"],
+      ["craftsmanship spirit", "工匠精神"],
+      ["double-edged sword", "双刃剑"],
+      ["interpersonal communication", "人际交往"],
+      ["interpersonal relationships", "人际关系"],
+      ["excessive reliance", "过度依赖"],
+      ["is detrimental to", "对……有害"],
+      ["is of supreme importance", "至关重要"],
+      ["is of extreme detriment", "极其有害"],
+      ["is of utmost significance", "具有极其重要的意义"],
+      ["it is universally acknowledged that", "众所周知"],
+      ["it is high time that", "是时候……了"],
+      ["abstract as the figures seem to be", "数字虽然看似抽象"],
+      ["as deep as the ocean", "如大海般深邃"],
+      ["only in this way can we", "只有这样我们才能"],
+      ["empty talk would lead a country astray", "空谈误国"],
+      ["hard work can revitalize a nation", "实干兴邦"],
+      ["the economic basis determines the superstructure", "经济基础决定上层建筑"],
+      ["vanguard and successor", "先锋与继承人"],
+      ["grasp the pulse of", "把握……的脉搏"],
+      ["surf the wave of", "驾驭……的浪潮"],
+      ["put things into perspective", "以长远/全局眼光看待问题"],
+      ["remain high on your agenda", "列为你的首要日程"],
+      ["take into serious consideration", "认真考虑"],
+      ["much obliged to you", "不胜感激"],
+      ["in good spirits", "心情愉快/精神饱满"],
+      ["with great enthusiasm", "怀着极大热情"],
+      ["highly advisable", "非常明智/强烈建议"],
+      ["broaden our horizons", "开阔我们的视野"],
+      ["broaden their horizons", "开阔他们的视野"],
+      ["relieve academic stress", "缓解学业压力"],
+      ["relieving stress", "缓解压力"],
+      ["disposable income", "可支配收入"],
+      ["distinctive features", "特色/鲜明特点"],
+      ["attentive service", "周到服务"],
+      ["compelling testament", "有力证明"],
+      ["deceptively simple", "看似简单"],
+      ["reveal notable changes", "揭示显著变化"],
+      ["climbed steadily", "稳步攀升"],
+      ["surged dramatically", "急剧激增"],
+      ["more than doubled", "翻了一倍多"],
+      ["in the foreseeable future", "在可预见的未来"],
+      ["exerts remarkable influence on", "对……产生显著影响"],
+      ["cost us dearly", "让我们付出沉重代价"],
+      ["mass media campaigns", "大众媒体宣传"],
+      ["laws and regulations", "法律法规"],
+      ["practical actions", "实际行动"],
+      ["struggle against adversity", "与逆境抗争"],
+      ["indispensable quality", "不可或缺的品质"],
+      ["role models", "榜样"],
+      ["priceless spiritual treasure", "无价的精神财富"],
+      ["traditional virtue", "传统美德"],
+      ["unshirkable obligation", "义不容辞的责任"],
+      ["inappropriate behaviors", "不当行为"],
+      ["environmental degradation", "环境恶化"],
+      ["persistent", "坚持不懈的"],
+      ["painstaking", "脚踏实地的/刻苦的"],
+      ["adversity", "逆境"],
+      ["indispensable", "不可或缺的"],
+      ["detrimental", "有害的"],
+      ["harmonious", "和谐的"],
+      ["prosperity", "繁荣"],
+      ["vitality", "活力"],
+      ["resilience", "韧性/恢复力"],
+      ["orientation", "入门指引/培训"],
+      ["illuminating", "富有启发性的"],
+      ["inevitability", "必然性"],
+      ["conspicuous", "显著的"],
+      ["propagate", "宣传/传播"],
+      ["withstand", "经受住/抵御"],
+      ["counterparts", "竞争对手/同行"],
+      ["credibility", "信誉/公信力"],
+      ["sophisticated", "精密的/高水平的"],
+      ["entrepreneurship", "创业精神"]
+    ];
+
+    PHRASE_DICT.sort((a, b) => b[0].length - a[0].length);
+
+    function escapeRegExp(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    const PHRASE_MAP = new Map();
+    const PHRASE_PATTERNS = PHRASE_DICT.map(([en, zh]) => {
+      PHRASE_MAP.set(en.toLowerCase(), zh);
+      return escapeRegExp(en);
+    });
+    const MASTER_REGEX = new RegExp(`\\b(${PHRASE_PATTERNS.join("|")})\\b`, "gi");
+
+    function annotateEnglishWithKeywords(containerEl) {
+      if (!containerEl) return;
+      const walker=document.createTreeWalker(containerEl,NodeFilter.SHOW_TEXT,{acceptNode(node){
+        if(!node.nodeValue||!/[A-Za-z]/.test(node.nodeValue))return NodeFilter.FILTER_REJECT;
+        const p=node.parentElement;
+        return !p||p.closest('.zh-text,.p-zh,.kw,.kw-zh,button,input,textarea,select,script,style')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;
+      }});
+      const nodes=[];let node;while((node=walker.nextNode()))nodes.push(node);
+      const tokenRE=/[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'’][A-Za-zÀ-ÖØ-öø-ÿ]+)*/g;
+      function appendWords(frag,text){
+        let last=0,m;tokenRE.lastIndex=0;
+        while((m=tokenRE.exec(text))){
+          frag.appendChild(document.createTextNode(text.slice(last,m.index)));
+          const word=m[0],key=word.toLowerCase().replace(/’/g,"'");
+          const zh=(typeof WRITING_DICT!=='undefined'&&WRITING_DICT[key]) || PHRASE_MAP.get(key) || '暂无词义，请结合整句或查词典';
+          const el=document.createElement('span');el.className='kw';el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label',`${word}，点击查看中文`);el.setAttribute('aria-expanded','false');el.appendChild(document.createTextNode(word));
+          const tip=document.createElement('span');tip.className='kw-zh';tip.textContent=zh;el.appendChild(tip);frag.appendChild(el);last=m.index+word.length;
+        }
+        frag.appendChild(document.createTextNode(text.slice(last)));
+      }
+      nodes.forEach(node=>{
+        const text=node.nodeValue,frag=document.createDocumentFragment();let last=0,m;MASTER_REGEX.lastIndex=0;
+        while((m=MASTER_REGEX.exec(text))!==null){
+          appendWords(frag,text.slice(last,m.index)); const matched=m[0];appendWords(frag,matched);
+          const meaning=PHRASE_MAP.get(matched.toLowerCase());
+          if(meaning && /\s/.test(matched)){const phrase=document.createElement('span');phrase.className='kw phrase-action';phrase.tabIndex=0;phrase.setAttribute('role','button');phrase.setAttribute('aria-expanded','false');phrase.setAttribute('aria-label',`查看词组 ${matched} 的中文`);phrase.appendChild(document.createTextNode('词组'));const tip=document.createElement('span');tip.className='kw-zh';tip.textContent=meaning;phrase.appendChild(tip);frag.appendChild(phrase);}
+          last=m.index+matched.length;
+        }
+        appendWords(frag,text.slice(last));node.parentNode.replaceChild(frag,node);
+      });
+    }
+    // Capture prevents a word click from also toggling the parent sentence translation.
+    document.addEventListener('click',e=>{const el=e.target.closest('.kw');if(el){e.stopPropagation();el.classList.toggle('open');el.setAttribute('aria-expanded',String(el.classList.contains('open')));}},true);
+    document.addEventListener('keydown',e=>{const el=e.target.closest('.kw');if(el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();el.click();}},true);
+    function cleanEnglish(el){const clone=el.cloneNode(true);clone.querySelectorAll('.kw-zh,.phrase-action').forEach(x=>x.remove());return clone.innerText||clone.textContent||'';}
+
+
+    // Selection lookup preserves original phrase translations where available.
+    const selectionPhrases = new Map(PHRASE_MAP);
+    APP_DATA.corpus.forEach(cat=>cat.items.forEach(item=>{
+      const e=document.createElement('div'); e.innerHTML=item.en;
+      selectionPhrases.set((e.textContent||'').trim().replace(/\s+/g,' ').toLowerCase(), item.zh);
+    }));
+    WRITING_GUIDE.filter(p=>p.id==='phrase').forEach(p=>p.blocks.forEach(x=>selectionPhrases.set(x.en.trim().replace(/\s+/g,' ').toLowerCase(),x.zh)));
+    let savedSelection='';
+    function selectedEnglish(){
+      const sel=window.getSelection();
+      if(!sel || !sel.rangeCount || !sel.anchorNode || !document.querySelector('main').contains(sel.anchorNode)) return '';
+      const fragment=sel.getRangeAt(0).cloneContents();
+      fragment.querySelectorAll('.kw-zh,.phrase-action').forEach(el=>el.remove());
+      return (fragment.textContent||'').trim();
+    }
+    document.addEventListener('selectionchange',()=>{const value=selectedEnglish();if(value)savedSelection=value;});
+    const lookupButton=document.getElementById('btnLookupSelection');
+    lookupButton.addEventListener('pointerdown', e=>e.preventDefault());
+    lookupButton.addEventListener('click',()=>{
+      const panel=document.getElementById('selectionResult'); panel.hidden=false;
+      const selected=(selectedEnglish()||savedSelection).replace(/\s+/g,' ').slice(0,500);
+      if(!selected){panel.textContent='请先在作文素材中选中英文词组，再点查选中词组。';return;}
+      const exact=selectionPhrases.get(selected.toLowerCase());
+      if(exact){panel.textContent=selected+'：'+exact;return;}
+      const words=selected.match(/[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'’][A-Za-zÀ-ÖØ-öø-ÿ]+)*/g)||[];
+      panel.textContent=words.length ? '逐词参考（非整句翻译）：'+words.map(word=>word+'：'+((typeof WRITING_DICT!=='undefined'&&WRITING_DICT[word.toLowerCase().replace(/’/g,"'")])||PHRASE_MAP.get(word.toLowerCase())||'暂无词义')).join('；') : '未识别到英文，请重新选择。';
+    });
+
+    function toggleAllKw() {
+      const on = document.body.classList.toggle("show-all-kw");
+      const btn = document.getElementById("btnAllKw");
+      btn.classList.toggle("active", on);
+      btn.textContent = on ? "🏷️ 收起全部词义" : "🏷️ 显示全部词义";
+    }
+
+    // --- PERSISTENT STATE ---
+    let masteredSet = new Set(JSON.parse(localStorage.getItem("ky_en2_v2_mastered") || "[]"));
+    let starredSet = new Set(JSON.parse(localStorage.getItem("ky_en2_v2_starred") || "[]"));
+    let currentSchool = "nanxiao";
+    let currentNxTier = "full";
+    let currentYearIdx = 2; // 2024
+    let currentCorpusCat = "all";
+    let onlyStarred = false;
+
+    function saveMastered() {
+      localStorage.setItem("ky_en2_v2_mastered", JSON.stringify([...masteredSet]));
+      updateMasterStats();
+    }
+    function saveStarred() {
+      localStorage.setItem("ky_en2_v2_starred", JSON.stringify([...starredSet]));
+      document.getElementById("starCount").textContent = starredSet.size;
+    }
+    function toggleMaster(id, e) {
+      e.stopPropagation();
+      if (masteredSet.has(id)) masteredSet.delete(id);
+      else masteredSet.add(id);
+      saveMastered();
+    }
+    function toggleStar(key, e) {
+      e.stopPropagation();
+      if (starredSet.has(key)) starredSet.delete(key);
+      else starredSet.add(key);
+      saveStarred();
+      renderCorpus();
+    }
+    function updateMasterStats() {
+      document.getElementById("masterStats").textContent = `已背熟: ${masteredSet.size} 句`;
+    }
+
+    // --- SPEECH & CLIPBOARD ---
+    function speakText(rawHtml, e) {
+      e.stopPropagation();
+      const tmp = document.createElement("div");
+      tmp.innerHTML = rawHtml;
+      const clean = tmp.textContent.replace(/【.*?】/g, " something ").replace(/\[.*?\]/g, "");
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(clean);
+        u.lang = "en-US";
+        u.rate = 0.94;
+        window.speechSynthesis.speak(u);
+      }
+    }
+
+    function copyTextById(elId) {
+      const el = document.getElementById(elId);
+      const text = el.innerText.trim();
+      navigator.clipboard.writeText(cleanEnglish(el).trim()).then(() => {
+        alert("已成功复制到剪贴板！");
+      });
+    }
+
+    function createSentenceBox(item) {
+      const checked = masteredSet.has(item.id) ? "checked" : "";
+      const div = document.createElement("div");
+      div.className = "sentence-box";
+      div.onclick = function(e) {
+        if (e.target.classList.contains("slot") && document.body.classList.contains("cloze-mode")) {
+          e.target.classList.toggle("revealed");
+          return;
+        }
+        this.classList.toggle("zh-open");
+      };
+      div.innerHTML = `
+        <div class="sentence-meta">
+          <span class="hint-pill">${item.tag}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="speak-btn" type="button">🔊 朗读</button>
+            <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;" onclick="event.stopPropagation()">
+              <input type="checkbox" class="master-check" ${checked} onchange="toggleMaster('${item.id}', event)" />
+              <span>已背熟</span>
+            </label>
+          </div>
+        </div>
+        <div class="en-text">${item.en}</div>
+        <div class="zh-text">${item.zh}</div>
+      `;
+      div.querySelector('.speak-btn').addEventListener('click',e=>speakText(item.en,e));
+      const english=div.querySelector('.en-text');
+      annotateEnglishWithKeywords(english);
+      if(item.phrase && !PHRASE_MAP.has(item.en.toLowerCase())){
+        const phrase=document.createElement('span');phrase.className='kw phrase-action';phrase.tabIndex=0;phrase.setAttribute('role','button');phrase.setAttribute('aria-expanded','false');phrase.setAttribute('aria-label',`查看词组 ${item.en} 的中文`);phrase.appendChild(document.createTextNode('词组'));const tip=document.createElement('span');tip.className='kw-zh';tip.textContent=item.zh;phrase.appendChild(tip);english.appendChild(phrase);
+      }
+      return div;
+    }
+
+    // --- TAB 1: SOP ---
+    function renderSOP() {
+      const aWrap = document.getElementById("sopPartAGrid");
+      aWrap.innerHTML = APP_DATA.sop.partA_steps.map(s => `
+        <div class="sop-card">
+          <div class="sop-step">${s.step}</div>
+          <div class="sop-title">${s.title}</div>
+          <div class="sop-desc">${s.desc}</div>
+          <div class="sop-example"><strong>实例示范：</strong>${s.example}</div>
+        </div>
+      `).join("");
+
+      const bWrap = document.getElementById("sopPartBGrid");
+      bWrap.innerHTML = APP_DATA.sop.partB_steps.map(s => `
+        <div class="sop-card">
+          <div class="sop-step">${s.step}</div>
+          <div class="sop-title">${s.title}</div>
+          <div class="sop-desc">${s.desc}</div>
+          <div class="sop-example"><strong>考场示范：</strong>${s.example}</div>
+        </div>
+      `).join("");
+    }
+
+    // --- TAB 2: PART A ---
+    function renderPartAStatic() {
+      const triWrap = document.getElementById("paThreeElementsWrap");
+      triWrap.innerHTML = "";
+      APP_DATA.partA.three_elements.forEach(group => {
+        const block = document.createElement("div");
+        block.style.marginBottom = "18px";
+        block.innerHTML = `
+          <div style="font-weight:700; font-size:0.95rem; color:var(--accent); margin-bottom:4px;">${group.type}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:9px;">📌 适用真题：${group.applicable}</div>
+        `;
+        group.points.forEach(pt => block.appendChild(createSentenceBox(pt)));
+        triWrap.appendChild(block);
+      });
+
+      const specWrap = document.getElementById("paSpecialFormatsWrap");
+      specWrap.innerHTML = "";
+      APP_DATA.partA.endings.forEach(item => specWrap.appendChild(createSentenceBox(item)));
+      APP_DATA.partA.special_formats.forEach(item => specWrap.appendChild(createSentenceBox(item)));
+    }
+
+    function escapeInput(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+    function buildPartALetter() {
+      const to = escapeInput(document.getElementById("paTo").value.trim()) || "Jack";
+      const topic = escapeInput(document.getElementById("paTopic").value.trim()) || "the upcoming event";
+      const sec = document.getElementById("paSec").value;
+      const pri = document.getElementById("paPri").value;
+      const triad = document.getElementById("paTriad").value;
+      const reply = document.getElementById("paReply").value;
+
+      let bodyPts = "";
+      if (triad === "how") {
+        bodyPts = `First of all, it is advisable to put things into perspective and establish correct, positive values about this endeavor primarily. What's more, you could look for relevant and practical experience in this aspect on reliable platforms such as Zhihu Community. In addition, a practical and reasonable plan should be promptly carried out and remain high on your agenda.`;
+      } else if (triad === "what") {
+        bodyPts = `First of all, it will be held in the Main Building next Sunday, so please make sure you are available then. What's more, our dedicated staff will be there to provide you with necessary orientation and thoughtful guidance. In addition, it is highly recommended that you be properly and comfortably dressed for the occasion.`;
+      } else if (triad === "why") {
+        bodyPts = `First of all, it has won official recognition and high praise from relevant authorities. What's more, it enjoys widespread popularity and an enviable reputation among the general public as well as on multiple social platforms. In addition, I personally find it genuinely attractive and beneficial, as it broadens our horizons.`;
+      } else {
+        bodyPts = `First of all, it will be held in the Main Building next Sunday, with our staff providing full orientation and guidance. What's more, rooted in fine traditional culture, it enjoys widespread popularity among students and faculty alike. In addition, I personally find it an illuminating opportunity to foster mutual understanding.`;
+      }
+
+      const ending = reply === "yes"
+        ? `I would appreciate it if you could take my message into serious consideration. And I would be much obliged to you for an early and positive reply.`
+        : `I would be glad if you found the information and suggestions mentioned above helpful. Should you have any further questions, please feel free to contact me.`;
+
+      const html = `
+        <p class="no-indent">Dear <span class="hl-fill">${to}</span>,</p>
+        <p>I am writing this letter to <span class="hl-fill">${sec}${pri} ${topic}</span>.</p>
+        <p>Regarding <span class="hl-fill">${topic}</span>, there are several points I would like to mention. ${bodyPts} For more details, you could refer to the attachment below.</p>
+        <p>${ending}</p>
+        <p class="no-indent">Yours truly,<br>Li Ming</p>
+      `;
+      const out = document.getElementById("paLiveOutput");
+      out.innerHTML = html;
+      annotateEnglishWithKeywords(out);
+      const words = cleanEnglish(out).trim().split(/\s+/).filter(Boolean).length;
+      document.getElementById("paWordCount").textContent = `词数统计：${words} words（小作文目标 100–130 words）`;
+    }
+
+    // --- TAB 3: PART B SCHOOLS ---
+    function switchPartBSchool(school, btn) {
+      currentSchool = school;
+      btn.parentElement.querySelectorAll(".pill-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderPartBSchool();
+    }
+
+    function setNxTier(tier) {
+      currentNxTier = tier;
+      renderPartBSchool();
+    }
+
+    function renderPartBSchool() {
+      const wrap = document.getElementById("partBSchoolContent");
+      wrap.innerHTML = "";
+      const data = APP_DATA.partB[currentSchool];
+
+      const head = document.createElement("div");
+      head.style.marginBottom = "14px";
+      head.innerHTML = `
+        <h3 style="font-size:1rem; color:var(--accent); margin-bottom:4px;">${data.title}</h3>
+        <p style="font-size:0.86rem; color:var(--text-muted);">${data.intro}</p>
+      `;
+      wrap.appendChild(head);
+
+      if (currentSchool === "nanxiao") {
+        const s1 = document.createElement("div");
+        s1.innerHTML = `<h4 style="font-size:0.9rem; margin:12px 0 8px;">第一步：第一段开头（按题型 3 选 1）</h4>`;
+        data.p1.forEach(item => s1.appendChild(createSentenceBox(item)));
+        wrap.appendChild(s1);
+
+        const tierDiv = document.createElement("div");
+        tierDiv.innerHTML = `<h4 style="font-size:0.9rem; margin:16px 0 8px;">第二步：第二段中心段落（选择你的目标档位）</h4>`;
+        const bar = document.createElement("div");
+        bar.className = "pill-bar";
+        [
+          { k: "full", label: "🏆 满分进阶版（9槽・18-20分）" },
+          { k: "simple", label: "⚡ 高效简化版（5槽・16-18分）" },
+          { k: "speed", label: "🚀 一晚速通版（5槽+实证句）" }
+        ].forEach(t => {
+          const b = document.createElement("button");
+          b.className = "pill-btn" + (currentNxTier === t.k ? " active" : "");
+          b.textContent = t.label;
+          b.onclick = () => setNxTier(t.k);
+          bar.appendChild(b);
+        });
+        tierDiv.appendChild(bar);
+        data.tiers[currentNxTier].forEach(item => tierDiv.appendChild(createSentenceBox(item)));
+        wrap.appendChild(tierDiv);
+
+        const s3 = document.createElement("div");
+        s3.innerHTML = `<h4 style="font-size:0.9rem; margin:16px 0 8px;">第三步：第三段总结（全版本通用）</h4>`;
+        data.p3.forEach(item => s3.appendChild(createSentenceBox(item)));
+        wrap.appendChild(s3);
+      } else if (currentSchool === "monkey") {
+        const cSec = document.createElement("div");
+        cSec.innerHTML = `<h4 style="font-size:0.92rem; color:var(--emerald); margin:12px 0 8px;">📈 Monkey 图表类大作文万能模板（英语二防卡壳神兵）</h4>`;
+        data.chart.forEach(item => cSec.appendChild(createSentenceBox(item)));
+        wrap.appendChild(cSec);
+
+        const pSec = document.createElement("div");
+        pSec.innerHTML = `<h4 style="font-size:0.92rem; color:var(--gold); margin:18px 0 8px;">🖼️ Monkey 图画类大作文万能模板（防英二突袭考图画）</h4>`;
+        data.cartoon.forEach(item => pSec.appendChild(createSentenceBox(item)));
+        wrap.appendChild(pSec);
+      } else {
+        const c9 = document.createElement("div");
+        c9.innerHTML = `<h4 style="font-size:0.92rem; color:var(--emerald); margin:12px 0 8px;">🔢 潘赟《九宫格》图表作文 9 步必背功能句与词汇升级</h4>`;
+        data.chart_9.forEach(item => c9.appendChild(createSentenceBox(item)));
+        wrap.appendChild(c9);
+
+        const pEx = document.createElement("div");
+        pEx.innerHTML = `<h4 style="font-size:0.92rem; color:var(--gold); margin:18px 0 8px;">✨ 潘赟《九宫格》图画与通用高分亮点句（倒装/双重否定/虚拟语气）</h4>`;
+        data.cartoon_extra.forEach(item => pEx.appendChild(createSentenceBox(item)));
+        wrap.appendChild(pEx);
+      }
+    }
+
+    // --- TAB 4: 17 YEARS REAL EXAM BUILDER ---
+    function initBuilder() {
+      const yList = document.getElementById("yearList");
+      yList.innerHTML = "";
+      APP_DATA.exams.forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.className = "year-item" + (idx === currentYearIdx ? " active" : "");
+        div.onclick = () => loadYearToBuilder(idx);
+        div.innerHTML = `
+          <div class="y-top"><span>${item.year}年 英语二</span><span style="font-weight:500;font-size:0.78rem;">${item.theme}</span></div>
+          <div class="y-sub">${item.partB}</div>
+        `;
+        yList.appendChild(div);
+      });
+      loadYearToBuilder(currentYearIdx);
+    }
+
+    function loadYearToBuilder(idx) {
+      currentYearIdx = idx;
+      document.querySelectorAll(".year-item").forEach((el, i) => el.classList.toggle("active", i === idx));
+      const d = APP_DATA.exams[idx];
+      document.getElementById("builderTitle").textContent = `${d.year}年真题：${d.partB}`;
+      document.getElementById("inP1Desc").value = d.p1Desc;
+      document.getElementById("inTheme").value = d.theme;
+      document.getElementById("inAction").value = d.action;
+      document.getElementById("inOutcome").value = d.outcome;
+      document.getElementById("inDomain").value = d.domain;
+      document.getElementById("inAbility").value = d.ability;
+      document.getElementById("inSocialEffect").value = d.socialEffect;
+      document.getElementById("inStrategy").value = d.strategy;
+      document.getElementById("inSocialChange").value = d.socialChange;
+      renderBuiltEssay();
+    }
+
+    function quickSetStrategy(val) {
+      document.getElementById("inStrategy").value = val;
+      renderBuiltEssay();
+    }
+
+    function renderBuiltEssay() {
+      const mode = document.getElementById("builderMode").value;
+      const spark = document.getElementById("builderSpark").value;
+      const d = APP_DATA.exams[currentYearIdx];
+      const p1 = escapeInput(document.getElementById("inP1Desc").value.trim());
+      const theme = escapeInput(document.getElementById("inTheme").value.trim());
+      const themeCap = theme ? theme.charAt(0).toUpperCase() + theme.slice(1) : "";
+      const action = escapeInput(document.getElementById("inAction").value.trim());
+      const outcome = escapeInput(document.getElementById("inOutcome").value.trim());
+      const domain = escapeInput(document.getElementById("inDomain").value.trim());
+      const ability = escapeInput(document.getElementById("inAbility").value.trim());
+      const socialEffect = escapeInput(document.getElementById("inSocialEffect").value.trim());
+      const strategy = escapeInput(document.getElementById("inStrategy").value.trim());
+      const socialChange = escapeInput(document.getElementById("inSocialChange").value.trim());
+
+      let p1Out = p1;
+      let p2Out = "";
+      let p3Out = "";
+
+      if (spark.includes("Abstract")) {
+        p1Out += `<span class="hl-fill">${spark}</span>`;
+      }
+
+      if (mode === "nx_full") {
+        p2Out = `<span class="hl-fill">${themeCap}</span> has attracted attention, not least because of its far-reaching implications. At the individual level, it is reflected in the way people <span class="hl-fill">${action}</span>, ultimately contributing to <span class="hl-fill">${outcome}</span>. National policies on <span class="hl-fill">${domain}</span> likewise focus on empowering individuals to <span class="hl-fill">${ability}</span>. Beyond personal advancement, this principle can strengthen communities by <span class="hl-fill">${socialEffect}</span>, laying the groundwork for sustainable progress. This is in line with national strategies for <span class="hl-fill">${strategy}</span>: as this principle takes root, <span class="hl-fill">${socialChange}</span>.`;
+        p3Out = `In conclusion, a rational consensus has emerged that both individuals and communities benefit immeasurably when <span class="hl-fill">${theme}</span> guides action. Promoting this principle is therefore not merely advisable but essential for holistic development.`;
+      } else if (mode === "nx_simple") {
+        p2Out = `<span class="hl-fill">${themeCap}</span> has attracted attention, not least because of its far-reaching implications. At the individual level, it is reflected in the way people <span class="hl-fill">${action}</span>, ultimately contributing to personal development and well-being. National policies on <span class="hl-fill">${domain}</span> likewise focus on empowering individuals to achieve their full potential. Beyond personal advancement, this principle can strengthen communities by <span class="hl-fill">${socialEffect}</span>, laying the groundwork for sustainable progress. As this principle takes root across society, it creates a ripple effect that benefits social harmony and long-term prosperity.`;
+        p3Out = `In conclusion, a rational consensus has emerged that both individuals and communities benefit immeasurably when <span class="hl-fill">${theme}</span> guides action. Promoting this principle is therefore not merely advisable but essential for holistic development.`;
+      } else if (mode === "nx_speed") {
+        p2Out = `To begin with, experience suggests that this trend can be explained in part by people's desire to <span class="hl-fill">${action}</span>. This is hardly surprising, as people tend to favour behaviour they believe will have desirable consequences. However, we should recognise that social conditions fundamentally shape the choices available to individuals. From this perspective, it is the promotion of national strategies for <span class="hl-fill">${strategy}</span> that provides impetus for these developments. A study published by <span class="hl-fill">Peking University</span> lends support to the view that <span class="hl-fill">${theme}</span> plays an important role in driving this trend and fostering community prosperity.`;
+        p3Out = `In conclusion, a rational consensus has emerged that both individuals and communities benefit immeasurably when <span class="hl-fill">${theme}</span> guides action. Promoting this principle is therefore not merely advisable but essential for holistic development.`;
+      } else {
+        p1Out += ` From my perspective, the above figures reveal a currently prevailing tendency concerning <span class="hl-fill">${theme}</span> in contemporary society.`;
+        p2Out = `To examine the root cause of this tendency, certain factors should be specifically pointed out here. First and foremost, just as Karl Marx once said, the economic basis determines the superstructure. Given China's sustained economic advancement and policies on <span class="hl-fill">${domain}</span>, it is not surprising to witness this positive trend. What's more, the phenomenon under discussion could be attributed to the shift of <span class="hl-fill">${d.pop}'s</span> values, as they increasingly choose to <span class="hl-fill">${action}</span>. In addition, social media platforms substantially facilitate the flow and intensification of awareness regarding <span class="hl-fill">${theme}</span>, accelerating its transition into a new social norm.`;
+        p3Out = `In conclusion, this tendency is of profound inevitability and aligns closely with national strategies for <span class="hl-fill">${strategy}</span>. Correspondingly, as the vanguard and successor of our society, we should grasp the pulse of this trend, surf the wave of this era, and actively embrace its opportunities.`;
+      }
+
+      if (spark && !spark.includes("Abstract")) {
+        p3Out += `<span class="hl-fill">${spark}</span>`;
+      }
+
+      const out = document.getElementById("essayOutput");
+      out.innerHTML = `<p>${p1Out}</p><p>${p2Out}</p><p>${p3Out}</p>`;
+      annotateEnglishWithKeywords(out);
+      const words = cleanEnglish(out).trim().split(/\s+/).filter(Boolean).length;
+      document.getElementById("wordCountDisplay").textContent = `词数统计：${words} words`;
+    }
+
+    // --- TAB 5: MASSIVE CORPUS ---
+    function initCorpusFilterBar() {
+      const bar = document.getElementById("corpusFilterBar");
+      bar.innerHTML = "";
+      const allBtn = document.createElement("button");
+      allBtn.className = "pill-btn active";
+      allBtn.textContent = "全部语料";
+      allBtn.onclick = () => selectCorpusCat("all", allBtn);
+      bar.appendChild(allBtn);
+
+      APP_DATA.corpus.forEach(cat => {
+        const b = document.createElement("button");
+        b.className = "pill-btn";
+        b.textContent = cat.name.split("（")[0];
+        b.onclick = () => selectCorpusCat(cat.id, b);
+        bar.appendChild(b);
+      });
+    }
+
+    function selectCorpusCat(catId, btn) {
+      currentCorpusCat = catId;
+      document.querySelectorAll("#corpusFilterBar .pill-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderCorpus();
+    }
+
+    function toggleOnlyStarred() {
+      onlyStarred = !onlyStarred;
+      document.getElementById("btnOnlyStarred").classList.toggle("active", onlyStarred);
+      renderCorpus();
+    }
+
+    function renderCorpus() {
+      const q = document.getElementById("corpusSearch").value.trim().toLowerCase();
+      const wrap = document.getElementById("corpusListWrap");
+      wrap.innerHTML = "";
+      let totalShown = 0;
+
+      APP_DATA.corpus.forEach(cat => {
+        if (currentCorpusCat !== "all" && cat.id !== currentCorpusCat) return;
+        const filtered = cat.items.filter((item, idx) => {
+          const key = `${cat.id}-${idx}`;
+          if (onlyStarred && !starredSet.has(key)) return false;
+          if (!q) return true;
+          return item.en.toLowerCase().includes(q) || item.zh.toLowerCase().includes(q) || item.tag.toLowerCase().includes(q);
+        });
+        if (filtered.length === 0) return;
+
+        totalShown += filtered.length;
+        const sec = document.createElement("div");
+        sec.style.marginBottom = "22px";
+        sec.innerHTML = `
+          <h4 style="font-size:0.96rem; color:var(--accent); margin-bottom:3px;">${cat.name}</h4>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">${cat.desc}</p>
+        `;
+        const grid = document.createElement("div");
+        grid.className = "chip-grid";
+
+        cat.items.forEach((item, idx) => {
+          const key = `${cat.id}-${idx}`;
+          if (onlyStarred && !starredSet.has(key)) return;
+          if (q && !(item.en.toLowerCase().includes(q) || item.zh.toLowerCase().includes(q) || item.tag.toLowerCase().includes(q))) return;
+
+          const isStar = starredSet.has(key);
+          const chip = document.createElement("div");
+          chip.className = "phrase-chip";
+          chip.onclick = () => chip.classList.toggle("zh-open");
+          chip.innerHTML = `
+            <div class="p-top">
+              <span class="p-tag">${item.tag}</span>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <button class="speak-btn" type="button" aria-label="朗读">🔊</button>
+                <button class="star-btn ${isStar ? 'starred' : ''}" title="收藏到我的考场专属词本" onclick="toggleStar('${key}', event)">⭐</button>
+              </div>
+            </div>
+            <div class="p-en">${item.en}</div>
+            <div class="p-zh">${item.zh}</div>
+          `;
+          chip.querySelector('.speak-btn').addEventListener('click',e=>speakText(item.en,e));
+          const pen=chip.querySelector('.p-en');
+          const whole=(pen.textContent||'').trim().replace(/\s+/g,' ');
+          annotateEnglishWithKeywords(pen);
+          // Each corpus entry has a source-provided translation, even if not in PHRASE_DICT.
+          if(whole.includes(' ') && !PHRASE_MAP.has(whole.toLowerCase())){
+            const phrase=document.createElement('span');phrase.className='kw phrase-action';phrase.tabIndex=0;phrase.setAttribute('role','button');phrase.setAttribute('aria-expanded','false');phrase.setAttribute('aria-label',`查看 ${whole} 的中文`);phrase.appendChild(document.createTextNode('词组'));const tip=document.createElement('span');tip.className='kw-zh';tip.textContent=item.zh;phrase.appendChild(tip);pen.appendChild(phrase);
+          }
+          grid.appendChild(chip);
+        });
+        sec.appendChild(grid);
+        wrap.appendChild(sec);
+      });
+
+      if (totalShown === 0) {
+        wrap.innerHTML = `<div style="text-align:center; padding:32px; color:var(--text-muted);">未找到匹配的语料，请尝试清空搜索词或取消收藏筛选。</div>`;
+      }
+      document.getElementById("corpusCountBadge").textContent = `当前显示 ${totalShown} 条精品语料`;
+      document.getElementById("starCount").textContent = starredSet.size;
+    }
+
+    // --- TAB 6: HISTORY TABLE ---
+    function renderHistoryTable() {
+      const tbody = document.getElementById("historyTableBody");
+      tbody.innerHTML = APP_DATA.exams.map(r => `
+        <tr>
+          <td style="font-weight:700; color:var(--accent);">${r.year}</td>
+          <td>${r.partA}</td>
+          <td>${r.partB}</td>
+          <td>
+            <span class="badge emerald">${r.value}</span>
+            <div style="font-size:0.79rem; color:var(--text-muted); margin-top:4px;">推荐主题词：<strong>${r.theme}</strong></div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    let guideId='start';
+    const guideNav=document.getElementById('guideNav');
+    const navItems=document.getElementById('writeNavItems');
+    const navButton=document.querySelector('.nav-toggle');
+    function setNavOpen(open){navItems.hidden=!open;navButton.setAttribute('aria-expanded',String(open));navButton.textContent=open?'收起章节目录 −':'显示章节目录 ＋';}
+    if(matchMedia('(max-width:650px)').matches)setNavOpen(false);
+    navButton.addEventListener('click',()=>setNavOpen(navItems.hidden));
+    matchMedia('(max-width:650px)').addEventListener('change',e=>{if(e.matches)setNavOpen(false);else {navItems.hidden=false;navButton.setAttribute('aria-expanded','true');}});
+    function paintGuideNav(q=''){
+      guideNav.replaceChildren(); let shown=0;
+      for(const group of [...new Set(WRITING_GUIDE.map(x=>x.group))]){
+        const hits=WRITING_GUIDE.filter(x=>x.group===group && (!q || JSON.stringify(x).toLowerCase().includes(q)));
+        if(!hits.length)continue; shown+=hits.length;
+        const details=document.createElement('details');details.className='write-nav-group';details.open=true;
+        const summary=document.createElement('summary');summary.textContent=group;details.appendChild(summary);
+        hits.forEach(item=>{const b=document.createElement('button');b.type='button';b.className='tab-btn'+(item.id===guideId&&document.getElementById('tab-guide').classList.contains('active')?' active':'');b.textContent=item.title;b.dataset.guide=item.id;b.addEventListener('click',()=>openGuide(item.id,true));details.appendChild(b);});guideNav.appendChild(details);
+      }
+      document.getElementById('noGuideResults').hidden=!!shown;
+    }
+    document.getElementById('guideSearch').addEventListener('input',e=>{paintGuideNav(e.target.value.trim().toLowerCase());if(e.target.value.trim()&&matchMedia('(max-width:650px)').matches)setNavOpen(true);});
+    function openGuide(id, scroll=false){
+      const item=WRITING_GUIDE.find(x=>x.id===id);if(!item)return;guideId=id;
+      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById('tab-guide').classList.add('active');document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.getElementById('rawWarning').hidden=true;
+      const root=document.getElementById('guidePage');root.replaceChildren();
+      const eyebrow=document.createElement('div');eyebrow.className='guide-eyebrow';eyebrow.textContent='推荐背诵版  /  '+item.group;root.appendChild(eyebrow);
+      const title=document.createElement('h2');title.className='guide-heading';title.textContent=item.title;root.appendChild(title);
+      const desc=document.createElement('p');desc.className='guide-desc';desc.textContent=item.intro;root.appendChild(desc);
+      const flow=document.createElement('div');flow.className='guide-flow';const ft=document.createElement('strong');ft.textContent='考场顺序';const fp=document.createElement('p');fp.textContent=item.flow;flow.append(ft,fp);root.appendChild(flow);
+      const note=document.createElement('div');note.className='guide-note';const nt=document.createElement('strong');nt.textContent='使用前注意';const ul=document.createElement('ul');item.notes.forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li)});note.append(nt,ul);root.appendChild(note);
+      if(item.blocks.length){const st=document.createElement('h3');st.className='guide-section-title';st.textContent='句块背诵 · 点句卡看整句中文';root.appendChild(st);const sentences=document.createElement('div');sentences.className='guide-sentences';item.blocks.forEach((block,i)=>sentences.appendChild(createSentenceBox({...block,id:'guide-'+item.id+'-'+i})));root.appendChild(sentences);}
+      paintGuideNav(document.getElementById('guideSearch').value.trim().toLowerCase());if(matchMedia('(max-width:650px)').matches)setNavOpen(false);
+      if(scroll) document.querySelector('.container').scrollIntoView({block:'start'});
+    }
+
+    // --- GLOBAL CONTROLS ---
+    function switchTab(id, btn) {
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.getElementById("rawWarning").hidden = false;
+      if(matchMedia("(max-width:650px)").matches) setNavOpen(false);
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    function toggleAllZh() {
+      if (document.body.classList.contains("zh-to-en")) toggleZhToEn();
+      const on = document.body.classList.toggle("show-all-zh");
+      const btn = document.getElementById("btnAllZh");
+      btn.classList.toggle("active", on);
+      btn.textContent = on ? "🙈 全部隐藏汉语" : "👁️ 全部显示汉语";
+    }
+
+    function toggleZhToEn() {
+      if (document.body.classList.contains("show-all-zh")) toggleAllZh();
+      const on = document.body.classList.toggle("zh-to-en");
+      const btn = document.getElementById("btnZhToEn");
+      btn.classList.toggle("active", on);
+      btn.textContent = on ? "🔓 退出看中背英" : "🔄 看中背英自测";
+    }
+
+    function toggleCloze() {
+      const on = document.body.classList.toggle("cloze-mode");
+      const btn = document.getElementById("btnCloze");
+      btn.classList.toggle("active", on);
+      btn.textContent = on ? "🔓 退出填空遮罩" : "🧠 槽位填空遮罩";
+      if (!on) document.querySelectorAll(".slot.revealed").forEach(s => s.classList.remove("revealed"));
+    }
+
+    function toggleDark() {
+      const on = document.body.classList.toggle("dark");
+      const btn = document.getElementById("btnDark");
+      btn.classList.toggle("active", on);
+      btn.textContent = on ? "☀️ 暖纸亮色" : "🌙 护眼暗色";
+    }
+
+    // A parent message also works when local file origins cannot read each other's DOM.
+    const setDeskTheme=dark=>document.body.classList.toggle('dark',!!dark);
+    if(window.parent!==window){
+      document.body.classList.add('in-desk');
+      setDeskTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      window.addEventListener('message',e=>{if(e.source===window.parent && e.data && e.data.type==='kaoyan-writing-theme' && typeof e.data.dark==='boolean')setDeskTheme(e.data.dark);});
+      try {const root=window.parent.document.documentElement;const syncTheme=()=>{const t=root.dataset.theme;setDeskTheme(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches));};syncTheme();new MutationObserver(syncTheme).observe(root,{attributes:true,attributeFilter:['data-theme']});}catch(e){}
+      window.parent.postMessage({type:'kaoyan-writing-ready'},'*');
+    } else {setDeskTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);}
+
+    // --- BOOTSTRAP ---
+    renderSOP();
+    renderPartAStatic();
+    buildPartALetter();
+    renderPartBSchool();
+    initBuilder();
+    initCorpusFilterBar();
+    renderCorpus();
+    renderHistoryTable();
+    annotateEnglishWithKeywords(document.getElementById("tab-sop"));
+    annotateEnglishWithKeywords(document.getElementById("tab-history"));
+    updateMasterStats();
+    openGuide("start");
+  </script>
+</body>
+</html>
