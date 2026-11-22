@@ -127,23 +127,14 @@
       "exam": false
     },
     {
-      "name": "考研冲刺决策台",
-      "zh": "考研 30 天冲刺决策台：今日时间轴、动态决策、打卡、番茄钟、模考计时、单词与错题本。",
-      "en": "Postgraduate-exam sprint decision desk: today's timeline, dynamic decisions, check-ins, Pomodoro, mock-exam timer, vocabulary and error log.",
-      "ja": "大学院入試スプリントの意思決定デスク：今日のタイムライン、動的な判断、チェックイン、ポモドーロ、模試タイマー、単語と誤答記録。",
+      "name": "考研决策台",
+      "zh": "数学解题框架、公式工具与多科复习资料整合。",
+      "en": "Mathematics problem-solving frameworks, formula tools and multi-subject postgraduate study resources.",
+      "ja": "数学の解法フレームワーク、公式ツール、複数科目の大学院試験学習資料。",
       "url": "./works/kaoyan-decision-desk/",
       "cover": "./assets/works/kaoyan-decision-desk.svg",
-      "exam": true
-    },
-    {
-      "name": "kaoyan-math-framework",
-      "zh": "kaoyan-math-framework",
-      "en": "kaoyan-math-framework",
-      "ja": "kaoyan-math-framework",
-      "url": "./works/kaoyan-math-framework/",
-      "cover": "",
-      "exam": false,
-      "draft": true
+      "exam": true,
+      "draft": false
     }
   ],
   "knownPaths": [
